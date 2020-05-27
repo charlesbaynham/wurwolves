@@ -196,6 +196,7 @@ Deployment by using [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cl
 * Add buildpacks
 
     ```bash
+    heroku buildpacks:clear
     heroku buildpacks:add --index=1 heroku/nodejs
     heroku buildpacks:add --index=1 heroku/python
     ```
