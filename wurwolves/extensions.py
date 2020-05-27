@@ -19,4 +19,4 @@ debug_toolbar = DebugToolbarExtension()
 flask_static_digest = FlaskStaticDigest()
 
 def get_db():
-    return db
+    return db.engine
