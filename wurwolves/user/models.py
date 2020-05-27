@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """User models."""
-import datetime as dt
+import datetime
 
 from flask_login import UserMixin
 
@@ -21,6 +21,8 @@ class Post(SurrogatePK, Model):
     title = Column(db.Text, unique=False, nullable=False)
     body = Column(db.Text, unique=False, nullable=False)
     author_id = reference_col("user", nullable=True)
+    created = Column(db.DateTime, default=datetime.datetime.utcnow)
+
 
 class User(SurrogatePK, Model):
     __tablename__ = "user"
