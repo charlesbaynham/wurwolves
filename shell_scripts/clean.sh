@@ -1,0 +1,1 @@
+git clean --exclude venv --exclude .vscode --exclude node_modules -xdf
