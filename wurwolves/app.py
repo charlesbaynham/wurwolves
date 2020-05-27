@@ -1,91 +1,42 @@
-# -*- coding: utf-8 -*-
-"""The app module, containing the app factory function."""
-import logging
-import sys
+import os
 
-from flask import Flask, render_template
-
-from wurwolves import commands, public, user
-from wurwolves.extensions import (
-    bcrypt,
-    cache,
-    csrf_protect,
-    db,
-    debug_toolbar,
-    flask_static_digest,
-    login_manager,
-    migrate,
-)
+from flask import Flask
 
 
-def create_app(config_object="wurwolves.settings"):
-    """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
+def create_app(test_config=None):
+    # create and configure the app
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+        DATABASE=os.path.join(app.instance_path, 'data.sqlite'),
+    )
 
-    :param config_object: The configuration object to use.
-    """
-    app = Flask(__name__.split(".")[0])
-    app.config.from_object(config_object)
-    register_extensions(app)
-    register_blueprints(app)
-    register_errorhandlers(app)
-    register_shellcontext(app)
-    register_commands(app)
-    configure_logger(app)
-    return app
+    if test_config is None:
+        # load the instance config, if it exists, when not testing
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
 
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
-def register_extensions(app):
-    """Register Flask extensions."""
-    bcrypt.init_app(app)
-    cache.init_app(app)
+    # a simple page that says hello
+    @app.route('/hello')
+    def hello():
+        return 'Hello, World!'
+
+    from . import db
     db.init_app(app)
-    csrf_protect.init_app(app)
-    login_manager.init_app(app)
-    debug_toolbar.init_app(app)
-    migrate.init_app(app, db)
-    flask_static_digest.init_app(app)
-    return None
 
+    from . import auth
+    app.register_blueprint(auth.bp)
 
-def register_blueprints(app):
-    """Register Flask blueprints."""
-    app.register_blueprint(public.views.blueprint)
-    app.register_blueprint(user.views.blueprint)
-    return None
+    from . import blog
+    app.register_blueprint(blog.bp)
+    app.add_url_rule('/', endpoint='index')
 
-
-def register_errorhandlers(app):
-    """Register error handlers."""
-
-    def render_error(error):
-        """Render error template."""
-        # If a HTTPException, pull the `code` attribute; default to 500
-        error_code = getattr(error, "code", 500)
-        return render_template(f"{error_code}.html"), error_code
-
-    for errcode in [401, 404, 500]:
-        app.errorhandler(errcode)(render_error)
-    return None
-
-
-def register_shellcontext(app):
-    """Register shell context objects."""
-
-    def shell_context():
-        """Shell context objects."""
-        return {"db": db, "User": user.models.User}
-
-    app.shell_context_processor(shell_context)
-
-
-def register_commands(app):
-    """Register Click commands."""
-    app.cli.add_command(commands.test)
-    app.cli.add_command(commands.lint)
-
-
-def configure_logger(app):
-    """Configure loggers."""
-    handler = logging.StreamHandler(sys.stdout)
-    if not app.logger.handlers:
-        app.logger.addHandler(handler)
+    return app
