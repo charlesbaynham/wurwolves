@@ -20,10 +20,10 @@ class Post(SurrogatePK, Model):
 
     title = Column(db.Text, unique=False, nullable=False)
     body = Column(db.Text, unique=False, nullable=False)
-    author_id = reference_col("users", nullable=True)
+    author_id = reference_col("user", nullable=True)
 
 class User(SurrogatePK, Model):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     username = Column(db.String(100), unique=False, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)
