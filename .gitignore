@@ -53,8 +53,5 @@ env/
 # webpack-built files
 /wurwolves/static/build/
 
-# Configuration
-.env
-
 # Development database
 *.db
