@@ -1,49 +1,52 @@
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
-)
+from flask import (Blueprint, flash, g, redirect, render_template, request,
+                   url_for)
+from flask_wtf import FlaskForm
 from werkzeug.exceptions import abort
+from wtforms import StringField, TextAreaField
+from wtforms.validators import DataRequired
 
 from .auth import login_required
-from .extensions import get_db
+from .extensions import get_db, db
+from .user.models import Post, User
+from .utils import flash_errors
 
 bp = Blueprint('blog', __name__)
 
 
+class CreateForm(FlaskForm):
+    title = StringField(
+        "Title", validators=[DataRequired()]
+    )
+    body = TextAreaField(
+        "Content", validators=[]
+    )
+
+
 @bp.route('/')
 def index():
-    db = get_db()
-    posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
-    ).fetchall()
-    return render_template('blog/index.html', posts=posts)
+    # posts = db.session.query(Post, User).join(User).all()
+    posts = Post.query.join(User).all()
+    return str([(p.__dict__, u.__dict__) for p, u in posts])
+    # return render_template('blog/index.html', posts=posts)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
-    if request.method == 'POST':
-        title = request.form['title']
-        body = request.form['body']
-        error = None
+    form = CreateForm(request.form)
 
-        if not title:
-            error = 'Title is required.'
+    if form.validate_on_submit():
+        Post.create(
+            title=form.title.data,
+            body=form.body.data,
+            author_id=g.user.id
+        )
+        flash("Post created", "success")
+        return redirect(url_for('blog.index'))
+    else:
+        flash_errors(form)
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO post (title, body, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
-            )
-            db.commit()
-            return redirect(url_for('blog.index'))
-
-    return render_template('blog/create.html')
+    return render_template('blog/create.html', form=form)
 
 
 def get_post(id, check_author=True):

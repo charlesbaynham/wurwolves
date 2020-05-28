@@ -15,7 +15,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired, Email, Length
 
-from .extensions import get_db
 from .user.models import User
 from .utils import flash_errors
 
@@ -131,9 +130,7 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
-        ).fetchone()
+        g.user = User.query.filter_by(id=user_id).first()
 
 
 @bp.route('/logout')

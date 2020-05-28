@@ -30,3 +30,5 @@ class User(SurrogatePK, Model):
     username = Column(db.String(50), unique=False, nullable=False)
     password = Column(db.String(128), nullable=True)
     email = Column(db.String(160), unique=False, nullable=False)
+
+    posts = db.relationship('Post', backref='author', lazy=True)
