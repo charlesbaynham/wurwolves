@@ -48,13 +48,6 @@ def create():
 
 
 def get_post(id, check_author=True):
-    post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
-    ).fetchone()
-
     post = Post.get_by_id(id)
 
     if post is None:
@@ -73,15 +66,18 @@ def update(id):
 
     form = CreateForm(request.form)
 
-    form.title.data = post.title
-    form.body.data = post.body
-
     if form.validate_on_submit():
         post.title = form.title.data
         post.body = form.body.data
-        flash("Post updated", "success")
+
+        db.session.commit()
+
+        flash(f"Post updated to {post.body}", "success")
         return redirect(url_for('blog.index'))
     else:
+        form.title.data = post.title
+        form.body.data = post.body
+
         flash_errors(form)
 
     return render_template('blog/update.html', form=form, post=post)
