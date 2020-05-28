@@ -27,5 +27,6 @@ class Post(SurrogatePK, Model):
 class User(SurrogatePK, Model):
     __tablename__ = "user"
 
-    username = Column(db.String(100), unique=False, nullable=False)
+    username = Column(db.String(50), unique=False, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)
+    email = Column(db.String(160), unique=False, nullable=False)
