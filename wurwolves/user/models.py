@@ -28,5 +28,5 @@ class User(SurrogatePK, Model):
     __tablename__ = "user"
 
     username = Column(db.String(50), unique=False, nullable=False)
-    password = Column(db.LargeBinary(128), nullable=True)
+    password = Column(db.String(128), nullable=True)
     email = Column(db.String(160), unique=False, nullable=False)
