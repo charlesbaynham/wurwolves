@@ -29,4 +29,4 @@ class User(SurrogatePK, Model):
 
     username = Column(db.String(50), unique=False, nullable=False)
     password = Column(db.LargeBinary(128), nullable=True)
-    email = Column(db.String(160), unique=False, nullable=False, default="")
+    email = Column(db.String(160), unique=False, nullable=False)
