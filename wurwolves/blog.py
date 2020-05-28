@@ -24,10 +24,8 @@ class CreateForm(FlaskForm):
 
 @bp.route('/')
 def index():
-    # posts = db.session.query(Post, User).join(User).all()
-    posts = Post.query.join(User).all()
-    return str([(p.__dict__, u.__dict__) for p, u in posts])
-    # return render_template('blog/index.html', posts=posts)
+    posts = Post.query.all()
+    return render_template('blog/index.html', posts=posts)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
