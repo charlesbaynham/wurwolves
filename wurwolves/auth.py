@@ -37,12 +37,12 @@ class RegisterForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         """Create instance."""
-        super(RegisterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = None
 
     def validate(self):
         """Validate the form."""
-        initial_validation = super(RegisterForm, self).validate()
+        initial_validation = super().validate()
         if not initial_validation:
             return False
         user = User.query.filter_by(username=self.username.data).first()
@@ -73,7 +73,7 @@ class LoginForm(FlaskForm):
 
     def validate(self):
         """Validate the form."""
-        initial_validation = super(RegisterForm, self).validate()
+        initial_validation = super().validate()
         if not initial_validation:
             return False
         self.user = User.query.filter_by(username=self.username.data).first()
