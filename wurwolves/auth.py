@@ -68,7 +68,7 @@ class LoginForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         """Create instance."""
-        super(RegisterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = None
 
     def validate(self):
