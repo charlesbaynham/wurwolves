@@ -1,9 +1,9 @@
 import React from 'react';
 
-import Controls from './features/controls/controls'
-import Footer from './features/footer'
-import PlayerGrid from './features/playergrid/playergrid'
-import Navbar from './features/navbar'
+import Controls from './features/controls/Controls'
+import Footer from './features/Footer'
+import PlayerGrid from './features/playergrid/Playergrid'
+import Navbar from './features/Navbar'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';

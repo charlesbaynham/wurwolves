@@ -1,38 +1,19 @@
 import React from 'react';
 
+import Player from '../player/Player'
+
 
 function PlayerGrid() {
     return (
         <div id="player-grid" class="row">
             <div class="col-md container">
                 <div class="row flex-wrap">
-                    <figure class="col-4 col-sm-3 figure player">
-                        <img src="/images/person.svg" class="figure-img img-fluid w-100" alt="A normal villager" />
-                        <figcaption class="figure-caption text-center">Charles</figcaption>
-                    </figure>
-                    <figure class="col-4 col-sm-3 figure player">
-                        <img src="/images/person-seconded.svg" class="figure-img img-fluid w-100"
-                            alt="A normal villager" />
-                        <figcaption class="figure-caption text-center">Charles</figcaption>
-                    </figure>
-                    <figure class="col-4 col-sm-3 figure player">
-                        <img src="/images/person-nominated.svg" class="figure-img img-fluid w-100"
-                            alt="A normal villager" />
-                        <figcaption class="figure-caption text-center">Charles</figcaption>
-                    </figure>
-                    <figure class="col-4 col-sm-3 figure player">
-                        <img src="/images/person-lynched.svg" class="figure-img img-fluid w-100"
-                            alt="A normal villager" />
-                        <figcaption class="figure-caption text-center">Charles</figcaption>
-                    </figure>
-                    <figure class="col-4 col-sm-3 figure player">
-                        <img src="/images/person.svg" class="figure-img img-fluid w-100" alt="A normal villager" />
-                        <figcaption class="figure-caption text-center">Charles</figcaption>
-                    </figure>
-                    <figure class="col-4 col-sm-3 figure player">
-                        <img src="/images/person-wolfed.svg" class="figure-img img-fluid w-100" alt="A normal villager" />
-                        <figcaption class="figure-caption text-center">Charles</figcaption>
-                    </figure>
+                    <Player />
+                    <Player />
+                    <Player />
+                    <Player />
+                    <Player />
+                    <Player />
                 </div>
             </div>
             <div class="col-md-5">
