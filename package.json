@@ -1,0 +1,29 @@
+{
+  "name": "wurwolves",
+  "version": "1.0.0",
+  "description": "A wurwolves (/mafia) webapp, implemented with a python FastAPI server with a Postgres database and a React.JS + Redux frontend, deployed to Heroku. ",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "subpkg install",
+    "start": "subpkg start",
+    "build": "subpkg build",
+    "test": "subpkg test",
+    "eject": "subpkg eject"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlesbaynham/wurwolves.git"
+  },
+  "author": "Charles Baynham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/charlesbaynham/wurwolves/issues"
+  },
+  "homepage": "https://github.com/charlesbaynham/wurwolves#readme",
+  "devDependencies": {
+    "subpackage": "^1.1.0"
+  },
+  "subPackages": [
+      "frontend"
+  ]
+}
