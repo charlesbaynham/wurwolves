@@ -1,39 +1,76 @@
-.App {
-  text-align: center;
+.night .bg-night-black {
+  background: black !important;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.night .bg-night-dark {
+  background: #343a40 !important
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-float infinite 3s ease-in-out;
+.night body {
+  color: white;
+}
+
+.player img {
+  background: white;
+}
+
+.night .player img {
+  background: #AAA;
+}
+
+@media (min-width: 1200px) {
+  .limited-width {
+      max-width: 900px;
   }
 }
 
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+#player-grid {
+  min-height: 7.5cm;
+  /* The height of the chat-box is determined by the height of the
+  player grid, so it mustn't get too small */
 }
 
-.App-link {
-  color: rgb(112, 76, 182);
+#chat-box {
+  overflow-y: scroll;
+  font-size: 10pt;
 }
 
-@keyframes App-logo-float {
-  0% {
-    transform: translateY(0);
+.chat-holder {
+  max-height: 10cm;
+}
+
+@media (min-width: 768px) {
+
+  /* = bootstrap "medium" */
+  .chat-holder {
+      /* When the chatbox is at the side, lift it out of the flow so
+      that its parent gets the height of the player-grid */
+      height: 100%;
+      position: absolute;
+      max-height: none;
   }
-  50% {
-    transform: translateY(10px)
-  }
-  100% {
-    transform: translateY(0px)
-  }
+}
+
+#chat-box p {
+  margin: 0
+}
+
+/* Footer code */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 30px;
+  /* Margin bottom = footer height */
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 30px;
+  /* Set the fixed height of the footer here */
+  line-height: 30px;
 }
