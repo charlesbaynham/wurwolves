@@ -11,21 +11,19 @@ class PlayerData {
 
 export const playersSlice = createSlice({
   name: 'players',
-  initialState: {
-    value: {},
-  },
+  initialState: {},
   reducers: {
     addPlayer: (state, action) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      new_player = PlayerData(action.payload.id, action.payload.name, action.payload.status, false);
+      var new_player = new PlayerData(action.payload.id, action.payload.name, action.payload.status, false);
       state[action.payload.id] = new_player;
       return state;
     },
     removePlayer: (state, action) => {
-      idToRemove = action.payload;
+      var idToRemove = action.payload;
       delete state[idToRemove];
       return state;
     },
@@ -44,13 +42,15 @@ export const playersSlice = createSlice({
   },
 });
 
-export const { addPlayer, removePlayer, setPlayerName, setPlayerStatus, setPlayerSelected } = counterSlice.actions;
+export const { addPlayer, removePlayer, setPlayerName, setPlayerStatus, setPlayerSelected } = playersSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
-export const getPlayerStatus = id => state => state.players[id].status;
-export const getPlayerName = id => state => state.players[id].name;
-export const getPlayerSelected = id => state => state.players[id].selected;
+export const selectPlayerName = id => (state => state.players[id].name);
+export const selectPlayerStatus = id => (state => state.players[id].status);
+export const selectPlayerSelected = id => (state => state.players[id].selected);
+
+export const selectAllPlayers = state => state.players;
 
 export default playersSlice.reducer;

@@ -9,7 +9,26 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 
 
+import {
+   addPlayer
+} from './features/stateSlices/players'
+import { useDispatch } from 'react-redux';
+
+
 function App() {
+  const dispatch = useDispatch();
+
+  dispatch(addPlayer({
+    id: "123",
+    name: "Hello world",
+    status: "normal"
+  }))
+  dispatch(addPlayer({
+    id: "321",
+    name: "Next one",
+    status: "wolfed"
+  }))
+
   return (
     <div class="bg-night-black">
       <Navbar />

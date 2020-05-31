@@ -1,19 +1,22 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Player from '../player/Player'
+import {
+    selectAllPlayers, addPlayer
+} from '../stateSlices/players'
 
 
 function PlayerGrid() {
+    const players = useSelector(selectAllPlayers);
+    
+    var player_ids = Object.keys(players)
+
     return (
         <div id="player-grid" class="row">
             <div class="col-md container">
                 <div class="row flex-wrap">
-                    <Player />
-                    <Player />
-                    <Player />
-                    <Player />
-                    <Player />
-                    <Player />
+                    {player_ids.map(id => <Player key={id} player_id={id} />)}
                 </div>
             </div>
             <div class="col-md-5">

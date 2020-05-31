@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
+import {
+    selectPlayerName,
+    selectPlayerStatus,
+    selectPlayerSelected
+} from '../stateSlices/players'
 
-var IMAGE_LOOKUP = {
+const IMAGE_LOOKUP = {
     'normal': {
         'img': '/images/person.svg',
         'alt': 'A normal villager?'
@@ -22,21 +28,24 @@ var IMAGE_LOOKUP = {
         'img': '/images/person-seconded.svg',
         'alt': 'A seconded player'
     },
-    'seconded': {
+    'spectating': {
         'img': '/images/person.svg',
         'alt': 'A spectator'
     }
 }
 
 function Player(props) {
-    const [playerStatus, setPlayerStatus] = useState('normal');
+    const player_id = props.player_id
+    const name = useSelector(selectPlayerName(player_id));
+    const status = useSelector(selectPlayerStatus(player_id));
+    const selected = useSelector(selectPlayerSelected(player_id));
 
     return (
         <figure class="col-4 col-sm-3 figure player">
-            <img src={IMAGE_LOOKUP[playerStatus].img}
+            <img src={IMAGE_LOOKUP[status].img}
                 class="figure-img img-fluid w-100"
-                alt={IMAGE_LOOKUP[playerStatus].alt} />
-            <figcaption class="figure-caption text-center">Charles</figcaption>
+                alt={IMAGE_LOOKUP[status].alt} />
+            <figcaption class="figure-caption text-center">{name}</figcaption>
         </figure>
     )
 }
