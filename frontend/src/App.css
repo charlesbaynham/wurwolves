@@ -24,7 +24,7 @@
   }
 }
 
-#player-grid {
+#grid-and-chat {
   min-height: 7.5cm;
   /* The height of the chat-box is determined by the height of the
   player grid, so it mustn't get too small */
@@ -44,7 +44,7 @@
   /* = bootstrap "medium" */
   .chat-holder {
       /* When the chatbox is at the side, lift it out of the flow so
-      that its parent gets the height of the player-grid */
+      that its parent gets the height of the grid-and-chat */
       height: 100%;
       position: absolute;
       max-height: none;
