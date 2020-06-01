@@ -1,13 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-class PlayerData {
-  constructor(id, name, status, selected) {
-    this.id = id;
-    this.name = name;
-    this.status = status;
-    this.selected = selected;
-  }
-}
 
 export const playersSlice = createSlice({
   name: 'players',
@@ -18,7 +10,12 @@ export const playersSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      var new_player = new PlayerData(action.payload.id, action.payload.name, action.payload.status, false);
+      var new_player = {
+        id: action.payload.id,
+        name: action.payload.name,
+        status: action.payload.status,
+        selected: false
+      };
       state[action.payload.id] = new_player;
       return state;
     },

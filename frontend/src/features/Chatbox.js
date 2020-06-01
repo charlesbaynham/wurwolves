@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 
 import {
     selectMessages
@@ -17,7 +17,10 @@ export function Chatbox() {
             <div class="card card-body d-flex flex-column chat-holder bg-night-black">
                 <h5 class="card-title">Events / secret chat</h5>
                 <div id="chat-box" class="flex-grow-1">
-                    {chat_messages.map((m, ind) => <ChatEntry key={ind} msg={m} />)}
+                    {chat_messages.map((m, ind) => m.isStrong 
+                        ? <strong key={ind}><ChatEntry msg={m.msg} /></strong>
+                        : <ChatEntry key={ind} msg={m.msg} />
+                        )}
                 </div>
                 <div class="mt-3">
                     <input type="text" class="form-control" id="chatInput"

@@ -6,8 +6,9 @@ export const chatSlice = createSlice({
     initialState: [],
     reducers: {
         addChatEntry: (state, action) => {
-            const msg = action.payload;
-            state.push(msg)
+            const msg = action.payload.msg;
+            const strong = action.payload.isStrong;
+            state.push({ msg: msg, isStrong: strong })
             return state;
         },
         clearChat: state => {
