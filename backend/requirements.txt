@@ -1,3 +1,4 @@
 alembic
 sqlalchemy
 fastapi[all]
+pytest

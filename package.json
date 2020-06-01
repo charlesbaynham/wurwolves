@@ -24,6 +24,7 @@
     "subpackage": "^1.1.0"
   },
   "subPackages": [
-      "frontend"
+      "frontend",
+      "backend"
   ]
 }
