@@ -14,11 +14,11 @@ import { useDispatch } from 'react-redux';
 function App() {
   addDemoData(useDispatch());
   return (
-    <div class="bg-night-black">
+    <div className="bg-night-black">
       <Navbar />
-      <div class="container limited-width pt-5 bg-light bg-night-dark">
+      <div className="container limited-width pt-5 bg-light bg-night-dark">
         <GridAndChat />
-        <h1 class="row col d-md-block d-none">Your role</h1>
+        <h1 className="row col d-md-block d-none">Your role</h1>
         <Controls />
       </div>
 

@@ -5,7 +5,7 @@ import { Chatbox } from './Chatbox'
 
 function GridAndChat() {
     return (
-        <div id="grid-and-chat" class="row">
+        <div id="grid-and-chat" className="row">
             <PlayerGrid />
             <Chatbox />
         </div>

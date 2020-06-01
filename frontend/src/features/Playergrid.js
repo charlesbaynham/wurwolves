@@ -13,8 +13,8 @@ export function PlayerGrid() {
     var player_ids = Object.keys(players)
 
     return (
-        <div class="col-md container">
-            <div class="row flex-wrap">
+        <div className="col-md container">
+            <div className="row flex-wrap">
                 {player_ids.map(id => <Player key={id} player_id={id} />)}
             </div>
         </div>

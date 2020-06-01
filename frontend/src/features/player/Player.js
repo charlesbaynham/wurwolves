@@ -41,39 +41,39 @@ function Player(props) {
     const selected = useSelector(selectPlayerSelected(player_id));
 
     return (
-        <figure class="col-4 col-sm-3 figure player">
+        <figure className="col-4 col-sm-3 figure player">
             <img src={IMAGE_LOOKUP[status].img}
-                class="figure-img img-fluid w-100"
+                className="figure-img img-fluid w-100"
                 alt={IMAGE_LOOKUP[status].alt} />
-            <figcaption class="figure-caption text-center">{name} {(status == "spectating") ? "(spectating)" : "" }</figcaption>
+            <figcaption className="figure-caption text-center">{name} {(status == "spectating") ? "(spectating)" : "" }</figcaption>
         </figure>
     )
 }
 
 
 
-{/* <figure class="col-4 col-sm-3 figure player">
-<img src="/images/person-seconded.svg" class="figure-img img-fluid w-100"
+{/* <figure className="col-4 col-sm-3 figure player">
+<img src="/images/person-seconded.svg" className="figure-img img-fluid w-100"
     alt="A normal villager" />
-<figcaption class="figure-caption text-center">Charles</figcaption>
+<figcaption className="figure-caption text-center">Charles</figcaption>
 </figure>
-<figure class="col-4 col-sm-3 figure player">
-<img src="/images/person-nominated.svg" class="figure-img img-fluid w-100"
+<figure className="col-4 col-sm-3 figure player">
+<img src="/images/person-nominated.svg" className="figure-img img-fluid w-100"
     alt="A normal villager" />
-<figcaption class="figure-caption text-center">Charles</figcaption>
+<figcaption className="figure-caption text-center">Charles</figcaption>
 </figure>
-<figure class="col-4 col-sm-3 figure player">
-<img src="/images/person-lynched.svg" class="figure-img img-fluid w-100"
+<figure className="col-4 col-sm-3 figure player">
+<img src="/images/person-lynched.svg" className="figure-img img-fluid w-100"
     alt="A normal villager" />
-<figcaption class="figure-caption text-center">Charles</figcaption>
+<figcaption className="figure-caption text-center">Charles</figcaption>
 </figure>
-<figure class="col-4 col-sm-3 figure player">
-<img src="/images/person.svg" class="figure-img img-fluid w-100" alt="A normal villager" />
-<figcaption class="figure-caption text-center">Charles</figcaption>
+<figure className="col-4 col-sm-3 figure player">
+<img src="/images/person.svg" className="figure-img img-fluid w-100" alt="A normal villager" />
+<figcaption className="figure-caption text-center">Charles</figcaption>
 </figure>
-<figure class="col-4 col-sm-3 figure player">
-<img src="/images/person-wolfed.svg" class="figure-img img-fluid w-100" alt="A normal villager" />
-<figcaption class="figure-caption text-center">Charles</figcaption>
+<figure className="col-4 col-sm-3 figure player">
+<img src="/images/person-wolfed.svg" className="figure-img img-fluid w-100" alt="A normal villager" />
+<figcaption className="figure-caption text-center">Charles</figcaption>
 </figure> */}
 
 export default Player;
