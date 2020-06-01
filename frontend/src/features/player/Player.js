@@ -29,7 +29,7 @@ const IMAGE_LOOKUP = {
         'alt': 'A seconded player'
     },
     'spectating': {
-        'img': '/images/person.svg',
+        'img': '/images/person-spectating.svg',
         'alt': 'A spectator'
     }
 }
@@ -45,7 +45,7 @@ function Player(props) {
             <img src={IMAGE_LOOKUP[status].img}
                 class="figure-img img-fluid w-100"
                 alt={IMAGE_LOOKUP[status].alt} />
-            <figcaption class="figure-caption text-center">{name}</figcaption>
+            <figcaption class="figure-caption text-center">{name} {(status == "spectating") ? "(spectating)" : "" }</figcaption>
         </figure>
     )
 }
