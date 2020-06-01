@@ -32,8 +32,6 @@ const demo_messages = [
 
 export function addDemoData(dispatch) {
 
-    var id = 0;
-
     for (const msg in demo_messages) {
         dispatch(addChatEntry({ msg: demo_messages[msg][0], isStrong: demo_messages[msg][1] }));
     }
