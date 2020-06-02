@@ -1,7 +1,8 @@
 {
-  "name": "heroku-cra-node",
-  "version": "3.0.0",
-  "description": "How to use create-react-app with a custom Node API on Heroku",
+  "name": "wurwolves",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
   "engines": {
     "node": "10.x"
   },
@@ -17,13 +18,16 @@
     "express": "^4.16.4"
   },
   "repository": {
+  	"type": "git",
+  	"url": "https://github.com/charlesbaynham/wurwolves.git"
   },
   "keywords": [
     "node",
     "heroku",
-    "create-react-app",
-    "react"
+    "fastapi",
+    "react",
+    "wurwolves"
   ],
-  "license": "MIT",
+  "license": "None",
   "devDependencies": {}
 }
