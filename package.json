@@ -6,7 +6,7 @@
   "scripts": {
     "start": "run-script-os",
     "start:win32": "concurrently \"node server\" \"uvicorn backend.main:app\"",
-    "start:default": "concurrently \"node server\" \"uvicorn backend.main:app\"",
+    "start:default": "concurrently \"node server\" \"uvicorn backend.main:app --host 0.0.0.0\"",
     "build": "cd react-ui/ && npm install && npm run build"
   },
   "cacheDirectories": [
