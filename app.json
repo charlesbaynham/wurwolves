@@ -1,0 +1,24 @@
+{
+  "name": "wurwolves",
+  "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
+  "scripts": {
+  },
+  "env": {
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python",
+    },
+    {
+      "url": "heroku/nodejs",
+    }
+  ]
+}
