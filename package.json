@@ -5,8 +5,8 @@
   "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
   "scripts": {
     "start": "run-script-os",
-    "start:win32": "concurrently \"node server\" \"venv\\Scripts\\uvicorn backend.main:app\"",
-    "start:default": "concurrently \"node server\" \"venv/bin//uvicorn backend.main:app\"",
+    "start:win32": "concurrently \"node server\" \"uvicorn backend.main:app\"",
+    "start:default": "concurrently \"node server\" \"uvicorn backend.main:app\"",
     "build": "cd react-ui/ && npm install && npm run build"
   },
   "cacheDirectories": [
