@@ -3,11 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
-  "engines": {
-    "node": "10.x"
-  },
   "scripts": {
-    "start": "node server",
+    "start": "run-script-os",
+    "start:win32": "concurrently \"node server\" \"venv\\Scripts\\uvicorn backend.main:app\"",
+    "start:default": "concurrently \"node server\" \"venv/bin//uvicorn backend.main:app\"",
     "build": "cd react-ui/ && npm install && npm run build"
   },
   "cacheDirectories": [
@@ -15,11 +14,13 @@
     "react-ui/node_modules"
   ],
   "dependencies": {
-    "express": "^4.16.4"
+    "concurrently": "^5.2.0",
+    "express": "^4.16.4",
+    "run-script-os": "^1.1.1"
   },
   "repository": {
-  	"type": "git",
-  	"url": "https://github.com/charlesbaynham/wurwolves.git"
+    "type": "git",
+    "url": "https://github.com/charlesbaynham/wurwolves.git"
   },
   "keywords": [
     "node",
