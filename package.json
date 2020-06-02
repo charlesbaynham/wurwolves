@@ -1,6 +1,6 @@
 {
   "name": "wurwolves",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
   "engines": {
