@@ -14,7 +14,7 @@ const options = {
   ws: true, // proxy websockets
   pathRewrite: {
     // '^/api/old-path': '/api/new-path', // rewrite path
-    '^/api': '/', // remove base path
+    '^/api': ':8000', // remove base path
   },
   // router: {
   //   // when request.headers.host == 'dev.localhost:3000',
