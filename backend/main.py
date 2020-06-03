@@ -10,7 +10,7 @@ data = {}
 
 
 @app.get("/hello/")
-async def read_stuff(*):
+async def read_stuff():
     return "Hello world!"
 
 
