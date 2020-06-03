@@ -9,6 +9,11 @@ app = FastAPI()
 data = {}
 
 
+@app.get("/hello/")
+async def read_stuff(*):
+    return "Hello world!"
+
+
 @app.get("/stuff/")
 async def read_stuff(*, user_ID=Depends(user_id)):
     return str(user_ID)
