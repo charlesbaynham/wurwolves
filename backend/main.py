@@ -13,10 +13,6 @@ data = {}
 async def read_stuff():
     return "Hello world!"
 
-@app.get("/")
-async def main():
-    return "The default response"
-
 
 @app.get("/api/stuff/")
 async def read_stuff(*, user_ID=Depends(user_id)):
