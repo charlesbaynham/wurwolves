@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // proxy middleware options
 const options = {
-  target: 'http://localhost:8000', // target host
+  target: 'http://127.0.0.1:8000', // target host
   changeOrigin: true, // needed for virtual hosted sites
   ws: true, // proxy websockets
   // router: {
