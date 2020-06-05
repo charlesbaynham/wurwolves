@@ -11,7 +11,9 @@
     }
   },
   "addons": [
-
+    {
+      "plan": "heroku-postgresql"
+    }
   ],
   "buildpacks": [
     {
