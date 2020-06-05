@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const roleSlice = createSlice({
   name: 'role',
   initialState: {
-    role: "",
+    name: "",
     day_text: "",
     night_text: "",
     button_visible: false,
@@ -14,7 +14,7 @@ export const roleSlice = createSlice({
   },
   reducers: {
     setRole: (state, action) => {
-      state.role = action.payload.role
+      state.name = action.payload.name
       state.day_text = action.payload.day_text
       state.night_text = action.payload.night_text
       state.button_visible = action.payload.button_visible

@@ -5,6 +5,7 @@ import {
     addChatEntry
 } from './features/stateSlices/chatEntries'
 import { setStage } from './features/stateSlices/gameStage'
+import { setRole } from './features/stateSlices/role'
 
 
 const demo_messages = [
@@ -68,6 +69,20 @@ export function addDemoData(dispatch) {
 
     dispatch(setStage("day"))
 
+    dispatch(setRole({
+        name: "Seer",
+        day_text: `
+You win the game if the villagers lynch all the wolves.
+
+During the night, you may check the identity of one person and discover if they are a wolf.
+        `,
+        night_text: "You get to check someone's identity!",
+        button_visible: false,
+        button_enabled: false,
+        button_text: "",
+        button_confirm_text: "",
+    }))
+    
     return
 }
 

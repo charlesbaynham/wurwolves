@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import {
     selectMessages
-} from '../features/stateSlices/chatEntries'
+} from './stateSlices/chatEntries'
 
 function ChatEntry(props) {
     return (<p>{props.msg}</p>)

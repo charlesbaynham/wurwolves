@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Controls from './features/controls/Controls'
+import Controls from './features/Controls'
 import Footer from './features/Footer'
 import GridAndChat from './features/GridAndChat'
 import Navbar from './features/Navbar'
