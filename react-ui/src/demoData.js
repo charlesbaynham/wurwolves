@@ -1,11 +1,10 @@
-import React from 'react';
-
 import {
     addPlayer
 } from './features/stateSlices/players'
 import {
     addChatEntry
 } from './features/stateSlices/chatEntries'
+import { setStage } from './features/stateSlices/gameStage'
 
 
 const demo_messages = [
@@ -67,9 +66,9 @@ export function addDemoData(dispatch) {
         status: "spectating"
     }))
 
-    return (
-        <p>Nothing</p>
-    )
+    dispatch(setStage("day"))
+
+    return
 }
 
 export default addDemoData;

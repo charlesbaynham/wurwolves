@@ -6,7 +6,7 @@
   background: #343a40 !important
 }
 
-.night body {
+.night {
   color: white;
 }
 
@@ -61,8 +61,8 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 30px;
+#main {
+  padding-bottom: 30px;
   /* Margin bottom = footer height */
 }
 
