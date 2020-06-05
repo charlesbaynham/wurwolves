@@ -20,7 +20,8 @@ class EventType(enum.Enum):
 class JSONEncodedDict(TypeDecorator):
     """Represents an immutable structure as a json-encoded string.
 
-    See https://docs.sqlalchemy.org/en/13/core/custom_types.html#marshal-json-strings
+    See
+    https://docs.sqlalchemy.org/en/13/core/custom_types.html#marshal-json-strings
 
     Usage::
         JSONEncodedDict(255)
