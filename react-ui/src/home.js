@@ -3,28 +3,25 @@ import Button from 'react-bootstrap/Button';
 
 
 class Home extends Component {
-    state = {
-        url: ""
-    }
-
     render() {
         return (
             <div className="container limited-width pt-5 bg-light bg-night-dark">
                 Welcome to Wurwolves...
 
-                <Button href={this.state.url}>
+                <Button onClick={this.start_game}>
                     Start a new game
                 </Button>
             </div>
         );
     }
 
-    componentDidMount() {
+    start_game() {
         fetch('/api/get_game')
             .then(res => res.json())
             .then((data) => {
                 var newUrl = '/' + data;
-                this.setState({ url: newUrl })
+                console.log("Starting new game at " + newUrl)
+                window.location = newUrl;
             })
             .catch(console.log)
     }
