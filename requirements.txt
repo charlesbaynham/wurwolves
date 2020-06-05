@@ -1,3 +1,4 @@
+python-dotenv
 alembic
 sqlalchemy
 fastapi[all]
