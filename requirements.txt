@@ -1,5 +1,10 @@
 python-dotenv
+
 alembic
 sqlalchemy
+psycopg2
+pysqlite
+
 fastapi[all]
+
 pytest
