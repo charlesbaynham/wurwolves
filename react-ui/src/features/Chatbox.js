@@ -15,7 +15,7 @@ export function Chatbox() {
     return (
         <div className="col-md-5">
             <div className="card card-body d-flex flex-column chat-holder bg-night-black">
-                <h5 className="card-title">Events / secret chat</h5>
+                <h5 className="card-title">Events</h5>
                 <div id="chat-box" className="flex-grow-1">
                     {chat_messages.map((m, ind) => m.isStrong 
                         ? <strong key={ind}><ChatEntry msg={m.msg} /></strong>
