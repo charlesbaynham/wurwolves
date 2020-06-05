@@ -6,7 +6,7 @@ Base = declarative_base()
 
 class ExampleModel(Base):
     """Data model example."""
-    __tablename__ = "example_table"
+    __tablename__ = "something_else"
 
     id = Column(Integer,
                 primary_key=True,
