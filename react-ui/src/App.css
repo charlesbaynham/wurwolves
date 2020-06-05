@@ -18,8 +18,16 @@
   background: #AAA;
 }
 
+#main {
+  display: flex;
+  flex-direction: column;
+}
+#content-box {
+  flex-grow: 1;
+}
+
 @media (min-width: 1200px) {
-  .limited-width {
+  #content-box {
       max-width: 900px;
   }
 }
