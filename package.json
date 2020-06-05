@@ -4,7 +4,9 @@
   "private": true,
   "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
   "scripts": {
-    "start": "concurrently \"node server\" \"uvicorn backend.main:app --host 0.0.0.0\"",    
+    "start": "per-env",
+    "start:production": "concurrently \"node server\" \"uvicorn backend.main:app --host 0.0.0.0\"",
+    "start:development": "concurrently \"cd react-ui && npm start\" \"alembic upgrade head && uvicorn backend.main:app --host 0.0.0.0\"",
     "build": "alembic upgrade head && cd react-ui && npm run build",
     "install": "pip install . && cd react-ui/ && npm install"
   },
@@ -15,7 +17,8 @@
   "dependencies": {
     "concurrently": "^5.2.0",
     "express": "^4.16.4",
-    "http-proxy-middleware": "^1.0.4"
+    "http-proxy-middleware": "^1.0.4",
+    "per-env": "^1.0.2"
   },
   "repository": {
     "type": "git",
