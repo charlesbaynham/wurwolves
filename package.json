@@ -10,7 +10,7 @@
     "install": "pip install -e . && cd react-ui/ && npm install",
     "migrate": "alembic revision --autogenerate",
     "upgrade": "alembic upgrade head",
-    "test": "pytest && cd react-ui && npm test --all"
+    "test": "pytest && cd react-ui && npm test"
   },
   "cacheDirectories": [
     "node_modules",
