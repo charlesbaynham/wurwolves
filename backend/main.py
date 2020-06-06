@@ -3,7 +3,7 @@ import os
 import random
 from datetime import datetime
 
-from fastapi import Depends, FastAPI, Path, Query
+from fastapi import Depends, FastAPI, Path, Query, APIRouter
 from sqlalchemy import and_, or_
 
 from .model import EventType, GameEvent
@@ -14,9 +14,9 @@ words = None
 data = {}
 
 app = FastAPI()
+router = APIRouter()
 
-
-# @app.get("/api/{game_id}/ui_events")
+# @router.get("/api/{game_id}/ui_events")
 # async def ui_events(
 #         game_id: str = Path(..., title="The four-word ID of the game"),
 #         user_ID=Depends(get_user_id)
@@ -29,7 +29,7 @@ app = FastAPI()
 #         return [e for e in events]
 
 
-# @app.get("/api/{game_id}/newest_timestamp")
+# @router.get("/api/{game_id}/newest_timestamp")
 # async def get_newest_timestamp(
 #         game_id: str = Path(..., title="The four-word ID of the game"),
 #         user_ID=Depends(get_user_id)
@@ -41,7 +41,7 @@ app = FastAPI()
 #         return newest_timestamp
 
 
-# @app.get("/api/{game_id}/new_player")
+# @router.get("/api/{game_id}/new_player")
 # async def make_new_player(
 #     game_id: str = Path(...,
 #                         title="The four-word ID of the game"),
@@ -60,14 +60,14 @@ app = FastAPI()
 #         ))
 
 
-# @ app.get("/api/log_connection/")
+# @router.get("/api/log_connection/")
 # async def log_connection(*, user_ID=Depends(get_user_id)):
 #     time_str = datetime.now().isoformat()
 #     data[user_ID] = time_str
 #     return data
 
 
-# @ app.get("/api/get_game/")
+# @router.get("/api/get_game/")
 # async def get_game():
 #     global words
 #     if not words:
@@ -81,8 +81,11 @@ app = FastAPI()
 #         random.choice(words),
 #     ])
 
-@app.get('/api/hello')
+@router.get('/hello')
 def hello():
     return {
         "msg": "Hello world!"
     }
+
+
+app.include_router(router, prefix='/api')
