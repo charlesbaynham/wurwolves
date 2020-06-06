@@ -42,7 +42,7 @@ async def get_newest_timestamp(
         return newest_timestamp
 
 
-@ app.get("/api/{game_id}/new_player")
+@app.get("/api/{game_id}/new_player")
 async def make_new_player(
     game_id: str = Path(...,
                         title="The four-word ID of the game"),
