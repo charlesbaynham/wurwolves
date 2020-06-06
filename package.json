@@ -5,9 +5,11 @@
   "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
   "scripts": {
     "start": "concurrently \"node server\" \"uvicorn backend.main:app --host 0.0.0.0\"",
-    "dev": "concurrently \"cd react-ui && npm start\" \"alembic upgrade head && uvicorn backend.main:app --reload\"",
-    "build": "alembic upgrade head && cd react-ui && npm run build",
-    "install": "pip install -e . && cd react-ui/ && npm install"
+    "dev": "concurrently \"cd react-ui && npm start\" \"npm upgrade && uvicorn backend.main:app --reload\"",
+    "build": "npm upgrade && cd react-ui && npm run build",
+    "install": "pip install -e . && cd react-ui/ && npm install",
+    "migrate": "alembic revision --autogenerate",
+    "upgrade": "alembic upgrade head"
   },
   "cacheDirectories": [
     "node_modules",
