@@ -50,16 +50,16 @@ class GameEvent(Base):
                 nullable=False)
     created = Column(DateTime, default=datetime.utcnow())
 
-    game_id = Column(Integer, index=True)
-    event_type = Column(Enum(EventType))
+    game_id = Column(Integer, index=True, nullable=False)
+    event_type = Column(Enum(EventType), nullable=False)
     details = Column(JSONEncodedDict)
-    public_visibility = Column(Boolean)
+    public_visibility = Column(Boolean, default=False)
 
     users_with_visibility = relationship(
         'GameEventVisibility', backref='event', lazy=True)
 
     def __repr__(self):
-        return '<GameEvent {}, type={}>'.format(self.id, self.event_type)
+        return '<GameEvent {}, game_id={}, type={}>'.format(self.id, self.game_id, self.event_type)
 
 
 class GameEventVisibility(Base):
