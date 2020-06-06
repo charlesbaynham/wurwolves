@@ -68,19 +68,19 @@ async def get_id(*, user_ID=Depends(get_user_id)):
     return user_ID
 
 
-# @router.get("/api/get_game/")
-# async def get_game():
-#     global words
-#     if not words:
-#         with open(WORDS_FILE, newline='') as f:
-#             words = list(line.rstrip() for line in f.readlines())
+@router.get("/get_game")
+async def get_game():
+    global words
+    if not words:
+        with open(WORDS_FILE, newline='') as f:
+            words = list(line.rstrip() for line in f.readlines())
 
-#     return '-'.join([
-#         random.choice(words),
-#         random.choice(words),
-#         random.choice(words),
-#         random.choice(words),
-#     ])
+    return '-'.join([
+        random.choice(words),
+        random.choice(words),
+        random.choice(words),
+        random.choice(words),
+    ])
 
 @router.get('/hello')
 def hello():
