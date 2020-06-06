@@ -2,10 +2,12 @@ import hashlib
 import os
 import random
 from datetime import datetime
+from uuid import UUID
 
-from fastapi import Depends, FastAPI, Path, Query, APIRouter
+from fastapi import APIRouter, Depends, FastAPI, Path, Query
 from sqlalchemy import and_, or_
 
+from .events import EventQueue
 from .model import EventType, GameEvent
 from .user_id import get_user_id
 
@@ -16,29 +18,30 @@ data = {}
 app = FastAPI()
 router = APIRouter()
 
-# @router.get("/api/{game_id}/ui_events")
-# async def ui_events(
-#         game_id: str = Path(..., title="The four-word ID of the game"),
-#         user_ID=Depends(get_user_id)
-# ):
-#     with session_scope() as session:
-#         # events = session.query(GameEvent).all()
-#         events = session.query(GameEvent.created).filter_by(
-#             game_id=hash_string(game_id)).order_by(GameEvent.id.desc()).first()
 
-#         return [e for e in events]
+@router.get("/{game_id}/ui_events")
+async def ui_events(
+        game_id: str = Path(..., title="The four-word ID of the game"),
+        since: int = Query(None, title="If provided, only show events with larger IDs that this"),
+        user_ID=Depends(get_user_id)
+):
+    return EventQueue(game_id, user_ID=UUID(user_ID)).get_all_events(since=since)
 
 
-# @router.get("/api/{game_id}/newest_timestamp")
-# async def get_newest_timestamp(
-#         game_id: str = Path(..., title="The four-word ID of the game"),
-#         user_ID=Depends(get_user_id)
-# ):
-#     with session_scope() as session:
-#         newest_timestamp = session.query(GameEvent.created).filter(
-#             GameEvent.game_id == hash_string(game_id)).first()
+@router.get("/{game_id}/newest_id")
+async def get_newest_timestamp(
+        game_id: str = Path(..., title="The four-word ID of the game"),
+        user_ID=Depends(get_user_id)
+):
+    return EventQueue(game_id, user_ID=UUID(user_ID)).get_latest_event_id()
 
-#         return newest_timestamp
+
+@router.get("/{game_id}/get_secrets")
+async def get_secrets(
+        game_id: str = Path(..., title="The four-word ID of the game"),
+        since: int = Query(None, title="If provided, only show events with larger IDs that this"),
+):
+    return EventQueue(game_id, public_only=False).get_all_events(since=since)
 
 
 # @router.get("/api/{game_id}/new_player")
@@ -50,7 +53,7 @@ router = APIRouter()
 # ):
 #     with session_scope() as session:
 #         session.add(GameEvent(
-#             game_id=hash_string(game_id), event_type=EventType.GUI,
+#             game_id=hash_game_id(game_id), event_type=EventType.GUI,
 #             details={
 #                 "type": "new_user",
 #                 "id": user_ID,
@@ -60,11 +63,9 @@ router = APIRouter()
 #         ))
 
 
-# @router.get("/api/log_connection/")
-# async def log_connection(*, user_ID=Depends(get_user_id)):
-#     time_str = datetime.now().isoformat()
-#     data[user_ID] = time_str
-#     return data
+@router.get("/my_id")
+async def get_id(*, user_ID=Depends(get_user_id)):
+    return user_ID
 
 
 # @router.get("/api/get_game/")

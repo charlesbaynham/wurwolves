@@ -20,7 +20,7 @@ class WurwolvesGame:
     """
 
     def __init__(self, game_id: str):
-        self.id = self.hash_string(game_id)
+        self.id = self.hash_game_id(game_id)
         self.latest_event_id = None
 
     def update_state(self):
@@ -30,19 +30,7 @@ class WurwolvesGame:
         Access the database to retrieve any events relating to this game which
         have not yet been parsed. Parse them all in order, updating this object
         the way. 
-        """        
+        """
         pass
 
-    @staticmethod
-    def hash_string(text: str, N: int = 4):
-        """ Hash a string into an N-byte integer
-
-        This method is used to convert the four-word style game identifiers into
-        a database-friendly integer. 
-        """
-
-        hash_obj = hashlib.md5(text.encode())
-        hash_bytes = list(hash_obj.digest())
-
-        # Slice off the first N bytes and cast to integer
-        return int.from_bytes(hash_bytes[0:N], 'big')
+    

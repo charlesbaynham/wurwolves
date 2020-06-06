@@ -1,4 +1,5 @@
 import enum
+import hashlib
 import json
 from datetime import datetime
 
@@ -73,3 +74,17 @@ class GameEventVisibility(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     event_id = Column(Integer, ForeignKey('game_events.id'))
     user_id = Column(UUIDType)
+
+
+def hash_game_id(text: str, N: int = 4):
+    """ Hash a string into an N-byte integer
+
+    This method is used to convert the four-word style game identifiers into
+    a database-friendly integer. 
+    """
+
+    hash_obj = hashlib.md5(text.encode())
+    hash_bytes = list(hash_obj.digest())
+
+    # Slice off the first N bytes and cast to integer
+    return int.from_bytes(hash_bytes[0:N], 'big')

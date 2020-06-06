@@ -11,52 +11,55 @@ events, but cannot write to them. To effect a change, clients must send a
 request to the :modu:`backend.game` module which will evaluate their request and
 may perform updates to the event log in response. 
 '''
-from dataclasses import dataclass
 from uuid import UUID
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
 
 from .database import session_scope
-from .model import GameEvent
+from .model import GameEvent, hash_game_id
 
 
-@dataclass
 class EventQueue:
-    """Accesses a queue of GameEvents from the database, applying visibility filters
+    def __init__(
+        self,
+        game_id: str,
+        public_only=True,
+        user_ID: UUID = None,
+    ):
+        """Accesses a queue of GameEvents from the database, applying visibility filters
 
-        By default, access all events relating to a game. Optionally filters can
-        be applied to limit the items returned by this object. 
+            By default, access all events relating to a game. Optionally filters can
+            be applied to limit the items returned by this object. 
 
-        Args: 
+            Args: 
 
-            game_id (int):  The ID of the game to check for. Note that this is
-                            the integer id not the string seen by the user. This comes from
-                            :meth:`backend.game.WurwolvesGame.hash_string`
+                game_id (str):  The ID of the game to check for. Note that this is the string
+                                seen by the user and will be hashed by
+                                :meth:`backend.game.WurwolvesGame.hash_game_id`
 
-            public_only (bool, optional):   Should this queue only return public events?
-                                            Defaults to False. Ignored if user_ID is provided. 
+                public_only (bool, optional):   Should this queue only return public events?
+                                                Defaults to True. Ignored if user_ID is provided. 
 
-            user_ID (UUID, optional):   If present, only return events visible to
-                                        this user (including public events). Defaults to None.
-    """
-
-    game_id: int
-    public_only = False
-    user_ID: UUID = None
+                user_ID (UUID, optional):   If present, only return events visible to
+                                            this user (including public events). Defaults to None.
+        """
+        self.game_id = hash_game_id(game_id)
+        self.public_only = public_only
+        self.user_ID = user_ID
 
     def filter_query(self, query: Query):
+        query = query.filter_by(game_id=self.game_id)
+
         if self.user_ID:
-            raise NotImplementedError
-            # return (
-            #     query
-            #     .filter_by(game_id=self.game_id)
-            #     .filter(or_(GameEvent.public_visibility, GameEvent.))
-            #     )
+            query = query.filter(or_(
+                GameEvent.public_visibility,
+                GameEvent.users_with_visibility.any(user_id=self.user_ID)                
+            ))
         elif self.public_only:
-            return query.filter_by(game_id=self.game_id, public_visibility=True)
-        else:
-            return query.filter_by(game_id=self.game_id)
+            query = query.filter_by(public_visibility=True)
+
+        return query
 
     def get_latest_event_id(self):
         """
@@ -95,7 +98,7 @@ class EventQueue:
         with session_scope() as session:
             q = self.filter_query(
                 session
-                .query(GameEvent.event_type, GameEvent.details)
+                .query(GameEvent.id, GameEvent.event_type, GameEvent.details)
                 .order_by(GameEvent.id.asc())
             )
 
