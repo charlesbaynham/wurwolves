@@ -48,7 +48,7 @@ class GameEvent(Base):
     id = Column(Integer,
                 primary_key=True,
                 nullable=False)
-    created = Column(DateTime, onupdate=datetime.utcnow())
+    created = Column(DateTime, default=datetime.utcnow())
 
     game_id = Column(Integer, index=True)
     event_type = Column(Enum(EventType))

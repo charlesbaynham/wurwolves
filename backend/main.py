@@ -1,3 +1,4 @@
+import hashlib
 import os
 import random
 from datetime import datetime
@@ -5,9 +6,8 @@ from datetime import datetime
 from fastapi import Depends, FastAPI, Path
 
 from .database import session_scope
+from .model import EventType, GameEvent
 from .user_id import user_id
-from .model import GameEvent, EventType
-
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
 words = None
@@ -22,16 +22,22 @@ async def ui_events(
         user_ID=Depends(user_id)
 ):
     with session_scope() as session:
-        events = session.query(GameEvent.game_id, GameEvent.event_type).all()
+        # events = session.query(GameEvent).all()
+        events = session.query(GameEvent.created, GameEvent.id).filter(
+            GameEvent.game_id == hash_string(game_id)).all()
         return events
 
 
-@app.get("/api/stuff/")
-async def read_stuff(*, user_ID=Depends(user_id)):
+@app.get("/api/{game_id}/new")
+async def read_stuff(
+    game_id: str = Path(...,
+                        title="The four-word ID of the game"),
+    user_ID=Depends(user_id),
+):
     with session_scope() as session:
         session.add(GameEvent(
-            game_id=123, event_type=EventType.GUI,
-            details={"user_id": user_ID}, public_visibility=True
+            game_id=hash_string(game_id), event_type=EventType.GUI,
+            details={"user_id": user_ID}, public_visibility=True,
         ))
 
 
@@ -55,3 +61,7 @@ async def get_game():
         random.choice(words),
         random.choice(words),
     ])
+
+
+def hash_string(text: str):
+    return int(hashlib.md5(text.encode()).hexdigest()[:8], 16)
