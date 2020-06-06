@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from backend.model import GameEvent, GameEventVisibility
+from backend.model import GameEvent, GameEventVisibility, EventType
 
 
 TESTING_DB_URL = "sqlite:///testing.db"
@@ -37,3 +37,10 @@ def session(engine):
 def test_fixtures(session):
     assert len(session.query(GameEvent).all()) == 0
     assert len(session.query(GameEventVisibility).all()) == 0
+
+
+def test_storage(session):
+    session.add(GameEvent(game_id=123456, event_type=EventType.GUI))
+    session.commit()
+
+    assert session.query(GameEvent.game_id).first()[0] == 123456
