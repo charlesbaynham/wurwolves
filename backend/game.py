@@ -21,6 +21,17 @@ class WurwolvesGame:
 
     def __init__(self, game_id: str):
         self.id = self.hash_string(game_id)
+        self.latest_event_id = None
+
+    def update_state(self):
+        """
+        Update the state of this object
+
+        Access the database to retrieve any events relating to this game which
+        have not yet been parsed. Parse them all in order, updating this object
+        the way. 
+        """        
+        pass
 
     @staticmethod
     def hash_string(text: str, N: int = 4):

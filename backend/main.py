@@ -6,7 +6,6 @@ from datetime import datetime
 from fastapi import Depends, FastAPI, Path, Query
 from sqlalchemy import and_, or_
 
-from .database import session_scope
 from .model import EventType, GameEvent
 from .user_id import get_user_id
 
