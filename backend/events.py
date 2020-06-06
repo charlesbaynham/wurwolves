@@ -81,19 +81,25 @@ class EventQueue:
 
         return newest_id[0]
 
-    def get_all_events(self):
+    def get_all_events(self, since=None):
         """Get all events for this game
 
         This method applies the filters set up on this object during initiaion. 
+
+        Args:
+            since (int, optional): Only return events with IDs greater than this. Defaults to None.
 
         Returns:
             List[GameEvent]: A chronological list of all GameEvents for this game
         """
         with session_scope() as session:
-            events = self.filter_query(
+            q = self.filter_query(
                 session
                 .query(GameEvent.event_type, GameEvent.details)
                 .order_by(GameEvent.id.asc())
-            ).all()
+            )
 
-        return events
+            if since:
+                q = q.filter(GameEvent.id > since)
+
+            return q.all()
