@@ -7,7 +7,7 @@
     "start": "concurrently \"node server\" \"uvicorn backend.main:app --host 0.0.0.0\"",
     "dev": "concurrently \"cd react-ui && npm start\" \"alembic upgrade head && uvicorn backend.main:app --reload\"",
     "build": "alembic upgrade head && cd react-ui && npm run build",
-    "install": "pip install . && cd react-ui/ && npm install"
+    "install": "pip install -e . && cd react-ui/ && npm install"
   },
   "cacheDirectories": [
     "node_modules",
