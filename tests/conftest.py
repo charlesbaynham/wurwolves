@@ -43,9 +43,9 @@ def db_session(engine):
 
 
 @pytest.fixture
-def api_client():
+def api_client(db_session):
     '''
-    Get a FastAPI TestClient pointing at the app 
+    Get a FastAPI TestClient pointing at the app with a clean database session
     '''
     from fastapi.testclient import TestClient
     from backend.main import app

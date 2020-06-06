@@ -10,6 +10,7 @@ from sqlalchemy import and_, or_
 from .events import EventQueue
 from .model import EventType, GameEvent
 from .user_id import get_user_id
+from .game import WurwolvesGame
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
 words = None
@@ -26,6 +27,14 @@ async def ui_events(
         user_ID=Depends(get_user_id)
 ):
     return EventQueue(game_id, user_ID=UUID(user_ID)).get_all_events(since=since)
+
+
+@router.post("/{game_id}/join_game")
+async def join_game(
+        game_id: str = Path(..., title="The four-word ID of the game"),
+        user_ID=Depends(get_user_id)
+):
+    return WurwolvesGame(game_id, user_ID).add_player()
 
 
 @router.get("/{game_id}/newest_id")
@@ -81,6 +90,7 @@ async def get_game():
         random.choice(words),
         random.choice(words),
     ])
+
 
 @router.get('/hello')
 def hello():
