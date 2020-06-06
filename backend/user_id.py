@@ -3,7 +3,7 @@ from uuid import uuid4 as get_uuid
 from fastapi import Cookie, Response
 
 
-async def user_id(*,
+async def get_user_id(*,
                   response: Response,
                   session_UUID: str = Cookie(
                       None, title="A UUID generated for each user session")
