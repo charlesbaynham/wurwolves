@@ -13,9 +13,9 @@ Base = declarative_base()
 
 
 class EventType(enum.Enum):
-    GUI = 1
-    CHAT = 2
-    NEW_PLAYER = 3
+    GUI = "GUI"
+    CHAT = "CHAT"
+    NEW_PLAYER = "NEW_PLAYER"
 
 
 class JSONEncodedDict(TypeDecorator):

@@ -30,8 +30,13 @@ async def ui_events(
         type_filter=EventType.GUI,
     ).get_all_events(since=since)
 
-    # All the events have the same type == GUI, so don't bother returning this
-    return [(e[0], e[0])]
+    # All the events have the same event_type == GUI, so don't bother returning this
+    filtered_events = [e.dict() for e in events]
+    for e in filtered_events:
+        del e['event_type']        
+
+    return filtered_events
+
 
 @router.post("/{game_id}/join_game")
 async def join_game(

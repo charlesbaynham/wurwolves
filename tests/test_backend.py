@@ -55,3 +55,20 @@ def test_add_player(api_client, db_session):
 
     q2 = EventQueue("another-game", type_filter=EventType.NEW_PLAYER)
     assert len(q2.get_all_events()) == 0
+
+
+def test_ui_events(api_client, db_session):
+    response = api_client.get("/api/{}/ui_events".format(GAME_ID))
+    assert response.status_code == 200
+    assert len(response.json()) == 0
+
+    response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Charles'})
+    assert response.status_code == 200
+
+    response = api_client.get("/api/{}/ui_events".format(GAME_ID))
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "event_type" not in response.content.decode()
+    assert data[0]['details']['name'] == 'Charles'
+    assert data[0]['details']['status'] == 'spectating'
