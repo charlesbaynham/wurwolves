@@ -12,9 +12,8 @@ from .model import EventType
 from .user_id import get_user_id
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
-NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
+
 words = None
-names = None
 
 app = FastAPI()
 router = APIRouter()
@@ -59,35 +58,7 @@ async def join(
         name: str = Query(None, title="The player's name"),
         user_id=Depends(get_user_id)
 ):
-    game = WurwolvesGame(game_id, user_id)
-    state = "spectating"
-
-    print(f"User {user_id} joining now")
-
-    preexisting_name, preexisting_state = game.get_player_status(user_id)
-
-    # If the player is already in the game, get their state and possibly their name
-    if preexisting_name:
-        state = preexisting_state
-        if not name:
-            name = preexisting_name
-
-    # If the player isn't in the game and doesn't yet have a name, generate one
-    if not preexisting_name and not name:
-        global words
-        with open(NAMES_FILE, newline='') as f:
-            words = list(line.rstrip() for line in f.readlines())
-        name = " ".join([
-            random.choice(words),
-            random.choice(words)
-        ]).title()
-
-    # If the name and state we're about to save are already in the database,
-    # don't bother
-    if name == preexisting_name and state == preexisting_state:
-        return
-
-    game.set_player(name, state)
+    WurwolvesGame(game_id, user_id).join(name)
 
 
 @router.get("/{game_id}/newest_id")

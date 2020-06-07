@@ -3,11 +3,16 @@ Game module
 
 This module provides the WurwolvesGame class, for interacting with a single game
 '''
+import os
+import random
 from uuid import UUID
 
 from .database import session_scope
-from .events import UIEvent, UIEventType, EventQueue
+from .events import EventQueue, UIEvent, UIEventType
 from .model import EventType, GameEvent, hash_game_id
+
+NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
+names = None
 
 
 class WurwolvesGame:
@@ -21,6 +26,9 @@ class WurwolvesGame:
     the log from start to end. See the :class:`backend.model.GameEvent` for the
     database model and :mod:`backend.events` for methods that access the queue
     and filter it.
+
+    If user_ID is provide, associate this instance with a particular user for
+    some functions. 
 
     Note that :mod:`backend.events` does not provide methods for altering the
     queue. This is intentional: all write access is performed through this
@@ -91,3 +99,51 @@ class WurwolvesGame:
                 status = rename_event.details['status']
 
         return player_name, status
+
+    def join(self, name: str = None):
+        """Join or rejoin a game using the current user's id
+
+        Args:
+            name (str): Name of the user. Use prexissting / generate a new one
+            if not provided
+        """
+
+        print(f"User {self.user_id} joining now")
+
+        if EventQueue(self.game_id).get_latest_event_id() == 0:
+            self.create_game()
+
+        preexisting_name, preexisting_state = self.get_player_status(self.user_id)
+
+        if not preexisting_name:
+            self.new_player(name)
+        else:
+            # Player is already in the game: get their state and, if a new name is not
+            # provided, their name
+            if preexisting_name:
+                state = preexisting_state
+                if not name:
+                    name = preexisting_name
+
+            # If the name and state we're about to save are already in the database,
+            # don't bother
+            if name == preexisting_name and state == preexisting_state:
+                return
+
+            self.set_player(name, state)
+
+    def new_player(self, name: str = None):
+        # If no name provided, generate one
+        if not name:
+            global words
+            with open(NAMES_FILE, newline='') as f:
+                words = list(line.rstrip() for line in f.readlines())
+            name = " ".join([
+                random.choice(words),
+                random.choice(words)
+            ]).title()
+
+        self.set_player(name, "spectating")
+
+    def create_game(self):
+        print("New game")

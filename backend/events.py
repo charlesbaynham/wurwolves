@@ -119,7 +119,7 @@ class EventQueue:
 
         Returns:
             int: ID of the newest GameEvent that matches the filters set on
-            this object.
+            this object. 0 if none found. 
         """
         with session_scope() as session:
             newest_id = self._filter_query(
