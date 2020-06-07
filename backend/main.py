@@ -12,8 +12,9 @@ from .model import EventType
 from .user_id import get_user_id
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
+NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 words = None
-data = {}
+names = None
 
 app = FastAPI()
 router = APIRouter()
@@ -40,10 +41,24 @@ async def ui_events(
 @router.post("/{game_id}/join_game")
 async def join_game(
         game_id: str = Path(..., title="The four-word ID of the game"),
-        name: str = Query(..., title="The player's name"),
-        user_ID=Depends(get_user_id)
+        name: str = Query(None, title="The player's name"),
+        user_id=Depends(get_user_id)
 ):
-    WurwolvesGame(game_id, user_ID).set_player(name, "spectating")
+    game = WurwolvesGame(game_id, user_id)
+    state = "spectating"
+
+    if not name:
+        name, state = game.get_player_status(user_id)
+        if not name:
+            global words
+            with open(NAMES_FILE, newline='') as f:
+                words = list(line.rstrip() for line in f.readlines())
+            name = " ".join([
+                random.choice(words),
+                random.choice(words)
+            ]).title()
+
+    game.set_player(name, state)
 
 
 @router.get("/{game_id}/newest_id")

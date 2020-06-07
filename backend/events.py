@@ -65,8 +65,8 @@ class EventQueue:
 
             Args:
 
-                game_id (str):  The ID of the game to check for. Note that this is the string
-                                seen by the user and will be hashed by
+                game_id (int / str):  The ID of the game to check for. If a string, it 
+                                will be first hashed by
                                 :meth:`backend.game.WurwolvesGame.hash_game_id`
 
                 public_only (bool, optional):   Should this queue only return public events?
@@ -79,7 +79,10 @@ class EventQueue:
                                 Only show events that match this event type. If passed an iterable,
                                 allow any of the passed types. Defaults to None = all events.
         """
-        self.game_id = hash_game_id(game_id)
+        if isinstance(game_id, int):
+            self.game_id = game_id
+        else:
+            self.game_id = hash_game_id(game_id)
         self.public_only = public_only
         self.user_ID = user_ID
         self.type_filter = type_filter

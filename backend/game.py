@@ -6,7 +6,7 @@ This module provides the WurwolvesGame class, for interacting with a single game
 from uuid import UUID
 
 from .database import session_scope
-from .events import UIEvent, UIEventType
+from .events import UIEvent, UIEventType, EventQueue
 from .model import EventType, GameEvent, hash_game_id
 
 
@@ -66,3 +66,25 @@ class WurwolvesGame:
 
             session.add(new_player_event)
             session.add(new_player_GUI_event)
+
+    def get_player_status(self, user_id):
+        """Get the status of the requested player
+
+        Returns:
+            Tuple[str, str]: Name and current status of player
+        """
+        q = EventQueue(
+            self.game_id,
+            type_filter=EventType.UPDATE_PLAYER,
+        )
+        player_name = None
+        status = None
+
+        print(q.get_all_events())
+
+        for rename_event in q.get_all_events():
+            if rename_event.details['id'] == user_id:
+                player_name = rename_event.details['name']
+                status = rename_event.details['status']
+
+        return player_name, status

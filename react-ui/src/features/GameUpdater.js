@@ -7,7 +7,7 @@
  */
 
 import { Component } from 'react';
-import { selectAllPlayers, addPlayer, setPlayerName, getPlayerById } from './stateSlices/players'
+import { selectAllPlayers, addPlayer, setPlayerName, setPlayerStatus, getPlayerById } from './stateSlices/players'
 import { selectMyID } from './stateSlices/myID'
 import { connect, useDispatch } from 'react-redux'
 
@@ -20,6 +20,7 @@ class GameUpdater extends Component {
         this.intervalId = null
         this.mostRecentID = 0
         this.checkNewData = this.checkNewData.bind(this)
+        this.joinGame = this.joinGame.bind(this)
     }
 
     componentDidMount() {
@@ -69,7 +70,9 @@ class GameUpdater extends Component {
     joinGame() {
         const { dispatch } = this.props;
 
-
+        fetch(`/api/${this.props.game_tag}/join_game`, { method: 'post' })
+            .then(r => r.json())
+            .then(data => console.log(data))
     }
 
     handleEvent(eventDetails) {
