@@ -44,7 +44,7 @@ async def join_game(
         name: str = Query(..., title="The player's name"),
         user_ID=Depends(get_user_id)
 ):
-    return WurwolvesGame(game_id, user_ID).add_player(name)
+    return WurwolvesGame(game_id, user_ID).set_player(name)
 
 
 @router.get("/{game_id}/newest_id")

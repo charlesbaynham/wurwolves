@@ -31,23 +31,14 @@ class WurwolvesGame:
         self.user_id = user_id
         self.latest_event_id = None
 
-    # def update_state(self):
-    #     """
-    #     Update the state of this object
+    def set_player(self, name: str):
+        """
+        Update this player's name
 
-    #     Access the database to retrieve any events relating to this game which
-    #     have not yet been parsed. Parse them all in order, updating this object
-    #     the way.
-    #     """
-    #     pass
+        Updates this player's name in the game. If not already present, adds
+        them as a spectator. 
 
-    def add_player(self, name: str):
-        """Add this player to the game
-
-        Add's a player with the current user's ID to the game as a spectator. 
-
-        Args:
-            name (str): Display name of the player
+        Args: name (str): Display name of the player
         """
         player_details = {
             "id": str(self.user_id),
@@ -58,7 +49,7 @@ class WurwolvesGame:
         with session_scope() as session:
             new_player_event = GameEvent(
                 game_id=self.game_id,
-                event_type=EventType.NEW_PLAYER,
+                event_type=EventType.UPDATE_PLAYER,
                 details=player_details
             )
             new_player_GUI_event = GameEvent(

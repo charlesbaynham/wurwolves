@@ -17,14 +17,14 @@ def test_read_main(api_client):
     assert response.json() == {"msg": "Hello world!"}
 
 
-def test_add_player(api_client, db_session):
+def test_set_player(api_client, db_session):
     response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Charles'})
     assert response.status_code == 200
 
     assert (db_session
             .query(GameEvent)
             .filter(GameEvent.game_id == hash_game_id(GAME_ID))
-            .filter(GameEvent.event_type == EventType.NEW_PLAYER)
+            .filter(GameEvent.event_type == EventType.UPDATE_PLAYER)
             ).count() == 1
 
     assert (db_session
@@ -50,10 +50,10 @@ def test_add_player(api_client, db_session):
         .all()
     )
 
-    q = EventQueue(GAME_ID, type_filter=EventType.NEW_PLAYER)
+    q = EventQueue(GAME_ID, type_filter=EventType.UPDATE_PLAYER)
     assert len(q.get_all_events()) == 2
 
-    q2 = EventQueue("another-game", type_filter=EventType.NEW_PLAYER)
+    q2 = EventQueue("another-game", type_filter=EventType.UPDATE_PLAYER)
     assert len(q2.get_all_events()) == 0
 
 

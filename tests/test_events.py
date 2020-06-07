@@ -35,7 +35,7 @@ def fake_events(db_session):
     # Add a secret event
     db_session.add(GameEvent(
         game_id=hash_game_id(GAME_ID),
-        event_type=EventType.NEW_PLAYER,
+        event_type=EventType.UPDATE_PLAYER,
         details={},
         public_visibility=False,
     ))
@@ -76,7 +76,7 @@ def test_since(db_session, fake_events):
 def test_event_filter(db_session, fake_events):
     q_all = EventQueue(GAME_ID)
     q_gui = EventQueue(GAME_ID, type_filter=EventType.GUI)
-    q_gui_or_player = EventQueue(GAME_ID, type_filter=[EventType.GUI, EventType.NEW_PLAYER])
+    q_gui_or_player = EventQueue(GAME_ID, type_filter=[EventType.GUI, EventType.UPDATE_PLAYER])
 
     assert len(q_all.get_all_events()) == 3
     assert len(q_gui.get_all_events()) == 1

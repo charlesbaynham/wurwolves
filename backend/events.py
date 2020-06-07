@@ -71,7 +71,7 @@ class EventQueue:
         if self.type_filter and not isinstance(self.type_filter, Iterable):
             self.type_filter = [self.type_filter]
 
-    def filter_query(self, query: Query):
+    def _filter_query(self, query: Query):
         query = query.filter_by(game_id=self.game_id)
 
         if self.user_ID:
@@ -103,7 +103,7 @@ class EventQueue:
             this object. 
         """
         with session_scope() as session:
-            newest_id = self.filter_query(
+            newest_id = self._filter_query(
                 session
                 .query(GameEvent.id)
                 .order_by(GameEvent.id.desc())
@@ -124,7 +124,7 @@ class EventQueue:
                          parsed as pydantic models
         """
         with session_scope() as session:
-            q = self.filter_query(
+            q = self._filter_query(
                 session
                 .query(GameEvent.id, GameEvent.event_type, GameEvent.details)
                 .order_by(GameEvent.id.asc())
