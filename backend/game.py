@@ -6,6 +6,7 @@ This module provides the WurwolvesGame class, for interacting with a single game
 from uuid import UUID
 
 from .database import session_scope
+from .events import UIEvent, UIEventType
 from .model import EventType, GameEvent, hash_game_id
 
 
@@ -45,18 +46,19 @@ class WurwolvesGame:
             "name": name,
             "status": "spectating",
         }
+        ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
 
         with session_scope() as session:
             new_player_event = GameEvent(
                 game_id=self.game_id,
                 event_type=EventType.UPDATE_PLAYER,
-                details=player_details
+                details=player_details,
             )
             new_player_GUI_event = GameEvent(
                 game_id=self.game_id,
                 event_type=EventType.GUI,
                 public_visibility=True,
-                details=player_details
+                details=ui_event.dict(),
             )
 
             session.add(new_player_event)

@@ -1,14 +1,15 @@
 import os
 import random
-
+from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, FastAPI, Path, Query
+from pydantic import BaseModel
 
-from .events import EventQueue
+from .events import EventQueue, UIEvent
+from .game import WurwolvesGame
 from .model import EventType
 from .user_id import get_user_id
-from .game import WurwolvesGame
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
 words = None
@@ -28,14 +29,12 @@ async def ui_events(
         game_id,
         user_ID=UUID(user_ID),
         type_filter=EventType.GUI,
-    ).get_all_events(since=since)
+    ).get_all_UI_events(since=since)
 
-    # All the events have the same event_type == GUI, so don't bother returning this
-    filtered_events = [e.dict() for e in events]
-    for e in filtered_events:
-        del e['event_type']        
-
-    return filtered_events
+    events = [{
+        "id": id, "event": event.dict()
+    } for id, event in events.items()]
+    return events
 
 
 @router.post("/{game_id}/join_game")

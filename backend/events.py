@@ -24,7 +24,8 @@ from .database import session_scope
 from .model import EventType, GameEvent, hash_game_id
 
 
-class UIEventType(Enum):
+# string representation so the JSON parser can understand this object
+class UIEventType(str, Enum):
     UPDATE_PLAYER = "UPDATE_PLAYER"
 
 
@@ -46,7 +47,7 @@ class UIEvent(BaseModel):
     which event_type = GUI
     """
     type: UIEventType
-    event_details: dict
+    payload: dict
 
 
 class EventQueue:
@@ -181,4 +182,6 @@ class EventQueue:
             events = q.all()
 
         # Make a UI event by parsing the "details" field
-        return OrderedDict([(id, UIEvent.parse_obj(details)) for id, details in events])
+        out = OrderedDict([(id, UIEvent.parse_obj(details)) for id, details in events])
+
+        return out

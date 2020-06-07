@@ -16,7 +16,7 @@ def fake_events(db_session):
     db_session.add(GameEvent(
         game_id=hash_game_id(GAME_ID),
         event_type=EventType.GUI,
-        details={"type": "UPDATE_PLAYER", "event_details": {}},
+        details={"type": "UPDATE_PLAYER", "payload": {}},
         public_visibility=True,
     ))
 
@@ -67,9 +67,9 @@ def test_get_all_UI_events(db_session, fake_events):
     from collections import OrderedDict
     assert isinstance(new_user_event, OrderedDict)
 
-    event_details = list(new_user_event.values())[0]
+    payload = list(new_user_event.values())[0]
 
-    assert isinstance(event_details, UIEvent)
+    assert isinstance(payload, UIEvent)
 
 
 def test_latest_event(db_session, fake_events):

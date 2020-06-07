@@ -3,6 +3,7 @@ import hashlib
 import json
 from datetime import datetime
 
+from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
