@@ -10,13 +10,14 @@ export const playersSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      var new_player = {
+      const new_player = {
         id: action.payload.id,
         name: action.payload.name,
         status: action.payload.status,
         selected: false
       };
       state[action.payload.id] = new_player;
+      console.log(`Writing new player ${new_player.name} to state`)
       return state;
     },
     removePlayer: (state, action) => {

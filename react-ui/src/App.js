@@ -24,7 +24,7 @@ import addDemoData from './demoData'
 
 
 function App() {
-  addDemoData(useDispatch());
+  // addDemoData(useDispatch());
   const game_stage = useSelector(selectStage)
   return (
     <div className={game_stage}>

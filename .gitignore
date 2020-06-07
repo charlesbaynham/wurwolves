@@ -1,4 +1,4 @@
-data.db
+*.db
 .vscode
 node_modules
 

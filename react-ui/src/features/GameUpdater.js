@@ -68,20 +68,22 @@ class GameUpdater extends Component {
          *
          * Parse an event from the server and update the local state accordingly
          */
-        
+
         switch (eventDetails.type) {
             case "UPDATE_PLAYER":
                 const id = eventDetails.payload.id
                 const name = eventDetails.payload.name
-                console.log("Making a new player. Current players:")
+                console.log(`Making new player ${id} = ${name}. Current players:`)
                 console.log(this.props.players)
-                if (this.props.players.some(p => p.id)) {
-                    console.log("player already exists")
-                }
-                else {
-                    const { dispatch } = this.props;    
-                    dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
-                }
+                // if (this.props.players.some(p => p.id)) {
+                //     console.log("player already exists")
+                // }
+                // else {
+                //     const { dispatch } = this.props;    
+                //     dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
+                // }
+                const { dispatch } = this.props;
+                dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
         }
     }
 
