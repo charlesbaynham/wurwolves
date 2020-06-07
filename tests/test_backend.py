@@ -71,8 +71,8 @@ def test_ui_events(api_client, db_session):
     data = response.json()
 
     assert "event_type" not in response.content.decode()
-    assert data[0]['event']['payload']['name'] == 'Charles'
-    assert data[0]['event']['payload']['status'] == 'spectating'
+    assert data[0]['details']['payload']['name'] == 'Charles'
+    assert data[0]['details']['payload']['status'] == 'spectating'
 
 
 def test_newest_id(api_client, db_session):

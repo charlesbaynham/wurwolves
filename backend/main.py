@@ -32,7 +32,7 @@ async def ui_events(
     ).get_all_UI_events(since=since)
 
     events = [{
-        "id": id, "event": event.dict()
+        "id": id, "details": event.dict()
     } for id, event in events.items()]
     return events
 

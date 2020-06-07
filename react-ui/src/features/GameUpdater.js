@@ -7,6 +7,8 @@
  */
 
 import { Component } from 'react';
+import { selectAllPlayers, addPlayer } from './stateSlices/players'
+import { connect, useDispatch } from 'react-redux'
 
 
 class GameUpdater extends Component {
@@ -51,25 +53,36 @@ class GameUpdater extends Component {
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         fetch(url)
-            .then(r => {
-                console.log(r)
-                // return r.json()
+            .then(r => r.json())
+            .then(data => {
+                for (const event of data) {
+                    console.log(`New id = ${event.id}, current most recent = ${this.mostRecentID}`)
+                    this.mostRecentID = event.id
+                    this.handleEvent(event.details)
+                }
             })
-            // .then(data => {
-            //     for (const event of data) {
-            //         this.mostRecentID = event.id
-            //         // this.handleEvent(event.details)
-            //         console.log(event)
-            //     }
-            // })
     }
 
-    handleEvent(event) {
+    handleEvent(eventDetails) {
         /** Handle a UI event from the server
          *
          * Parse an event from the server and update the local state accordingly
          */
-        console.log(event)
+        
+        switch (eventDetails.type) {
+            case "UPDATE_PLAYER":
+                const id = eventDetails.payload.id
+                const name = eventDetails.payload.name
+                console.log("Making a new player. Current players:")
+                console.log(this.props.players)
+                if (this.props.players.some(p => p.id)) {
+                    console.log("player already exists")
+                }
+                else {
+                    const { dispatch } = this.props;    
+                    dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
+                }
+        }
     }
 
     render() {
@@ -77,4 +90,10 @@ class GameUpdater extends Component {
     }
 }
 
-export default GameUpdater;
+function mapStateToProps(state) {
+    const players = selectAllPlayers(state);
+    return { players };
+}
+
+export default connect(mapStateToProps)(GameUpdater);
+
