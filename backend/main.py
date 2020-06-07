@@ -44,7 +44,7 @@ async def join_game(
         name: str = Query(..., title="The player's name"),
         user_ID=Depends(get_user_id)
 ):
-    return WurwolvesGame(game_id, user_ID).set_player(name)
+    WurwolvesGame(game_id, user_ID).set_player(name)
 
 
 @router.get("/{game_id}/newest_id")
@@ -65,25 +65,6 @@ async def get_secrets(
         since: int = Query(None, title="If provided, only show events with larger IDs that this"),
 ):
     return EventQueue(game_id, public_only=False).get_all_events(since=since)
-
-
-# @router.get("/api/{game_id}/new_player")
-# async def make_new_player(
-#     game_id: str = Path(...,
-#                         title="The four-word ID of the game"),
-#     player_name: str = Query(..., title="Display name of the new player"),
-#     user_ID=Depends(get_user_id),
-# ):
-#     with session_scope() as session:
-#         session.add(GameEvent(
-#             game_id=hash_game_id(game_id), event_type=EventType.GUI,
-#             details={
-#                 "type": "new_user",
-#                 "id": user_ID,
-#                 "name": player_name,
-#                 "status": "spectating",
-#             }, public_visibility=True,
-#         ))
 
 
 @router.get("/my_id")

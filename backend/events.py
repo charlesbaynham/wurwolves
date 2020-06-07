@@ -1,7 +1,7 @@
 '''
 This module contains all the code related to retrieving and manipulating the
 event log. Note that the actual description of the database schema is not here,
-it's stored in :modu:`backend.model`. 
+it's stored in :modu:`backend.model`.
 
 This module is responsible for accessing the list of events, handling client
 requests for accessing the applicable subset of events visible to a particular
@@ -9,22 +9,27 @@ user and updating the event log with new events. Note that the clients never
 directly send updates to the event log: clients can request read access to the
 events, but cannot write to them. To effect a change, clients must send a
 request to the :modu:`backend.game` module which will evaluate their request and
-may perform updates to the event log in response. 
+may perform updates to the event log in response.
 '''
+from collections import OrderedDict
 from collections.abc import Iterable
+from enum import Enum
 from uuid import UUID
 
+from pydantic import BaseModel
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
 
 from .database import session_scope
 from .model import EventType, GameEvent, hash_game_id
 
-from pydantic import BaseModel
+
+class UIEventType(Enum):
+    UPDATE_PLAYER = "UPDATE_PLAYER"
 
 
 class Event(BaseModel):
-    """ Simple model for event
+    """ Model for an event
 
     This pydantic model is returned by the EventQueue and ultimately by the API. It is a
     simplified view of the real database model stored in :mod:`.model`
@@ -32,6 +37,16 @@ class Event(BaseModel):
     id: int
     event_type: EventType
     details: dict
+
+
+class UIEvent(BaseModel):
+    """ Model for a UI event
+
+    This pydantic model represents the "details" field of a database entry for
+    which event_type = GUI
+    """
+    type: UIEventType
+    event_details: dict
 
 
 class EventQueue:
@@ -45,23 +60,23 @@ class EventQueue:
         """Accesses a queue of GameEvents from the database, applying visibility filters
 
             By default, access all events relating to a game. Optionally filters can
-            be applied to limit the items returned by this object. 
+            be applied to limit the items returned by this object.
 
-            Args: 
+            Args:
 
                 game_id (str):  The ID of the game to check for. Note that this is the string
                                 seen by the user and will be hashed by
                                 :meth:`backend.game.WurwolvesGame.hash_game_id`
 
                 public_only (bool, optional):   Should this queue only return public events?
-                                                Defaults to False. Ignored if user_ID is provided. 
+                                                Defaults to False. Ignored if user_ID is provided.
 
                 user_ID (UUID, optional):   If present, only return events visible to
                                             this user (including public events). Defaults to None.
 
-                type_filter (EventType, optional): 
+                type_filter (EventType, optional):
                                 Only show events that match this event type. If passed an iterable,
-                                allow any of the passed types. Defaults to None = all events. 
+                                allow any of the passed types. Defaults to None = all events.
         """
         self.game_id = hash_game_id(game_id)
         self.public_only = public_only
@@ -94,13 +109,13 @@ class EventQueue:
 
         Event IDs are guaranteed to be in ascending order, so user code can
         check if their event queue is up to date by comparing the latest event
-        ID they have processed against the one returned from this function. 
+        ID they have processed against the one returned from this function.
 
-        This method applies the filters set up on this object during initiaion. 
+        This method applies the filters set up on this object during initiaion.
 
-        Returns: 
+        Returns:
             int: ID of the newest GameEvent that matches the filters set on
-            this object. 
+            this object.
         """
         with session_scope() as session:
             newest_id = self._filter_query(
@@ -114,7 +129,7 @@ class EventQueue:
     def get_all_events(self, since=None):
         """Get all events for this game
 
-        This method applies the filters set up on this object during initiaion. 
+        This method applies the filters set up on this object during initiation.
 
         Args:
             since (int, optional): Only return events with IDs greater than this. Defaults to None.
@@ -137,3 +152,33 @@ class EventQueue:
 
         # Run the output through the pydantic parser and return
         return [Event(id=e[0], event_type=e[1], details=e[2]) for e in events]
+
+    def get_all_UI_events(self, since=None):
+        """Get all UI events for this game
+
+        This method applies the filters set up on this object during initiation
+        additionally only displays events with type == GUI. If the object
+        filters exclude GUI events then this method will always return an empty
+        list.
+
+        Args:
+            since (int, optional): Only return events with IDs greater than this. Defaults to None.
+
+        Returns:
+            OrderedDict[int, UIEvent]: An ordered dict of event id -> event details
+        """
+        with session_scope() as session:
+            q = self._filter_query(
+                session
+                .query(GameEvent.id, GameEvent.details)
+                .filter(GameEvent.event_type == EventType.GUI)
+                .order_by(GameEvent.id.asc())
+            )
+
+            if since:
+                q = q.filter(GameEvent.id > since)
+
+            events = q.all()
+
+        # Make a UI event by parsing the "details" field
+        return OrderedDict([(id, UIEvent.parse_obj(details)) for id, details in events])

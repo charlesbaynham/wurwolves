@@ -1,10 +1,10 @@
-import pytest
-
-from backend.model import EventType, GameEvent, GameEventVisibility, hash_game_id
 from uuid import uuid4 as uuid
 
-from backend.events import EventQueue
+import pytest
 
+from backend.events import EventQueue, UIEvent, UIEventType
+from backend.model import (EventType, GameEvent, GameEventVisibility,
+                           hash_game_id)
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -16,7 +16,7 @@ def fake_events(db_session):
     db_session.add(GameEvent(
         game_id=hash_game_id(GAME_ID),
         event_type=EventType.GUI,
-        details={},
+        details={"type": "UPDATE_PLAYER", "event_details": {}},
         public_visibility=True,
     ))
 
@@ -51,6 +51,25 @@ def test_get_all_events(db_session, fake_events):
     assert len(q_public.get_all_events()) == 1
     assert len(q_user.get_all_events()) == 2
     assert len(q_secrets.get_all_events()) == 3
+
+
+def test_get_all_UI_events(db_session, fake_events):
+    q_public = EventQueue(GAME_ID, public_only=True)
+    q_user = EventQueue(GAME_ID, user_ID=USER_ID)
+    q_secrets = EventQueue(GAME_ID, public_only=False)
+
+    assert len(q_public.get_all_UI_events()) == 1
+    assert len(q_user.get_all_UI_events()) == 1
+    assert len(q_secrets.get_all_UI_events()) == 1
+
+    new_user_event = q_public.get_all_UI_events()
+
+    from collections import OrderedDict
+    assert isinstance(new_user_event, OrderedDict)
+
+    event_details = list(new_user_event.values())[0]
+
+    assert isinstance(event_details, UIEvent)
 
 
 def test_latest_event(db_session, fake_events):
