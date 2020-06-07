@@ -48,7 +48,6 @@
 }
 
 @media (min-width: 768px) {
-
   /* = bootstrap "medium" */
   .chat-holder {
       /* When the chatbox is at the side, lift it out of the flow so
@@ -56,6 +55,14 @@
       height: 100%;
       position: absolute;
       max-height: none;
+  }
+}
+
+
+@media (max-width: 576px) {
+  /* = bootstrap "small" */
+  .navbar-brand {
+    font-size: 1rem;
   }
 }
 
