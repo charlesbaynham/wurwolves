@@ -32,15 +32,25 @@ async def ui_events(
         type_filter=EventType.GUI,
     ).get_all_UI_events(since=since)
 
-    events = [{
+    out = [{
         "id": id, "details": event.dict()
     } for id, event in events.items()]
-    return events
+    return out
 
 
 @router.get("/{game_id}/chat")
-async def get_chat():
-    pass
+async def get_chat(
+    game_id: str = Path(..., title="The four-word ID of the game"),
+    since: int = Query(None, title="If provided, only show events with larger IDs that this"),
+    user_ID=Depends(get_user_id),
+):
+    events = EventQueue(
+        game_id,
+        user_ID=UUID(user_ID),
+        type_filter=EventType.CHAT,
+    ).get_all_events(since=since)
+
+    return events
 
 
 @router.post("/{game_id}/join")
