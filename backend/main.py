@@ -38,8 +38,13 @@ async def ui_events(
     return events
 
 
-@router.post("/{game_id}/join_game")
-async def join_game(
+@router.get("/{game_id}/chat")
+async def get_chat():
+    pass
+
+
+@router.post("/{game_id}/join")
+async def join(
         game_id: str = Path(..., title="The four-word ID of the game"),
         name: str = Query(None, title="The player's name"),
         user_id=Depends(get_user_id)
@@ -47,16 +52,30 @@ async def join_game(
     game = WurwolvesGame(game_id, user_id)
     state = "spectating"
 
-    if not name:
-        name, state = game.get_player_status(user_id)
+    print(f"User {user_id} joining now")
+
+    preexisting_name, preexisting_state = game.get_player_status(user_id)
+
+    # If the player is already in the game, get their state and possibly their name
+    if preexisting_name:
+        state = preexisting_state
         if not name:
-            global words
-            with open(NAMES_FILE, newline='') as f:
-                words = list(line.rstrip() for line in f.readlines())
-            name = " ".join([
-                random.choice(words),
-                random.choice(words)
-            ]).title()
+            name = preexisting_name
+
+    # If the player isn't in the game and doesn't yet have a name, generate one
+    if not preexisting_name and not name:
+        global words
+        with open(NAMES_FILE, newline='') as f:
+            words = list(line.rstrip() for line in f.readlines())
+        name = " ".join([
+            random.choice(words),
+            random.choice(words)
+        ]).title()
+
+    # If the name and state we're about to save are already in the database,
+    # don't bother
+    if name == preexisting_name and state == preexisting_state:
+        return
 
     game.set_player(name, state)
 

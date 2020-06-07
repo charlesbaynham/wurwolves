@@ -19,7 +19,7 @@ def test_read_main(api_client):
 
 
 def test_set_player(api_client, db_session):
-    response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Charles'})
+    response = api_client.post("/api/{}/join".format(GAME_ID), params={'name': 'Charles'})
     assert response.status_code == 200
 
     assert (db_session
@@ -34,7 +34,7 @@ def test_set_player(api_client, db_session):
             .filter(GameEvent.event_type == EventType.GUI)
             ).count() == 1
 
-    response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Gaby'})
+    response = api_client.post("/api/{}/join".format(GAME_ID), params={'name': 'Gaby'})
     assert response.status_code == 200
 
     assert (db_session
@@ -63,7 +63,7 @@ def test_ui_events(api_client, db_session):
     assert response.status_code == 200
     assert len(response.json()) == 0
 
-    response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Charles'})
+    response = api_client.post("/api/{}/join".format(GAME_ID), params={'name': 'Charles'})
     assert response.status_code == 200
 
     response = api_client.get("/api/{}/ui_events".format(GAME_ID))

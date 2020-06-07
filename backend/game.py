@@ -27,25 +27,30 @@ class WurwolvesGame:
     module instead.     
     """
 
-    def __init__(self, game_id: str, user_id: UUID):
+    def __init__(self, game_id: str, user_id: UUID = None):
         self.game_id = hash_game_id(game_id)
         self.user_id = user_id
         self.latest_event_id = None
 
-    def set_player(self, name: str, status: str):
+    def set_player(self, name: str, status: str, user_id: UUID = None):
         """
-        Update this player's name and status
+        Update a player's name and status
 
-        Updates this player's state in the game. If not already present, adds
-        them as a spectator. 
+        Updates a player's state in the game. If not already present, adds
+        them as a spectator. If not speecified, uses the current user. 
 
         Args: 
 
         name (str): Display name of the player
         status (str): Status of the player
         """
+        if user_id is None:
+            user_id = self.user_id
+        if user_id is None:
+            raise ValueError("No user_id provided and none set")
+
         player_details = {
-            "id": str(self.user_id),
+            "id": str(user_id),
             "name": name,
             "status": status,
         }
@@ -79,8 +84,6 @@ class WurwolvesGame:
         )
         player_name = None
         status = None
-
-        print(q.get_all_events())
 
         for rename_event in q.get_all_events():
             if rename_event.details['id'] == user_id:
