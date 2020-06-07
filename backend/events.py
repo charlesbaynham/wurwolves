@@ -11,21 +11,23 @@ events, but cannot write to them. To effect a change, clients must send a
 request to the :modu:`backend.game` module which will evaluate their request and
 may perform updates to the event log in response. 
 '''
+from collections.abc import Iterable
 from uuid import UUID
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
 
 from .database import session_scope
-from .model import GameEvent, hash_game_id
+from .model import EventType, GameEvent, hash_game_id
 
 
 class EventQueue:
     def __init__(
         self,
         game_id: str,
-        public_only=True,
+        public_only=False,
         user_ID: UUID = None,
+        type_filter: EventType = None,
     ):
         """Accesses a queue of GameEvents from the database, applying visibility filters
 
@@ -39,14 +41,22 @@ class EventQueue:
                                 :meth:`backend.game.WurwolvesGame.hash_game_id`
 
                 public_only (bool, optional):   Should this queue only return public events?
-                                                Defaults to True. Ignored if user_ID is provided. 
+                                                Defaults to False. Ignored if user_ID is provided. 
 
                 user_ID (UUID, optional):   If present, only return events visible to
                                             this user (including public events). Defaults to None.
+
+                type_filter (EventType, optional): 
+                                Only show events that match this event type. If passed an iterable,
+                                allow any of the passed types. Defaults to None = all events. 
         """
         self.game_id = hash_game_id(game_id)
         self.public_only = public_only
         self.user_ID = user_ID
+        self.type_filter = type_filter
+
+        if self.type_filter and not isinstance(self.type_filter, Iterable):
+            self.type_filter = [self.type_filter]
 
     def filter_query(self, query: Query):
         query = query.filter_by(game_id=self.game_id)
@@ -54,10 +64,14 @@ class EventQueue:
         if self.user_ID:
             query = query.filter(or_(
                 GameEvent.public_visibility,
-                GameEvent.users_with_visibility.any(user_id=self.user_ID)                
+                GameEvent.users_with_visibility.any(user_id=self.user_ID)
             ))
         elif self.public_only:
             query = query.filter_by(public_visibility=True)
+
+        if self.type_filter:
+            conditions = (GameEvent.event_type == t for t in self.type_filter)
+            query = query.filter(or_(*conditions))
 
         return query
 

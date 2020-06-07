@@ -1,5 +1,6 @@
 from backend.game import WurwolvesGame
 from backend.model import GameEvent, GameEventVisibility, EventType, hash_game_id
+from backend.events import EventQueue
 from uuid import uuid4 as uuid
 
 
@@ -48,3 +49,5 @@ def test_add_player(api_client, db_session):
         .filter(GameEvent.event_type == EventType.GUI)
         .all()
     )
+
+    q = EventQueue(GAME_ID)
