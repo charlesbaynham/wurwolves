@@ -150,13 +150,17 @@ class WurwolvesGame:
 
     def create_game(self):
         role_details = {
-            "name": "Some writing",
-            "day_text": "Some *markdown* writing",
+            "title": "Ready to start",
+            "day_text": '''
+The game will begin once all players have pressed start. 
+
+I should probably write some more things here. 
+            '''.strip(),
             "night_text": "",
-            "button_visible": False,
-            "button_enabled": False,
-            "button_text": "",
-            "button_confirm_text": "",
+            "button_visible": True,
+            "button_enabled": True,
+            "button_text": "Vote to start game",
+            "button_confirm_text": "Waiting for all players...",
         }
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
