@@ -55,9 +55,17 @@ class GameUpdater extends Component {
             .then(data => {
                 for (const event of data) {
                     this.mostRecentID = event.id
-                    console.log(event.details)
+                    this.handleEvent(event.details)
                 }
             })
+    }
+
+    handleEvent(event) {
+        /** Handle a UI event from the server
+         *
+         * Parse an event from the server and update the local state accordingly
+         */
+        console.log(event)
     }
 
     render() {
