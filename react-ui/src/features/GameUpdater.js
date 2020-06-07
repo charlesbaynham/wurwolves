@@ -7,7 +7,8 @@
  */
 
 import { Component } from 'react';
-import { selectAllPlayers, addPlayer, setPlayerName, getPlayerById, removePlayer } from './stateSlices/players'
+import { selectAllPlayers, addPlayer, setPlayerName, getPlayerById } from './stateSlices/players'
+import { selectMyID } from './stateSlices/myID'
 import { connect, useDispatch } from 'react-redux'
 
 
@@ -30,6 +31,7 @@ class GameUpdater extends Component {
     }
 
     startPolling() {
+        this.joinGame()
         this.checkNewData()
         this.intervalId = setInterval(this.checkNewData, 500)
     }
@@ -64,6 +66,12 @@ class GameUpdater extends Component {
             })
     }
 
+    joinGame() {
+        const { dispatch } = this.props;
+
+
+    }
+
     handleEvent(eventDetails) {
         /** Handle a UI event from the server
          *
@@ -74,14 +82,16 @@ class GameUpdater extends Component {
             case "UPDATE_PLAYER":
                 const id = eventDetails.payload.id
                 const name = eventDetails.payload.name
+                const status = eventDetails.payload.status
                 const { dispatch } = this.props;
 
                 if (getPlayerById(this.props.players, id)) {
                     console.log(`player ${id} already exists`)
                     dispatch(setPlayerName({ id: id, name: name }))
+                    dispatch(setPlayerStatus({ id: id, status: status }))
                 }
                 else {
-                    dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
+                    dispatch(addPlayer({ id: id, name: name, status: status }))
                 }
         }
     }
@@ -93,7 +103,8 @@ class GameUpdater extends Component {
 
 function mapStateToProps(state) {
     const players = selectAllPlayers(state);
-    return { players };
+    const myID = selectMyID(state);
+    return { players, myID };
 }
 
 export default connect(mapStateToProps)(GameUpdater);

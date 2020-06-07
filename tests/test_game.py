@@ -12,14 +12,14 @@ USER_ID = uuid()
 
 def test_add_player(db_session):
     g = WurwolvesGame(GAME_ID, USER_ID)
-    g.set_player("Charles")
+    g.set_player("Charles", "spectating")
 
     assert len(EventQueue(
         GAME_ID,
         type_filter=EventType.UPDATE_PLAYER
     ).get_all_events()) == 1
 
-    g.set_player("Gaby")
+    g.set_player("Gaby", "spectating")
 
     assert len(EventQueue(
         GAME_ID,

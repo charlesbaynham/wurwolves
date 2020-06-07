@@ -81,7 +81,7 @@ def test_newest_id(api_client, db_session):
     assert response.json() == 0
 
     g = WurwolvesGame(GAME_ID, USER_ID)
-    g.set_player(name="Charles")
+    g.set_player(name="Charles", status="spectating")
 
     latest_id = EventQueue(GAME_ID).get_latest_event_id()
 

@@ -32,19 +32,22 @@ class WurwolvesGame:
         self.user_id = user_id
         self.latest_event_id = None
 
-    def set_player(self, name: str):
+    def set_player(self, name: str, status: str):
         """
-        Update this player's name
+        Update this player's name and status
 
-        Updates this player's name in the game. If not already present, adds
+        Updates this player's state in the game. If not already present, adds
         them as a spectator. 
 
-        Args: name (str): Display name of the player
+        Args: 
+
+        name (str): Display name of the player
+        status (str): Status of the player
         """
         player_details = {
             "id": str(self.user_id),
             "name": name,
-            "status": "spectating",
+            "status": status,
         }
         ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
 
