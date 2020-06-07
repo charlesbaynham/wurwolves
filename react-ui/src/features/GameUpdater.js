@@ -9,8 +9,9 @@
 import { Component } from 'react';
 import { selectAllPlayers, addPlayer, setPlayerName, setPlayerStatus, getPlayerById } from './stateSlices/players'
 import { selectMyID } from './stateSlices/myID'
-import { connect, useDispatch } from 'react-redux'
-
+import { setRole } from './stateSlices/role'
+import { connect } from 'react-redux'
+import store from '../app/store'
 
 class GameUpdater extends Component {
 
@@ -78,13 +79,15 @@ class GameUpdater extends Component {
          *
          * Parse an event from the server and update the local state accordingly
          */
+        const { dispatch } = this.props;
+
+        console.log(`Received event ${eventDetails.type}`)
 
         switch (eventDetails.type) {
             case "UPDATE_PLAYER":
                 const id = eventDetails.payload.id
                 const name = eventDetails.payload.name
                 const status = eventDetails.payload.status
-                const { dispatch } = this.props;
 
                 console.log(`Updating player ${id} = ${name}, ${status}`)
 
@@ -96,7 +99,14 @@ class GameUpdater extends Component {
                 else {
                     dispatch(addPlayer({ id: id, name: name, status: status }))
                 }
+                break;
+            case "SET_CONTROLS":
+                dispatch(setRole(eventDetails.payload))
+                break;
         }
+
+        console.log("Updated state:")
+        console.log(store.getState())
     }
 
     render() {

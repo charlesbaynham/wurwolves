@@ -150,8 +150,8 @@ class WurwolvesGame:
 
     def create_game(self):
         role_details = {
-            "name": "",
-            "day_text": "",
+            "name": "Some writing",
+            "day_text": "Some *markdown* writing",
             "night_text": "",
             "button_visible": False,
             "button_enabled": False,
