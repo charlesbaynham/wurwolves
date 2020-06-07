@@ -33,7 +33,7 @@ function Controls() {
                 : null }
             </div>
             <div className="col-md pt-4 pt-md-0">
-                <h5>You are a {role.name}</h5>
+                <h5>{role.title}</h5>
                 <ReactMarkdown source={left_text} />
             </div>
         </div>

@@ -70,7 +70,7 @@ export function addDemoData(dispatch) {
     dispatch(setStage("day"))
 
     dispatch(setRole({
-        name: "Seer",
+        title: "Seer",
         day_text: `
 You win the game if the villagers lynch all the wolves.
 

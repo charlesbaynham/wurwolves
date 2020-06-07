@@ -146,4 +146,29 @@ class WurwolvesGame:
         self.set_player(name, "spectating")
 
     def create_game(self):
-        print("New game")
+        role_details = {
+            "name": "",
+            "day_text": "",
+            "night_text": "",
+            "button_visible": False,
+            "button_enabled": False,
+            "button_text": "",
+            "button_confirm_text": "",
+        }
+        # ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
+
+        # with session_scope() as session:
+        #     new_player_event = GameEvent(
+        #         game_id=self.game_id,
+        #         event_type=EventType.UPDATE_PLAYER,
+        #         details=player_details,
+        #     )
+        #     new_player_GUI_event = GameEvent(
+        #         game_id=self.game_id,
+        #         event_type=EventType.GUI,
+        #         public_visibility=True,
+        #         details=ui_event.dict(),
+        #     )
+
+        #     session.add(new_player_event)
+        #     session.add(new_player_GUI_event)

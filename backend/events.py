@@ -27,6 +27,7 @@ from .model import EventType, GameEvent, hash_game_id
 # string representation so the JSON parser can understand this object
 class UIEventType(str, Enum):
     UPDATE_PLAYER = "UPDATE_PLAYER"
+    SET_CONTROLS = "SET_CONTROLS"
 
 
 class Event(BaseModel):
