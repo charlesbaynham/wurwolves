@@ -32,7 +32,7 @@ function App() {
         <Topbar />
         <Router>
           <Switch>
-            <Route path="/:id" component={Game} />
+            <Route path="/:game_tag" component={Game} />
             <Route path="/" component={Home} />
           </Switch>
         </Router>
