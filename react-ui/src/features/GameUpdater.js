@@ -35,7 +35,10 @@ class GameUpdater extends Component {
     }
 
     updateState() {
-        console.log(`Fetching ${this.props.game_tag}...`)
+        // console.log(`Fetching ${this.props.game_tag}...`)
+        fetch(`/api/${this.props.game_tag}/ui_events`)
+            .then(r => r.json())
+            .then(data => console.log(data))
     }
 
     render() {

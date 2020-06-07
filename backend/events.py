@@ -20,6 +20,19 @@ from sqlalchemy.orm import Query
 from .database import session_scope
 from .model import EventType, GameEvent, hash_game_id
 
+from pydantic import BaseModel
+
+
+class Event(BaseModel):
+    """ Simple model for event
+
+    This pydantic model is returned by the EventQueue and ultimately by the API. It is a
+    simplified view of the real database model stored in :mod:`.model`
+    """
+    id: int
+    event_type: EventType
+    details: dict
+
 
 class EventQueue:
     def __init__(
@@ -107,7 +120,8 @@ class EventQueue:
             since (int, optional): Only return events with IDs greater than this. Defaults to None.
 
         Returns:
-            List[GameEvent]: A chronological list of all GameEvents for this game
+            List[Event]: A chronological list of all events for this game,
+                         parsed as pydantic models
         """
         with session_scope() as session:
             q = self.filter_query(
@@ -119,4 +133,7 @@ class EventQueue:
             if since:
                 q = q.filter(GameEvent.id > since)
 
-            return q.all()
+            events = q.all()
+
+        # Run the output through the pydantic parser and return
+        return [Event(id=e[0], event_type=e[1], details=e[2]) for e in events]

@@ -24,12 +24,14 @@ async def ui_events(
         since: int = Query(None, title="If provided, only show events with larger IDs that this"),
         user_ID=Depends(get_user_id)
 ):
-    return EventQueue(
+    events = EventQueue(
         game_id,
         user_ID=UUID(user_ID),
         type_filter=EventType.GUI,
     ).get_all_events(since=since)
 
+    # All the events have the same type == GUI, so don't bother returning this
+    return [(e[0], e[0])]
 
 @router.post("/{game_id}/join_game")
 async def join_game(
