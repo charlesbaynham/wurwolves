@@ -51,13 +51,17 @@ class GameUpdater extends Component {
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         fetch(url)
-            .then(r => r.json())
-            .then(data => {
-                for (const event of data) {
-                    this.mostRecentID = event.id
-                    this.handleEvent(event.details)
-                }
+            .then(r => {
+                console.log(r)
+                // return r.json()
             })
+            // .then(data => {
+            //     for (const event of data) {
+            //         this.mostRecentID = event.id
+            //         // this.handleEvent(event.details)
+            //         console.log(event)
+            //     }
+            // })
     }
 
     handleEvent(event) {

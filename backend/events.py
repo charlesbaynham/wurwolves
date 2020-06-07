@@ -125,7 +125,7 @@ class EventQueue:
                 .order_by(GameEvent.id.desc())
             ).first()
 
-        return newest_id[0]
+        return newest_id[0] if newest_id else 0
 
     def get_all_events(self, since=None):
         """Get all events for this game

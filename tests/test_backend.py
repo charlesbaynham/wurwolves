@@ -1,6 +1,7 @@
 from backend.model import GameEvent, EventType, hash_game_id
 from backend.events import EventQueue
 from uuid import uuid4 as uuid
+from backend.game import WurwolvesGame
 
 
 GAME_ID = "hot-potato"
@@ -72,3 +73,18 @@ def test_ui_events(api_client, db_session):
     assert "event_type" not in response.content.decode()
     assert data[0]['event']['payload']['name'] == 'Charles'
     assert data[0]['event']['payload']['status'] == 'spectating'
+
+
+def test_newest_id(api_client, db_session):
+    response = api_client.get("/api/{}/newest_id".format(GAME_ID))
+    assert response.status_code == 200
+    assert response.json() == 0
+
+    g = WurwolvesGame(GAME_ID, USER_ID)
+    g.set_player(name="Charles")
+
+    latest_id = EventQueue(GAME_ID).get_latest_event_id()
+
+    response = api_client.get("/api/{}/newest_id".format(GAME_ID))
+    assert response.status_code == 200
+    assert response.json() == latest_id
