@@ -69,19 +69,19 @@ export function addDemoData(dispatch) {
 
     dispatch(setStage("day"))
 
-    dispatch(setRole({
-        title: "Seer",
-        day_text: `
-You win the game if the villagers lynch all the wolves.
+//     dispatch(setRole({
+//         title: "Seer",
+//         day_text: `
+// You win the game if the villagers lynch all the wolves.
 
-During the night, you may check the identity of one person and discover if they are a wolf.
-        `,
-        night_text: "You get to check someone's identity!",
-        button_visible: true,
-        button_enabled: true,
-        button_text: "Select someone to lynch...",
-        button_confirm_text: "Lynch {}?",
-    }))
+// During the night, you may check the identity of one person and discover if they are a wolf.
+//         `,
+//         night_text: "You get to check someone's identity!",
+//         button_visible: true,
+//         button_enabled: true,
+//         button_text: "Select someone to lynch...",
+//         button_confirm_text: "Lynch {}?",
+//     }))
     
     return
 }

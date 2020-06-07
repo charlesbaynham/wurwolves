@@ -45,7 +45,7 @@ class WurwolvesGame:
         Update a player's name and status
 
         Updates a player's state in the game. If not already present, adds
-        them as a spectator. If not speecified, uses the current user. 
+        them as a spectator. If not specified, uses the current user. 
 
         Args: 
 
@@ -133,6 +133,7 @@ class WurwolvesGame:
             self.set_player(name, state)
 
     def new_player(self, name: str = None):
+
         # If no name provided, generate one
         if not name:
             global words
@@ -142,6 +143,8 @@ class WurwolvesGame:
                 random.choice(words),
                 random.choice(words)
             ]).title()
+
+        print("Making new player {} = {}".format(self.user_id, name))
 
         self.set_player(name, "spectating")
 
@@ -155,20 +158,12 @@ class WurwolvesGame:
             "button_text": "",
             "button_confirm_text": "",
         }
-        # ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
+        ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
-        # with session_scope() as session:
-        #     new_player_event = GameEvent(
-        #         game_id=self.game_id,
-        #         event_type=EventType.UPDATE_PLAYER,
-        #         details=player_details,
-        #     )
-        #     new_player_GUI_event = GameEvent(
-        #         game_id=self.game_id,
-        #         event_type=EventType.GUI,
-        #         public_visibility=True,
-        #         details=ui_event.dict(),
-        #     )
-
-        #     session.add(new_player_event)
-        #     session.add(new_player_GUI_event)
+        with session_scope() as session:
+            session.add(GameEvent(
+                game_id=self.game_id,
+                event_type=EventType.GUI,
+                public_visibility=True,
+                details=ui_event.dict(),
+            ))

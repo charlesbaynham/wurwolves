@@ -71,8 +71,6 @@ class GameUpdater extends Component {
         const { dispatch } = this.props;
 
         fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
-            .then(r => r.json())
-            .then(data => console.log(data))
     }
 
     handleEvent(eventDetails) {
@@ -87,6 +85,8 @@ class GameUpdater extends Component {
                 const name = eventDetails.payload.name
                 const status = eventDetails.payload.status
                 const { dispatch } = this.props;
+
+                console.log(`Updating player ${id} = ${name}, ${status}`)
 
                 if (getPlayerById(this.props.players, id)) {
                     console.log(`player ${id} already exists`)
