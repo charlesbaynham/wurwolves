@@ -10,12 +10,10 @@ import {
 export function PlayerGrid() {
     const players = useSelector(selectAllPlayers);
 
-    var player_ids = Object.keys(players)
-
     return (
         <div className="col-md container">
             <div className="row flex-wrap">
-                {player_ids.map(id => <Player key={id} player_id={id} />)}
+                {players.map(p => <Player key={p.id} player_id={p.id} />)}
             </div>
         </div>
     )

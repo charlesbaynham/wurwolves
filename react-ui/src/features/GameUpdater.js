@@ -7,7 +7,7 @@
  */
 
 import { Component } from 'react';
-import { selectAllPlayers, addPlayer } from './stateSlices/players'
+import { selectAllPlayers, addPlayer, setPlayerName, getPlayerById, removePlayer } from './stateSlices/players'
 import { connect, useDispatch } from 'react-redux'
 
 
@@ -30,7 +30,8 @@ class GameUpdater extends Component {
     }
 
     startPolling() {
-        this.intervalId = setInterval(this.checkNewData, 1000)
+        this.checkNewData()
+        this.intervalId = setInterval(this.checkNewData, 500)
     }
 
     stopPolling() {
@@ -56,7 +57,7 @@ class GameUpdater extends Component {
             .then(r => r.json())
             .then(data => {
                 for (const event of data) {
-                    console.log(`New id = ${event.id}, current most recent = ${this.mostRecentID}`)
+                    console.log(`Event: new id = ${event.id}, current most recent = ${this.mostRecentID}`)
                     this.mostRecentID = event.id
                     this.handleEvent(event.details)
                 }
@@ -73,17 +74,15 @@ class GameUpdater extends Component {
             case "UPDATE_PLAYER":
                 const id = eventDetails.payload.id
                 const name = eventDetails.payload.name
-                console.log(`Making new player ${id} = ${name}. Current players:`)
-                console.log(this.props.players)
-                // if (this.props.players.some(p => p.id)) {
-                //     console.log("player already exists")
-                // }
-                // else {
-                //     const { dispatch } = this.props;    
-                //     dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
-                // }
                 const { dispatch } = this.props;
-                dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
+
+                if (getPlayerById(this.props.players, id)) {
+                    console.log(`player ${id} already exists`)
+                    dispatch(setPlayerName({ id: id, name: name }))
+                }
+                else {
+                    dispatch(addPlayer({ id: id, name: name, status: "spectating" }))
+                }
         }
     }
 
