@@ -1,5 +1,4 @@
-from backend.game import WurwolvesGame
-from backend.model import GameEvent, GameEventVisibility, EventType, hash_game_id
+from backend.model import GameEvent, EventType, hash_game_id
 from backend.events import EventQueue
 from uuid import uuid4 as uuid
 
@@ -19,8 +18,8 @@ def test_read_main(api_client):
 
 
 def test_add_player(api_client, db_session):
-    game = WurwolvesGame(game_id=GAME_ID, user_id=USER_ID)
-    game.add_player("Charles")
+    response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Charles'})
+    assert response.status_code == 200
 
     assert (db_session
             .query(GameEvent)
@@ -34,7 +33,8 @@ def test_add_player(api_client, db_session):
             .filter(GameEvent.event_type == EventType.GUI)
             ).count() == 1
 
-    game.add_player("Gaby")
+    response = api_client.post("/api/{}/join_game".format(GAME_ID), params={'name': 'Gaby'})
+    assert response.status_code == 200
 
     assert (db_session
             .query(GameEvent)
@@ -50,4 +50,8 @@ def test_add_player(api_client, db_session):
         .all()
     )
 
-    q = EventQueue(GAME_ID)
+    q = EventQueue(GAME_ID, type_filter=EventType.NEW_PLAYER)
+    assert len(q.get_all_events()) == 2
+
+    q2 = EventQueue("another-game", type_filter=EventType.NEW_PLAYER)
+    assert len(q2.get_all_events()) == 0
