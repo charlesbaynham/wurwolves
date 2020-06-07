@@ -15,7 +15,8 @@ class GameUpdater extends Component {
         super()
 
         this.intervalId = null
-        this.updateState = this.updateState.bind(this)
+        this.mostRecentID = 0
+        this.checkNewData = this.checkNewData.bind(this)
     }
 
     componentDidMount() {
@@ -27,18 +28,36 @@ class GameUpdater extends Component {
     }
 
     startPolling() {
-        this.intervalId = setInterval(this.updateState, 1000)
+        this.intervalId = setInterval(this.checkNewData, 1000)
     }
 
     stopPolling() {
         clearInterval(this.intervalId)
     }
 
-    updateState() {
-        // console.log(`Fetching ${this.props.game_tag}...`)
-        fetch(`/api/${this.props.game_tag}/ui_events`)
+    checkNewData() {
+        fetch(`/api/${this.props.game_tag}/newest_id`)
             .then(r => r.json())
-            .then(data => console.log(data))
+            .then(mostRecentID => {
+                if (mostRecentID > this.mostRecentID) {
+                    this.updateState()
+                }
+            })
+    }
+
+    updateState() {
+        var url = new URL(`/api/${this.props.game_tag}/ui_events`, document.baseURI),
+            params = { since: this.mostRecentID }
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                for (const event of data) {
+                    this.mostRecentID = event.id
+                    console.log(event.details)
+                }
+            })
     }
 
     render() {
