@@ -14,7 +14,6 @@ import Game from './game'
 import Home from './home'
 
 import Footer from './features/Footer'
-import Topbar from './features/Topbar'
 
 // For demo data:
 import {
@@ -29,7 +28,6 @@ function App() {
   return (
     <div className={game_stage}>
       <div id="main" className="min-vh-100 bg-night-black">
-        <Topbar />
         <Router>
           <Switch>
             <Route path="/:game_tag" component={Game} />

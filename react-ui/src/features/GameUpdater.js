@@ -69,8 +69,6 @@ class GameUpdater extends Component {
     }
 
     joinGame() {
-        const { dispatch } = this.props;
-
         fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
     }
 

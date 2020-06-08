@@ -4,28 +4,31 @@ import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import ReactMarkdown from 'react-markdown';
-
+import Topbar from './features/Topbar'
 
 class Home extends Component {
     render() {
         return (
-            <Container id="content-box" className="pt-5 bg-light bg-night-dark">
-                <Row><Col><h1>Welcome to Wurwolves...</h1></Col></Row>
-                <Row>
-                    <Col md>
-                    <ReactMarkdown source={`
+            <div>
+                <Topbar />
+                <Container id="content-box" className="pt-5 bg-light bg-night-dark">
+                    <Row><Col><h1>Welcome to Wurwolves...</h1></Col></Row>
+                    <Row>
+                        <Col md>
+                            <ReactMarkdown source={`
 This is where I should write a bit of a description of this site, maybe some instructions. 
 
 Probably some other stuff too. 
                     `} />
-                    </Col>
-                    <Col md>
-                        <Button block onClick={this.start_game}>
-                            Start a new game
+                        </Col>
+                        <Col md>
+                            <Button block onClick={this.start_game}>
+                                Start a new game
                     </Button>
-                    </Col>
-                </Row>
-            </Container>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
         );
     }
 
