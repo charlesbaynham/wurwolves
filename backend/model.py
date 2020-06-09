@@ -3,8 +3,7 @@ import hashlib
 import json
 from datetime import datetime
 
-from pydantic import BaseModel
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
@@ -47,7 +46,7 @@ class GameEvent(Base):
     """Event log for all games"""
     __tablename__ = "game_events"
 
-    id = Column(Integer,
+    id = Column(BigInteger,
                 primary_key=True,
                 nullable=False)
     created = Column(DateTime, default=datetime.utcnow())
@@ -72,8 +71,8 @@ class GameEventVisibility(Base):
     """
     __tablename__ = "game_event_visibilities"
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    event_id = Column(Integer, ForeignKey('game_events.id'))
+    id = Column(BigInteger, primary_key=True, nullable=False)
+    event_id = Column(BigInteger, ForeignKey('game_events.id'))
     user_id = Column(UUIDType)
 
 
