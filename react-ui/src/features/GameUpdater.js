@@ -102,9 +102,6 @@ class GameUpdater extends Component {
                 dispatch(setRole(eventDetails.payload))
                 break;
         }
-
-        console.log("Updated state:")
-        console.log(store.getState())
     }
 
     render() {

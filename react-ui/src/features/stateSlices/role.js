@@ -14,16 +14,10 @@ export const roleSlice = createSlice({
   },
   reducers: {
     setRole: (state, action) => {
-      state.title = action.payload.title
-      state.day_text = action.payload.day_text
-      state.night_text = action.payload.night_text
-      state.button_visible = action.payload.button_visible
-      state.button_enabled = action.payload.button_enabled
-      state.button_text = action.payload.button_text
-      state.button_confirm_text = action.payload.button_confirm_text
-      state.button_submit_url = action.payload.button_submit_url
-      state.button_submit_person = action.payload.button_submit_person
-
+      for (const property in action.payload) {
+        state[property] = action.payload[property]
+      }
+      
       return state;
     },
   },

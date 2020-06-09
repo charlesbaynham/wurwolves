@@ -148,6 +148,28 @@ class WurwolvesGame:
 
         self.set_player(name, "spectating")
 
+    def start_game(self):
+        role_details = {
+            "title": "Started!",
+            "day_text": '''
+The game has started!
+
+I should probably write some more things here. 
+            '''.strip(),
+            "night_text": "",
+            "button_visible": False,
+        }
+
+        ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
+
+        with session_scope() as session:
+            session.add(GameEvent(
+                game_id=self.game_id,
+                event_type=EventType.GUI,
+                public_visibility=True,
+                details=ui_event.dict(),
+            ))
+
     def create_game(self):
         role_details = {
             "title": "Ready to start",
@@ -161,7 +183,7 @@ I should probably write some more things here.
             "button_enabled": True,
             "button_text": "Vote to start game",
             "button_confirm_text": "Waiting for all players...",
-            "button_submit_url": "/api/start_game",
+            "button_submit_url": "start_game",
             "button_submit_person": None,
         }
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)

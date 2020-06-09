@@ -37,15 +37,23 @@ async def ui_events(
     return out
 
 
+@router.get("/{game_id}/start_game")
+async def start_game(
+    game_id: str = Path(..., title="The four-word ID of the game"),
+    user_id=Depends(get_user_id)
+):
+    WurwolvesGame(game_id, user_id).start_game()
+
+
 @router.get("/{game_id}/chat")
 async def get_chat(
     game_id: str = Path(..., title="The four-word ID of the game"),
     since: int = Query(None, title="If provided, only show events with larger IDs that this"),
-    user_ID=Depends(get_user_id),
+    user_id=Depends(get_user_id),
 ):
     events = EventQueue(
         game_id,
-        user_ID=UUID(user_ID),
+        user_ID=UUID(user_id),
         type_filter=EventType.CHAT,
     ).get_all_events(since=since)
 
