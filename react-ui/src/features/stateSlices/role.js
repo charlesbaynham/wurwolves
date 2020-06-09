@@ -21,6 +21,8 @@ export const roleSlice = createSlice({
       state.button_enabled = action.payload.button_enabled
       state.button_text = action.payload.button_text
       state.button_confirm_text = action.payload.button_confirm_text
+      state.button_submit_url = action.payload.button_submit_url
+      state.button_submit_person = action.payload.button_submit_person
 
       return state;
     },

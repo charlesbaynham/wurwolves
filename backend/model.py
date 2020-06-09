@@ -3,7 +3,7 @@ import hashlib
 import json
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, BigInteger
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
@@ -46,7 +46,7 @@ class GameEvent(Base):
     """Event log for all games"""
     __tablename__ = "game_events"
 
-    id = Column(BigInteger,
+    id = Column(Integer,
                 primary_key=True,
                 nullable=False)
     created = Column(DateTime, default=datetime.utcnow())
@@ -71,12 +71,12 @@ class GameEventVisibility(Base):
     """
     __tablename__ = "game_event_visibilities"
 
-    id = Column(BigInteger, primary_key=True, nullable=False)
-    event_id = Column(BigInteger, ForeignKey('game_events.id'))
+    id = Column(Integer, primary_key=True, nullable=False)
+    event_id = Column(Integer, ForeignKey('game_events.id'))
     user_id = Column(UUIDType)
 
 
-def hash_game_id(text: str, N: int = 4):
+def hash_game_id(text: str, N: int = 3):
     """ Hash a string into an N-byte integer
 
     This method is used to convert the four-word style game identifiers into

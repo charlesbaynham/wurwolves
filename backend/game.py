@@ -161,6 +161,8 @@ I should probably write some more things here.
             "button_enabled": True,
             "button_text": "Vote to start game",
             "button_confirm_text": "Waiting for all players...",
+            "button_submit_url": "/api/start_game",
+            "button_submit_person": None,
         }
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
