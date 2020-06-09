@@ -9,7 +9,7 @@ from uuid import UUID
 
 from .database import session_scope
 from .events import EventQueue, UIEvent, UIEventType
-from .model import EventType, GameEvent, hash_game_id
+from .model import EventType, GameEvent, GameEventVisibility, hash_game_id
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
@@ -174,9 +174,9 @@ I should probably write some more things here.
         role_details = {
             "title": "Ready to start",
             "day_text": '''
-The game will begin once all players have pressed start. 
+The game will begin as soon as someone presses start.  
 
-I should probably write some more things here. 
+If anyone joins after they, they'll be a spectator until the game finishes. 
             '''.strip(),
             "night_text": "",
             "button_visible": True,
@@ -195,3 +195,69 @@ I should probably write some more things here.
                 public_visibility=True,
                 details=ui_event.dict(),
             ))
+
+        self.add_dummy_messages()
+
+    def add_dummy_messages(self):
+        messages = [
+            ("3 votes for Euan (Rosie, Rachel, Gaby)", False),
+            ("Gaby was voted off", True),
+            ("Sophie was killed in the night", True),
+            ("Rob was nominated by Charles", False),
+            ("James was nominated by Charles", False),
+            ("James was seconded by Parav", False),
+            ("4 votes for Gaby (Charles, James, Parav, Harry)", False),
+            ("3 votes for Euan (Rosie, Rachel, Gaby)", False),
+            ("Gaby was voted off", True),
+            ("Sophie was killed in the night", True),
+            ("Rob was nominated by Charles", False),
+            ("James was nominated by Charles", False),
+            ("James was seconded by Parav", False),
+            ("4 votes for Gaby (Charles, James, Parav, Harry)", False),
+            ("3 votes for Euan (Rosie, Rachel, Gaby)", False),
+            ("Gaby was voted off", True),
+            ("Sophie was killed in the night", True),
+            ("Rob was nominated by Charles", False),
+            ("James was nominated by Charles", False)
+        ]
+
+        for msg, is_strong in messages:
+            self.send_chat_message(msg, is_strong)
+
+    def send_chat_message(self, msg, is_strong=False, player_list=None):
+        """Post a message in the chat log
+
+        Args:
+            msg (str): Message to post
+            is_strong (bool, optional): Display with HTML <strong>? Defaults to
+                                        False.
+            player_list (List[UUID], optional): List of player IDs who can see the
+                                        message. All players if None. 
+        """
+
+        msg_details = {
+            "msg": msg,
+            "isStrong": is_strong,
+        }
+
+        message_obj = UIEvent(type=UIEventType.CHAT_MESSAGE, payload=msg_details)
+
+        with session_scope() as session:
+            if player_list:
+                player_db_objs = [
+                    GameEventVisibility(user_id=id) for id in player_list
+                ]
+                session.add(GameEvent(
+                    game_id=self.game_id,
+                    event_type=EventType.GUI,
+                    public_visibility=False,
+                    users_with_visibility=player_db_objs,
+                    details=message_obj.dict(),
+                ))
+            else:
+                session.add(GameEvent(
+                                game_id=self.game_id,
+                                event_type=EventType.GUI,
+                                public_visibility=True,
+                                details=message_obj.dict(),
+                            ))

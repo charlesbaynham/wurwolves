@@ -7,11 +7,13 @@
  */
 
 import { Component } from 'react';
+import { connect } from 'react-redux'
+
 import { selectAllPlayers, addPlayer, setPlayerName, setPlayerStatus, getPlayerById } from './stateSlices/players'
 import { selectMyID } from './stateSlices/myID'
 import { setRole } from './stateSlices/role'
-import { connect } from 'react-redux'
-import store from '../app/store'
+import { addChatEntry } from './stateSlices/chatEntries'
+
 
 class GameUpdater extends Component {
 
@@ -100,6 +102,9 @@ class GameUpdater extends Component {
                 break;
             case "SET_CONTROLS":
                 dispatch(setRole(eventDetails.payload))
+                break;
+            case "CHAT_MESSAGE":
+                dispatch(addChatEntry(eventDetails.payload))
                 break;
         }
     }

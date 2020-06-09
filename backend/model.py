@@ -14,7 +14,6 @@ Base = declarative_base()
 
 class EventType(enum.Enum):
     GUI = "GUI"
-    CHAT = "CHAT"
     UPDATE_PLAYER = "UPDATE_PLAYER"
 
 
