@@ -15,15 +15,12 @@ import Home from './home'
 
 import Footer from './features/Footer'
 
-// For demo data:
 import {
   selectStage
 } from './features/stateSlices/gameStage'
-import addDemoData from './demoData'
 
 
 function App() {
-  addDemoData(useDispatch());
   const game_stage = useSelector(selectStage)
   return (
     <div className={game_stage}>

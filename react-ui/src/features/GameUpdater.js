@@ -13,6 +13,7 @@ import { selectAllPlayers, addPlayer, setPlayerName, setPlayerStatus, getPlayerB
 import { selectMyID } from './stateSlices/myID'
 import { setRole } from './stateSlices/role'
 import { addChatEntry } from './stateSlices/chatEntries'
+import { setStage } from './stateSlices/gameStage'
 
 
 class GameUpdater extends Component {
@@ -105,6 +106,9 @@ class GameUpdater extends Component {
                 break;
             case "CHAT_MESSAGE":
                 dispatch(addChatEntry(eventDetails.payload))
+                break;
+            case "GAME_STAGE":
+                dispatch(setStage(eventDetails.payload))
                 break;
         }
     }

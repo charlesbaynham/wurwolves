@@ -6,7 +6,7 @@ export const stageSlice = createSlice({
   initialState: "day",
   reducers: {
     setStage: (state, action) => {
-      return action.payload;
+      return action.payload.stage.toLowerCase();
     },
   },
 });

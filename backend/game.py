@@ -5,6 +5,7 @@ This module provides the WurwolvesGame class, for interacting with a single game
 '''
 import os
 import random
+from enum import Enum
 from uuid import UUID
 
 from .database import session_scope
@@ -13,6 +14,12 @@ from .model import EventType, GameEvent, GameEventVisibility, hash_game_id
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
+
+
+class GameStages(str, Enum):
+    DAY = "DAY"
+    NIGHT = "NIGHT"
+    VOTING = "VOTING"
 
 
 class WurwolvesGame:
@@ -171,6 +178,7 @@ I should probably write some more things here.
             ))
 
     def create_game(self):
+        self.set_stage(GameStages.DAY)
         role_details = {
             "title": "Ready to start",
             "day_text": '''
@@ -256,8 +264,17 @@ If anyone joins after they, they'll be a spectator until the game finishes.
                 ))
             else:
                 session.add(GameEvent(
-                                game_id=self.game_id,
-                                event_type=EventType.GUI,
-                                public_visibility=True,
-                                details=message_obj.dict(),
-                            ))
+                    game_id=self.game_id,
+                    event_type=EventType.GUI,
+                    public_visibility=True,
+                    details=message_obj.dict(),
+                ))
+
+    def set_stage(self, new_stage: GameStages):
+        with session_scope() as session:
+            session.add(GameEvent(
+                game_id=self.game_id,
+                event_type=EventType.GUI,
+                public_visibility=True,
+                details=UIEvent(type=UIEventType.GAME_STAGE, payload={"stage": new_stage}).dict(),
+            ))

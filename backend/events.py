@@ -29,6 +29,7 @@ class UIEventType(str, Enum):
     UPDATE_PLAYER = "UPDATE_PLAYER"
     SET_CONTROLS = "SET_CONTROLS"
     CHAT_MESSAGE = "CHAT_MESSAGE"
+    GAME_STAGE = "GAME_STAGE"
 
 
 class Event(BaseModel):
