@@ -55,12 +55,28 @@ class UIEvent(BaseModel):
     payload: dict
 
 
+class Stati(str, Enum):
+    NORMAL = 'normal'
+    LYNCHED = 'lynched'
+    NOMINATED = 'nominated'
+    WOLFED = 'wolfed'
+    SECONDED = 'seconded'
+    SPECTATING = 'spectating'
+
+
 class UpdatePlayerEvent(BaseModel):
     """Model for an UPDATE_PLAYER event
     """
     id: UUID
     name: str = None
     status: str = None
+
+
+class SetRoleEvent(BaseModel):
+    """Model for an SET_ROLE event
+    """
+    id: UUID
+    role: str = None
 
 
 class RemovePlayerEvent(BaseModel):

@@ -17,6 +17,7 @@ class EventType(enum.Enum):
     GUI = "GUI"
     UPDATE_PLAYER = "UPDATE_PLAYER"
     REMOVE_PLAYER = "REMOVE_PLAYER"
+    SET_ROLE = "SET_ROLE"
 
 
 class JSONEncodedDict(TypeDecorator):

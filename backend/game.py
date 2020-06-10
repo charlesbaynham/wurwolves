@@ -9,8 +9,8 @@ from enum import Enum
 from uuid import UUID
 
 from .database import session_scope
-from .events import (EventQueue, RemovePlayerEvent, UIEvent, UIEventType,
-                     UpdatePlayerEvent)
+from .events import (EventQueue, RemovePlayerEvent, Stati, UIEvent,
+                     UIEventType, UpdatePlayerEvent, SetRoleEvent)
 from .model import EventType, GameEvent, GameEventVisibility, hash_game_id
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
@@ -172,6 +172,14 @@ I should probably write some more things here.
         players = self.get_current_players()
         print(players)
 
+        role_events = []
+        for p in players:
+            role_events.append(GameEvent(
+                game_id=self.game_id,
+                event_type=EventType.SET_ROLE,
+                details=SetRoleEvent(id=p, role=random.choice(list(Stati))).dict()
+            ))
+
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
         with session_scope() as session:
@@ -181,24 +189,37 @@ I should probably write some more things here.
                 public_visibility=True,
                 details=ui_event.dict(),
             ))
+            for e in role_events:
+                session.add(e)
+
+        players = self.get_current_players()
+        print(players)
 
     def get_current_players(self):
         """Get a list of current players in the game, with their states and roles
         """
         q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
-                                                  EventType.REMOVE_PLAYER])
+                                                  EventType.REMOVE_PLAYER,
+                                                  EventType.SET_ROLE])
 
         players = {}
         for event in q.get_all_events():
             if event.event_type == EventType.UPDATE_PLAYER:
                 d = UpdatePlayerEvent.parse_obj(event.details)
                 if d.id not in players:
-                    players[d.id] = (d.name, d.status)
+                    players[d.id] = {
+                        'name': d.name,
+                        'status': d.status,
+                        'role': None,
+                    }
                 else:
-                    players[d.id] = (
-                        d.name if d.name else players[d.id][0],
-                        d.status if d.status else players[d.id][1]
-                        )
+                    if d.name:
+                        players[d.id]["name"] = d.name
+                    if d.status:
+                        players[d.id]["status"] = d.status
+            elif event.event_type == EventType.SET_ROLE:
+                d = SetRoleEvent.parse_obj(event.details)
+                players[d.id]["role"] = d.role
             elif event.event_type == EventType.REMOVE_PLAYER:
                 d = RemovePlayerEvent.parse_obj(event.details)
                 del players[d.id]
