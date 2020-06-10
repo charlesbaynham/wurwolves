@@ -65,19 +65,18 @@ class WurwolvesGame:
         if user_id is None:
             raise ValueError("No user_id provided and none set")
 
-        player_details = {
-            "id": str(user_id),
-            "name": name,
-            "status": status,
-        }
+        player_details = UpdatePlayerEvent(
+            id=str(user_id),
+            name=name,
+            status=status,
+        )
         ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
-        game_details = UpdatePlayerEvent.parse_obj(player_details)
 
         with session_scope() as session:
             new_player_event = GameEvent(
                 game_id=self.game_id,
                 event_type=EventType.UPDATE_PLAYER,
-                details=game_details.dict(),
+                details=player_details.dict(),
             )
             new_player_GUI_event = GameEvent(
                 game_id=self.game_id,
@@ -174,11 +173,7 @@ I should probably write some more things here.
 
         role_events = []
         for p in players:
-            role_events.append(GameEvent(
-                game_id=self.game_id,
-                event_type=EventType.SET_ROLE,
-                details=SetRoleEvent(id=p, role=random.choice(list(Stati))).dict()
-            ))
+            self.set_player(None, random.choice(list(Stati)), user_id=p)
 
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 

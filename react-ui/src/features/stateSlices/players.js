@@ -28,13 +28,17 @@ export const playersSlice = createSlice({
     setPlayerName: (state, action) => {
       const id = action.payload.id;
       var player = getPlayerById(state, id)
-      player.name = action.payload.name
+      if (action.payload.name) {
+        player.name = action.payload.name
+      }
       return state;
     },
     setPlayerStatus: (state, action) => {
       const id = action.payload.id;
       var player = getPlayerById(state, id)
-      player.status = action.payload.status
+      if (action.payload.status) {
+        player.status = action.payload.status
+      }
       return state;
     },
     setPlayerSelected: (state, action) => {
