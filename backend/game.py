@@ -173,7 +173,7 @@ I should probably write some more things here.
 
         role_events = []
         for p in players:
-            self.set_player(None, random.choice(list(Stati)), user_id=p)
+            self.set_player(None, Stati.NORMAL, user_id=p)
 
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
