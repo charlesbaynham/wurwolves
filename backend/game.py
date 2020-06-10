@@ -169,7 +169,8 @@ I should probably write some more things here.
             "button_visible": False,
         }
 
-        # players = self.get_current_players()
+        players = self.get_current_players()
+        print(players)
 
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
@@ -191,8 +192,18 @@ I should probably write some more things here.
         for event in q.get_all_events():
             if event.event_type == EventType.UPDATE_PLAYER:
                 d = UpdatePlayerEvent.parse_obj(event.details)
+                if d.id not in players:
+                    players[d.id] = (d.name, d.status)
+                else:
+                    players[d.id] = (
+                        d.name if d.name else players[d.id][0],
+                        d.status if d.status else players[d.id][1]
+                        )
+            elif event.event_type == EventType.REMOVE_PLAYER:
+                d = RemovePlayerEvent.parse_obj(event.details)
+                del players[d.id]
 
-
+        return players
 
     def create_game(self):
         self.set_stage(GameStages.DAY)

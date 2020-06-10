@@ -9,7 +9,10 @@ load_dotenv(find_dotenv())
 
 # an Engine, which the Session will use for connection
 # resources
-engine = create_engine(os.environ.get("DATABASE_URL"))
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    raise ValueError("Env var DATABASE_URL not set. If you are running for development, copy the .env.example file to .env")
+engine = create_engine(db_url)
 
 # create a configured "Session" class
 Session = sessionmaker(bind=engine)
