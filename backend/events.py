@@ -43,6 +43,8 @@ class Event(BaseModel):
     details: dict
 
 
+# Detail models. The following are models for the "details" fields in an Event,
+# depending on the type of the event
 class UIEvent(BaseModel):
     """ Model for a UI event
 
@@ -51,6 +53,20 @@ class UIEvent(BaseModel):
     """
     type: UIEventType
     payload: dict
+
+
+class UpdatePlayerEvent(BaseModel):
+    """Model for an UPDATE_PLAYER event
+    """
+    id: UUID
+    name: str = None
+    status: str = None
+
+
+class RemovePlayerEvent(BaseModel):
+    """Model for a REMOVE_PLAYER event
+    """
+    id: UUID
 
 
 class EventQueue:
@@ -78,7 +94,7 @@ class EventQueue:
                 user_ID (UUID, optional):   If present, only return events visible to
                                             this user (including public events). Defaults to None.
 
-                type_filter (EventType, optional):
+                type_filter (EventType / List[EventType], optional):
                                 Only show events that match this event type. If passed an iterable,
                                 allow any of the passed types. Defaults to None = all events.
         """

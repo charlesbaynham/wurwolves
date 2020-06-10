@@ -9,7 +9,8 @@ from enum import Enum
 from uuid import UUID
 
 from .database import session_scope
-from .events import EventQueue, UIEvent, UIEventType
+from .events import (EventQueue, RemovePlayerEvent, UIEvent, UIEventType,
+                     UpdatePlayerEvent)
 from .model import EventType, GameEvent, GameEventVisibility, hash_game_id
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
@@ -70,12 +71,13 @@ class WurwolvesGame:
             "status": status,
         }
         ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
+        game_details = UpdatePlayerEvent.parse_obj(player_details)
 
         with session_scope() as session:
             new_player_event = GameEvent(
                 game_id=self.game_id,
                 event_type=EventType.UPDATE_PLAYER,
-                details=player_details,
+                details=game_details.dict(),
             )
             new_player_GUI_event = GameEvent(
                 game_id=self.game_id,
@@ -167,6 +169,8 @@ I should probably write some more things here.
             "button_visible": False,
         }
 
+        # players = self.get_current_players()
+
         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
 
         with session_scope() as session:
@@ -176,6 +180,17 @@ I should probably write some more things here.
                 public_visibility=True,
                 details=ui_event.dict(),
             ))
+
+    # def get_current_players(self):
+    #     """Get a list of current players in the game, with their states and roles
+    #     """
+    #     q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
+    #                                               EventType.REMOVE_PLAYER])
+
+    #     players = []
+    #     for event in q.get_all_events():
+    #         if event.event_type == EventType.UPDATE_PLAYER:
+
 
     def create_game(self):
         self.set_stage(GameStages.DAY)
