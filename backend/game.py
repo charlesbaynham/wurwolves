@@ -181,15 +181,17 @@ I should probably write some more things here.
                 details=ui_event.dict(),
             ))
 
-    # def get_current_players(self):
-    #     """Get a list of current players in the game, with their states and roles
-    #     """
-    #     q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
-    #                                               EventType.REMOVE_PLAYER])
+    def get_current_players(self):
+        """Get a list of current players in the game, with their states and roles
+        """
+        q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
+                                                  EventType.REMOVE_PLAYER])
 
-    #     players = []
-    #     for event in q.get_all_events():
-    #         if event.event_type == EventType.UPDATE_PLAYER:
+        players = {}
+        for event in q.get_all_events():
+            if event.event_type == EventType.UPDATE_PLAYER:
+                d = UpdatePlayerEvent.parse_obj(event.details)
+
 
 
     def create_game(self):
