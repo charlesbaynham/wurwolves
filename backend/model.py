@@ -4,20 +4,13 @@ import json
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer
+from sqlalchemy import Table, Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
 from sqlalchemy_utils import UUIDType
 
 Base = declarative_base()
-
-
-class EventType(enum.Enum):
-    GUI = "GUI"
-    UPDATE_PLAYER = "UPDATE_PLAYER"
-    REMOVE_PLAYER = "REMOVE_PLAYER"
-    SET_ROLE = "SET_ROLE"
 
 
 class JSONEncodedDict(TypeDecorator):
@@ -51,38 +44,93 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
-class GameEvent(Base):
-    """Event log for all games"""
-    __tablename__ = "game_events"
-
-    id = Column(Integer,
-                primary_key=True,
-                nullable=False)
-    created = Column(DateTime, default=datetime.utcnow())
-
-    game_id = Column(Integer, index=True, nullable=False)
-    event_type = Column(Enum(EventType), nullable=False)
-    details = Column(JSONEncodedDict)
-    public_visibility = Column(Boolean, default=False)
-
-    users_with_visibility = relationship(
-        'GameEventVisibility', backref='event', lazy=True)
-
-    def __repr__(self):
-        return '<GameEvent {}, game_id={}, type={}>'.format(self.id, self.game_id, self.event_type)
-
-
-class GameEventVisibility(Base):
-    """
-    List of users with visibility of a GameEvent
-
-    Only relevant for event_type == GUI and if public_visibility == False
-    """
-    __tablename__ = "game_event_visibilities"
+class Game(Base):
+    """The current state of a game"""
+    __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    event_id = Column(Integer, ForeignKey('game_events.id'))
-    user_id = Column(UUIDType)
+    created = Column(DateTime, default=datetime.utcnow())
+
+    players = relationship(
+        'Player', backref='game', lazy=True
+    )
+
+    messages = relationship(
+        'Message', backref='game', lazy=True
+    )
+
+    def __repr__(self):
+        return '<Game id={}, players={}>'.format(self.id, self.players)
+
+
+class PlayerRole(enum.Enum):
+    VILLAGER = 'VILLAGER'
+    WOLF = 'WOLF'
+    SEER = 'SEER'
+    MEDIC = 'MEDIC'
+    SPECTATOR = 'SPECTATOR'
+
+
+class PlayerState(enum.Enum):
+    ALIVE = 'ALIVE'
+    WOLFED = 'WOLFED'
+    LYNCHED = 'LYNCHED'
+    NOMINATED = 'NOMINATED'
+    SECONDED = 'SECONDED'
+
+
+class Player(Base):
+    """
+    The role and current state of a player in a game. 
+
+    Each User is a Player in each game that they are in. Each Game has a Player for each player in it. 
+    """
+    __tablename__ = "game_roles"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    game_id = Column(Integer, ForeignKey('games.id'))
+    user_id = Column(UUIDType, ForeignKey('users.id'))
+
+    role = Column(Enum(PlayerRole), nullable=False)
+    state = Column(Enum(PlayerState), nullable=False)
+
+
+class User(Base):
+    """
+    Details of each user, recognised by their session id
+
+    A user can be in multiple games and will have a GameRole in each
+    """
+    __tablename__ = "users"
+
+    id = Column(UUIDType,
+                primary_key=True,
+                nullable=False)
+    name = Column(String)
+
+    player_roles = relationship(
+        'Player', backref='user', lazy=True)
+
+
+# many-to-many relationship between users and messages
+association_table = Table(
+    'message_visibility', Base.metadata,
+    Column('user_id', UUIDType, ForeignKey('users.id')),
+    Column('message_id', Integer, ForeignKey('messages.id'))
+)
+
+
+class Message(Base):
+    """
+    A message in the chatlog of a game. Each Game can have many Messages. 
+    """
+    __tablename__ = 'messages'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    text = Column(String)
+    game_id = Column(Integer, ForeignKey('games.id'))
+
+    visible_to = relationship("User", secondary=association_table)
 
 
 def hash_game_id(text: str, N: int = 3):
