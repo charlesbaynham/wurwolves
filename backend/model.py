@@ -4,7 +4,8 @@ import json
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import Table, Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
+                        String, Table)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
@@ -107,15 +108,16 @@ class User(Base):
                 primary_key=True,
                 nullable=False)
     name = Column(String)
+    name_is_generated = Column(Boolean, default=True)
 
     player_roles = relationship(
         'Player', backref='user', lazy=True)
 
 
-# many-to-many relationship between users and messages
+# many-to-many relationship between players and messages
 association_table = Table(
     'message_visibility', Base.metadata,
-    Column('user_id', UUIDType, ForeignKey('users.id')),
+    Column('player_id', Integer, ForeignKey('players.id')),
     Column('message_id', Integer, ForeignKey('messages.id'))
 )
 
@@ -129,8 +131,9 @@ class Message(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     text = Column(String)
     game_id = Column(Integer, ForeignKey('games.id'))
+    is_strong = Column(Boolean, default=False)
 
-    visible_to = relationship("User", secondary=association_table)
+    visible_to = relationship("Player", secondary=association_table)
 
 
 def hash_game_id(text: str, N: int = 3):
