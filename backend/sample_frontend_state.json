@@ -2,8 +2,20 @@
   "players": [
     {
       "id": "cceaf6efdb034d5988e955676c135d76",
-      "name": "Viridian Boozy",
-      "status": "spectating",
+      "name": "Euan",
+      "status": "normal",
+      "selected": false
+    },
+    {
+      "id": "cceaf6efdb034d598ae955676c135d76",
+      "name": "James",
+      "status": "wolfed",
+      "selected": false
+    },
+    {
+      "id": "cceaf6efdb0asdd598ae955676c135d76",
+      "name": "Rob",
+      "status": "lynched",
       "selected": false
     }
   ],
