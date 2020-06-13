@@ -5,7 +5,7 @@ import {
     selectPlayerName,
     selectPlayerStatus,
     selectPlayerSelected
-} from '../stateSlices/players'
+} from './selectors'
 
 const IMAGE_LOOKUP = {
     'normal': {

@@ -5,11 +5,8 @@ import ReactMarkdown from 'react-markdown';
 import Button from 'react-bootstrap/Button';
 
 import {
-    selectRole
-} from './stateSlices/role'
-import {
-    selectStage
-} from './stateSlices/gameStage'
+    selectStage, selectRole
+} from './selectors'
 
 
 function Controls(props) {

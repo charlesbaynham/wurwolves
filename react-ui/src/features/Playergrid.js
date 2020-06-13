@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import Player from './player/Player'
 import {
     selectAllPlayers
-} from './stateSlices/players'
+} from './selectors'
 
 
 export function PlayerGrid() {

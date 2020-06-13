@@ -9,11 +9,11 @@
 import { Component } from 'react';
 import { connect } from 'react-redux'
 
-import { selectAllPlayers, addPlayer, setPlayerName, setPlayerStatus, getPlayerById } from './stateSlices/players'
-import { selectMyID } from './stateSlices/myID'
-import { setRole } from './stateSlices/role'
-import { addChatEntry } from './stateSlices/chatEntries'
-import { setStage } from './stateSlices/gameStage'
+import {
+    selectAllPlayers, addPlayer,
+    setPlayerName, setPlayerStatus,
+    getPlayerById, selectMyID
+} from './selectors'
 
 
 class GameUpdater extends Component {
