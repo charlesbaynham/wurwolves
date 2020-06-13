@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 
-import Player from './player/Player'
+import Player from './Player'
 import {
     selectAllPlayers
 } from './selectors'
@@ -9,6 +9,8 @@ import {
 
 export function PlayerGrid() {
     const players = useSelector(selectAllPlayers);
+
+    console.log(useStore().getState())
 
     return (
         <div className="col-md container">

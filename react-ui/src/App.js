@@ -5,7 +5,7 @@ import {
   Switch
 } from 'react-router-dom'
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
@@ -17,7 +17,7 @@ import Footer from './features/Footer'
 
 import {
   selectStage
-} from './features/stateSlices/gameStage'
+} from './features/selectors'
 
 
 function App() {

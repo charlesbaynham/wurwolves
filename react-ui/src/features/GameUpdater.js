@@ -10,9 +10,8 @@ import { Component } from 'react';
 import { connect } from 'react-redux'
 
 import {
-    selectAllPlayers, addPlayer,
-    setPlayerName, setPlayerStatus,
-    getPlayerById, selectMyID
+    selectAllPlayers,
+    selectMyID
 } from './selectors'
 
 
@@ -46,72 +45,72 @@ class GameUpdater extends Component {
     }
 
     checkNewData() {
-        fetch(`/api/${this.props.game_tag}/newest_id`)
-            .then(r => r.json())
-            .then(mostRecentID => {
-                if (mostRecentID > this.mostRecentID) {
-                    this.updateState()
-                }
-            })
+        // fetch(`/api/${this.props.game_tag}/newest_id`)
+        //     .then(r => r.json())
+        //     .then(mostRecentID => {
+        //         if (mostRecentID > this.mostRecentID) {
+        //             this.updateState()
+        //         }
+        //     })
+        this.updateState()
     }
 
     updateState() {
-        var url = new URL(`/api/${this.props.game_tag}/ui_events`, document.baseURI),
-            params = { since: this.mostRecentID }
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+        var url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
 
         fetch(url)
             .then(r => r.json())
             .then(data => {
-                for (const event of data) {
-                    console.log(`Event: new id = ${event.id}, current most recent = ${this.mostRecentID}`)
-                    this.mostRecentID = event.id
-                    this.handleEvent(event.details)
-                }
+                // for (const event of data) {
+                //     console.log(`Event: new id = ${event.id}, current most recent = ${this.mostRecentID}`)
+                //     this.mostRecentID = event.id
+                //     this.handleEvent(event.details)
+                // }
+                console.log(data)
             })
     }
 
     joinGame() {
-        fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
+        // fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
     }
 
-    handleEvent(eventDetails) {
+    // handleEvent(eventDetails) {
         /** Handle a UI event from the server
          *
          * Parse an event from the server and update the local state accordingly
          */
-        const { dispatch } = this.props;
+    //     const { dispatch } = this.props;
 
-        console.log(`Received event ${eventDetails.type}`)
+    //     console.log(`Received event ${eventDetails.type}`)
 
-        switch (eventDetails.type) {
-            case "UPDATE_PLAYER":
-                const id = eventDetails.payload.id
-                const name = eventDetails.payload.name
-                const status = eventDetails.payload.status
+    //     switch (eventDetails.type) {
+    //         case "UPDATE_PLAYER":
+    //             const id = eventDetails.payload.id
+    //             const name = eventDetails.payload.name
+    //             const status = eventDetails.payload.status
 
-                console.log(`Updating player ${id} = ${name}, ${status}`)
+    //             console.log(`Updating player ${id} = ${name}, ${status}`)
 
-                if (getPlayerById(this.props.players, id)) {
-                    console.log(`player ${id} already exists`)
-                    dispatch(setPlayerName({ id: id, name: name }))
-                    dispatch(setPlayerStatus({ id: id, status: status }))
-                }
-                else {
-                    dispatch(addPlayer({ id: id, name: name, status: status }))
-                }
-                break;
-            case "SET_CONTROLS":
-                dispatch(setRole(eventDetails.payload))
-                break;
-            case "CHAT_MESSAGE":
-                dispatch(addChatEntry(eventDetails.payload))
-                break;
-            case "GAME_STAGE":
-                dispatch(setStage(eventDetails.payload))
-                break;
-        }
-    }
+    //             if (getPlayerById(this.props.players, id)) {
+    //                 console.log(`player ${id} already exists`)
+    //                 dispatch(setPlayerName({ id: id, name: name }))
+    //                 dispatch(setPlayerStatus({ id: id, status: status }))
+    //             }
+    //             else {
+    //                 dispatch(addPlayer({ id: id, name: name, status: status }))
+    //             }
+    //             break;
+    //         case "SET_CONTROLS":
+    //             dispatch(setRole(eventDetails.payload))
+    //             break;
+    //         case "CHAT_MESSAGE":
+    //             dispatch(addChatEntry(eventDetails.payload))
+    //             break;
+    //         case "GAME_STAGE":
+    //             dispatch(setStage(eventDetails.payload))
+    //             break;
+    //     }
+    // }
 
     render() {
         return null
