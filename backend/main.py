@@ -1,20 +1,28 @@
 import os
 import random
-from typing import List
-from uuid import UUID
 
-from fastapi import APIRouter, Depends, FastAPI, Path, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, FastAPI, Path
 
+# from .frontend_parser import FrontendState
 from .game import WurwolvesGame
 from .user_id import get_user_id
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
+SAMPLE_MODEL = os.path.join(os.path.dirname(__file__), 'sample_frontend_state.json')
 
 words = None
 
 app = FastAPI()
 router = APIRouter()
+
+
+@router.get("/{game_id}/state")
+def get_state(
+    game_id: str = Path(..., title="The four-word ID of the game"),
+    user_id=Depends(get_user_id)
+):
+    with open(SAMPLE_MODEL, 'r') as F:
+        return F.read()
 
 
 @router.get("/{game_id}/start_game")
