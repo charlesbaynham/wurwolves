@@ -1,0 +1,101 @@
+{
+  "players": [
+        {
+      "id": "cceaf6efdb034d5988e955676c135d76",
+      "name": "Viridian Boozy",
+      "status": "spectating",
+      "selected": false
+        }
+    ],
+  "chat": [
+        {
+      "msg": "3 votes for Euan (Rosie, Rachel, Gaby)",
+      "isStrong": false
+        },
+        {
+      "msg": "Gaby was voted off",
+      "isStrong": true
+        },
+        {
+      "msg": "Sophie was killed in the night",
+      "isStrong": true
+        },
+        {
+      "msg": "Rob was nominated by Charles",
+      "isStrong": false
+        },
+        {
+      "msg": "James was nominated by Charles",
+      "isStrong": false
+        },
+        {
+      "msg": "James was seconded by Parav",
+      "isStrong": false
+        },
+        {
+      "msg": "4 votes for Gaby (Charles, James, Parav, Harry)",
+      "isStrong": false
+        },
+        {
+      "msg": "3 votes for Euan (Rosie, Rachel, Gaby)",
+      "isStrong": false
+        },
+        {
+      "msg": "Gaby was voted off",
+      "isStrong": true
+        },
+        {
+      "msg": "Sophie was killed in the night",
+      "isStrong": true
+        },
+        {
+      "msg": "Rob was nominated by Charles",
+      "isStrong": false
+        },
+        {
+      "msg": "James was nominated by Charles",
+      "isStrong": false
+        },
+        {
+      "msg": "James was seconded by Parav",
+      "isStrong": false
+        },
+        {
+      "msg": "4 votes for Gaby (Charles, James, Parav, Harry)",
+      "isStrong": false
+        },
+        {
+      "msg": "3 votes for Euan (Rosie, Rachel, Gaby)",
+      "isStrong": false
+        },
+        {
+      "msg": "Gaby was voted off",
+      "isStrong": true
+        },
+        {
+      "msg": "Sophie was killed in the night",
+      "isStrong": true
+        },
+        {
+      "msg": "Rob was nominated by Charles",
+      "isStrong": false
+        },
+        {
+      "msg": "James was nominated by Charles",
+      "isStrong": false
+        }
+    ],
+  "stage": "day",
+  "role": {
+    "title": "Ready to start",
+    "day_text": "The game will begin as soon as someone presses start.  \n\nIf anyone joins after they, they\"ll be a spectator until the game finishes.",
+    "night_text": "",
+    "button_visible": true,
+    "button_enabled": true,
+    "button_text": "Vote to start game",
+    "button_confirm_text": "Waiting for all players...",
+    "button_submit_url": "start_game",
+    "button_submit_person": null
+    },
+  "myID": ""
+}
