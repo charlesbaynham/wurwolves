@@ -138,7 +138,7 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     text = Column(String)
-    game_id = Column(Integer, ForeignKey('games.id'))
+    game_id = Column(Integer, ForeignKey('games.id'), nullable=False)
     is_strong = Column(Boolean, default=False)
 
     visible_to = relationship("Player", secondary=association_table)

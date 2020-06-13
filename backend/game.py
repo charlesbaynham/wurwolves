@@ -6,13 +6,21 @@ This module provides the WurwolvesGame class, for interacting with a single game
 import os
 import random
 from functools import wraps
+from typing import List
 from uuid import UUID
+
+import pydantic
 
 from .model import (Game, GameStage, Message, Player, PlayerRole, PlayerState,
                     User, hash_game_id)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
+
+
+class ChatMessage(pydantic.BaseModel):
+    text: str
+    is_strong = False
 
 
 class WurwolvesGame:
@@ -52,9 +60,9 @@ class WurwolvesGame:
                 out = func(self, *args, **kwargs)
                 self.session.commit()
                 return out
-            except Exception:
+            except Exception as e:
                 self.session.rollback()
-                raise
+                raise e
             finally:
                 self.session_users -= 1
                 if self.session_users == 0:
@@ -124,6 +132,13 @@ class WurwolvesGame:
         return self.session.query(Game).filter(Game.id == self.game_id).first()
 
     @db_scoped
+    def get_player(self, user_id: UUID) -> Player:
+        return self.session.query(Player).filter(
+            Player.game_id == self.game_id,
+            Player.user_id == user_id
+        ).first()
+
+    @db_scoped
     def create_game(self):
         game = Game(id=self.game_id)
 
@@ -171,23 +186,45 @@ class WurwolvesGame:
             self.send_chat_message(msg, is_strong)
 
     @db_scoped
-    def send_chat_message(self, msg, is_strong=False, player_list=[]):
+    def get_messages(self, user_id: UUID) -> List[ChatMessage]:
+        """ Get chat messages visible to the given user """
+
+        game = self.get_game()
+
+        out = []
+
+        player = self.get_player(user_id)
+
+        m: Message
+        for m in game.messages:
+            if m.visible_to and player not in m.visible_to:
+                continue
+
+            out.append(ChatMessage(text=m.text, is_strong=m.is_strong))
+
+        return out
+
+    @db_scoped
+    def send_chat_message(self, msg, is_strong=False, user_list=[]):
         """Post a message in the chat log
 
         Args:
             msg (str): Message to post
             is_strong (bool, optional): Display with HTML <strong>? Defaults to
                                         False.
-            player_list (List[Integer], optional): List of player IDs who can see the
+            user_list (List[UUID], optional): List of user IDs who can see the
                                         message. All players if None. 
         """
         m = Message(
             text=msg,
             is_strong=is_strong,
+            game_id=self.game_id,
         )
 
-        for player_id in player_list:
-            m.visible_to.add(player_id)
+        for user_id in user_list:
+            m.visible_to.append(
+                self.get_player(user_id)
+            )
 
         self.session.add(m)
 

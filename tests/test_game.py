@@ -2,12 +2,15 @@
 
 from uuid import uuid4 as uuid
 
+import pytest
+
 from backend.game import WurwolvesGame
 from backend.model import (Game, GameStage, Player, PlayerRole, PlayerState,
                            User, hash_game_id)
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
+PLAYER_NAME = "Charles"
 
 
 def test_add_player(db_session):
@@ -81,6 +84,34 @@ def test_start_game(db_session):
     assert p.role == PlayerRole.SPECTATOR
 
 
+def test_chat(demo_game, db_session):
+    other_user = uuid()
+    demo_game.join(other_user)
+
+    messages = demo_game.get_messages(USER_ID)
+
+    assert not messages
+
+    demo_game.send_chat_message("Hello world!")
+    demo_game.send_chat_message("Important", is_strong=True)
+    demo_game.send_chat_message("Secret", user_list=[USER_ID])
+    demo_game.send_chat_message("Secret 2", user_list=[other_user])
+
+    db_session.expire_all()
+
+    visible_messages = demo_game.get_messages(USER_ID)
+
+    from json import dumps
+    summary = dumps([v.dict() for v in visible_messages])
+
+    assert "Hello world!" in summary
+    assert "Important" in summary
+    assert "Secret" in summary
+    assert "Secret 2" not in summary
+
+    assert len(visible_messages) == 3
+
+
 def get_game(db_session, id) -> Game:
     return (db_session
             .query(Game)
@@ -96,3 +127,11 @@ def get_player(db_session, game_id, user_id) -> Game:
                 Player.user_id == user_id
             )
             .first())
+
+
+@pytest.fixture
+def demo_game(db_session) -> WurwolvesGame:
+    g = WurwolvesGame(GAME_ID)
+    g.join(USER_ID)
+
+    return g
