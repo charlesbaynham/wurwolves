@@ -45,12 +45,20 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
+class GameStage(enum.Enum):
+    LOBBY = "LOBBY"
+    DAY = "DAY"
+    VOTING = "VOTING"
+    NIGHT = "NIGHT"
+
+
 class Game(Base):
     """The current state of a game"""
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, nullable=False)
     created = Column(DateTime, default=datetime.utcnow())
+    stage = Column(Enum(GameStage), default=GameStage.LOBBY)
 
     players = relationship(
         'Player', backref='game', lazy=True

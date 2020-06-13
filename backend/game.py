@@ -9,17 +9,11 @@ from enum import Enum
 from functools import wraps
 from uuid import UUID
 
-from .model import (Game, Message, Player, PlayerRole, PlayerState, User,
-                    hash_game_id)
+from .model import (Game, GameStage, Message, Player, PlayerRole, PlayerState,
+                    User, hash_game_id)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
-
-
-class GameStages(str, Enum):
-    DAY = "DAY"
-    NIGHT = "NIGHT"
-    VOTING = "VOTING"
 
 
 class WurwolvesGame:
@@ -84,26 +78,6 @@ class WurwolvesGame:
         u.name_is_generated = False
         self.session.add(u)
 
-    # def get_player_status(self, user_id):
-    #     """Get the status of the requested player
-
-    #     Returns:
-    #         Tuple[str, str]: Name and current status of player
-    #     """
-    #     q = EventQueue(
-    #         self.game_id,
-    #         type_filter=EventType.UPDATE_PLAYER,
-    #     )
-    #     player_name = None
-    #     status = None
-
-    #     for rename_event in q.get_all_events():
-    #         if rename_event.details['id'] == user_id:
-    #             player_name = rename_event.details['name']
-    #             status = rename_event.details['status']
-
-    #     return player_name, status
-
     @scoped
     def join(self, user_id: UUID):
         """Join or rejoin a game as a user
@@ -127,8 +101,7 @@ class WurwolvesGame:
             print("Making new player {} = {}".format(user.id, user.name))
 
         # Get the game, creating it if it doesn't exist
-        game = self.session.query(Game).filter(Game.id == self.game_id).first()
-
+        game = self.get_game()
         if not game:
             game = self.create_game()
 
@@ -148,82 +121,60 @@ class WurwolvesGame:
         self.session.add(player)
 
     @scoped
+    def get_game(self) -> Game:
+        return self.session.query(Game).filter(Game.id == self.game_id).first()
+
+    @scoped
     def create_game(self):
         game = Game(id=self.game_id)
-        self.add_dummy_messages()
 
         self.session.add(game)
 
         return game
 
-#     def new_player(self, name: str = None):
+    @scoped
+    def start_game(self):
+        game = self.get_game()
 
-#         self.set_player(name, "spectating")
+        game.stage = GameStage.NIGHT
 
-#     def start_game(self):
-#         role_details = {
-#             "title": "Started!",
-#             "day_text": '''
-# The game has started!
+        player: Player
+        for player in game.players:
+            # For now, just assign some random roles
+            player.role = random.choice(list(PlayerRole))
 
-# I should probably write some more things here.
-#             '''.strip(),
-#             "night_text": "",
-#             "button_visible": False,
-#         }
+        self.add_dummy_messages()
 
-#         players = self.get_current_players()
-#         print(players)
+    def get_current_players(self):
+        """Get a list of current players in the game, with their states and roles
+        """
+        q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
+                                                  EventType.REMOVE_PLAYER,
+                                                  EventType.SET_ROLE])
 
-#         role_events = []
-#         for p in players:
-#             self.set_player(None, Stati.NORMAL, user_id=p)
+        players = {}
+        for event in q.get_all_events():
+            if event.event_type == EventType.UPDATE_PLAYER:
+                d = UpdatePlayerEvent.parse_obj(event.details)
+                if d.id not in players:
+                    players[d.id] = {
+                        'name': d.name,
+                        'status': d.status,
+                        'role': None,
+                    }
+                else:
+                    if d.name:
+                        players[d.id]["name"] = d.name
+                    if d.status:
+                        players[d.id]["status"] = d.status
+            elif event.event_type == EventType.SET_ROLE:
+                d = SetRoleEvent.parse_obj(event.details)
+                players[d.id]["role"] = d.role
+            elif event.event_type == EventType.REMOVE_PLAYER:
+                d = RemovePlayerEvent.parse_obj(event.details)
+                del players[d.id]
 
-#         ui_event = UIEvent(type=UIEventType.SET_CONTROLS, payload=role_details)
-
-#         with session_scope() as session:
-#             session.add(GameEvent(
-#                 game_id=self.game_id,
-#                 event_type=EventType.GUI,
-#                 public_visibility=True,
-#                 details=ui_event.dict(),
-#             ))
-#             for e in role_events:
-#                 session.add(e)
-
-#         players = self.get_current_players()
-#         print(players)
-
-#     def get_current_players(self):
-#         """Get a list of current players in the game, with their states and roles
-#         """
-#         q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
-#                                                   EventType.REMOVE_PLAYER,
-#                                                   EventType.SET_ROLE])
-
-#         players = {}
-#         for event in q.get_all_events():
-#             if event.event_type == EventType.UPDATE_PLAYER:
-#                 d = UpdatePlayerEvent.parse_obj(event.details)
-#                 if d.id not in players:
-#                     players[d.id] = {
-#                         'name': d.name,
-#                         'status': d.status,
-#                         'role': None,
-#                     }
-#                 else:
-#                     if d.name:
-#                         players[d.id]["name"] = d.name
-#                     if d.status:
-#                         players[d.id]["status"] = d.status
-#             elif event.event_type == EventType.SET_ROLE:
-#                 d = SetRoleEvent.parse_obj(event.details)
-#                 players[d.id]["role"] = d.role
-#             elif event.event_type == EventType.REMOVE_PLAYER:
-#                 d = RemovePlayerEvent.parse_obj(event.details)
-#                 del players[d.id]
-
-#         return players
+        return players
 
     def add_dummy_messages(self):
         messages = [
