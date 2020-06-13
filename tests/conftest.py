@@ -12,10 +12,12 @@ def engine():
     invocations. Use db_session instead. 
     '''
     os.environ['DATABASE_URL'] = TESTING_DB_URL
+    
+    import backend.database
 
-    from backend.database import engine
+    backend.database.load()
 
-    return engine
+    return backend.database.engine
 
 
 @pytest.fixture

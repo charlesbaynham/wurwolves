@@ -7,15 +7,26 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv(find_dotenv())
 
-# an Engine, which the Session will use for connection
-# resources
-db_url = os.environ.get("DATABASE_URL")
-if not db_url:
-    raise ValueError("Env var DATABASE_URL not set. If you are running for development, copy the .env.example file to .env")
-engine = create_engine(db_url)
 
-# create a configured "Session" class
-Session = sessionmaker(bind=engine)
+engine = None
+Session = None
+
+
+def load():
+    # an Engine, which the Session will use for connection
+    # resources
+    db_url = os.environ.get("DATABASE_URL")
+    if not db_url:
+        raise ValueError(
+            "Env var DATABASE_URL not set. If you are running for "
+            "development, copy the .env.example file to .env"
+        )
+
+    global engine
+    global Session
+
+    engine = create_engine(db_url)
+    Session = sessionmaker(bind=engine)
 
 
 @contextmanager
@@ -30,3 +41,6 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
+load()
