@@ -1,90 +1,94 @@
 {
   "players": [
-        {
+    {
       "id": "cceaf6efdb034d5988e955676c135d76",
       "name": "Viridian Boozy",
       "status": "spectating",
       "selected": false
-        }
-    ],
+    }
+  ],
   "chat": [
-        {
+    {
       "msg": "3 votes for Euan (Rosie, Rachel, Gaby)",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "Gaby was voted off",
       "isStrong": true
-        },
-        {
+    },
+    {
       "msg": "Sophie was killed in the night",
       "isStrong": true
-        },
-        {
+    },
+    {
       "msg": "Rob was nominated by Charles",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "James was nominated by Charles",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "James was seconded by Parav",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "4 votes for Gaby (Charles, James, Parav, Harry)",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "3 votes for Euan (Rosie, Rachel, Gaby)",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "Gaby was voted off",
       "isStrong": true
-        },
-        {
+    },
+    {
       "msg": "Sophie was killed in the night",
       "isStrong": true
-        },
-        {
+    },
+    {
       "msg": "Rob was nominated by Charles",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "James was nominated by Charles",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "James was seconded by Parav",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "4 votes for Gaby (Charles, James, Parav, Harry)",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "3 votes for Euan (Rosie, Rachel, Gaby)",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "Gaby was voted off",
       "isStrong": true
-        },
-        {
+    },
+    {
       "msg": "Sophie was killed in the night",
       "isStrong": true
-        },
-        {
+    },
+    {
       "msg": "Rob was nominated by Charles",
       "isStrong": false
-        },
-        {
+    },
+    {
       "msg": "James was nominated by Charles",
       "isStrong": false
-        }
-    ],
+    },
+    {
+      "msg": "This is sample data, loaded from a file",
+      "isStrong": true
+    }
+  ],
   "stage": "day",
   "role": {
     "title": "Ready to start",
@@ -96,6 +100,6 @@
     "button_confirm_text": "Waiting for all players...",
     "button_submit_url": "start_game",
     "button_submit_person": null
-    },
+  },
   "myID": "123"
 }
