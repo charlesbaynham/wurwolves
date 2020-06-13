@@ -69,45 +69,20 @@ class WurwolvesGame:
                     self.session = None
         return f
 
-    # def set_player(self, user_id: UUID, name: str):
-    #     """
-    #     Update a player's name and adds them to the game.
+    @scoped
+    def set_player(self, user_id: UUID, name: str):
+        """
+        Update a player's name
 
-    #     Updates a player's name in the game. If not already present, adds
-    #     them as a spectator.
+        Args:
 
-    #     Args:
-
-    #     user_id (UUID): User ID
-    #     name (str): Display name of the player
-    #     """
-    #     if user_id is None:
-    #         user_id = self.user_id
-    #     if user_id is None:
-    #         raise ValueError("No user_id provided and none set")
-
-    #     player_details = UpdatePlayerEvent(
-    #         id=str(user_id),
-    #         name=name,
-    #         status=status,
-    #     )
-    #     ui_event = UIEvent(type=UIEventType.UPDATE_PLAYER, payload=player_details)
-
-    #     with session_scope() as session:
-    #         new_player_event = GameEvent(
-    #             game_id=self.game_id,
-    #             event_type=EventType.UPDATE_PLAYER,
-    #             details=player_details.dict(),
-    #         )
-    #         new_player_GUI_event = GameEvent(
-    #             game_id=self.game_id,
-    #             event_type=EventType.GUI,
-    #             public_visibility=True,
-    #             details=ui_event.dict(),
-    #         )
-
-    #         session.add(new_player_event)
-    #         session.add(new_player_GUI_event)
+        user_id (UUID): User ID
+        name (str): New display name of the player
+        """
+        u = self.session.query(User).filter(User.id == user_id).first()
+        u.name = name
+        u.name_is_generated = False
+        self.session.add(u)
 
     # def get_player_status(self, user_id):
     #     """Get the status of the requested player
@@ -191,7 +166,7 @@ class WurwolvesGame:
 #             "day_text": '''
 # The game has started!
 
-# I should probably write some more things here. 
+# I should probably write some more things here.
 #             '''.strip(),
 #             "night_text": "",
 #             "button_visible": False,
