@@ -5,7 +5,6 @@ This module provides the WurwolvesGame class, for interacting with a single game
 '''
 import os
 import random
-from enum import Enum
 from functools import wraps
 from uuid import UUID
 
@@ -33,13 +32,13 @@ class WurwolvesGame:
         self.session = None
         self.session_users = 0
 
-    def scoped(func):
+    def db_scoped(func):
         """
         Start a session and store it in self.session
 
-        When a @scoped method returns, commit the session
+        When a @db_scoped method returns, commit the session
 
-        Close the session once all users are finished
+        Close the session once all @db_scoped methods are finished
         """
         from . import database
 
@@ -63,7 +62,7 @@ class WurwolvesGame:
                     self.session = None
         return f
 
-    @scoped
+    @db_scoped
     def set_player(self, user_id: UUID, name: str):
         """
         Update a player's name
@@ -78,7 +77,7 @@ class WurwolvesGame:
         u.name_is_generated = False
         self.session.add(u)
 
-    @scoped
+    @db_scoped
     def join(self, user_id: UUID):
         """Join or rejoin a game as a user
 
@@ -120,11 +119,11 @@ class WurwolvesGame:
         self.session.add(user)
         self.session.add(player)
 
-    @scoped
+    @db_scoped
     def get_game(self) -> Game:
         return self.session.query(Game).filter(Game.id == self.game_id).first()
 
-    @scoped
+    @db_scoped
     def create_game(self):
         game = Game(id=self.game_id)
 
@@ -132,7 +131,7 @@ class WurwolvesGame:
 
         return game
 
-    @scoped
+    @db_scoped
     def start_game(self):
         game = self.get_game()
 
@@ -144,37 +143,6 @@ class WurwolvesGame:
             player.role = random.choice(list(PlayerRole))
 
         self.add_dummy_messages()
-
-    def get_current_players(self):
-        """Get a list of current players in the game, with their states and roles
-        """
-        q = EventQueue(self.game_id, type_filter=[EventType.UPDATE_PLAYER,
-                                                  EventType.REMOVE_PLAYER,
-                                                  EventType.SET_ROLE])
-
-        players = {}
-        for event in q.get_all_events():
-            if event.event_type == EventType.UPDATE_PLAYER:
-                d = UpdatePlayerEvent.parse_obj(event.details)
-                if d.id not in players:
-                    players[d.id] = {
-                        'name': d.name,
-                        'status': d.status,
-                        'role': None,
-                    }
-                else:
-                    if d.name:
-                        players[d.id]["name"] = d.name
-                    if d.status:
-                        players[d.id]["status"] = d.status
-            elif event.event_type == EventType.SET_ROLE:
-                d = SetRoleEvent.parse_obj(event.details)
-                players[d.id]["role"] = d.role
-            elif event.event_type == EventType.REMOVE_PLAYER:
-                d = RemovePlayerEvent.parse_obj(event.details)
-                del players[d.id]
-
-        return players
 
     def add_dummy_messages(self):
         messages = [
@@ -202,6 +170,7 @@ class WurwolvesGame:
         for msg, is_strong in messages:
             self.send_chat_message(msg, is_strong)
 
+    @db_scoped
     def send_chat_message(self, msg, is_strong=False, player_list=[]):
         """Post a message in the chat log
 
@@ -221,15 +190,6 @@ class WurwolvesGame:
             m.visible_to.add(player_id)
 
         self.session.add(m)
-
-    # def set_stage(self, new_stage: GameStages):
-    #     with session_scope() as session:
-    #         session.add(GameEvent(
-    #             game_id=self.game_id,
-    #             event_type=EventType.GUI,
-    #             public_visibility=True,
-    #             details=UIEvent(type=UIEventType.GAME_STAGE, payload={"stage": new_stage}).dict(),
-    #         ))
 
     @staticmethod
     def generate_name():
