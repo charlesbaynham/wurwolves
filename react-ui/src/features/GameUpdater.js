@@ -6,8 +6,9 @@
  * and updates the local state accordingly. 
  */
 
-import { Component } from 'react';
-import { connect } from 'react-redux'
+import { Component } from 'react'
+import { connect, useDispatch } from 'react-redux'
+import { replaceState } from '../app/store'
 
 import {
     selectAllPlayers,
@@ -66,52 +67,15 @@ class GameUpdater extends Component {
                 //     this.mostRecentID = event.id
                 //     this.handleEvent(event.details)
                 // }
-                console.log(data)
+                const { dispatch } = this.props;
+                dispatch(replaceState(data));
             })
     }
 
     joinGame() {
         // fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
     }
-
-    // handleEvent(eventDetails) {
-        /** Handle a UI event from the server
-         *
-         * Parse an event from the server and update the local state accordingly
-         */
-    //     const { dispatch } = this.props;
-
-    //     console.log(`Received event ${eventDetails.type}`)
-
-    //     switch (eventDetails.type) {
-    //         case "UPDATE_PLAYER":
-    //             const id = eventDetails.payload.id
-    //             const name = eventDetails.payload.name
-    //             const status = eventDetails.payload.status
-
-    //             console.log(`Updating player ${id} = ${name}, ${status}`)
-
-    //             if (getPlayerById(this.props.players, id)) {
-    //                 console.log(`player ${id} already exists`)
-    //                 dispatch(setPlayerName({ id: id, name: name }))
-    //                 dispatch(setPlayerStatus({ id: id, status: status }))
-    //             }
-    //             else {
-    //                 dispatch(addPlayer({ id: id, name: name, status: status }))
-    //             }
-    //             break;
-    //         case "SET_CONTROLS":
-    //             dispatch(setRole(eventDetails.payload))
-    //             break;
-    //         case "CHAT_MESSAGE":
-    //             dispatch(addChatEntry(eventDetails.payload))
-    //             break;
-    //         case "GAME_STAGE":
-    //             dispatch(setStage(eventDetails.payload))
-    //             break;
-    //     }
-    // }
-
+    
     render() {
         return null
     }

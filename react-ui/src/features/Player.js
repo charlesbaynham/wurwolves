@@ -36,7 +36,6 @@ const IMAGE_LOOKUP = {
 
 function Player(props) {
     const player_id = props.player_id
-    console.log(`Making <Player> with id = ${player_id}`)
     const name = useSelector(selectPlayerName(player_id));
     const status = useSelector(selectPlayerStatus(player_id));
     const selected = useSelector(selectPlayerSelected(player_id));

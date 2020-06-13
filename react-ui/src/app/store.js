@@ -19,11 +19,18 @@ const initialState = {
   myID: "",
 }
 
-function reducer(oldState, newState) {
+export function replaceState(state) {
+  return {
+    type: "REPLACE",
+    state: state
+  }
+} 
+
+function reducer(state, action) {
   if (typeof state === 'undefined') {
     return initialState
   } else {
-    return newState
+    return action.state
   }
 }
 

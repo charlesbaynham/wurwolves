@@ -10,8 +10,6 @@ import {
 export function PlayerGrid() {
     const players = useSelector(selectAllPlayers);
 
-    console.log(useStore().getState())
-
     return (
         <div className="col-md container">
             <div className="row flex-wrap">

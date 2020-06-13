@@ -1,3 +1,4 @@
+import json
 import os
 import random
 
@@ -22,7 +23,7 @@ def get_state(
     user_id=Depends(get_user_id)
 ):
     with open(SAMPLE_MODEL, 'r') as F:
-        return F.read()
+        return json.load(F)
 
 
 @router.get("/{game_id}/start_game")
