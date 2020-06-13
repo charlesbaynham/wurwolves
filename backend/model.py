@@ -86,7 +86,7 @@ class Player(Base):
 
     Each User is a Player in each game that they are in. Each Game has a Player for each player in it. 
     """
-    __tablename__ = "game_roles"
+    __tablename__ = "players"
 
     id = Column(Integer, primary_key=True, nullable=False)
     game_id = Column(Integer, ForeignKey('games.id'))

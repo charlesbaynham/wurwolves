@@ -1,13 +1,16 @@
-from backend.model import GameEvent, GameEventVisibility, EventType
+from uuid import uuid4 as uuid
+
+from backend.model import Game, User
 
 
 def test_fixtures(db_session):
-    assert len(db_session.query(GameEvent).all()) == 0
-    assert len(db_session.query(GameEventVisibility).all()) == 0
+    assert len(db_session.query(Game).all()) == 0
+    assert len(db_session.query(User).all()) == 0
 
 
 def test_storage(db_session):
-    db_session.add(GameEvent(game_id=123456, event_type=EventType.GUI))
+    id = uuid()
+    db_session.add(User(id=id, name="Hello"))
     db_session.commit()
 
-    assert db_session.query(GameEvent.game_id).first()[0] == 123456
+    assert db_session.query(User.name).first()[0] == "Hello"

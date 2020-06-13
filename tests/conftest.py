@@ -3,9 +3,6 @@ import pytest
 
 TESTING_DB_URL = "sqlite:///testing.db"
 
-@pytest.fixture
-def client():
-    return None
 
 @pytest.fixture(scope="session")
 def engine():
