@@ -1,12 +1,12 @@
-.night .bg-night-black {
+.NIGHT .bg-night-black {
   background: black !important;
 }
 
-.night .bg-night-dark {
+.NIGHT .bg-night-dark {
   background: #343a40 !important
 }
 
-.night {
+.NIGHT {
   color: white;
 }
 
@@ -14,7 +14,7 @@
   background: white;
 }
 
-.night .player img {
+.NIGHT .player img {
   background: #AAA;
 }
 
