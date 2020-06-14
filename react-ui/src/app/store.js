@@ -2,6 +2,7 @@ import { createStore } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 const initialState = {
+  state_hash: 0,
   players: [],
   chat: [],
   stage: "LOBBY",

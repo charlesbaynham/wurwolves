@@ -12,7 +12,8 @@ import { replaceState } from '../app/store'
 
 import {
     selectAllPlayers,
-    selectMyID
+    selectMyID,
+    selectStateHash
 } from './selectors'
 
 
@@ -22,7 +23,6 @@ class GameUpdater extends Component {
         super()
 
         this.intervalId = null
-        this.mostRecentID = 0
         this.checkNewData = this.checkNewData.bind(this)
     }
 
@@ -45,27 +45,21 @@ class GameUpdater extends Component {
     }
 
     checkNewData() {
-        // fetch(`/api/${this.props.game_tag}/newest_id`)
-        //     .then(r => r.json())
-        //     .then(mostRecentID => {
-        //         if (mostRecentID > this.mostRecentID) {
-        //             this.updateState()
-        //         }
-        //     })
-        this.updateState()
+        fetch(`/api/${this.props.game_tag}/state_hash`)
+            .then(r => r.json())
+            .then(new_hash => {
+                if (new_hash !== this.props.state_hash) {
+                    this.updateState()
+                }
+            })
     }
 
     updateState() {
-        var url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
+        const url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
 
         fetch(url)
             .then(r => r.json())
             .then(data => {
-                // for (const event of data) {
-                //     console.log(`Event: new id = ${event.id}, current most recent = ${this.mostRecentID}`)
-                //     this.mostRecentID = event.id
-                //     this.handleEvent(event.details)
-                // }
                 const { dispatch } = this.props;
                 dispatch(replaceState(data));
             })
@@ -83,7 +77,8 @@ class GameUpdater extends Component {
 function mapStateToProps(state) {
     const players = selectAllPlayers(state);
     const myID = selectMyID(state);
-    return { players, myID };
+    const state_hash = selectStateHash(state);
+    return { players, myID, state_hash };
 }
 
 export default connect(mapStateToProps)(GameUpdater);

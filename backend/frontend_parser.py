@@ -13,6 +13,8 @@ class FrontendState(pydantic.BaseModel):
     Schema for the React state of a client's frontend
     '''
 
+    state_hash: int
+
     class PlayerState(pydantic.BaseModel):
         id: UUID
         name: str
@@ -64,6 +66,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     logging.debug("Game players: %s", game.players)
 
     state = FrontendState(
+        state_hash=game.update_counter,
         players=[
             FrontendState.PlayerState(
                 id=p.user_id,
