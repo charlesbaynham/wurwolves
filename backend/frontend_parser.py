@@ -1,11 +1,14 @@
 import json
+import logging
 import os
 from typing import List, Union
 from uuid import UUID
 
 import pydantic
 
-from .model import Game, Player
+from .game import WurwolvesGame
+from .model import Game, Player, hash_game_tag
+from .database import session_scope
 
 
 class FrontendState(pydantic.BaseModel):
@@ -35,14 +38,14 @@ class FrontendState(pydantic.BaseModel):
         night_text: str
         button_visible: bool
         button_enabled: bool
-        button_text: Union[None, str]
-        button_confirm_text: Union[None, str]
-        button_submit_url: Union[None, str]
-        button_submit_person: Union[None, bool]
+        button_text: Union[None, str] = None
+        button_confirm_text: Union[None, str] = None
+        button_submit_url: Union[None, str] = None
+        button_submit_person: Union[None, bool] = None
 
     role: RoleState
 
-    myID: str
+    myID: UUID
 
 
 SAMPLE_MODEL = os.path.join(os.path.dirname(__file__), 'sample_frontend_state.json')
@@ -55,4 +58,34 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     '''
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     '''
-    return DEMO_STATE
+    g = WurwolvesGame(game_tag)
+    game = g.get_game_model()
+    player = g.get_player_model(user_id)
+
+    logging.info("Game: %s", game)
+    logging.info("Game players: %s", game.players)
+    logging.info("Player: %s", player)
+    logging.info("User id: %s", user_id)
+
+    state = FrontendState(
+        players=[
+            FrontendState.PlayerState(
+                id=p.user_id,
+                name=p.user.name,
+                status=p.state,
+                selected=False
+            ) for p in game.players
+        ],
+        chat=game.messages,
+        stage=game.stage,
+        role=FrontendState.RoleState(
+            title='Hello',
+            day_text='I\'m the daytime',
+            night_text='I\'m the nighttime',
+            button_visible=False,
+            button_enabled=False,
+        ),
+        myID=user_id
+    )
+
+    return state

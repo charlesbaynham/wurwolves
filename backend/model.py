@@ -1,7 +1,10 @@
+import datetime
 import enum
 import json
+from typing import List
 from uuid import UUID
 
+import pydantic
 import sqlalchemy.sql.functions as func
 from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
                         String, Table, update)
@@ -47,7 +50,7 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
-class GameStage(enum.Enum):
+class GameStage(str, enum.Enum):
     LOBBY = "LOBBY"
     DAY = "DAY"
     VOTING = "VOTING"
@@ -88,7 +91,7 @@ class PlayerRole(enum.Enum):
     SPECTATOR = 'SPECTATOR'
 
 
-class PlayerState(enum.Enum):
+class PlayerState(str, enum.Enum):
     ALIVE = 'ALIVE'
     WOLFED = 'WOLFED'
     LYNCHED = 'LYNCHED'
@@ -159,3 +162,55 @@ def hash_game_tag(text: str):
     but can actually be any string
     """
     return hash_str_to_int(text, 3)
+
+
+class PlayerModel(pydantic.BaseModel):
+    id: int
+    game_id: int
+    user_id: UUID
+
+    user: 'UserModel'
+
+    role: PlayerRole
+    state: PlayerState
+
+    class Config:
+        orm_mode = True
+
+
+class MessageModel(pydantic.BaseModel):
+    id: int
+    text: str
+    game_id: int
+    is_strong: bool
+
+    visible_to: List[PlayerModel]
+
+    class Config:
+        orm_mode = True
+
+
+class GameModel(pydantic.BaseModel):
+    id: int
+    created: datetime.datetime
+    last_update: datetime.datetime
+
+    stage: GameStage
+
+    players: List[PlayerModel]
+    messages: List[MessageModel]
+
+    class Config:
+        orm_mode = True
+
+
+class UserModel(pydantic.BaseModel):
+    id: UUID
+    name: str
+    name_is_generated: bool
+
+    class Config:
+        orm_mode = True
+
+
+PlayerModel.update_forward_refs()

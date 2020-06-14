@@ -7,6 +7,12 @@
       "selected": false
     },
     {
+      "id": "cfabf6efdb034d5988e955676c135d76",
+      "name": "Charles",
+      "status": "normal",
+      "selected": false
+    },
+    {
       "id": "cceaf6efdb034d598ae955676c135d76",
       "name": "James",
       "status": "wolfed",
@@ -113,5 +119,5 @@
     "button_submit_url": "start_game",
     "button_submit_person": null
   },
-  "myID": "123"
+  "myID": "cfabf6efdb034d5988e955676c135d76"
 }
