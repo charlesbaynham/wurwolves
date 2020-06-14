@@ -13,6 +13,7 @@ from uuid import UUID
 
 import pydantic
 
+from . import roles
 from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel,
                     PlayerRole, PlayerState, User, hash_game_tag)
 
@@ -27,7 +28,7 @@ class ChatMessage(pydantic.BaseModel):
     is_strong = False
 
 
-class WurwolvesGame:
+class WurwolvesGame(roles.MedicMixin):
     """
     Provides methods for accessing all the properties of a wurwolves game. This
     object is initialised with the ID of a game and loads all other information

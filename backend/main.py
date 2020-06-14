@@ -1,14 +1,10 @@
-import asyncio
-import logging
 import os
 import random
 
 from fastapi import APIRouter, Depends, FastAPI, Path, Query, HTTPException
 
 from . import frontend_parser
-from .database import session_scope
 from .game import WurwolvesGame
-from .model import User
 from .user_id import get_user_id
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')

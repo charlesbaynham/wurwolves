@@ -1,6 +1,7 @@
 import pydantic
 from typing import Union
 from .model import PlayerRole
+from .game import WurwolvesGame
 
 
 class RoleDescription(pydantic.BaseModel):
@@ -17,6 +18,8 @@ class RoleDescription(pydantic.BaseModel):
 
     fallback_role: Union[None, "RoleDescription"]
 
+
+RoleDescription.update_forward_refs()
 
 DEFAULT_ROLE = RoleDescription(
     display_name="Villager",
@@ -45,3 +48,8 @@ ROLE_MAP = {
     PlayerRole.WOLF: DEFAULT_ROLE,
     PlayerRole.SPECTATOR: DEFAULT_ROLE,
 }
+
+
+class MedicMixin():
+    def medic_action(self, payload):
+        print(payload)
