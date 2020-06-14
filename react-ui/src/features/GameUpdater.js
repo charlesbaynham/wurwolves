@@ -7,7 +7,7 @@
  */
 
 import { Component } from 'react'
-import { connect, useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 import { replaceState } from '../app/store'
 
 import {
