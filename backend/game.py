@@ -86,13 +86,7 @@ class WurwolvesGame:
                     # If any of the functions altered the game state,
                     # fire the corresponding updates events if they are present in the global dict
                     if modified:
-                        global update_events
-                        try:
-                            update_events[self.game_id].set()
-                            logging.info("Fired event for %s", self.game_id)
-                            del update_events[self.game_id]
-                        except KeyError:
-                            pass
+                        trigger_update_event(self.game_id)
         return f
 
     @db_scoped
@@ -334,9 +328,10 @@ class WurwolvesGame:
             u.name = name
             u.name_is_generated = False
 
-            # Update all the games in which this user plays
+            # Update all the games in which this user plays and trigger their update events
             for player_role in u.player_roles:
                 player_role.game.touch()
+                trigger_update_event(player_role.game_id)
 
     @staticmethod
     def generate_name():
@@ -351,3 +346,10 @@ class WurwolvesGame:
         ]).title()
 
         return name
+
+
+def trigger_update_event(game_id: int):
+    global update_events
+    if game_id in update_events:
+        update_events[game_id].set()
+        del update_events[game_id]
