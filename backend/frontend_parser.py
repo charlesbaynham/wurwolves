@@ -33,6 +33,7 @@ class FrontendState(pydantic.BaseModel):
         title: str
         day_text: str
         night_text: str
+        lobby_text: str
         button_visible: bool
         button_enabled: bool
         button_text: Union[None, str] = None
@@ -73,6 +74,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             title='Hello',
             day_text='I\'m the daytime',
             night_text='I\'m the nighttime',
+            lobby_text='I\'m the lobby',
             button_visible=False,
             button_enabled=False,
         ),

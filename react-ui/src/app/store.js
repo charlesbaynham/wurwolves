@@ -4,11 +4,12 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 const initialState = {
   players: [],
   chat: [],
-  stage: "day",
+  stage: "LOBBY",
   role: {
     title: "",
     day_text: "",
     night_text: "",
+    lobby_text: "",
     button_visible: false,
     button_enabled: false,
     button_text: "",

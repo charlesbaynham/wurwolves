@@ -14,10 +14,18 @@ function Controls(props) {
     const game_stage = useSelector(selectStage);
 
     var left_text;
-    if (game_stage === "day") {
-        left_text = role.day_text;
-    } else {
-        left_text = role.night_text;
+    switch (game_stage) {
+        case "DAY":
+            left_text = role.day_text;
+            break;
+        case "NIGHT":
+            left_text = role.night_text;
+            break;
+        case "LOBBY":
+            left_text = role.lobby_text;
+            break;
+        default:
+            left_text = `Unknown game stage: ${game_stage}`
     }
 
     function doButtonAction(props) {
