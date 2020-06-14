@@ -133,7 +133,7 @@ class Player(Base):
 
 class Action(Base):
     __tablename__ = "actions"
-    
+
     id = Column(Integer, primary_key=True, nullable=False)
     game_id = Column(Integer, ForeignKey('games.id'))
     player_id = Column(Integer, ForeignKey('players.id'))
@@ -234,6 +234,20 @@ class UserModel(pydantic.BaseModel):
     id: UUID
     name: str
     name_is_generated: bool
+
+    class Config:
+        orm_mode = True
+
+
+class ActionModel(pydantic.BaseModel):
+    id: int
+    game_id: int
+    player_id: int
+    stage_id: int
+    payload: dict
+
+    game: GameModel
+    player: PlayerModel
 
     class Config:
         orm_mode = True
