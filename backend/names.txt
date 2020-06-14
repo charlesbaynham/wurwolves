@@ -95,7 +95,8 @@ wiggy
 wimpy
 woolly
 woozy
-zippy'], ['alizarin
+zippy
+alizarin
 amaranth
 amber
 amethyst
@@ -135,8 +136,8 @@ cream
 crimson
 cyan
 dandelion
-denim', 
-'ecru
+denim
+ecru
 emerald
 eggplant
 firebrick
@@ -211,7 +212,8 @@ white
 wisteria
 xanthic
 yellow
-zucchini'], ['abyssinian
+zucchini
+abyssinian
 affenpinscher
 akbash
 akita
@@ -226,8 +228,8 @@ argentino
 armadillo
 audemer
 avocet
-axolotl', 
-'baboon
+axolotl
+baboon
 badger
 balinese
 bandicoot
@@ -302,8 +304,8 @@ cuttlefish
 dachsbracke
 dachshund
 dalmatian
-dane', 
-'deer
+dane
+deer
 devil
 dhole
 dingo
@@ -476,8 +478,8 @@ sheep
 sheepdog
 shrew
 shrimp
-skunk', 
-'sloth
+skunk
+sloth
 slug
 snail
 snake
@@ -508,8 +510,8 @@ tortoise
 toucan
 tuatara
 turkey
-turtle', 
-'tzu
+turtle
+tzu
 uakari
 uguisu
 urchin
