@@ -4,7 +4,7 @@ from uuid import UUID
 import pydantic
 from fastapi import APIRouter, Depends, Path, HTTPException
 
-from .model import Action, PlayerRole
+from .model import Action, PlayerRole, GameStage
 from .user_id import get_user_id
 
 router = APIRouter()
@@ -112,6 +112,8 @@ def register(WurwolvesGame, role_name, role: PlayerRole):
             raise HTTPException(status_code=403, detail=f"Player {user_id} is not a {role}")
         if not ROLE_MAP[role].night_action:
             raise HTTPException(status_code=403, detail=f"Player {user_id} in role {role} has no night action")
+        if not game.stage == GameStage.NIGHT:
+            raise HTTPException(status_code=403, detail="Actions may only be performed at night")
 
         # Check if this player has already acted this round
         action = self._session.query(Action).filter(
@@ -134,6 +136,18 @@ def register(WurwolvesGame, role_name, role: PlayerRole):
             stage_id=game.stage_id,
         )
         self._session.add(action)
+
+        # If all the actions are complete, process them
+        players = game.players
+        ready = True
+        for player in players:
+            if (ROLE_MAP[player.role].night_action and
+                    not any(a.stage_id == game.stage_id for a in player.actions)):
+                ready = False
+                break
+
+        if ready:
+            self.process_actions()
 
     # And one for the API router
     @router.get(f"/{{game_tag}}/{func_name}")
