@@ -47,11 +47,11 @@ class WurwolvesGame:
         self._db_scoped_altering = False
 
     @classmethod
-    def from_id(cls, game_id: int) -> "WurwolvesGame":
+    def from_id(cls, game_id: int, **kwargs) -> "WurwolvesGame":
         """
         Make a WurwolvesGame from a game ID instead of a tag
         """
-        g = WurwolvesGame("")
+        g = WurwolvesGame("", **kwargs)
         g.game_id = game_id
         return g
 
@@ -89,14 +89,17 @@ class WurwolvesGame:
                 raise e
             finally:
                 self._session_users -= 1
-                if self._session_users == 0 and not self._session_is_external:
-                    self._session.close()
-                    self._session = None
-
+                if self._session_users == 0:
                     # If any of the functions altered the game state,
                     # fire the corresponding updates events if they are present in the global dict
                     if self._session_modified:
                         trigger_update_event(self.game_id)
+
+                    # Close the session if we made it and no longer need it
+                    if not self._session_is_external:
+                        self._session.close()
+                        self._session = None
+
         return f
 
     @db_scoped
@@ -352,7 +355,7 @@ class WurwolvesGame:
             # the message-sending will achieve that, but rememer to
             # put this back if I ever need it again
             for player_role in u.player_roles:
-                WurwolvesGame.from_id(player_role.game_id).send_chat_message(
+                WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
                     msg=f"'{old_name}' has changed their name to '{name}''"
                 )
                 # player_role.game.touch()
