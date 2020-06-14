@@ -5,27 +5,25 @@ import ReactMarkdown from 'react-markdown';
 import Button from 'react-bootstrap/Button';
 
 import {
-    selectStage, selectRole
+    selectStage, selectRoles
 } from './selectors'
 
 
+const DEFAULT_ROLE = {
+    title: "",
+    text: "",
+    button_visible: false,
+    button_enabled: false,
+}
+
 function Controls(props) {
-    const role = useSelector(selectRole);
+    const roles = useSelector(selectRoles);
     const game_stage = useSelector(selectStage);
 
-    var left_text;
-    switch (game_stage) {
-        case "DAY":
-            left_text = role.day_text;
-            break;
-        case "NIGHT":
-            left_text = role.night_text;
-            break;
-        case "LOBBY":
-            left_text = role.lobby_text;
-            break;
-        default:
-            left_text = `Unknown game stage: ${game_stage}`
+    var role = roles[game_stage]
+
+    if (typeof(role) == "undefined") {
+        role = DEFAULT_ROLE
     }
 
     function doButtonAction(props) {
@@ -35,8 +33,8 @@ function Controls(props) {
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
             fetch(url)
-            .then(r => r.json())
-            .then(r => console.log(r))
+                .then(r => r.json())
+                .then(r => console.log(r))
         }
     }
 
@@ -51,7 +49,7 @@ function Controls(props) {
             </div>
             <div className="col-md pt-4 pt-md-0">
                 <h5>{role.title}</h5>
-                <ReactMarkdown source={left_text} />
+                <ReactMarkdown source={role.text} />
             </div>
         </div>
     )

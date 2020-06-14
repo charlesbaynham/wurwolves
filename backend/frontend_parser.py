@@ -1,11 +1,11 @@
 import logging
-from typing import List, Union
+from typing import Dict, List, Union
 from uuid import UUID
 
 import pydantic
 
 from .game import WurwolvesGame
-from .model import PlayerState, GameStage
+from .model import GameStage, PlayerState
 
 
 class FrontendState(pydantic.BaseModel):
@@ -33,9 +33,7 @@ class FrontendState(pydantic.BaseModel):
 
     class RoleState(pydantic.BaseModel):
         title: str
-        day_text: str
-        night_text: str
-        lobby_text: str
+        text: str
         button_visible: bool
         button_enabled: bool
         button_text: Union[None, str] = None
@@ -43,7 +41,14 @@ class FrontendState(pydantic.BaseModel):
         button_submit_url: Union[None, str] = None
         button_submit_person: Union[None, bool] = None
 
-    role: RoleState
+    roles: Dict[GameStage, RoleState]
+
+    @pydantic.validator('roles')
+    def role_for_all_stages(cls, v):
+        for stage in list(GameStage):
+            if stage not in v:
+                raise ValueError('role must contain an entry for all stages. {} is missing'.format(stage))
+        return v
 
     myID: UUID
     myName: str
@@ -79,14 +84,32 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         ],
         chat=game.messages,
         stage=game.stage,
-        role=FrontendState.RoleState(
-            title='Hello',
-            day_text='I\'m the daytime',
-            night_text='I\'m the nighttime',
-            lobby_text='I\'m the lobby',
-            button_visible=False,
-            button_enabled=False,
-        ),
+        roles={
+            GameStage.LOBBY: FrontendState.RoleState(
+                title='Hello',
+                text='I\'m the lobby',
+                button_visible=False,
+                button_enabled=False,
+            ),
+            GameStage.DAY: FrontendState.RoleState(
+                title='Hello',
+                text='I\'m the daytime',
+                button_visible=False,
+                button_enabled=False,
+            ),
+            GameStage.VOTING: FrontendState.RoleState(
+                title='Hello',
+                text='Voting time!',
+                button_visible=False,
+                button_enabled=False,
+            ),
+            GameStage.NIGHT: FrontendState.RoleState(
+                title='Hello',
+                text='I\'m the night',
+                button_visible=False,
+                button_enabled=False,
+            ),
+        },
         myID=user_id,
         myName=player.user.name,
         myNameIsGenerated=player.user.name_is_generated,

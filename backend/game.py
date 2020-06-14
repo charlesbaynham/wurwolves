@@ -3,7 +3,6 @@ Game module
 
 This module provides the WurwolvesGame class, for interacting with a single game
 '''
-import datetime
 import os
 import random
 from functools import wraps

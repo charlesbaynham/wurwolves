@@ -19,6 +19,6 @@ export const selectPlayerSelected = id => (state => getPlayerById(state.players,
 
 export const selectAllPlayers = state => state.players;
 
-export const selectRole = (state => state.role);
+export const selectRoles = (state => state.roles);
 
 export const selectStateHash = (state => state.state_hash);
