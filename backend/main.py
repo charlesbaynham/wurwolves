@@ -1,3 +1,4 @@
+import asyncio
 import os
 import random
 
@@ -5,8 +6,8 @@ from fastapi import APIRouter, Depends, FastAPI, Path, Query
 
 from . import frontend_parser
 from .database import session_scope
-from .model import User, Player, Game
 from .game import WurwolvesGame
+from .model import User
 from .user_id import get_user_id
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
@@ -26,7 +27,7 @@ def get_state(
 
 
 @router.get("/{game_tag}/state_hash")
-def get_state_hash(
+async def get_state_hash(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
 ):
@@ -35,6 +36,7 @@ def get_state_hash(
 
     Basically a hash: this string is guaranteed to change if the state changes
     """
+    await asyncio.sleep(3)
     return WurwolvesGame(game_tag).get_hash()
 
 

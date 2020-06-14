@@ -22,8 +22,8 @@ class GameUpdater extends Component {
     constructor() {
         super()
 
-        this.intervalId = null
-        this.checkNewData = this.checkNewData.bind(this)
+        this.timeoutID = null
+        this.checkAndReschedule = this.checkAndReschedule.bind(this)
     }
 
     componentDidMount() {
@@ -36,23 +36,33 @@ class GameUpdater extends Component {
 
     startPolling() {
         this.joinGame()
-        this.checkNewData()
-        this.intervalId = setInterval(this.checkNewData, 500)
+        this.checkAndReschedule()
+    }
+
+    checkAndReschedule() {
+        const errorCheckRate = 1000
+
+        const successHandler = r => {
+            r.json().then(new_hash => {
+                this.timeoutID = setTimeout(this.checkAndReschedule, 0)
+                console.log(`new_hash = ${new_hash}`)
+                if (new_hash !== this.props.state_hash) {
+                    this.updateState()
+                }
+            })
+        }
+        const failureHandler = r => {
+            this.timeoutID = setTimeout(this.checkAndReschedule, errorCheckRate)
+        }
+
+        fetch(`/api/${this.props.game_tag}/state_hash`)
+            .then(successHandler, failureHandler)
     }
 
     stopPolling() {
         clearInterval(this.intervalId)
     }
 
-    checkNewData() {
-        fetch(`/api/${this.props.game_tag}/state_hash`)
-            .then(r => r.json())
-            .then(new_hash => {
-                if (new_hash !== this.props.state_hash) {
-                    this.updateState()
-                }
-            })
-    }
 
     updateState() {
         const url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
