@@ -253,6 +253,24 @@ class WurwolvesGame:
 
         self.session.add(m)
 
+    @classmethod
+    def set_user_name(cls, user_id: UUID, name: str):
+        """
+        Set a users's name
+
+        Because this sets their name across all games, this method is a class method. 
+        """
+        from . import database
+
+        with database.session_scope() as s:
+            u: User = s.query(User).filter(User.id == user_id).first()
+            u.name = name
+            u.name_is_generated = False
+
+            # Update all the games in which this user plays
+            for player_role in u.player_roles:
+                player_role.game.touch()
+
     @staticmethod
     def generate_name():
         global names

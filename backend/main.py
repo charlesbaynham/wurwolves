@@ -64,14 +64,7 @@ async def set_name(
     name: str = Query(..., title="New username. This will be used in all games for this user"),
     user_id=Depends(get_user_id)
 ):
-    with session_scope() as s:
-        u: User = s.query(User).filter(User.id == user_id).first()
-        u.name = name
-        u.name_is_generated = False
-
-        # Update all the games in which this user plays
-        for player_role in u.player_roles:
-            player_role.game.touch()
+    WurwolvesGame.set_user_name(user_id, name)
 
 
 @router.get("/my_id")
