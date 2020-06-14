@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, FastAPI, Path
 # from .frontend_parser import FrontendState
 from .game import WurwolvesGame
 from .user_id import get_user_id
+from . import frontend_parser
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
-SAMPLE_MODEL = os.path.join(os.path.dirname(__file__), 'sample_frontend_state.json')
 
 words = None
 
@@ -22,8 +22,7 @@ def get_state(
     game_id: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
 ):
-    with open(SAMPLE_MODEL, 'r') as F:
-        return json.load(F)
+    return frontend_parser.DEMO_STATE
 
 
 @router.get("/{game_id}/start_game")
