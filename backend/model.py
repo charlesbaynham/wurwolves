@@ -84,6 +84,10 @@ class Game(Base):
         'Message', backref='game', lazy=True
     )
 
+    actions = relationship(
+        'Action', backref='game', lazy=True
+    )
+
     def touch(self):
         self.update_counter += 1
 
@@ -122,6 +126,19 @@ class Player(Base):
 
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
+    actions = relationship(
+        'Action', backref='player', lazy=True
+    )
+
+
+class Action(Base):
+    __tablename__ = "actions"
+    
+    id = Column(Integer, primary_key=True, nullable=False)
+    game_id = Column(Integer, ForeignKey('games.id'))
+    player_id = Column(Integer, ForeignKey('players.id'))
+    stage_id = Column(Integer, index=True, nullable=False)
+    payload = Column(JSONEncodedDict, nullable=False)
 
 
 class User(Base):
