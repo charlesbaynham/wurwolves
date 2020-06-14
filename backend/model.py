@@ -1,5 +1,4 @@
 import enum
-import hashlib
 import json
 from datetime import datetime
 from uuid import UUID
@@ -10,6 +9,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
 from sqlalchemy_utils import UUIDType
+
+from .utils import hash_str_to_int
 
 Base = declarative_base()
 
@@ -144,15 +145,10 @@ class Message(Base):
     visible_to = relationship("Player", secondary=association_table)
 
 
-def hash_game_id(text: str, N: int = 3):
-    """ Hash a string into an N-byte integer
+def hash_game_id(text: str):
+    """ Hash a game id into a 3-byte integer
 
-    This method is used to convert the four-word style game identifiers into
-    a database-friendly integer. 
+    A game ID will normally be something like "correct-horse-battery-staple",
+    but can actually be any string
     """
-
-    hash_obj = hashlib.md5(text.encode())
-    hash_bytes = list(hash_obj.digest())
-
-    # Slice off the first N bytes and cast to integer
-    return int.from_bytes(hash_bytes[0:N], 'big')
+    return hash_str_to_int(str, 3)
