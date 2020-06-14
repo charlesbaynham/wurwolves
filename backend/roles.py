@@ -78,7 +78,8 @@ class MedicMixin():
 def named(role_name):
     def f(func):
         func.__name__ = f"{role_name}_action"
-        func.__docstring__ = f'An automatically registered function to perform the action associated with the {role_name} role'
+        func.__doc__ = ('An automatically registered function to perform '
+                        f'the action associated with the {role_name} role')
         return func
     return f
 
