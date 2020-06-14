@@ -14,7 +14,7 @@ from uuid import UUID
 import pydantic
 
 from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel,
-                    PlayerRole, PlayerState, User, hash_game_tag)
+                    PlayerRole, PlayerModel, PlayerState, User, hash_game_tag)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
@@ -179,6 +179,18 @@ class WurwolvesGame:
     def get_player_model(self, user_id: UUID) -> PlayerModel:
         p = self.get_player(user_id)
         return PlayerModel.from_orm(p) if p else None
+
+    @db_scoped
+    def get_players(self, user_id: UUID) -> List[Player]:
+        return self.session.query(Player).filter(
+            Player.game_id == self.game_id
+        ).all()
+
+    @db_scoped
+    def get_players_model(self, user_id: UUID) -> List[PlayerModel]:
+        return [
+            PlayerModel.from_orm(p) for p in self.get_players()
+        ]
 
     @db_scoped
     def get_hash_now(self):

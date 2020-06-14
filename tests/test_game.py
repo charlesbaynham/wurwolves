@@ -139,7 +139,7 @@ def demo_game(db_session) -> WurwolvesGame:
     return g
 
 
-def test_async_get_hash(db_session, demo_game):
+def test_async_get_hash_msg(db_session, demo_game):
     import asyncio
 
     async def tester():
@@ -150,7 +150,36 @@ def test_async_get_hash(db_session, demo_game):
         await asyncio.sleep(0.1)
         assert not task_waiter.done()
 
+        demo_game.get_player_model(USER_ID)
+
+        await asyncio.sleep(0.1)
+        assert not task_waiter.done()
+
         demo_game.send_chat_message("Hello world")
+
+        await asyncio.sleep(0.1)
+        assert task_waiter.done()
+
+    asyncio.get_event_loop().run_until_complete(tester())
+
+
+def test_async_get_hash_name(db_session, demo_game):
+    import asyncio
+
+    async def tester():
+        initial_hash = demo_game.get_hash_now()
+
+        task_waiter = asyncio.ensure_future(demo_game.get_hash(known_hash=initial_hash))
+
+        await asyncio.sleep(0.1)
+        assert not task_waiter.done()
+
+        demo_game.get_player_model(USER_ID)
+
+        await asyncio.sleep(0.1)
+        assert not task_waiter.done()
+
+        WurwolvesGame.set_user_name(USER_ID, "Something else")
 
         await asyncio.sleep(0.1)
         assert task_waiter.done()
