@@ -63,15 +63,15 @@ class WurwolvesGame:
 
             if not self.session:
                 self.session = database.Session()
-
-            modified = False
+            if self.session_users == 0:
+                self._session_modified = False
 
             try:
                 self.session_users += 1
                 out = func(self, *args, **kwargs)
                 # If this commit will alter the database, set the modified flag
-                if not modified and (self.session.dirty or self.session.new):
-                    modified = True
+                if not self._session_modified and (self.session.dirty or self.session.new):
+                    self._session_modified = True
                 self.session.commit()
                 return out
             except Exception as e:
@@ -85,7 +85,7 @@ class WurwolvesGame:
 
                     # If any of the functions altered the game state,
                     # fire the corresponding updates events if they are present in the global dict
-                    if modified:
+                    if self._session_modified:
                         trigger_update_event(self.game_id)
         return f
 
@@ -232,6 +232,8 @@ class WurwolvesGame:
     @db_scoped
     def start_game(self):
         game = self.get_game()
+
+        self.session.add(game)
 
         game.stage = GameStage.NIGHT
 

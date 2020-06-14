@@ -185,3 +185,27 @@ def test_async_get_hash_name(db_session, demo_game):
         assert task_waiter.done()
 
     asyncio.get_event_loop().run_until_complete(tester())
+
+
+def test_async_get_start_game(db_session, demo_game):
+    import asyncio
+
+    async def tester():
+        initial_hash = demo_game.get_hash_now()
+
+        task_waiter = asyncio.ensure_future(demo_game.get_hash(known_hash=initial_hash))
+
+        await asyncio.sleep(0.1)
+        assert not task_waiter.done()
+
+        demo_game.get_player_model(USER_ID)
+
+        await asyncio.sleep(0.1)
+        assert not task_waiter.done()
+
+        demo_game.start_game()
+
+        await asyncio.sleep(0.1)
+        assert task_waiter.done()
+
+    asyncio.get_event_loop().run_until_complete(tester())
