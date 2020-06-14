@@ -16,7 +16,7 @@ app = FastAPI()
 router = APIRouter()
 
 
-@router.get("/{game_id}/state")
+@router.get("/{game_tag}/state")
 def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
@@ -24,7 +24,7 @@ def get_state(
     return frontend_parser.parse_game_to_state(game_tag, user_id)
 
 
-@router.get("/{game_id}/start_game")
+@router.get("/{game_tag}/start_game")
 async def start_game(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
@@ -35,7 +35,7 @@ async def start_game(
     WurwolvesGame(game_tag).start_game()
 
 
-@router.post("/{game_id}/join")
+@router.post("/{game_tag}/join")
 async def join(
         game_tag: str = Path(..., title="The four-word ID of the game"),
         user_id=Depends(get_user_id)
