@@ -55,8 +55,11 @@ class GameUpdater extends Component {
             this.timeoutID = setTimeout(this.checkAndReschedule, errorCheckRate)
         }
 
-        fetch(`/api/${this.props.game_tag}/state_hash`)
-            .then(successHandler, failureHandler)
+        var url = new URL(`/api/${this.props.game_tag}/state_hash`, document.baseURI),
+            params = { known_hash: this.props.state_hash }
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+
+        fetch(url).then(successHandler, failureHandler)
     }
 
     stopPolling() {

@@ -3,10 +3,12 @@ Game module
 
 This module provides the WurwolvesGame class, for interacting with a single game
 '''
+import asyncio
+import logging
 import os
 import random
 from functools import wraps
-from typing import List
+from typing import Dict, List
 from uuid import UUID
 
 import pydantic
@@ -16,6 +18,8 @@ from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel,
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
+
+update_events: Dict[int, asyncio.Event] = {}
 
 
 class ChatMessage(pydantic.BaseModel):
@@ -39,6 +43,7 @@ class WurwolvesGame:
         self.game_id = hash_game_tag(game_tag)
         self.session = None
         self.session_users = 0
+        self._db_scoped_altering = False
 
     def db_scoped(func):
         """
@@ -47,17 +52,26 @@ class WurwolvesGame:
         When a @db_scoped method returns, commit the session
 
         Close the session once all @db_scoped methods are finished
+
+        If any of the decorated functions altered the database state, also release an asyncio
+        event marking this game as having been updated
         """
         from . import database
 
         @wraps(func)
         def f(self, *args, **kwargs):
+
             if not self.session:
                 self.session = database.Session()
+
+            modified = False
 
             try:
                 self.session_users += 1
                 out = func(self, *args, **kwargs)
+                # If this commit will alter the database, set the modified flag
+                if not modified and self.session.dirty:
+                    modified = True
                 self.session.commit()
                 return out
             except Exception as e:
@@ -68,6 +82,17 @@ class WurwolvesGame:
                 if self.session_users == 0:
                     self.session.close()
                     self.session = None
+
+                    # If any of the functions altered the game state,
+                    # fire the corresponding updates events if they are present in the global dict
+                    if modified:
+                        global update_events
+                        try:
+                            update_events[self.game_id].set()
+                            logging.info("Fired event for %s", self.game_id)
+                            del update_events[self.game_id]
+                        except KeyError:
+                            pass
         return f
 
     @db_scoped
@@ -156,9 +181,38 @@ class WurwolvesGame:
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
-    def get_hash(self) -> int:
+    def get_hash_now(self):
         g = self.get_game()
         return g.update_counter if g else 0
+
+    async def get_hash(self, known_hash=None, timeout=15) -> int:
+        """
+        Gets the latest hash of this game
+
+        If known_hash is provided and is the same as the current hash,
+        do not return immediately: wait for up to timeout seconds. 
+
+        Note that this function is not @db_scoped, but it calls one that is:
+        this is to prevent the database being locked while it waits
+        """
+        current_hash = self.get_hash_now()
+
+        # Return immediately if the hash has changed or if there's no known hash
+        if known_hash is None or known_hash != current_hash:
+            return current_hash
+
+        # Otherwise, lookup / make an event and subscribe to it
+        if self.game_id not in update_events:
+            update_events[self.game_id] = asyncio.Event()
+            logging.info("Made new event for %s", self.game_id)
+        else:
+            logging.info("Subscribing to event for %s", self.game_id)
+
+        try:
+            await asyncio.wait_for(update_events[self.game_id].wait(), timeout=timeout)
+            return self.get_hash_now()
+        except asyncio.TimeoutError:
+            return current_hash
 
     @db_scoped
     def create_game(self):

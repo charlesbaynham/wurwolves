@@ -15,7 +15,7 @@ function Topbar(props) {
 
   const [chosenName, setChosenName] = useState("");
 
-  if (!name_is_generated && chosenName == "") {
+  if (!name_is_generated && chosenName === "") {
     setChosenName(name)
   }
 

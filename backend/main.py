@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import random
 
@@ -29,6 +30,7 @@ def get_state(
 @router.get("/{game_tag}/state_hash")
 async def get_state_hash(
     game_tag: str = Path(..., title="The four-word ID of the game"),
+    known_hash: int = Query(0, title="The most recent known hash of the client. If provided, this call will block until a change occurs"),
     user_id=Depends(get_user_id)
 ):
     """
@@ -36,8 +38,7 @@ async def get_state_hash(
 
     Basically a hash: this string is guaranteed to change if the state changes
     """
-    await asyncio.sleep(3)
-    return WurwolvesGame(game_tag).get_hash()
+    return await WurwolvesGame(game_tag).get_hash(known_hash=known_hash)
 
 
 @router.get("/{game_tag}/start_game")
