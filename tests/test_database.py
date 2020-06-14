@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4 as uuid
 
-from backend.model import Game, User
+from backend.model import Game, User, GameStage
 
 
 def test_fixtures(db_session):
@@ -23,21 +23,23 @@ def test_update(db_session):
     db_session.add(Game())
     db_session.add(Game())
 
-    some_time = datetime(1990, 1, 1)
-
     g = Game()
-    g.last_update = some_time
     db_session.add(g)
     db_session.commit()
 
     db_session.expire_all()
     g = db_session.query(Game).filter_by(id=g.id).first()
 
-    assert g.last_update == some_time
+    assert g.update_counter == 1
+
+    g.stage = GameStage.NIGHT
+    db_session.commit()
+
+    assert g.update_counter == 2
 
     g.touch()
 
     db_session.expire_all()
     g = db_session.query(Game).filter_by(id=g.id).first()
 
-    assert g.last_update != some_time
+    assert g.update_counter == 3

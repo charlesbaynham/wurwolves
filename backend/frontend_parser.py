@@ -55,9 +55,13 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     player = g.get_player_model(user_id)
 
     logging.debug("Game: %s", game)
-    logging.debug("Game players: %s", game.players)
     logging.debug("Player: %s", player)
     logging.debug("User id: %s", user_id)
+
+    if not game or not player:
+        return None
+
+    logging.debug("Game players: %s", game.players)
 
     state = FrontendState(
         players=[

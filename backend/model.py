@@ -6,9 +6,10 @@ from uuid import UUID
 
 import pydantic
 import sqlalchemy.sql.functions as func
+from sqlalchemy.sql import text
 from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
                         String, Table, update)
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
 from sqlalchemy_utils import UUIDType
@@ -57,13 +58,21 @@ class GameStage(str, enum.Enum):
     NIGHT = "NIGHT"
 
 
+def update_game_counter(context):
+    val = context.get_current_parameters()['update_counter']
+    return val+1 if val else 1
+
+
 class Game(Base):
     """The current state of a game"""
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, nullable=False)
     created = Column(DateTime, default=func.now())
-    last_update = Column(DateTime, server_default=func.now(), onupdate=func.current_timestamp())
+
+    @declared_attr
+    def update_counter(cls):
+        return Column(Integer(), default=1, onupdate=text('update_counter + 1'))
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
 

@@ -24,12 +24,17 @@ def get_state(
     return frontend_parser.parse_game_to_state(game_tag, user_id)
 
 
-@router.get("/{game_tag}/state_timestamp")
-def get_state(
+@router.get("/{game_tag}/state_hash")
+def get_state_hash(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
 ):
-    return WurwolvesGame(game_tag).get_timestamp()
+    """
+    Get a string which identifies the state of the state.
+
+    Basically a hash: this string is guaranteed to change if the state changes
+    """
+    return WurwolvesGame(game_tag).get_hash()
 
 
 @router.get("/{game_tag}/start_game")
