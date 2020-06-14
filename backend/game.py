@@ -158,7 +158,8 @@ class WurwolvesGame:
 
     @db_scoped
     def get_timestamp(self) -> datetime.datetime:
-        return self.get_game().last_update
+        g = self.get_game()
+        return g.last_update if g else None
 
     @db_scoped
     def create_game(self):
