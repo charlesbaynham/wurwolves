@@ -22,7 +22,7 @@ function Controls(props) {
 
     var role = roles[game_stage]
 
-    if (typeof(role) == "undefined") {
+    if (typeof (role) == "undefined") {
         role = DEFAULT_ROLE
     }
 
@@ -32,7 +32,7 @@ function Controls(props) {
                 params = {}
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
-            fetch(url)
+            fetch(url, { method: 'post' })
                 .then(r => r.json())
                 .then(r => console.log(r))
         }

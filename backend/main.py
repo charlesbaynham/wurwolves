@@ -41,7 +41,7 @@ async def get_state_hash(
     return await WurwolvesGame(game_tag).get_hash(known_hash=known_hash)
 
 
-@router.get("/{game_tag}/start_game")
+@router.post("/{game_tag}/start_game")
 async def start_game(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
