@@ -14,7 +14,7 @@ from uuid import UUID
 import pydantic
 
 from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel,
-                    PlayerRole, PlayerModel, PlayerState, User, hash_game_tag)
+                    PlayerRole, PlayerState, User, hash_game_tag)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
