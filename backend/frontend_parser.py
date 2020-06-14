@@ -51,7 +51,7 @@ with open(SAMPLE_MODEL, 'r') as F:
     DEMO_STATE = FrontendState.parse_obj(json.load(F))
 
 
-def parse_game_to_state(game: Game, player: Player):
+def parse_game_to_state(game_tag: str, user_id: UUID):
     '''
       Parses a Game object into a FrontendState to be given to a user's React frontend
       '''

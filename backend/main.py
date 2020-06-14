@@ -21,8 +21,7 @@ def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
 ):  
-    # game = parse_game_to_state(game_tag, )
-    return frontend_parser.DEMO_STATE
+    return frontend_parser.parse_game_to_state(game_tag, user_id)
 
 
 @router.get("/{game_id}/start_game")
