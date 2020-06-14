@@ -20,8 +20,16 @@ router = APIRouter()
 def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
-):  
+):
     return frontend_parser.parse_game_to_state(game_tag, user_id)
+
+
+@router.get("/{game_tag}/state_timestamp")
+def get_state(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+    user_id=Depends(get_user_id)
+):
+    return WurwolvesGame(game_tag).get_timestamp()
 
 
 @router.get("/{game_tag}/start_game")

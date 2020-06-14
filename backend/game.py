@@ -3,6 +3,7 @@ Game module
 
 This module provides the WurwolvesGame class, for interacting with a single game
 '''
+import datetime
 import os
 import random
 from functools import wraps
@@ -11,8 +12,8 @@ from uuid import UUID
 
 import pydantic
 
-from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel, PlayerRole,
-                    PlayerState, User, hash_game_tag)
+from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel,
+                    PlayerRole, PlayerState, User, hash_game_tag)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
@@ -95,6 +96,8 @@ class WurwolvesGame:
 
         print(f"User {user_id} joining now")
 
+        altered_game = False
+
         # Get the user from the user list, adding them if not already present
         user = self.session.query(User).filter(User.id == user_id).first()
 
@@ -104,6 +107,7 @@ class WurwolvesGame:
                 name=WurwolvesGame.generate_name(),
                 name_is_generated=True,
             )
+            altered_game = True
 
             print("Making new player {} = {}".format(user.id, user.name))
 
@@ -122,10 +126,14 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
+            altered_game = True
 
         self.session.add(game)
         self.session.add(user)
         self.session.add(player)
+
+        if altered_game:
+            game.touch()
 
     @db_scoped
     def get_game(self) -> Game:
@@ -147,6 +155,10 @@ class WurwolvesGame:
     def get_player_model(self, user_id: UUID) -> PlayerModel:
         p = self.get_player(user_id)
         return PlayerModel.from_orm(p) if p else None
+
+    @db_scoped
+    def get_timestamp(self) -> datetime.datetime:
+        return self.get_game().last_update
 
     @db_scoped
     def create_game(self):
