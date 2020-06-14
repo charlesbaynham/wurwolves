@@ -8,27 +8,27 @@ import {
 } from './selectors'
 
 const IMAGE_LOOKUP = {
-    'normal': {
+    'ALIVE': {
         'img': '/images/person.svg',
         'alt': 'A normal villager?'
     },
-    'lynched': {
+    'LYNCHED': {
         'img': '/images/person-lynched.svg',
         'alt': 'A lynched player'
     },
-    'nominated': {
+    'NOMINATED': {
         'img': '/images/person-nominated.svg',
         'alt': 'A nominated player'
     },
-    'wolfed': {
+    'WOLFED': {
         'img': '/images/person-wolfed.svg',
         'alt': 'A player killed by a wolf'
     },
-    'seconded': {
+    'SECONDED': {
         'img': '/images/person-seconded.svg',
         'alt': 'A seconded player'
     },
-    'spectating': {
+    'SPECTATING': {
         'img': '/images/person-spectating.svg',
         'alt': 'A spectator'
     }

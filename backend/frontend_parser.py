@@ -1,14 +1,11 @@
-import json
 import logging
-import os
 from typing import List, Union
 from uuid import UUID
 
 import pydantic
 
 from .game import WurwolvesGame
-from .model import Game, Player, hash_game_tag
-from .database import session_scope
+from .model import PlayerState, GameStage
 
 
 class FrontendState(pydantic.BaseModel):
@@ -19,7 +16,7 @@ class FrontendState(pydantic.BaseModel):
     class PlayerState(pydantic.BaseModel):
         id: UUID
         name: str
-        status: str
+        status: PlayerState
         selected: bool = False
 
     players: List[PlayerState]
@@ -30,7 +27,7 @@ class FrontendState(pydantic.BaseModel):
 
     chat: List[ChatMsg]
 
-    stage: str
+    stage: GameStage
 
     class RoleState(pydantic.BaseModel):
         title: str
@@ -81,5 +78,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         ),
         myID=user_id
     )
+
+    logging.info("Full UI state: %s", state)
 
     return state

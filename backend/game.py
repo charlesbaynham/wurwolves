@@ -120,7 +120,7 @@ class WurwolvesGame:
                 game=game,
                 user=user,
                 role=PlayerRole.SPECTATOR,
-                state=PlayerState.ALIVE,
+                state=PlayerState.SPECTATING,
             )
 
         self.session.add(game)
@@ -133,7 +133,7 @@ class WurwolvesGame:
 
     @db_scoped
     def get_game_model(self) -> GameModel:
-        g = self.get_game()        
+        g = self.get_game()
         return GameModel.from_orm(g) if g else None
 
     @db_scoped
@@ -142,10 +142,10 @@ class WurwolvesGame:
             Player.game_id == self.game_id,
             Player.user_id == user_id
         ).first()
-    
+
     @db_scoped
     def get_player_model(self, user_id: UUID) -> PlayerModel:
-        p = self.get_player(user_id)        
+        p = self.get_player(user_id)
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
@@ -165,7 +165,10 @@ class WurwolvesGame:
         player: Player
         for player in game.players:
             # For now, just assign some random roles
-            player.role = random.choice(list(PlayerRole))
+            non_spectator_roles = list(PlayerRole)
+            non_spectator_roles.remove(PlayerRole.SPECTATOR)
+            player.role = random.choice(non_spectator_roles)
+            player.state = PlayerState.ALIVE
 
         self.add_dummy_messages()
 

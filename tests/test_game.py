@@ -64,6 +64,7 @@ def test_start_game(db_session):
     p: Player
     for p in db_game.players:
         assert p.role == PlayerRole.SPECTATOR
+        assert p.state == PlayerState.SPECTATING
 
     g.start_game()
 
@@ -73,6 +74,7 @@ def test_start_game(db_session):
 
     p: Player
     for p in db_game.players:
+        assert p.role != PlayerRole.SPECTATOR
         assert p.state == PlayerState.ALIVE
 
     new_user_id = uuid()

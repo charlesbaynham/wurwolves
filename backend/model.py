@@ -97,6 +97,7 @@ class PlayerState(str, enum.Enum):
     LYNCHED = 'LYNCHED'
     NOMINATED = 'NOMINATED'
     SECONDED = 'SECONDED'
+    SPECTATING = 'SPECTATING'
 
 
 class Player(Base):
