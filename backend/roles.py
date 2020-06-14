@@ -2,7 +2,7 @@ from typing import Union
 from uuid import UUID
 
 import pydantic
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, HTTPException
 
 from .model import Action, PlayerRole
 from .user_id import get_user_id
@@ -87,8 +87,9 @@ def register(WurwolvesGame, role_name):
         game = self.get_game()
 
         # Check if this user is entitled to act at night
-        if not ROLE_MAP[game.get_player().role].night_action:
-            raise RuntimeError(f"Player {user_id} in role {game.get_player().role} has no night action")
+        role = self.get_player(user_id).role
+        if not ROLE_MAP[role].night_action:
+            raise HTTPException(status_code=403, detail=f"Player {user_id} in role {role} has no night action")
 
         # Check if this user has already acted this round
         action = self._session.query(Action).filter(
@@ -98,7 +99,7 @@ def register(WurwolvesGame, role_name):
         ).first()
 
         if action:
-            raise RuntimeError(f"Action already completed for player {user_id} in round {game.stage_id}")
+            raise HTTPException(status_code=403, detail=f"Action already completed for player {user_id} in round {game.stage_id}")
 
         # Save the action
         action = Action(
