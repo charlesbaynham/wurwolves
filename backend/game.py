@@ -264,34 +264,6 @@ class WurwolvesGame(roles.MedicMixin):
             player.role = random.choice(non_spectator_roles)
             player.state = PlayerState.ALIVE
 
-        self.add_dummy_messages()
-
-    def add_dummy_messages(self):
-        messages = [
-            ("3 votes for Euan (Rosie, Rachel, Gaby)", False),
-            ("Gaby was voted off", True),
-            ("Sophie was killed in the night", True),
-            ("Rob was nominated by Charles", False),
-            ("James was nominated by Charles", False),
-            ("James was seconded by Parav", False),
-            ("4 votes for Gaby (Charles, James, Parav, Harry)", False),
-            ("3 votes for Euan (Rosie, Rachel, Gaby)", False),
-            ("Gaby was voted off", True),
-            ("Sophie was killed in the night", True),
-            ("Rob was nominated by Charles", False),
-            ("James was nominated by Charles", False),
-            ("James was seconded by Parav", False),
-            ("4 votes for Gaby (Charles, James, Parav, Harry)", False),
-            ("3 votes for Euan (Rosie, Rachel, Gaby)", False),
-            ("Gaby was voted off", True),
-            ("Sophie was killed in the night", True),
-            ("Rob was nominated by Charles", False),
-            ("James was nominated by Charles", False)
-        ]
-
-        for msg, is_strong in messages:
-            self.send_chat_message(msg, is_strong)
-
     @db_scoped
     def get_messages(self, user_id: UUID) -> List[ChatMessage]:
         """ Get chat messages visible to the given user """
@@ -388,5 +360,5 @@ def trigger_update_event(game_id: int):
         del update_events[game_id]
 
 
-# Register the roles
+# Register the roles with actions
 roles.register(WurwolvesGame, "medic", PlayerRole.MEDIC)
