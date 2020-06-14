@@ -46,11 +46,25 @@ Click someone's icon and click the button.
     fallback_role=None,
 )
 
+MEDIC = RoleDescription(
+    display_name="Medic",
+    night_action=True,
+    day_text="""
+You are a medic! You get to save one person each night. 
+
+You win if all the wolves are eliminated. 
+    """,
+    night_text="""
+Choose who to save...
+    """,
+    vote_text=None,
+    fallback_role=DEFAULT_ROLE,
+)
 
 ROLE_MAP = {
     PlayerRole.VILLAGER: DEFAULT_ROLE,
     PlayerRole.SEER: DEFAULT_ROLE,
-    PlayerRole.MEDIC: DEFAULT_ROLE,
+    PlayerRole.MEDIC: MEDIC,
     PlayerRole.WOLF: DEFAULT_ROLE,
     PlayerRole.SPECTATOR: DEFAULT_ROLE,
 }
@@ -87,24 +101,28 @@ def register(WurwolvesGame, role_name):
         game = self.get_game()
 
         # Check if this user is entitled to act at night
-        role = self.get_player(user_id).role
+        player = self.get_player(user_id)
+        role = player.role
         if not ROLE_MAP[role].night_action:
             raise HTTPException(status_code=403, detail=f"Player {user_id} in role {role} has no night action")
 
-        # Check if this user has already acted this round
+        # Check if this player has already acted this round
         action = self._session.query(Action).filter(
             Action.game_id == game.id,
             Action.stage_id == game.stage_id,
-            Action.user_id == user_id
+            Action.player_id == player.id
         ).first()
 
         if action:
-            raise HTTPException(status_code=403, detail=f"Action already completed for player {user_id} in round {game.stage_id}")
+            raise HTTPException(
+                status_code=403,
+                detail=f"Action already completed for player {user_id} in round {game.stage_id}"
+            )
 
         # Save the action
         action = Action(
             game_id=self.game_id,
-            user_id=user_id,
+            player_id=player.id,
             selected_id=selected_id,
             stage_id=game.stage_id,
         )
