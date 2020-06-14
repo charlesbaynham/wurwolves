@@ -19,6 +19,8 @@ const initialState = {
     button_submit_person: null,
   },
   myID: "",
+  myName: "",
+  myNameIsGenerated: true,
 }
 
 export function replaceState(state) {

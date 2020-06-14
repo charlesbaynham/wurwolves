@@ -63,8 +63,9 @@ async def set_name(
     user_id=Depends(get_user_id)
 ):
     with session_scope() as s:
-        u = s.query(User).filter(User.id == user_id).first()
+        u: User = s.query(User).filter(User.id == user_id).first()
         u.name = name
+        u.name_is_generated = False
 
         # Update all the games in which this user plays
         for player_role in u.player_roles:

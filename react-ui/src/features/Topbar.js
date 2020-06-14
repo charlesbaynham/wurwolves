@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 
+import {
+  selectMyName,
+  selectMyNameIsGenerated
+} from './selectors'
+
 
 function Topbar(props) {
-  const [chosenName, setChosenName] = useState('');
+  const name = useSelector(selectMyName);
+  const name_is_generated = useSelector(selectMyNameIsGenerated);
+
+  const [chosenName, setChosenName] = useState("");
+
+  if (!name_is_generated && chosenName == "") {
+    setChosenName(name)
+  }
 
   return (
     <Navbar expand="lg" bg="light" className="bg-secondary bg-night-black">

@@ -3,6 +3,8 @@ export const selectMessages = (state => state.chat);
 export const selectStage = (state => state.stage);
 
 export const selectMyID = (state => state.myID);
+export const selectMyName = (state => state.myName);
+export const selectMyNameIsGenerated = (state => state.myNameIsGenerated);
 
 
 export function getPlayerById(players, id) {

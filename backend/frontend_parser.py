@@ -46,6 +46,8 @@ class FrontendState(pydantic.BaseModel):
     role: RoleState
 
     myID: UUID
+    myName: str
+    myNameIsGenerated: bool
 
 
 def parse_game_to_state(game_tag: str, user_id: UUID):
@@ -85,7 +87,9 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             button_visible=False,
             button_enabled=False,
         ),
-        myID=user_id
+        myID=user_id,
+        myName=player.user.name,
+        myNameIsGenerated=player.user.name_is_generated,
     )
 
     logging.debug("Full UI state: %s", state)
