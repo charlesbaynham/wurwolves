@@ -307,6 +307,30 @@ class WurwolvesGame(roles.MedicMixin):
 
         self._session.add(m)
 
+    @db_scoped
+    def process_actions(self):
+        """
+        Process all the actions of the night that just passed
+
+        This function contains basically all the rules of the game. It is
+        called by the role registered action functions when all the expected
+        actions in a night have been completed. It will parse the current state of
+        the game and all the submitted actions, decide what should happen, dispatch the
+        appropriate chat messages and alter the game state as required. 
+        """
+        logging.warning("Actions should be parsed! Blimey, this might be tricky")
+        self._set_stage(GameStage.DAY)
+
+    @db_scoped
+    def _set_stage(self, stage: GameStage):
+        """ Change the stage of the game, updating the stage ID """
+        if not isinstance(stage, GameStage):
+            raise ValueError
+
+        g = self.get_game()
+        g.stage = stage
+        g.stage_id = Game.stage_id + 1
+
     @classmethod
     def set_user_name(cls, user_id: UUID, name: str):
         """
@@ -362,3 +386,5 @@ def trigger_update_event(game_id: int):
 
 # Register the roles with actions
 roles.register(WurwolvesGame, "medic", PlayerRole.MEDIC)
+roles.register(WurwolvesGame, "seer", PlayerRole.SEER)
+roles.register(WurwolvesGame, "wolf", PlayerRole.WOLF)
