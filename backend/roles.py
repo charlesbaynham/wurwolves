@@ -61,6 +61,14 @@ class MedicMixin():
         print(payload)
 
 
+def named(role_name):
+    def f(func):
+        func.__name__ = f"{role_name}_action"
+        func.__docstring__ = f'An automatically registered function to perform the action associated with the {role_name} role'
+        return func
+    return f
+
+
 def register(WurwolvesGame, role_name):
     """
     Register a new role by creating an API endpoint at <role_name>_action which calls a new method on 
@@ -68,10 +76,12 @@ def register(WurwolvesGame, role_name):
 
     The API endpoint is added to the router in this module which must be imported by main
     """
+
     func_name = f"{role_name}_action"
 
     # Define a function to be added to WurwolvesGame
     @WurwolvesGame.db_scoped
+    @named(role_name)
     def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID):
 
         game = self.get_game()
@@ -99,20 +109,17 @@ def register(WurwolvesGame, role_name):
         )
         self._session.add(action)
 
-    game_func.__name__ = func_name
-
     # And one for the API router
     @router.get(f"/{{game_tag}}/{func_name}")
+    @named(role_name)
     def api_func(
-        selected_id: UUID,
+        selected_id: UUID = None,
         game_tag: str = Path(..., title="The four-word ID of the game"),
         user_id=Depends(get_user_id),
     ):
         g = WurwolvesGame(game_tag)
         f = getattr(WurwolvesGame, func_name)
         f(g, user_id, selected_id)
-
-    api_func.__name__ = func_name
 
     # Patch the WurwolvesGame function into WurwolvesGame: the API
     # function is in the router which will be added in main
