@@ -1,15 +1,16 @@
 import enum
 import json
-from datetime import datetime
 from uuid import UUID
 
+import sqlalchemy.sql.functions as func
 from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
-                        String, Table)
+                        String, Table, update)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
 from sqlalchemy_utils import UUIDType
 
+from . import database as db
 from .utils import hash_str_to_int
 
 Base = declarative_base()
@@ -58,7 +59,9 @@ class Game(Base):
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    created = Column(DateTime, default=datetime.utcnow())
+    created = Column(DateTime, default=func.now())
+    last_update = Column(DateTime, server_default=func.now(), onupdate=func.current_timestamp())
+
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
 
     players = relationship(
@@ -68,6 +71,10 @@ class Game(Base):
     messages = relationship(
         'Message', backref='game', lazy=True
     )
+
+    def touch(self):
+        stmt = update(Game).where(Game.id == 1)
+        db.engine.execute(stmt)
 
     def __repr__(self):
         return '<Game id={}, players={}>'.format(self.id, self.players)
@@ -151,4 +158,4 @@ def hash_game_id(text: str):
     A game ID will normally be something like "correct-horse-battery-staple",
     but can actually be any string
     """
-    return hash_str_to_int(str, 3)
+    return hash_str_to_int(text, 3)

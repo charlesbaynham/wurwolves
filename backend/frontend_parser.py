@@ -2,9 +2,10 @@ import json
 import os
 from typing import List, Union
 from uuid import UUID
-from uuid import uuid4 as uuid
 
 import pydantic
+
+from .model import Game, Player
 
 
 class FrontendState(pydantic.BaseModel):
@@ -48,7 +49,9 @@ class FrontendParser:
     '''
     Parses a Game object into a FrontendState to be given to a user's React frontend
     '''
-    pass
+
+    def __init__(self, game: Game, player: Player):
+        self.output = DEMO_STATE
 
 
 SAMPLE_MODEL = os.path.join(os.path.dirname(__file__), 'sample_frontend_state.json')
