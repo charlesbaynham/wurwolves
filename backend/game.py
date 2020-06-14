@@ -348,6 +348,9 @@ class WurwolvesGame:
 
             old_name = u.name
 
+            if old_name == name:
+                return
+
             u.name = name
             u.name_is_generated = False
 
