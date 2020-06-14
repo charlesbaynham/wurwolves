@@ -28,7 +28,7 @@ function Controls(props) {
 
     function doButtonAction(props) {
         return () => {
-            var url = new URL(`/api/${props.game_tag}/${role.button_submit_url}`, document.baseURI),
+            var url = new URL(`/api/${props.game_tag}/${role.button_submit_func}`, document.baseURI),
                 params = {}
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 

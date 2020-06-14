@@ -38,7 +38,7 @@ class FrontendState(pydantic.BaseModel):
         button_enabled: bool
         button_text: Union[None, str] = None
         button_confirm_text: Union[None, str] = None
-        button_submit_url: Union[None, str] = None
+        button_submit_func: Union[None, str] = None
         button_submit_person: Union[None, bool] = None
 
     roles: Dict[GameStage, RoleState]
@@ -82,14 +82,21 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
                 selected=False
             ) for p in game.players
         ],
-        chat=game.messages,
+        chat=[
+            FrontendState.ChatMsg(
+                msg=m.text,
+                isStrong=m.is_strong
+            ) for m in game.messages
+        ],
         stage=game.stage,
         roles={
             GameStage.LOBBY: FrontendState.RoleState(
                 title='Hello',
                 text='I\'m the lobby',
-                button_visible=False,
-                button_enabled=False,
+                button_visible=True,
+                button_enabled=True,
+                button_submit_func='start_game',
+                button_text="Start game"
             ),
             GameStage.DAY: FrontendState.RoleState(
                 title='Hello',
