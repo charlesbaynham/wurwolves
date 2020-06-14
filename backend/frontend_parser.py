@@ -45,16 +45,15 @@ class FrontendState(pydantic.BaseModel):
     myID: str
 
 
-class FrontendParser:
-    '''
-    Parses a Game object into a FrontendState to be given to a user's React frontend
-    '''
-
-    def __init__(self, game: Game, player: Player):
-        self.output = DEMO_STATE
-
-
 SAMPLE_MODEL = os.path.join(os.path.dirname(__file__), 'sample_frontend_state.json')
 
 with open(SAMPLE_MODEL, 'r') as F:
     DEMO_STATE = FrontendState.parse_obj(json.load(F))
+
+
+def parse_game_to_state(game: Game, player: Player):
+    '''
+      Parses a Game object into a FrontendState to be given to a user's React frontend
+      '''
+
+    return DEMO_STATE

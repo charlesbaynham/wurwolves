@@ -6,7 +6,7 @@ import pytest
 
 from backend.game import WurwolvesGame
 from backend.model import (Game, GameStage, Player, PlayerRole, PlayerState,
-                           User, hash_game_id)
+                           User, hash_game_tag)
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -115,7 +115,7 @@ def test_chat(demo_game, db_session):
 def get_game(db_session, id) -> Game:
     return (db_session
             .query(Game)
-            .filter(Game.id == hash_game_id(id))
+            .filter(Game.id == hash_game_tag(id))
             .first())
 
 
@@ -123,7 +123,7 @@ def get_player(db_session, game_id, user_id) -> Game:
     return (db_session
             .query(Player)
             .filter(
-                Player.game_id == hash_game_id(game_id),
+                Player.game_id == hash_game_tag(game_id),
                 Player.user_id == user_id
             )
             .first())

@@ -152,7 +152,7 @@ class Message(Base):
     visible_to = relationship("Player", secondary=association_table)
 
 
-def hash_game_id(text: str):
+def hash_game_tag(text: str):
     """ Hash a game id into a 3-byte integer
 
     A game ID will normally be something like "correct-horse-battery-staple",

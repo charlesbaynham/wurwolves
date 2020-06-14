@@ -18,29 +18,30 @@ router = APIRouter()
 
 @router.get("/{game_id}/state")
 def get_state(
-    game_id: str = Path(..., title="The four-word ID of the game"),
+    game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
-):
+):  
+    # game = parse_game_to_state(game_tag, )
     return frontend_parser.DEMO_STATE
 
 
 @router.get("/{game_id}/start_game")
 async def start_game(
-    game_id: str = Path(..., title="The four-word ID of the game"),
+    game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id)
 ):
     """
     Vote to start the game (actually just starts it right now)
     """
-    WurwolvesGame(game_id).start_game()
+    WurwolvesGame(game_tag).start_game()
 
 
 @router.post("/{game_id}/join")
 async def join(
-        game_id: str = Path(..., title="The four-word ID of the game"),
+        game_tag: str = Path(..., title="The four-word ID of the game"),
         user_id=Depends(get_user_id)
 ):
-    WurwolvesGame(game_id).join(user_id)
+    WurwolvesGame(game_tag).join(user_id)
 
 
 @router.get("/my_id")

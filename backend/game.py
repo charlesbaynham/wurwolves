@@ -12,7 +12,7 @@ from uuid import UUID
 import pydantic
 
 from .model import (Game, GameStage, Message, Player, PlayerRole, PlayerState,
-                    User, hash_game_id)
+                    User, hash_game_tag)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
@@ -30,13 +30,13 @@ class WurwolvesGame:
     from the database on request.
     """
 
-    def __init__(self, game_id: str):
+    def __init__(self, game_tag: str):
         '''Make a new WurwolvesGame for controlling / getting information about a game
 
         Arguments:
-        game_id (str): ID of the game. This will be hashed to become the database id
+        game_tag (str): Tag of the game. This will be hashed to become the database id
         '''
-        self.game_id = hash_game_id(game_id)
+        self.game_id = hash_game_tag(game_tag)
         self.session = None
         self.session_users = 0
 
