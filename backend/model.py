@@ -1,20 +1,19 @@
 import datetime
 import enum
 import json
-from typing import List
+from typing import List, Union
 from uuid import UUID
 
 import pydantic
 import sqlalchemy.sql.functions as func
 from sqlalchemy.sql import text
 from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
-                        String, Table, update)
+                        String, Table)
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
 from sqlalchemy_utils import UUIDType
 
-from . import database as db
 from .utils import hash_str_to_int
 
 Base = declarative_base()
@@ -75,6 +74,7 @@ class Game(Base):
         return Column(Integer(), default=1, onupdate=text('update_counter + 1'))
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
+    stage_id = Column(Integer, default=0)
 
     players = relationship(
         'Player', backref='game', lazy=True
@@ -138,7 +138,7 @@ class Action(Base):
     game_id = Column(Integer, ForeignKey('games.id'))
     player_id = Column(Integer, ForeignKey('players.id'))
     stage_id = Column(Integer, index=True, nullable=False)
-    payload = Column(JSONEncodedDict, nullable=False)
+    selected_id = Column(UUIDType, nullable=True)
 
 
 class User(Base):
@@ -244,7 +244,7 @@ class ActionModel(pydantic.BaseModel):
     game_id: int
     player_id: int
     stage_id: int
-    payload: dict
+    selected_id: Union[UUID, None]
 
     game: GameModel
     player: PlayerModel

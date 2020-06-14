@@ -386,3 +386,7 @@ def trigger_update_event(game_id: int):
     if game_id in update_events:
         update_events[game_id].set()
         del update_events[game_id]
+
+
+# Register the roles
+roles.register(WurwolvesGame, "medic")

@@ -1,10 +1,11 @@
 import os
 import random
 
-from fastapi import APIRouter, Depends, FastAPI, Path, Query, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Path, Query
 
 from . import frontend_parser
 from .game import WurwolvesGame
+from .roles import router as roles_router
 from .user_id import get_user_id
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
@@ -95,3 +96,4 @@ def hello():
 
 
 app.include_router(router, prefix='/api')
+app.include_router(roles_router, prefix='/api')
