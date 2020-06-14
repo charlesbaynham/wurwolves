@@ -234,6 +234,7 @@ class WurwolvesGame:
         try:
             event = update_events[self.game_id]
             await asyncio.wait_for(event.wait(), timeout=timeout)
+            logging.info(f"Event received for game {self.game_id}")
             return self.get_hash_now()
         except asyncio.TimeoutError:
             return current_hash
@@ -351,15 +352,14 @@ class WurwolvesGame:
             u.name_is_generated = False
 
             # Send a message to all games in which this user plays
-            # Don't manually trigger their update events since
-            # the message-sending will achieve that, but rememer to
-            # put this back if I ever need it again
+            # Manually trigger update and touch game. This shouldn't be required
+            # but is for some reason...
             for player_role in u.player_roles:
                 WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
-                    msg=f"'{old_name}' has changed their name to '{name}''"
+                    msg=f"{old_name} has changed their name to {name}"
                 )
-                # player_role.game.touch()
-                # trigger_update_event(player_role.game_id)
+                player_role.game.touch()
+                trigger_update_event(player_role.game_id)
 
     @staticmethod
     def generate_name():
@@ -377,6 +377,7 @@ class WurwolvesGame:
 
 
 def trigger_update_event(game_id: int):
+    logging.info(f"Triggering updates for game {game_id}")
     global update_events
     if game_id in update_events:
         update_events[game_id].set()
