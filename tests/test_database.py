@@ -38,8 +38,19 @@ def test_update(db_session):
     assert g.update_counter == 2
 
     g.touch()
+    db_session.commit()
 
     db_session.expire_all()
     g = db_session.query(Game).filter_by(id=g.id).first()
 
     assert g.update_counter == 3
+
+    # How about with an uncommitted session?
+    db_session.add(Game())
+    g.touch()
+    db_session.commit()
+
+    db_session.expire_all()
+    g = db_session.query(Game).filter_by(id=g.id).first()
+
+    assert g.update_counter == 4

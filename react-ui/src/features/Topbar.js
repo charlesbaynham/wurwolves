@@ -16,7 +16,7 @@ function Topbar(props) {
         <Form.Control
           placeholder="Your name..."
           onChange={e => setChosenName(e.target.value)}
-          onBlur={() => setName(props.game_tag, chosenName)}
+          onBlur={() => requestNewName(chosenName)}
           value={chosenName}
         />
       </Form>
@@ -24,8 +24,8 @@ function Topbar(props) {
   )
 }
 
-function setName(game_tag, name) {
-  var url = new URL(`/api/${game_tag}/join`, document.baseURI)
+function requestNewName(name) {
+  var url = new URL(`/api/set_name`, document.baseURI)
   const params = { name: name }
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 

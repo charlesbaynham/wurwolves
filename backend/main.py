@@ -1,12 +1,13 @@
 import os
 import random
 
-from fastapi import APIRouter, Depends, FastAPI, Path
+from fastapi import APIRouter, Depends, FastAPI, Path, Query
 
-# from .frontend_parser import FrontendState
+from . import frontend_parser
+from .database import session_scope
+from .model import User, Player, Game
 from .game import WurwolvesGame
 from .user_id import get_user_id
-from . import frontend_parser
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), 'words.txt')
 
@@ -54,6 +55,20 @@ async def join(
         user_id=Depends(get_user_id)
 ):
     WurwolvesGame(game_tag).join(user_id)
+
+
+@router.post("/set_name")
+async def set_name(
+    name: str = Query(..., title="New username. This will be used in all games for this user"),
+    user_id=Depends(get_user_id)
+):
+    with session_scope() as s:
+        u = s.query(User).filter(User.id == user_id).first()
+        u.name = name
+
+        # Update all the games in which this user plays
+        for player_role in u.player_roles:
+            player_role.game.touch()
 
 
 @router.get("/my_id")

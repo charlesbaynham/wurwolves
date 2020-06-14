@@ -85,8 +85,7 @@ class Game(Base):
     )
 
     def touch(self):
-        stmt = update(Game).where(Game.id == self.id)
-        db.engine.execute(stmt)
+        self.update_counter += 1
 
     def __repr__(self):
         return '<Game id={}, players={}>'.format(self.id, self.players)
