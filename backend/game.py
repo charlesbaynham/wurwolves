@@ -157,9 +157,9 @@ class WurwolvesGame:
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
-    def get_hash(self) -> datetime.datetime:
+    def get_hash(self) -> int:
         g = self.get_game()
-        return g.last_update if g else None
+        return g.update_counter if g else 0
 
     @db_scoped
     def create_game(self):

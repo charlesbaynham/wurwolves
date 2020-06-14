@@ -203,7 +203,7 @@ class MessageModel(pydantic.BaseModel):
 class GameModel(pydantic.BaseModel):
     id: int
     created: datetime.datetime
-    last_update: datetime.datetime
+    update_counter: int
 
     stage: GameStage
 
