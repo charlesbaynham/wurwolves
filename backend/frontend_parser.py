@@ -48,12 +48,6 @@ class FrontendState(pydantic.BaseModel):
     myID: UUID
 
 
-SAMPLE_MODEL = os.path.join(os.path.dirname(__file__), 'sample_frontend_state.json')
-
-with open(SAMPLE_MODEL, 'r') as F:
-    DEMO_STATE = FrontendState.parse_obj(json.load(F))
-
-
 def parse_game_to_state(game_tag: str, user_id: UUID):
     '''
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
