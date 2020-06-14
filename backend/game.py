@@ -389,4 +389,4 @@ def trigger_update_event(game_id: int):
 
 
 # Register the roles
-roles.register(WurwolvesGame, "medic")
+roles.register(WurwolvesGame, "medic", PlayerRole.MEDIC)

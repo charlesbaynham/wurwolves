@@ -83,7 +83,7 @@ def named(role_name):
     return f
 
 
-def register(WurwolvesGame, role_name):
+def register(WurwolvesGame, role_name, role: PlayerRole):
     """
     Register a new role by creating an API endpoint at <role_name>_action which calls a new method on 
     WurwolvesGame called the same. 
@@ -100,9 +100,15 @@ def register(WurwolvesGame, role_name):
 
         game = self.get_game()
 
-        # Check if this user is entitled to act at night
+        if not game:
+            raise HTTPException(status_code=404, detail=f"Game {self.game_id} not found")
+
+        # Check if this user is entitled to act in this capacity
         player = self.get_player(user_id)
-        role = player.role
+        if not player:
+            raise HTTPException(status_code=404, detail=f"Player {user_id} not found")
+        if player.role != role:
+            raise HTTPException(status_code=403, detail=f"Player {user_id} is not a {role}")
         if not ROLE_MAP[role].night_action:
             raise HTTPException(status_code=403, detail=f"Player {user_id} in role {role} has no night action")
 
