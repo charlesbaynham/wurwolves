@@ -70,7 +70,7 @@ class WurwolvesGame:
                 self.session_users += 1
                 out = func(self, *args, **kwargs)
                 # If this commit will alter the database, set the modified flag
-                if not modified and self.session.dirty:
+                if not modified and (self.session.dirty or self.session.new):
                     modified = True
                 self.session.commit()
                 return out
@@ -209,7 +209,8 @@ class WurwolvesGame:
             logging.info("Subscribing to event for %s", self.game_id)
 
         try:
-            await asyncio.wait_for(update_events[self.game_id].wait(), timeout=timeout)
+            event = update_events[self.game_id]
+            await asyncio.wait_for(event.wait(), timeout=timeout)
             return self.get_hash_now()
         except asyncio.TimeoutError:
             return current_hash

@@ -137,3 +137,22 @@ def demo_game(db_session) -> WurwolvesGame:
     g.join(USER_ID)
 
     return g
+
+
+def test_async_get_hash(db_session, demo_game):
+    import asyncio
+
+    async def tester():
+        initial_hash = demo_game.get_hash_now()
+
+        task_waiter = asyncio.ensure_future(demo_game.get_hash(known_hash=initial_hash))
+
+        await asyncio.sleep(0.1)
+        assert not task_waiter.done()
+
+        demo_game.send_chat_message("Hello world")
+
+        await asyncio.sleep(0.1)
+        assert task_waiter.done()
+
+    asyncio.get_event_loop().run_until_complete(tester())
