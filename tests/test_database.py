@@ -18,6 +18,11 @@ def test_storage(db_session):
 
 
 def test_update(db_session):
+
+    db_session.add(Game())
+    db_session.add(Game())
+    db_session.add(Game())
+
     some_time = datetime(1990, 1, 1)
 
     g = Game()
@@ -26,13 +31,13 @@ def test_update(db_session):
     db_session.commit()
 
     db_session.expire_all()
-    g = db_session.query(Game).filter_by(id=1).first()
+    g = db_session.query(Game).filter_by(id=g.id).first()
 
     assert g.last_update == some_time
 
     g.touch()
 
     db_session.expire_all()
-    g = db_session.query(Game).filter_by(id=1).first()
+    g = db_session.query(Game).filter_by(id=g.id).first()
 
     assert g.last_update != some_time

@@ -53,7 +53,6 @@ with open(SAMPLE_MODEL, 'r') as F:
 
 def parse_game_to_state(game_tag: str, user_id: UUID):
     '''
-      Parses a Game object into a FrontendState to be given to a user's React frontend
-      '''
-
+    Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
+    '''
     return DEMO_STATE

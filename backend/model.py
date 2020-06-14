@@ -73,7 +73,7 @@ class Game(Base):
     )
 
     def touch(self):
-        stmt = update(Game).where(Game.id == 1)
+        stmt = update(Game).where(Game.id == self.id)
         db.engine.execute(stmt)
 
     def __repr__(self):
