@@ -24,7 +24,6 @@ class GameUpdater extends Component {
         this.intervalId = null
         this.mostRecentID = 0
         this.checkNewData = this.checkNewData.bind(this)
-        this.joinGame = this.joinGame.bind(this)
     }
 
     componentDidMount() {
@@ -73,9 +72,9 @@ class GameUpdater extends Component {
     }
 
     joinGame() {
-        // fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
+        fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
     }
-    
+
     render() {
         return null
     }
