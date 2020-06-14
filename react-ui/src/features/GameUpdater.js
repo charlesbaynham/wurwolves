@@ -41,12 +41,13 @@ class GameUpdater extends Component {
 
     checkAndReschedule() {
         const errorCheckRate = 1000
+        const successCheckRate = 300
 
         const successHandler = r => {
             r.json().then(new_hash => {
-                this.timeoutID = setTimeout(this.checkAndReschedule, 0)
-                console.log(`new_hash = ${new_hash}`)
+                this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
                 if (new_hash !== this.props.state_hash) {
+                    console.log(`Got new_hash = ${new_hash}`)
                     this.updateState()
                 }
             })
@@ -71,10 +72,17 @@ class GameUpdater extends Component {
         const url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
 
         fetch(url)
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    throw "Fetch state failed with error " + r.status
+                }
+                return r.json()
+            })
             .then(data => {
-                const { dispatch } = this.props;
-                dispatch(replaceState(data));
+                if (data) {
+                    const { dispatch } = this.props;
+                    dispatch(replaceState(data));
+                }
             })
     }
 

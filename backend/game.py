@@ -45,6 +45,15 @@ class WurwolvesGame:
         self.session_users = 0
         self._db_scoped_altering = False
 
+    @classmethod
+    def from_id(cls, game_id: int) -> "WurwolvesGame":
+        """
+        Make a WurwolvesGame from a game ID instead of a tag
+        """
+        g = WurwolvesGame("")
+        g.game_id = game_id
+        return g
+
     def db_scoped(func):
         """
         Start a session and store it in self.session
@@ -145,6 +154,10 @@ class WurwolvesGame:
                 state=PlayerState.SPECTATING,
             )
             altered_game = True
+            self.send_chat_message(
+                f"{player.user.name} joined the game",
+                True
+            )
 
         self.session.add(game)
         self.session.add(user)
@@ -327,13 +340,22 @@ class WurwolvesGame:
 
         with database.session_scope() as s:
             u: User = s.query(User).filter(User.id == user_id).first()
+
+            old_name = u.name
+
             u.name = name
             u.name_is_generated = False
 
-            # Update all the games in which this user plays and trigger their update events
+            # Send a message to all games in which this user plays
+            # Don't manually trigger their update events since
+            # the message-sending will achieve that, but rememer to
+            # put this back if I ever need it again
             for player_role in u.player_roles:
-                player_role.game.touch()
-                trigger_update_event(player_role.game_id)
+                WurwolvesGame.from_id(player_role.game_id).send_chat_message(
+                    msg=f"'{old_name}' has changed their name to '{name}''"
+                )
+                # player_role.game.touch()
+                # trigger_update_event(player_role.game_id)
 
     @staticmethod
     def generate_name():

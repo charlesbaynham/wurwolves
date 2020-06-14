@@ -90,10 +90,6 @@ def test_chat(demo_game, db_session):
     other_user = uuid()
     demo_game.join(other_user)
 
-    messages = demo_game.get_messages(USER_ID)
-
-    assert not messages
-
     demo_game.send_chat_message("Hello world!")
     demo_game.send_chat_message("Important", is_strong=True)
     demo_game.send_chat_message("Secret", user_list=[USER_ID])
@@ -110,8 +106,6 @@ def test_chat(demo_game, db_session):
     assert "Important" in summary
     assert "Secret" in summary
     assert "Secret 2" not in summary
-
-    assert len(visible_messages) == 3
 
 
 def get_game(db_session, id) -> Game:

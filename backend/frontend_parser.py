@@ -63,9 +63,9 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     game = g.get_game_model()
     player = g.get_player_model(user_id)
 
-    logging.debug("Game: %s", game)
-    logging.debug("Player: %s", player)
-    logging.debug("User id: %s", user_id)
+    logging.info("Game: %s", game)
+    logging.info("Player: %s", player)
+    logging.info("User id: %s", user_id)
 
     if not game or not player:
         return None
