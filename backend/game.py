@@ -34,15 +34,16 @@ class WurwolvesGame:
     from the database on request.
     """
 
-    def __init__(self, game_tag: str):
+    def __init__(self, game_tag: str, session=None):
         '''Make a new WurwolvesGame for controlling / getting information about a game
 
         Arguments:
         game_tag (str): Tag of the game. This will be hashed to become the database id
         '''
         self.game_id = hash_game_tag(game_tag)
-        self.session = None
-        self.session_users = 0
+        self._session = session
+        self._session_users = 0
+        self._session_is_external = bool(session)
         self._db_scoped_altering = False
 
     @classmethod
@@ -56,11 +57,11 @@ class WurwolvesGame:
 
     def db_scoped(func):
         """
-        Start a session and store it in self.session
+        Start a session and store it in self._session
 
         When a @db_scoped method returns, commit the session
 
-        Close the session once all @db_scoped methods are finished
+        Close the session once all @db_scoped methods are finished (if the session is not external)
 
         If any of the decorated functions altered the database state, also release an asyncio
         event marking this game as having been updated
@@ -70,27 +71,27 @@ class WurwolvesGame:
         @wraps(func)
         def f(self, *args, **kwargs):
 
-            if not self.session:
-                self.session = database.Session()
-            if self.session_users == 0:
+            if not self._session:
+                self._session = database.Session()
+            if self._session_users == 0:
                 self._session_modified = False
 
             try:
-                self.session_users += 1
+                self._session_users += 1
                 out = func(self, *args, **kwargs)
                 # If this commit will alter the database, set the modified flag
-                if not self._session_modified and (self.session.dirty or self.session.new):
+                if not self._session_modified and (self._session.dirty or self._session.new):
                     self._session_modified = True
-                self.session.commit()
+                self._session.commit()
                 return out
             except Exception as e:
-                self.session.rollback()
+                self._session.rollback()
                 raise e
             finally:
-                self.session_users -= 1
-                if self.session_users == 0:
-                    self.session.close()
-                    self.session = None
+                self._session_users -= 1
+                if self._session_users == 0 and not self._session_is_external:
+                    self._session.close()
+                    self._session = None
 
                     # If any of the functions altered the game state,
                     # fire the corresponding updates events if they are present in the global dict
@@ -108,10 +109,10 @@ class WurwolvesGame:
         user_id (UUID): User ID
         name (str): New display name of the player
         """
-        u = self.session.query(User).filter(User.id == user_id).first()
+        u = self._session.query(User).filter(User.id == user_id).first()
         u.name = name
         u.name_is_generated = False
-        self.session.add(u)
+        self._session.add(u)
 
     @db_scoped
     def join(self, user_id: UUID):
@@ -126,7 +127,7 @@ class WurwolvesGame:
         altered_game = False
 
         # Get the user from the user list, adding them if not already present
-        user = self.session.query(User).filter(User.id == user_id).first()
+        user = self._session.query(User).filter(User.id == user_id).first()
 
         if not user:
             user = User(
@@ -144,7 +145,7 @@ class WurwolvesGame:
             game = self.create_game()
 
         # Add this user to the game as a spectator if they're not already in it
-        player = self.session.query(Player).filter(Player.game == game, Player.user == user).first()
+        player = self._session.query(Player).filter(Player.game == game, Player.user == user).first()
 
         if not player:
             player = Player(
@@ -159,16 +160,16 @@ class WurwolvesGame:
                 True
             )
 
-        self.session.add(game)
-        self.session.add(user)
-        self.session.add(player)
+        self._session.add(game)
+        self._session.add(user)
+        self._session.add(player)
 
         if altered_game:
             game.touch()
 
     @db_scoped
     def get_game(self) -> Game:
-        return self.session.query(Game).filter(Game.id == self.game_id).first()
+        return self._session.query(Game).filter(Game.id == self.game_id).first()
 
     @db_scoped
     def get_game_model(self) -> GameModel:
@@ -177,7 +178,7 @@ class WurwolvesGame:
 
     @db_scoped
     def get_player(self, user_id: UUID) -> Player:
-        return self.session.query(Player).filter(
+        return self._session.query(Player).filter(
             Player.game_id == self.game_id,
             Player.user_id == user_id
         ).first()
@@ -189,7 +190,7 @@ class WurwolvesGame:
 
     @db_scoped
     def get_players(self, user_id: UUID) -> List[Player]:
-        return self.session.query(Player).filter(
+        return self._session.query(Player).filter(
             Player.game_id == self.game_id
         ).all()
 
@@ -238,7 +239,7 @@ class WurwolvesGame:
     def create_game(self):
         game = Game(id=self.game_id)
 
-        self.session.add(game)
+        self._session.add(game)
 
         return game
 
@@ -246,7 +247,7 @@ class WurwolvesGame:
     def start_game(self):
         game = self.get_game()
 
-        self.session.add(game)
+        self._session.add(game)
 
         game.stage = GameStage.NIGHT
 
@@ -327,7 +328,7 @@ class WurwolvesGame:
                 self.get_player(user_id)
             )
 
-        self.session.add(m)
+        self._session.add(m)
 
     @classmethod
     def set_user_name(cls, user_id: UUID, name: str):
