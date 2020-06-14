@@ -74,7 +74,7 @@ class GameUpdater extends Component {
         fetch(url)
             .then(r => {
                 if (!r.ok) {
-                    throw "Fetch state failed with error " + r.status
+                    throw Error("Fetch state failed with error " + r.status)
                 }
                 return r.json()
             })
