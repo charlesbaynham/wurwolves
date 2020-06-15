@@ -10,19 +10,19 @@ from backend.resolver import process_actions
 from backend.roles import ROLE_MAP
 
 users = [
-    UserModel(id=uuid(), name="Villager 1", name_is_generate=False),
-    UserModel(id=uuid(), name="Villager 2", name_is_generate=False),
-    UserModel(id=uuid(), name="Wolfy Mcwolfington", name_is_generate=False),
-    UserModel(id=uuid(), name="Medic", name_is_generate=False),
+    UserModel(id=uuid(), name="Villager 1", name_is_generated=False),
+    UserModel(id=uuid(), name="Villager 2", name_is_generated=False),
+    UserModel(id=uuid(), name="Wolfy Mcwolfington", name_is_generated=False),
+    UserModel(id=uuid(), name="Medic", name_is_generated=False),
 ]
 players = [
-    PlayerModel(id=1, game_id=1, user_id=users[0].user_id, user=users[0],
+    PlayerModel(id=1, game_id=1, user_id=users[0].id, user=users[0],
                 role=PlayerRole.VILLAGER, state=PlayerState.ALIVE),
-    PlayerModel(id=2, game_id=1, user_id=users[1].user_id, user=users[1],
+    PlayerModel(id=2, game_id=1, user_id=users[1].id, user=users[1],
                 role=PlayerRole.VILLAGER, state=PlayerState.ALIVE),
-    PlayerModel(id=3, game_id=1, user_id=users[2].user_id, user=users[2],
+    PlayerModel(id=3, game_id=1, user_id=users[2].id, user=users[2],
                 role=PlayerRole.WOLF, state=PlayerState.ALIVE),
-    PlayerModel(id=4, game_id=1, user_id=users[3].user_id, user=users[2],
+    PlayerModel(id=4, game_id=1, user_id=users[3].id, user=users[2],
                 role=PlayerRole.MEDIC, state=PlayerState.ALIVE),
 ]
 game = GameModel(
