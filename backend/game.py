@@ -14,8 +14,8 @@ from uuid import UUID
 import pydantic
 
 from . import roles
-from .model import (Game, GameModel, GameStage, Message, Player, PlayerModel,
-                    PlayerRole, PlayerState, User, hash_game_tag)
+from .model import (Action, ActionModel, Game, GameModel, GameStage, Message, Player,
+                    PlayerModel, PlayerRole, PlayerState, User, hash_game_tag)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
@@ -202,6 +202,24 @@ class WurwolvesGame(roles.MedicMixin):
     def get_players_model(self, user_id: UUID) -> List[PlayerModel]:
         return [
             PlayerModel.from_orm(p) for p in self.get_players()
+        ]
+
+    @db_scoped
+    def get_actions(self, stage_id=None) -> List[Action]:
+        game = self.get_game()
+
+        if stage_id is None:
+            stage_id = game.stage_id
+
+        return self._session.query(Action).filter(
+            Action.game_id == game.id,
+            Action.stage_id == game.stage_id
+        ).all()
+
+    @db_scoped
+    def get_actions_model(self, stage_id=None) -> List[ActionModel]:
+        return [
+            ActionModel.from_orm(a) for a in self.get_actions(stage_id)
         ]
 
     @db_scoped

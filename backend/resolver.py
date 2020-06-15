@@ -174,7 +174,11 @@ class GameAction:
         return ROLE_MAP[role].priority
 
 
-def process_actions(players: List[PlayerModel], actions: List[GameAction]):
+def process_actions(
+    game: WurwolvesGame
+):
+    players = game.get_players_model()
+    actions = game.get_actions_model()
 
     game_players = {}
     for p in players:
@@ -183,3 +187,16 @@ def process_actions(players: List[PlayerModel], actions: List[GameAction]):
     game_actions = []
     for a in actions:
         game_actions.append(GameAction(a, game_players))
+
+    # Sort actions by priority then by action id
+    game_actions.sort(
+        key=lambda a: (a.priority, a.model.id)
+    )
+
+    # In order, modify all other actions
+    for a in game_actions:
+        a.do_modifiers()
+
+    # In order, execute the actions
+    for a in game_actions:
+        a.execute(game)
