@@ -69,7 +69,9 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     '''
     g = WurwolvesGame(game_tag)
+
     game = g.get_game_model()
+
     player = g.get_player_model(user_id)
     actions = g.get_actions_model(player_id=player.id)
 

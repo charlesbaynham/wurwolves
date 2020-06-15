@@ -128,7 +128,7 @@ class WurwolvesGame():
             user_ID (str): ID of the user
         """
 
-        print(f"User {user_id} joining now")
+        logging.info("User %s joining now", user_id)
 
         altered_game = False
 
