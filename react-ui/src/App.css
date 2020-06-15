@@ -10,8 +10,21 @@
   color: white;
 }
 
+.player {
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.player:hover img {
+  transform: scale(1.05);
+}
+
 .player img {
   background: white;
+}
+
+.player img.selected {
+  border: 0.3rem solid blue !important;
 }
 
 .NIGHT .player img {
