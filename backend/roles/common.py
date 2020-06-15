@@ -1,4 +1,4 @@
-from collections import namedtuple
+from typing import NamedTuple
 from typing import Union
 
 import pydantic
@@ -25,10 +25,16 @@ class RoleDescription(pydantic.BaseModel):
 
 RoleDescription.update_forward_refs()
 
-# A RoleDetails tuple contains a complete description of what a role entails It
-# can be used to figure out how a role should behave and will be stored in
-# .registration.ROLE_MAP
-RoleDetails = namedtuple("RoleDetails", ["role_description", "role_action"])
+
+class RoleDetails(NamedTuple):
+    '''
+    A RoleDetails tuple contains a complete description of what a role entails
+    It can be used to figure out how a role should behave and will be stored in
+    .registration.ROLE_MAP
+    '''
+    role_description: RoleDescription
+    role_action: GameAction
+
 
 DEFAULT_ROLE = RoleDescription(
     display_name="Villager",

@@ -2,17 +2,13 @@
 The Villager role
 '''
 from ..model import PlayerRole
-from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
+from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
 
 
 description = RoleDescription(
     display_name="Villager",
     night_action=False,
-    day_text="""
-You are a Villager. You have no special powers but you're special anyway. 
-
-You win if all the wolves are eliminated. 
-    """,
+    day_text=None,
     night_text=None,
     vote_text=None,
     fallback_role=DEFAULT_ROLE,

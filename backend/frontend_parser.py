@@ -73,7 +73,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
 
     logging.debug("Game players: %s", game.players)
 
-    role_details = ROLE_MAP[player.role]
+    role_details = ROLE_MAP[player.role].role_description
 
     state = FrontendState(
         state_hash=game.update_counter,
@@ -95,7 +95,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         roles={
             GameStage.LOBBY: FrontendState.RoleState(
                 title=role_details.display_name,
-                text=role_details.day_text,
+                text=role_details.day_text or role_details.fallback_role.day_text,
                 button_visible=True,
                 button_enabled=True,
                 button_submit_func='start_game',
@@ -103,19 +103,19 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             ),
             GameStage.DAY: FrontendState.RoleState(
                 title=role_details.display_name,
-                text=role_details.day_text,
+                text=role_details.day_text or role_details.fallback_role.day_text,
                 button_visible=False,
                 button_enabled=False,
             ),
             GameStage.VOTING: FrontendState.RoleState(
                 title=role_details.display_name,
-                text=role_details.vote_text,
+                text=role_details.vote_text or role_details.fallback_role.vote_text,
                 button_visible=False,
                 button_enabled=False,
             ),
             GameStage.NIGHT: FrontendState.RoleState(
                 title=role_details.display_name,
-                text=role_details.night_text,
+                text=role_details.night_text or role_details.fallback_role.night_text,
                 button_visible=False,
                 button_enabled=False,
             ),
