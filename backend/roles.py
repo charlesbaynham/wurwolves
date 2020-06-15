@@ -1,10 +1,12 @@
+from collections import namedtuple
 from typing import Union
 from uuid import UUID
 
 import pydantic
-from fastapi import APIRouter, Depends, Path, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 
-from .model import Action, PlayerRole, GameStage
+from .model import Action, GameStage, PlayerRole
+from .resolver import GameAction
 from .user_id import get_user_id
 
 router = APIRouter()
@@ -63,12 +65,19 @@ Choose who to save...
     fallback_role=DEFAULT_ROLE,
 )
 
+
+class VillagerAction(GameAction):
+    def execute(self):
+        pass
+
+
+RoleDetails = namedtuple("RoleDetails", ["role_description", "role_action"])
 ROLE_MAP = {
-    PlayerRole.VILLAGER: DEFAULT_ROLE,
-    PlayerRole.SEER: DEFAULT_ROLE,
-    PlayerRole.MEDIC: MEDIC,
-    PlayerRole.WOLF: DEFAULT_ROLE,
-    PlayerRole.SPECTATOR: DEFAULT_ROLE,
+    PlayerRole.VILLAGER: RoleDetails(DEFAULT_ROLE, VillagerAction),
+    PlayerRole.SEER: RoleDetails(DEFAULT_ROLE, VillagerAction),
+    PlayerRole.MEDIC: RoleDetails(DEFAULT_ROLE, VillagerAction),
+    PlayerRole.WOLF: RoleDetails(DEFAULT_ROLE, VillagerAction),
+    PlayerRole.SPECTATOR: RoleDetails(DEFAULT_ROLE, VillagerAction),
 }
 
 
@@ -112,7 +121,7 @@ def register(WurwolvesGame, role_name, role: PlayerRole):
             raise HTTPException(status_code=404, detail=f"Player {user_id} not found")
         if player.role != role:
             raise HTTPException(status_code=403, detail=f"Player {user_id} is not a {role}")
-        if not ROLE_MAP[role].night_action:
+        if not ROLE_MAP[role].role_description.night_action:
             raise HTTPException(status_code=403, detail=f"Player {user_id} in role {role} has no night action")
         if not game.stage == GameStage.NIGHT:
             raise HTTPException(status_code=403, detail="Actions may only be performed at night")
@@ -143,7 +152,7 @@ def register(WurwolvesGame, role_name, role: PlayerRole):
         players = game.players
         ready = True
         for player in players:
-            if (ROLE_MAP[player.role].night_action and
+            if (ROLE_MAP[player.role].role_description.night_action and
                     not any(a.stage_id == game.stage_id for a in player.actions)):
                 ready = False
                 break

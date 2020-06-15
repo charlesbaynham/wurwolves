@@ -13,9 +13,12 @@ from uuid import UUID
 
 import pydantic
 
+import resolver
+
 from . import roles
-from .model import (Action, ActionModel, Game, GameModel, GameStage, Message, Player,
-                    PlayerModel, PlayerRole, PlayerState, User, hash_game_tag)
+from .model import (Action, ActionModel, Game, GameModel, GameStage, Message,
+                    Player, PlayerModel, PlayerRole, PlayerState, User,
+                    hash_game_tag)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), 'names.txt')
 names = None
@@ -336,7 +339,10 @@ class WurwolvesGame(roles.MedicMixin):
         the game and all the submitted actions, decide what should happen, dispatch the
         appropriate chat messages and alter the game state as required. 
         """
-        logging.warning("Actions should be parsed! Blimey, this might be tricky")
+        logging.info(f"All the actions are in for game {self.game_id}: processing")
+
+        resolver.process_actions(self)
+
         self._set_stage(GameStage.DAY)
 
     @db_scoped

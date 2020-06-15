@@ -171,7 +171,7 @@ class GameAction:
         Args:
             role (PlayerRole): The role
         """
-        return ROLE_MAP[role].priority
+        return ROLE_MAP[role].role_description.priority
 
 
 def process_actions(
@@ -186,7 +186,8 @@ def process_actions(
 
     game_actions = []
     for a in actions:
-        game_actions.append(GameAction(a, game_players))
+        action_class = ROLE_MAP[a.player.role].role_action
+        game_actions.append(action_class(a, game_players))
 
     # Sort actions by priority then by action id
     game_actions.sort(
