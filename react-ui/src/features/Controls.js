@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import Button from 'react-bootstrap/Button';
 
 import {
-    selectStage, selectRoles
+    selectStage, selectRoles, selectSelectedPlayer
 } from './selectors'
 
 
@@ -19,6 +19,7 @@ const DEFAULT_ROLE = {
 function Controls(props) {
     const roles = useSelector(selectRoles);
     const game_stage = useSelector(selectStage);
+    const selected_player = useSelector(selectSelectedPlayer);
 
     var role = roles[game_stage]
 
@@ -29,7 +30,7 @@ function Controls(props) {
     function doButtonAction(props) {
         return () => {
             var url = new URL(`/api/${props.game_tag}/${role.button_submit_func}`, document.baseURI),
-                params = {}
+                params = { selected_id: selected_player }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
             fetch(url, { method: 'post' })

@@ -84,11 +84,14 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 detail=f"Action already completed for player {user_id} in round {game.stage_id}"
             )
 
+        if selected_id:
+            selected_player_id = self.get_player(selected_id).id
+
         # Save the action
         action = Action(
             game_id=self.game_id,
             player_id=player.id,
-            selected_player_id=selected_id,
+            selected_player_id=selected_player_id,
             stage_id=game.stage_id,
         )
         self._session.add(action)
