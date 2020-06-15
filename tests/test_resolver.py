@@ -7,8 +7,10 @@ import pytest
 from backend.model import (ActionModel, GameModel, GameStage, PlayerModel,
                            PlayerRole, PlayerState, UserModel)
 from backend.resolver import process_actions
-from backend.roles.common import VillagerAction, WolfAction, SeerAction
+
 from backend.roles.medic import MedicAction
+from backend.roles.wolf import WolfAction
+from backend.roles.seer import SeerAction
 
 
 @pytest.fixture
@@ -55,14 +57,12 @@ def test_actions_framework(wolf_medic_game_model):
     mock_game.get_players_model.return_value = wolf_medic_game_model['players']
     mock_game.get_actions_model.return_value = wolf_medic_game_model['actions']
 
-    VillagerAction.execute = Mock()
     WolfAction.execute = Mock()
     MedicAction.execute = Mock()
     SeerAction.execute = Mock()
 
     process_actions(mock_game)
 
-    assert VillagerAction.execute.call_count == 0
     assert WolfAction.execute.call_count == 1
     assert MedicAction.execute.call_count == 1
     assert SeerAction.execute.call_count == 0

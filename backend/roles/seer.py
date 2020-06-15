@@ -1,34 +1,32 @@
 '''
-The Medic role
-
-The Medic can save one person every night. 
+The Seer role
 '''
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 
 
 description = RoleDescription(
-    display_name="Medic",
+    display_name="Seer",
     night_action=True,
     day_text="""
-You are a medic! You get to save one person each night. 
+You are a Seer! You get to check the identity of one person each night. 
 
 You win if all the wolves are eliminated. 
     """,
     night_text="""
-Choose who to save...
+Choose who to check...
     """,
     vote_text=None,
     fallback_role=DEFAULT_ROLE,
 )
 
 
-class MedicAction(GameAction):
+class SeerAction(GameAction):
     def execute(self, game):
         pass
 
 
 def register(role_map):
     role_map.update({
-        PlayerRole.MEDIC: RoleDetails(description, MedicAction)
+        PlayerRole.SEER: RoleDetails(description, SeerAction)
     })

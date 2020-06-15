@@ -1,24 +1,26 @@
-from collections import namedtuple
+from typing import Dict
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 
 from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
-from .common import DEFAULT_ROLE, SeerAction, VillagerAction, WolfAction
-from .medic import MedicAction
+from . import medic, seer, villager, wolf
+from .common import RoleDetails
 
 router = APIRouter()
 
 
-RoleDetails = namedtuple("RoleDetails", ["role_description", "role_action"])
-ROLE_MAP = {
-    PlayerRole.VILLAGER: RoleDetails(DEFAULT_ROLE, VillagerAction),
-    PlayerRole.SEER: RoleDetails(DEFAULT_ROLE, SeerAction),
-    PlayerRole.MEDIC: RoleDetails(DEFAULT_ROLE, MedicAction),
-    PlayerRole.WOLF: RoleDetails(DEFAULT_ROLE, WolfAction),
-    PlayerRole.SPECTATOR: RoleDetails(DEFAULT_ROLE, VillagerAction),
-}
+# The ROLE_MAP maps PlayerRoles to RoleDetails. It is therefore a way of looking
+# up how a role should behave given it a PlayerRole enum
+ROLE_MAP: Dict[PlayerRole, RoleDetails] = {}
+
+
+# Populate ROLE_MAP
+medic.register(ROLE_MAP)
+seer.register(ROLE_MAP)
+villager.register(ROLE_MAP)
+wolf.register(ROLE_MAP)
 
 
 def named(role_name):
@@ -32,8 +34,8 @@ def named(role_name):
 
 def register_role(WurwolvesGame, role: PlayerRole):
     """
-    Register a new role by creating an API endpoint at <role_name>_action which calls a new method on 
-    WurwolvesGame called the same. 
+    Register a new role by creating an API endpoint at <role_name>_action which calls a new method on
+    WurwolvesGame called the same.
 
     The API endpoint is added to the router in this module which must be imported by main
     """
@@ -43,8 +45,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
     func_name = f"{role_name}_action"
 
     # Define a function to be added to WurwolvesGame
-    @WurwolvesGame.db_scoped
-    @named(role_name)
+    @ WurwolvesGame.db_scoped
+    @ named(role_name)
     def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID):
 
         game = self.get_game()

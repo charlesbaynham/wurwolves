@@ -1,3 +1,4 @@
+from collections import namedtuple
 from typing import Union
 
 import pydantic
@@ -24,6 +25,11 @@ class RoleDescription(pydantic.BaseModel):
 
 RoleDescription.update_forward_refs()
 
+# A RoleDetails tuple contains a complete description of what a role entails It
+# can be used to figure out how a role should behave and will be stored in
+# .registration.ROLE_MAP
+RoleDetails = namedtuple("RoleDetails", ["role_description", "role_action"])
+
 DEFAULT_ROLE = RoleDescription(
     display_name="Villager",
     night_action=False,
@@ -42,19 +48,3 @@ Click someone's icon and click the button.
     """,
     fallback_role=None,
 )
-
-
-class VillagerAction(GameAction):
-    def execute(self, game):
-        # Villagers don't have an action: this should never be called
-        raise NotImplementedError
-
-
-class WolfAction(GameAction):
-    def execute(self, game):
-        pass
-
-
-class SeerAction(GameAction):
-    def execute(self, game):
-        pass

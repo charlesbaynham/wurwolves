@@ -30,7 +30,7 @@ class ChatMessage(pydantic.BaseModel):
     is_strong = False
 
 
-class WurwolvesGame(roles.medic.MedicMixin):
+class WurwolvesGame():
     """
     Provides methods for accessing all the properties of a wurwolves game. This
     object is initialised with the ID of a game and loads all other information
