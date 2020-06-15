@@ -6,6 +6,7 @@ import pydantic
 
 from .game import WurwolvesGame
 from .model import GameStage, PlayerState
+from .roles import ROLE_MAP
 
 
 class FrontendState(pydantic.BaseModel):
@@ -72,6 +73,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
 
     logging.debug("Game players: %s", game.players)
 
+    role_details = ROLE_MAP[player.role]
+
     state = FrontendState(
         state_hash=game.update_counter,
         players=[
@@ -91,28 +94,28 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         stage=game.stage,
         roles={
             GameStage.LOBBY: FrontendState.RoleState(
-                title='Hello',
-                text='I\'m the lobby',
+                title=role_details.display_name,
+                text=role_details.day_text,
                 button_visible=True,
                 button_enabled=True,
                 button_submit_func='start_game',
                 button_text="Start game"
             ),
             GameStage.DAY: FrontendState.RoleState(
-                title='Hello',
-                text='I\'m the daytime',
+                title=role_details.display_name,
+                text=role_details.day_text,
                 button_visible=False,
                 button_enabled=False,
             ),
             GameStage.VOTING: FrontendState.RoleState(
-                title='Hello',
-                text='Voting time!',
+                title=role_details.display_name,
+                text=role_details.vote_text,
                 button_visible=False,
                 button_enabled=False,
             ),
             GameStage.NIGHT: FrontendState.RoleState(
-                title='Hello',
-                text='I\'m the night',
+                title=role_details.display_name,
+                text=role_details.night_text,
                 button_visible=False,
                 button_enabled=False,
             ),
