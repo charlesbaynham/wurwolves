@@ -68,15 +68,31 @@ Choose who to save...
 
 class VillagerAction(GameAction):
     def execute(self, game):
+        # Villagers don't have an action: this should never be called
+        raise NotImplementedError
+
+
+class MedicAction(GameAction):
+    def execute(self, game):
+        pass
+
+
+class WolfAction(GameAction):
+    def execute(self, game):
+        pass
+
+
+class SeerAction(GameAction):
+    def execute(self, game):
         pass
 
 
 RoleDetails = namedtuple("RoleDetails", ["role_description", "role_action"])
 ROLE_MAP = {
     PlayerRole.VILLAGER: RoleDetails(DEFAULT_ROLE, VillagerAction),
-    PlayerRole.SEER: RoleDetails(DEFAULT_ROLE, VillagerAction),
-    PlayerRole.MEDIC: RoleDetails(DEFAULT_ROLE, VillagerAction),
-    PlayerRole.WOLF: RoleDetails(DEFAULT_ROLE, VillagerAction),
+    PlayerRole.SEER: RoleDetails(DEFAULT_ROLE, SeerAction),
+    PlayerRole.MEDIC: RoleDetails(DEFAULT_ROLE, MedicAction),
+    PlayerRole.WOLF: RoleDetails(DEFAULT_ROLE, WolfAction),
     PlayerRole.SPECTATOR: RoleDetails(DEFAULT_ROLE, VillagerAction),
 }
 
