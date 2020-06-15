@@ -30,7 +30,7 @@ class ChatMessage(pydantic.BaseModel):
     is_strong = False
 
 
-class WurwolvesGame(roles.MedicMixin):
+class WurwolvesGame(roles.medic.MedicMixin):
     """
     Provides methods for accessing all the properties of a wurwolves game. This
     object is initialised with the ID of a game and loads all other information
@@ -408,6 +408,6 @@ def trigger_update_event(game_id: int):
 
 
 # Register the roles with actions
-roles.register(WurwolvesGame, "medic", PlayerRole.MEDIC)
-roles.register(WurwolvesGame, "seer", PlayerRole.SEER)
-roles.register(WurwolvesGame, "wolf", PlayerRole.WOLF)
+roles.register_role(WurwolvesGame, PlayerRole.MEDIC)
+roles.register_role(WurwolvesGame, PlayerRole.SEER)
+roles.register_role(WurwolvesGame, PlayerRole.WOLF)

@@ -1,90 +1,14 @@
 from collections import namedtuple
-from typing import Union
 from uuid import UUID
 
-import pydantic
 from fastapi import APIRouter, Depends, HTTPException, Path
 
-from .model import Action, GameStage, PlayerRole
-from .resolver import GameAction
-from .user_id import get_user_id
+from ..model import Action, GameStage, PlayerRole
+from ..user_id import get_user_id
+from .common import DEFAULT_ROLE, SeerAction, VillagerAction, WolfAction
+from .medic import MedicAction
 
 router = APIRouter()
-
-
-class RoleDescription(pydantic.BaseModel):
-    display_name: str
-
-    night_action: bool
-    night_action_url: Union[None, str] = None
-    night_action_select_person = True
-    night_button_text: Union[None, str] = None
-
-    day_text: Union[None, str] = None
-    night_text: Union[None, str] = None
-    vote_text: Union[None, str] = None
-
-    priority: int = 0
-
-    fallback_role: Union[None, "RoleDescription"]
-
-
-RoleDescription.update_forward_refs()
-
-DEFAULT_ROLE = RoleDescription(
-    display_name="Villager",
-    night_action=False,
-    day_text="""
-You are a villager. You have no special powers. Try not to get eaten!
-
-You win if all the wolves are eliminated. 
-    """,
-    night_text="""
-You have nothing to do at night. Relax...
-    """,
-    vote_text="""
-Vote for someone to lynch! Whoever gets the most votes will be killed.
-
-Click someone's icon and click the button. 
-    """,
-    fallback_role=None,
-)
-
-MEDIC = RoleDescription(
-    display_name="Medic",
-    night_action=True,
-    day_text="""
-You are a medic! You get to save one person each night. 
-
-You win if all the wolves are eliminated. 
-    """,
-    night_text="""
-Choose who to save...
-    """,
-    vote_text=None,
-    fallback_role=DEFAULT_ROLE,
-)
-
-
-class VillagerAction(GameAction):
-    def execute(self, game):
-        # Villagers don't have an action: this should never be called
-        raise NotImplementedError
-
-
-class MedicAction(GameAction):
-    def execute(self, game):
-        pass
-
-
-class WolfAction(GameAction):
-    def execute(self, game):
-        pass
-
-
-class SeerAction(GameAction):
-    def execute(self, game):
-        pass
 
 
 RoleDetails = namedtuple("RoleDetails", ["role_description", "role_action"])
@@ -97,11 +21,6 @@ ROLE_MAP = {
 }
 
 
-class MedicMixin():
-    def medic_action(self, payload):
-        print(payload)
-
-
 def named(role_name):
     def f(func):
         func.__name__ = f"{role_name}_action"
@@ -111,13 +30,15 @@ def named(role_name):
     return f
 
 
-def register(WurwolvesGame, role_name, role: PlayerRole):
+def register_role(WurwolvesGame, role: PlayerRole):
     """
     Register a new role by creating an API endpoint at <role_name>_action which calls a new method on 
     WurwolvesGame called the same. 
 
     The API endpoint is added to the router in this module which must be imported by main
     """
+
+    role_name = role.value.lower()
 
     func_name = f"{role_name}_action"
 

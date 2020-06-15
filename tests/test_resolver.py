@@ -7,7 +7,8 @@ import pytest
 from backend.model import (ActionModel, GameModel, GameStage, PlayerModel,
                            PlayerRole, PlayerState, UserModel)
 from backend.resolver import process_actions
-from backend.roles import VillagerAction, WolfAction, MedicAction, SeerAction
+from backend.roles.common import VillagerAction, WolfAction, SeerAction
+from backend.roles.medic import MedicAction
 
 
 @pytest.fixture

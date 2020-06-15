@@ -30,7 +30,8 @@ def get_state(
 @router.get("/{game_tag}/state_hash")
 async def get_state_hash(
     game_tag: str = Path(..., title="The four-word ID of the game"),
-    known_hash: int = Query(0, title="The most recent known hash of the client. If provided, this call will block until a change occurs"),
+    known_hash: int = Query(
+        0, title="The most recent known hash of the client. If provided, this call will block until a change occurs"),
     user_id=Depends(get_user_id)
 ):
     """

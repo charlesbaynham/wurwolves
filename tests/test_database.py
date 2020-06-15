@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import uuid4 as uuid
 
 from backend.model import Game, User, GameStage
