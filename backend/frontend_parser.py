@@ -86,7 +86,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             FrontendState.ChatMsg(
                 msg=m.text,
                 isStrong=m.is_strong
-            ) for m in game.messages
+            ) for m in game.messages if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
         ],
         stage=game.stage,
         roles={
