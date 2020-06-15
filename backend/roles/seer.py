@@ -1,6 +1,7 @@
 '''
 The Seer role
 '''
+import logging
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 
@@ -24,7 +25,7 @@ Choose who to check...
 
 class SeerAction(GameAction):
     def execute(self, game):
-        pass
+        logging.warning("Seer action occurred but not written yet")
 
 
 def register(role_map):

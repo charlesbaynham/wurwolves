@@ -1,6 +1,7 @@
 '''
 The Wolf role
 '''
+import logging
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 
@@ -12,7 +13,7 @@ description = RoleDescription(
     day_text="""
 You are a Wolf! You kill one person each night
 
-You win if the wolves kill enough villager that you are equal in number
+You win if the wolves kill enough villagers that you are equal in number
     """,
     night_text="""
 Choose who to kill!
@@ -24,7 +25,7 @@ Choose who to kill!
 
 class WolfAction(GameAction):
     def execute(self, game):
-        pass
+        logging.warning("Wolf action occurred but not written yet")
 
 
 def register(role_map):

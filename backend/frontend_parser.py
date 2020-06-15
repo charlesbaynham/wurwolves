@@ -44,8 +44,8 @@ class FrontendState(pydantic.BaseModel):
 
         @pydantic.validator("button_text", always=True)
         def text_present(cls, v, values):
-            logging.warning(f"Text = : {v}")
-            logging.warning(f"Values = {values}")
+            logging.debug(f"Text = : {v}")
+            logging.debug(f"Values = {values}")
             if values["button_visible"] and not v:
                 raise ValueError("No button text provided when button is visible")
             return v
@@ -71,7 +71,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     g = WurwolvesGame(game_tag)
     game = g.get_game_model()
     player = g.get_player_model(user_id)
-    actions = g.get_actions_model(player.id)
+    actions = g.get_actions_model(player_id=player.id)
 
     logging.info("Game: %s", game)
     logging.info("Player: %s", player)

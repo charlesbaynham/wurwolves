@@ -99,9 +99,11 @@ def register_role(WurwolvesGame, role: PlayerRole):
                     not any(a.stage_id == game.stage_id for a in player.actions)):
                 ready = False
                 break
-
+        
         if ready:
             self.process_actions()
+
+        game.touch()
 
     # And one for the API router
     @router.get(f"/{{game_tag}}/{func_name}")

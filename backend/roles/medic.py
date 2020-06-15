@@ -3,6 +3,7 @@ The Medic role
 
 The Medic can save one person every night. 
 '''
+import logging
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 
@@ -25,7 +26,7 @@ Choose who to save...
 
 class MedicAction(GameAction):
     def execute(self, game):
-        pass
+        logging.warning("Medic action occurred but not written yet")
 
 
 def register(role_map):
