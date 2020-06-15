@@ -1,3 +1,4 @@
+from .roles import get_action_func_name
 import logging
 from typing import Dict, List, Union
 from uuid import UUID
@@ -131,6 +132,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
                 button_visible=role_details.night_action,
                 button_enabled=role_details.night_action and not actions,
                 button_text=role_details.night_button_text,
+                button_submit_func=get_action_func_name(player.role),
+                button_submit_person=role_details.night_action_select_person,
             ),
         },
         myID=user_id,
