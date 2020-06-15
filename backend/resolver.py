@@ -149,8 +149,8 @@ class GameAction:
         self.originator = players[action_model.player_id]
 
         # If there's a target, get it too
-        if action_model.selected_id:
-            self.target = players[action_model.selected_id]
+        if action_model.selected_player_id:
+            self.target = players[action_model.selected_player_id]
 
         self.priority = GameAction.get_priority(self.model.player.role)
 

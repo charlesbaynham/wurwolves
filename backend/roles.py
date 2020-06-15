@@ -67,7 +67,7 @@ Choose who to save...
 
 
 class VillagerAction(GameAction):
-    def execute(self):
+    def execute(self, game):
         pass
 
 
