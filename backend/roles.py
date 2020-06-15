@@ -22,6 +22,8 @@ class RoleDescription(pydantic.BaseModel):
     night_text: Union[None, str] = None
     vote_text: Union[None, str] = None
 
+    priority: int = 0
+
     fallback_role: Union[None, "RoleDescription"]
 
 
