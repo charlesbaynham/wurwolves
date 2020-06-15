@@ -1,31 +1,30 @@
-import { createStore } from 'redux'
+import { createStore, combineReducers } from 'redux'
+import { createSlice } from '@reduxjs/toolkit'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
-const initialState = {
-  state_hash: 0,
-  players: [],
-  chat: [],
-  stage: "LOBBY",
-  roles: {},
-  myID: "",
-  myName: "",
-  myNameIsGenerated: true,
-}
 
-export function replaceState(state) {
-  return {
-    type: "REPLACE",
-    state: state
+const backend = createSlice({
+  name: 'backend',
+  initialState: {
+    state_hash: 0,
+    players: [],
+    chat: [],
+    stage: "LOBBY",
+    roles: {},
+    myID: "",
+    myName: "",
+    myNameIsGenerated: true,
+  },
+  reducers: {
+    replace: (state, action) => action.payload
   }
-} 
+})
 
-function reducer(state, action) {
-  if (typeof state === 'undefined') {
-    return initialState
-  } else {
-    return action.state
-  }
-}
+export const replaceState = backend.actions.replace
+
+const reducer = combineReducers({
+  backend: backend.reducer,
+})
 
 export default createStore(
   reducer,

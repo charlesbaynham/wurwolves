@@ -21,7 +21,6 @@ class FrontendState(pydantic.BaseModel):
         id: UUID
         name: str
         status: PlayerState
-        selected: bool = False
 
     players: List[PlayerState]
 
