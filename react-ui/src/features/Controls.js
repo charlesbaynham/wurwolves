@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 
 import Button from 'react-bootstrap/Button';
@@ -7,6 +7,8 @@ import Button from 'react-bootstrap/Button';
 import {
     selectStage, selectRoles, selectSelectedPlayer
 } from './selectors'
+
+import { unselectAll } from '../app/store'
 
 
 const DEFAULT_ROLE = {
@@ -20,6 +22,7 @@ function Controls(props) {
     const roles = useSelector(selectRoles);
     const game_stage = useSelector(selectStage);
     const selected_player = useSelector(selectSelectedPlayer);
+    const dispatch = useDispatch();
 
     var role = roles[game_stage]
 
@@ -29,6 +32,7 @@ function Controls(props) {
 
     function doButtonAction(props) {
         return () => {
+            dispatch(unselectAll());
             var url = new URL(`/api/${props.game_tag}/${role.button_submit_func}`, document.baseURI),
                 params = { selected_id: selected_player }
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
