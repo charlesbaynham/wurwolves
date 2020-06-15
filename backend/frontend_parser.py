@@ -110,14 +110,14 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             GameStage.VOTING: FrontendState.RoleState(
                 title=role_details.display_name,
                 text=role_details.vote_text or role_details.fallback_role.vote_text,
-                button_visible=False,
-                button_enabled=False,
+                button_visible=True,
+                button_enabled=True,
             ),
             GameStage.NIGHT: FrontendState.RoleState(
                 title=role_details.display_name,
                 text=role_details.night_text or role_details.fallback_role.night_text,
-                button_visible=False,
-                button_enabled=False,
+                button_visible=role_details.night_action,
+                button_enabled=role_details.night_action,
             ),
         },
         myID=user_id,
