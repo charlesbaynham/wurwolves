@@ -86,7 +86,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
         action = Action(
             game_id=self.game_id,
             player_id=player.id,
-            selected_id=selected_id,
+            selected_player_id=selected_id,
             stage_id=game.stage_id,
         )
         self._session.add(action)

@@ -195,13 +195,13 @@ class WurwolvesGame():
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
-    def get_players(self, user_id: UUID) -> List[Player]:
+    def get_players(self) -> List[Player]:
         return self._session.query(Player).filter(
             Player.game_id == self.game_id
         ).all()
 
     @db_scoped
-    def get_players_model(self, user_id: UUID) -> List[PlayerModel]:
+    def get_players_model(self) -> List[PlayerModel]:
         return [
             PlayerModel.from_orm(p) for p in self.get_players()
         ]
