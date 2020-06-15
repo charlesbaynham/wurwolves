@@ -127,7 +127,7 @@ class Player(Base):
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
     actions = relationship(
-        'Action', backref='player', lazy=True
+        'Action', lazy=True, foreign_keys="Action.player_id"
     )
 
 
@@ -138,7 +138,10 @@ class Action(Base):
     game_id = Column(Integer, ForeignKey('games.id'))
     player_id = Column(Integer, ForeignKey('players.id'))
     stage_id = Column(Integer, index=True, nullable=False)
-    selected_id = Column(UUIDType, nullable=True)
+    selected_player_id = Column(Integer, ForeignKey('players.id'), nullable=True)
+
+    player = relationship('Player', lazy=True, foreign_keys=player_id)
+    selected_player = relationship('Player', lazy=True, foreign_keys=selected_player_id)
 
 
 class User(Base):
@@ -244,10 +247,11 @@ class ActionModel(pydantic.BaseModel):
     game_id: int
     player_id: int
     stage_id: int
-    selected_id: Union[UUID, None]
+    selected_player_id: Union[int, None]
 
     game: GameModel
     player: PlayerModel
+    selected_player: Union[None, PlayerModel]
 
     class Config:
         orm_mode = True
