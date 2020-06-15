@@ -53,7 +53,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
     # Define a function to be added to WurwolvesGame
     @ WurwolvesGame.db_scoped
     @ named(func_name)
-    def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID):
+    def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID = None):
 
         game = self.get_game()
 
@@ -107,17 +107,28 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
         game.touch()
 
-    # And one for the API router
-    @router.post(f"/{{game_tag}}/{func_name}")
-    @named(func_name)
-    def api_func(
-        selected_id: UUID = None,
-        game_tag: str = Path(..., title="The four-word ID of the game"),
-        user_id=Depends(get_user_id),
-    ):
-        g = WurwolvesGame(game_tag)
-        f = getattr(WurwolvesGame, func_name)
-        f(g, user_id, selected_id)
+    # Make one for the API router that does / does not require a selected_id
+    if ROLE_MAP[role].role_description.night_action_select_person:
+        @router.post(f"/{{game_tag}}/{func_name}")
+        @named(func_name)
+        def api_func(
+            selected_id: UUID,
+            game_tag: str = Path(..., title="The four-word ID of the game"),
+            user_id=Depends(get_user_id),
+        ):
+            g = WurwolvesGame(game_tag)
+            f = getattr(WurwolvesGame, func_name)
+            f(g, user_id, selected_id)
+    else:
+        @router.post(f"/{{game_tag}}/{func_name}")
+        @named(func_name)
+        def api_func(
+            game_tag: str = Path(..., title="The four-word ID of the game"),
+            user_id=Depends(get_user_id),
+        ):
+            g = WurwolvesGame(game_tag)
+            f = getattr(WurwolvesGame, func_name)
+            f(g, user_id)
 
     # Patch the WurwolvesGame function into WurwolvesGame: the API
     # function is in the router which will be added in main
