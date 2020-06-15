@@ -22,9 +22,24 @@ const backend = createSlice({
 
 export const replaceState = backend.actions.replace
 
+const selectedPlayer = createSlice({
+  name: 'selectedPlayer',
+  initialState: null,
+  reducers: {
+    selectPlayer: (state, action) => action.payload,
+    unselectAll: state => null, 
+  }
+})
+
+export const selectPlayer = selectedPlayer.actions.selectPlayer
+export const unselectAll = selectedPlayer.actions.unselectAll
+
 const reducer = combineReducers({
   backend: backend.reducer,
+  selectedPlayer: selectedPlayer.reducer,
 })
+
+
 
 export default createStore(
   reducer,

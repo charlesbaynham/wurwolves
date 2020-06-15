@@ -22,5 +22,6 @@ export const selectRoles = (state => state.backend.roles);
 
 export const selectStateHash = (state => state.backend.state_hash);
 
+// Frontend stuff:
 
-export const selectPlayerSelected = id => (state => getPlayerById(state.backend.players, id).selected);
+export const selectSelectedPlayer = (state => state.selectedPlayer)

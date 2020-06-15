@@ -1,11 +1,13 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import {
     selectPlayerName,
     selectPlayerStatus,
-    selectPlayerSelected
+    selectSelectedPlayer
 } from './selectors'
+
+import { selectPlayer, unselectAll } from '../app/store'
 
 const IMAGE_LOOKUP = {
     'ALIVE': {
@@ -38,14 +40,22 @@ function Player(props) {
     const player_id = props.player_id
     const name = useSelector(selectPlayerName(player_id));
     const status = useSelector(selectPlayerStatus(player_id));
-    const selected = useSelector(selectPlayerSelected(player_id));
+
+    const selectedPlayer = useSelector(selectSelectedPlayer);
+    const selected = selectedPlayer === player_id
+
+    const dispatch = useDispatch()
 
     return (
-        <figure className="col-4 col-sm-3 figure player">
+        <figure className="col-4 col-sm-3 figure player" onClick={
+            selected
+                ? () => dispatch(unselectAll(player_id))
+                : () => dispatch(selectPlayer(player_id))
+        }>
             <img src={IMAGE_LOOKUP[status].img}
                 className={`figure-img img-fluid w-100 ${selected ? "selected" : ""}`}
                 alt={IMAGE_LOOKUP[status].alt} />
-            <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : "" }</figcaption>
+            <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
         </figure>
     )
 }
