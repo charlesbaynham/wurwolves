@@ -8,6 +8,7 @@ from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 description = RoleDescription(
     display_name="Seer",
     night_action=True,
+    night_button_text="Select someone to check",
     day_text="""
 You are a Seer! You get to check the identity of one person each night. 
 

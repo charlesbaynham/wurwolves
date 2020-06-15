@@ -8,6 +8,7 @@ from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 description = RoleDescription(
     display_name="Wolf",
     night_action=True,
+    night_button_text="Select someone to maul",
     day_text="""
 You are a Wolf! You kill one person each night
 

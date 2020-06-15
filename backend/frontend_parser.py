@@ -42,6 +42,14 @@ class FrontendState(pydantic.BaseModel):
         button_submit_func: Union[None, str] = None
         button_submit_person: Union[None, bool] = None
 
+        @pydantic.validator("button_text", always=True)
+        def text_present(cls, v, values):
+            logging.warning(f"Text = : {v}")
+            logging.warning(f"Values = {values}")
+            if values["button_visible"] and not v:
+                raise ValueError("No button text provided when button is visible")
+            return v
+
     roles: Dict[GameStage, RoleState]
 
     @pydantic.validator('roles')
@@ -112,12 +120,14 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
                 text=role_details.vote_text or role_details.fallback_role.vote_text,
                 button_visible=True,
                 button_enabled=True,
+                button_text=role_details.vote_button_text or role_details.fallback_role.vote_button_text,
             ),
             GameStage.NIGHT: FrontendState.RoleState(
                 title=role_details.display_name,
                 text=role_details.night_text or role_details.fallback_role.night_text,
                 button_visible=role_details.night_action,
                 button_enabled=role_details.night_action,
+                button_text=role_details.night_button_text,
             ),
         },
         myID=user_id,

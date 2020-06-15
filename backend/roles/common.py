@@ -13,6 +13,7 @@ class RoleDescription(pydantic.BaseModel):
     night_action_url: Union[None, str] = None
     night_action_select_person = True
     night_button_text: Union[None, str] = None
+    vote_button_text: Union[None, str] = None
 
     day_text: Union[None, str] = None
     night_text: Union[None, str] = None
@@ -52,5 +53,6 @@ Vote for someone to lynch! Whoever gets the most votes will be killed.
 
 Click someone's icon and click the button. 
     """,
+    vote_button_text="Vote for someone to lynch...",
     fallback_role=None,
 )
