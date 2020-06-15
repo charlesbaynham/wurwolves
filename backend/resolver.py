@@ -125,9 +125,7 @@ Step 5
 
 from typing import Dict, List
 
-from .game import WurwolvesGame
 from .model import ActionModel, PlayerModel, PlayerRole
-from .roles import ROLE_MAP
 
 
 class GamePlayer:
@@ -156,7 +154,7 @@ class GameAction:
 
         self.priority = GameAction.get_priority(self.model.player.role)
 
-    def execute(self, game: WurwolvesGame):
+    def execute(self, game):
         raise NotImplementedError
 
     def do_modifiers(self):
@@ -171,12 +169,15 @@ class GameAction:
         Args:
             role (PlayerRole): The role
         """
+        from .roles import ROLE_MAP
         return ROLE_MAP[role].role_description.priority
 
 
 def process_actions(
-    game: WurwolvesGame
+    game
 ):
+    from .roles import ROLE_MAP
+
     players = game.get_players_model()
     actions = game.get_actions_model()
 
