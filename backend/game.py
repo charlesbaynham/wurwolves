@@ -13,8 +13,7 @@ from uuid import UUID
 
 import pydantic
 
-import resolver
-
+from . import resolver
 from . import roles
 from .model import (Action, ActionModel, Game, GameModel, GameStage, Message,
                     Player, PlayerModel, PlayerRole, PlayerState, User,
