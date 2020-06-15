@@ -207,21 +207,26 @@ class WurwolvesGame():
         ]
 
     @db_scoped
-    def get_actions(self, stage_id=None) -> List[Action]:
+    def get_actions(self, stage_id=None, player_id: int = None) -> List[Action]:
         game = self.get_game()
 
         if stage_id is None:
             stage_id = game.stage_id
 
-        return self._session.query(Action).filter(
+        q = self._session.query(Action).filter(
             Action.game_id == game.id,
             Action.stage_id == game.stage_id
-        ).all()
+        )
+
+        if player_id:
+            q = q.filter(Action.player_id == player_id)
+
+        return q.all()
 
     @db_scoped
-    def get_actions_model(self, stage_id=None) -> List[ActionModel]:
+    def get_actions_model(self, stage_id=None, player_id: int = None) -> List[ActionModel]:
         return [
-            ActionModel.from_orm(a) for a in self.get_actions(stage_id)
+            ActionModel.from_orm(a) for a in self.get_actions(stage_id, player_id)
         ]
 
     @db_scoped

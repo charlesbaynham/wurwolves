@@ -71,6 +71,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
     g = WurwolvesGame(game_tag)
     game = g.get_game_model()
     player = g.get_player_model(user_id)
+    actions = g.get_actions_model(player.id)
 
     logging.info("Game: %s", game)
     logging.info("Player: %s", player)
@@ -126,7 +127,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
                 title=role_details.display_name,
                 text=role_details.night_text or role_details.fallback_role.night_text,
                 button_visible=role_details.night_action,
-                button_enabled=role_details.night_action,
+                button_enabled=role_details.night_action and not actions,
                 button_text=role_details.night_button_text,
             ),
         },
