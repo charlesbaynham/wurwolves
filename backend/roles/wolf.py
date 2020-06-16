@@ -26,7 +26,7 @@ Choose who to kill!
 )
 
 
-class AffectedByWolves(ActionMixin, AffectedByMedic):
+class AffectedByWolves(AffectedByMedic):
     '''
     Creates attributes `originator_attacked_by_wolf` and `target_attacked_by_wolf`. 
     These can be cancelled by medic action
