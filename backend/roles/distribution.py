@@ -44,8 +44,8 @@ def assign_roles(num_players: int) -> List[PlayerRole]:
 
     optional_roles, optional_weightings = zip(*randomised_roles.items())
     roles += random.choices(
-        population=optional_roles + [PlayerRole.VILLAGER],
-        weights=optional_weightings + [villager_weighting],
+        population=list(optional_roles) + [PlayerRole.VILLAGER],
+        weights=list(optional_weightings) + [villager_weighting],
         k=num_players-len(roles)
     )
 

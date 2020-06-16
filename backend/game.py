@@ -91,17 +91,22 @@ class WurwolvesGame():
                 self._session.rollback()
                 raise e
             finally:
-                self._session_users -= 1
-                if self._session_users == 0:
+                # If we're about to close the session, check if the game should be marked as updated
+                if self._session_users == 1 and self._session_modified:
                     # If any of the functions altered the game state,
                     # fire the corresponding updates events if they are present in the global dict
-                    if self._session_modified:
-                        trigger_update_event(self.game_id)
+                    # And mark the game as altered in the database
+                    g = self.get_game()
+                    g.touch()
+                    self._session.commit()
+                    trigger_update_event(self.game_id)
 
-                    # Close the session if we made it and no longer need it
-                    if not self._session_is_external:
-                        self._session.close()
-                        self._session = None
+                self._session_users -= 1
+
+                # Close the session if we made it and no longer need it
+                if self._session_users == 0 and not self._session_is_external:
+                    self._session.close()
+                    self._session = None
 
         return f
 
