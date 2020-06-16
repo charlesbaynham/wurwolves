@@ -39,11 +39,18 @@ class CancelledByWolf(ActionMixin):
 
 class WolfAction(GameAction, CancelledByMedic):
     def execute(self, game):
+        target_name = self.target.model.user.name
 
         if self.cancelled_by_medic:
-            logging.warning("Wolf attacked but the medic saved")
+            game.send_chat_message(
+                f"{target_name} was attacked but survived!",
+                is_strong=True
+            )
         else:
-            logging.warning("Wolf attacked successfully")
+            game.send_chat_message(
+                f"{target_name} was brutally murdered",
+                is_strong=True
+            )
 
 
 def register(role_map):
