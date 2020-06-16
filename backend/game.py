@@ -309,7 +309,7 @@ class WurwolvesGame():
         return out
 
     @db_scoped
-    def send_chat_message(self, msg, is_strong=False, user_list=[]):
+    def send_chat_message(self, msg, is_strong=False, user_list=[], player_list=[]):
         """Post a message in the chat log
 
         Args:
@@ -318,6 +318,8 @@ class WurwolvesGame():
                                         False.
             user_list (List[UUID], optional): List of user IDs who can see the
                                         message. All players if None. 
+            player_list (List[int], optional): List of player IDs who can see the
+                                        message. All players if None. Merged with user_list
         """
         m = Message(
             text=msg,
@@ -326,9 +328,10 @@ class WurwolvesGame():
         )
 
         for user_id in user_list:
-            m.visible_to.append(
-                self.get_player(user_id)
-            )
+            player_list.append(self.get_player(user_id))
+        
+        for player_id in player_list:
+            m.visible_to.append(player_id)
 
         self._session.add(m)
 

@@ -127,6 +127,9 @@ from typing import Dict, List
 
 from .model import ActionModel, PlayerModel, PlayerRole
 
+if False:  # for typing
+    from ..game import WurwolvesGame
+
 
 class GamePlayer:
     def __init__(self, player_model: PlayerModel):
@@ -154,6 +157,11 @@ class GameAction:
 
         self.priority = GameAction.get_priority(self.model.player.role)
 
+        # Add this object to the target and originator's lists
+        self.originator.originated_from.append(self)
+        if self.target:
+            self.target.targetted_by.append(self)
+
     def execute(self, game):
         raise NotImplementedError
 
@@ -174,7 +182,7 @@ class GameAction:
 
 
 def process_actions(
-    game
+    game: 'WurwolvesGame'
 ):
     from .roles import ROLE_MAP
 

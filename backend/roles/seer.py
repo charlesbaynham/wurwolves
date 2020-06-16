@@ -5,6 +5,8 @@ import logging
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
 
+if False:  # for typing
+    from ..game import WurwolvesGame
 
 description = RoleDescription(
     display_name="Seer",
@@ -25,8 +27,25 @@ Choose who to check...
 
 
 class SeerAction(GameAction):
-    def execute(self, game):
-        logging.warning("Seer action occurred but not written yet")
+    def execute(self, game: 'WurwolvesGame'):
+        seer_name = self.originator.model.user.name
+        target_name = self.target.model.user.name
+        target_is_wolf = self.target.model.role.team == RoleDescription.Team.WOLVES
+
+        logging.info(f"Seer: {seer_name} checks {target_name}")
+
+        if target_is_wolf:
+            game.send_chat_message(
+                f"{target_name} is a wolf!",
+                is_strong=True,
+                player_list=[self.originator.model.id]
+            )
+        else:
+            game.send_chat_message(
+                f"{target_name} is not a wolf",
+                is_strong=False,
+                player_list=[self.originator.model.id]
+            )
 
 
 def register(role_map):
