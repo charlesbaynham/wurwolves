@@ -1,3 +1,4 @@
+import math
 import random
 from typing import List
 
@@ -22,7 +23,26 @@ PROB_VILLAGER = 0.25
 
 
 def num_wolves(num_players: int):
-    return 1
+    lookup = {
+        3: 1,
+        4: 1,
+        5: 1,
+        6: 1,
+        7: 2,
+        8: 2,
+        9: 2,
+        10: 3,
+        11: 3,
+        12: 3,
+        13: 3,
+        14: 3,
+        15: 3,
+    }
+
+    try:
+        return lookup[num_players]
+    except KeyError:
+        return math.ceil(num_players/5)
 
 
 def assign_roles(num_players: int, probability_of_villager=PROB_VILLAGER) -> List[PlayerRole]:
