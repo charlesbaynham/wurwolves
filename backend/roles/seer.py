@@ -38,13 +38,13 @@ class SeerAction(GameAction):
 
         if target_is_wolf:
             game.send_chat_message(
-                f"{target_name} is a wolf!",
+                f"You checked {target_name}... they are a wolf!",
                 is_strong=True,
                 player_list=[self.originator.model.id]
             )
         else:
             game.send_chat_message(
-                f"{target_name} is not a wolf",
+                f"You checked {target_name}... they are not a wolf",
                 is_strong=False,
                 player_list=[self.originator.model.id]
             )
