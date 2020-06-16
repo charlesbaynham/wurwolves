@@ -18,14 +18,14 @@ randomised_roles = {
 # This cannot be satisfied for very small games (because all the guaranteed roles
 # must be handed out) or for very large games (because there aren't enough optional
 # roles to go around) but the algorithm will do its best
-probability_of_villager = 0.25
+PROB_VILLAGER = 0.25
 
 
 def num_wolves(num_players: int):
     return 1
 
 
-def assign_roles(num_players: int) -> List[PlayerRole]:
+def assign_roles(num_players: int, probability_of_villager=PROB_VILLAGER) -> List[PlayerRole]:
     """
     Return a randomised list of roles for this game, or None if not enough players have joined
 
@@ -54,6 +54,8 @@ def assign_roles(num_players: int) -> List[PlayerRole]:
 
     # Prepare a list of optional roles and weightings
     opt_roles, opt_weighs = zip(*randomised_roles.items())
+    opt_roles = list(opt_roles)
+    opt_weighs = list(opt_weighs)
 
     # For each remaining player, pick either villager or an optional role
     for _ in range(num_players-len(roles)):
