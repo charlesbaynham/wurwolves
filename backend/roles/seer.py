@@ -28,9 +28,11 @@ Choose who to check...
 
 class SeerAction(GameAction):
     def execute(self, game: 'WurwolvesGame'):
+        from .registration import get_role_team
+
         seer_name = self.originator.model.user.name
         target_name = self.target.model.user.name
-        target_is_wolf = self.target.model.role.team == RoleDescription.Team.WOLVES
+        target_is_wolf = get_role_team(self.target.model.role) == RoleDescription.Team.WOLVES
 
         logging.info(f"Seer: {seer_name} checks {target_name}")
 

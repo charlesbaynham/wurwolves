@@ -205,6 +205,7 @@ class PlayerModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        extra = 'forbid'
 
 
 class MessageModel(pydantic.BaseModel):
@@ -217,6 +218,7 @@ class MessageModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        extra = 'forbid'
 
 
 class GameModel(pydantic.BaseModel):
@@ -231,6 +233,7 @@ class GameModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        extra = 'forbid'
 
 
 class UserModel(pydantic.BaseModel):
@@ -240,6 +243,7 @@ class UserModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        extra = 'forbid'
 
 
 class ActionModel(pydantic.BaseModel):
@@ -255,6 +259,7 @@ class ActionModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        extra = 'forbid'
 
 
 PlayerModel.update_forward_refs()
