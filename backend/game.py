@@ -12,9 +12,9 @@ from typing import Dict, List
 from uuid import UUID
 
 import pydantic
+from fastapi import HTTPException
 
-from . import resolver
-from . import roles
+from . import resolver, roles
 from .model import (Action, ActionModel, Game, GameModel, GameStage, Message,
                     Player, PlayerModel, PlayerRole, PlayerState, User,
                     hash_game_tag)
@@ -283,11 +283,16 @@ class WurwolvesGame():
     def start_game(self):
         game = self.get_game()
 
+        player_roles = roles.assign_roles(len(game.players))
+        if not player_roles:
+            raise HTTPException(
+                status_code=400,
+                detail="Not enough players"
+            )
+
         self._session.add(game)
 
         game.stage = GameStage.NIGHT
-
-        player_roles = roles.assign_roles(len(game.players))
 
         player: Player
         for player, role in zip(game.players, player_roles):

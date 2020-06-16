@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 
 from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
-from . import medic, seer, villager, wolf, spectator
+from . import jester, medic, seer, spectator, villager, wolf
 from .common import RoleDetails
 
 router = APIRouter()
@@ -21,6 +21,7 @@ seer.register(ROLE_MAP)
 villager.register(ROLE_MAP)
 wolf.register(ROLE_MAP)
 spectator.register(ROLE_MAP)
+jester.register(ROLE_MAP)
 
 if any(r not in ROLE_MAP for r in list(PlayerRole)):
     raise TypeError("Not all roles are registered")

@@ -100,6 +100,7 @@ class PlayerRole(enum.Enum):
     WOLF = 'WOLF'
     SEER = 'SEER'
     MEDIC = 'MEDIC'
+    JESTER = 'JESTER'
     SPECTATOR = 'SPECTATOR'
 
 

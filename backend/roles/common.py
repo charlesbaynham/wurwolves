@@ -25,6 +25,7 @@ class RoleDescription(pydantic.BaseModel):
         VILLAGERS = 'VILLAGERS'
         WOLVES = 'WOLVES'
         SPECTATORS = 'SPECTATORS'
+        JESTER = "JESTER"
     team: Team
 
     fallback_role: Union[None, "RoleDescription"]
