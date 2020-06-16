@@ -175,9 +175,6 @@ class WurwolvesGame():
         self._session.add(user)
         self._session.add(player)
 
-        if altered_game:
-            game.touch()
-
     @db_scoped
     def get_game(self) -> Game:
         return self._session.query(Game).filter(Game.id == self.game_id).first()
@@ -403,14 +400,10 @@ class WurwolvesGame():
             u.name_is_generated = False
 
             # Send a message to all games in which this user plays
-            # Manually trigger update and touch game. This shouldn't be required
-            # but is for some reason...
             for player_role in u.player_roles:
                 WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
                     msg=f"{old_name} has changed their name to {name}"
                 )
-                player_role.game.touch()
-                trigger_update_event(player_role.game_id)
 
     @staticmethod
     def generate_name():
