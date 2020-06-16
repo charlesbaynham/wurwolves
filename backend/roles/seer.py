@@ -6,7 +6,7 @@ import logging
 from ..model import PlayerRole
 from ..resolver import GameAction
 from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
-from .wolf import CancelledByWolf
+from .wolf import AffectedByWolves
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -29,7 +29,7 @@ Choose who to check...
 )
 
 
-class SeerAction(GameAction, CancelledByWolf):
+class SeerAction(GameAction, AffectedByWolves):
     def execute(self, game: 'WurwolvesGame'):
         from .registration import get_role_team
 
@@ -39,7 +39,7 @@ class SeerAction(GameAction, CancelledByWolf):
 
         logging.info(f"Seer: {seer_name} checks {target_name}")
 
-        if self.cancelled_by_wolf:
+        if self.originator_attacked_by_wolf:
             game.send_chat_message(
                 f"You checked {target_name} but were rudely interrupted",
                 is_strong=False,

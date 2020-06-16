@@ -152,7 +152,7 @@ class ActionMixin():
 
         Example usage:
 
-            self.bind_as_modifier(self.__do_mod, CancelledByMedic, MedicAction, False)
+            self.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, False)
 
         This is used to bind dunder methods of a mixin to the parent GameAction with a predictable name
 

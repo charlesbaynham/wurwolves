@@ -26,15 +26,15 @@ Choose who to save...
 )
 
 
-class CancelledByMedic(ActionMixin):
+class AffectedByMedic(ActionMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cancelled_by_medic = False
+        self.target_saved_by_medic = False
 
         self.bind_as_modifier(self.__do_mod, __class__, MedicAction, False)
 
     def __do_mod(self):
-        self.cancelled_by_medic = True
+        self.target_saved_by_medic = True
 
 
 class MedicAction(GameAction):

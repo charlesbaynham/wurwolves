@@ -6,7 +6,7 @@ import logging
 from ..model import PlayerRole
 from ..resolver import ActionMixin, GameAction
 from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
-from .medic import CancelledByMedic
+from .medic import AffectedByMedic
 
 description = RoleDescription(
     display_name="Wolf",
@@ -26,22 +26,22 @@ Choose who to kill!
 )
 
 
-class CancelledByWolf(ActionMixin):
+class AffectedByWolves(ActionMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cancelled_by_wolf = False
+        self.originator_attacked_by_wolf = False
 
         self.bind_as_modifier(self.__do_mod, __class__, WolfAction, True)
 
     def __do_mod(self):
-        self.cancelled_by_wolf = True
+        self.originator_attacked_by_wolf = True
 
 
-class WolfAction(GameAction, CancelledByMedic):
+class WolfAction(GameAction, AffectedByMedic):
     def execute(self, game):
         target_name = self.target.model.user.name
 
-        if self.cancelled_by_medic:
+        if self.target_saved_by_medic:
             game.send_chat_message(
                 f"{target_name} was attacked but survived!",
                 is_strong=True
