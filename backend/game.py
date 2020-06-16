@@ -287,12 +287,11 @@ class WurwolvesGame():
 
         game.stage = GameStage.NIGHT
 
+        player_roles = roles.assign_roles(len(game.players))
+
         player: Player
-        for player in game.players:
-            # For now, just assign some random roles
-            non_spectator_roles = list(PlayerRole)
-            non_spectator_roles.remove(PlayerRole.SPECTATOR)
-            player.role = random.choice(non_spectator_roles)
+        for player, role in zip(game.players, player_roles):
+            player.role = role
             player.state = PlayerState.ALIVE
 
     @db_scoped
