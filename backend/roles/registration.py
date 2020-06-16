@@ -15,7 +15,6 @@ router = APIRouter()
 # up how a role should behave given it a PlayerRole enum
 ROLE_MAP: Dict[PlayerRole, RoleDetails] = {}
 
-
 # Populate ROLE_MAP
 medic.register(ROLE_MAP)
 seer.register(ROLE_MAP)
@@ -29,6 +28,10 @@ if any(r not in ROLE_MAP for r in list(PlayerRole)):
 
 def get_action_func_name(role: PlayerRole):
     return f"{role.value.lower()}_action"
+
+
+def get_role_team(role: PlayerRole):
+    return ROLE_MAP[role].role_description.team
 
 
 def named(n):

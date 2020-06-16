@@ -11,6 +11,7 @@ description = RoleDescription(
     day_text="You're not playing. Guess you were late.",
     night_text="You're not playing. Guess you were late.",
     vote_text="You're not playing. Guess you were late.",
+    team=RoleDescription.Team.SPECTATORS,
     fallback_role=DEFAULT_ROLE,
 )
 

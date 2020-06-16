@@ -1,5 +1,5 @@
-from typing import NamedTuple
-from typing import Union
+from enum import Enum
+from typing import NamedTuple, Union
 
 import pydantic
 
@@ -21,7 +21,16 @@ class RoleDescription(pydantic.BaseModel):
 
     priority: int = 0
 
+    class Team(Enum):
+        VILLAGERS = 'VILLAGERS'
+        WOLVES = 'WOLVES'
+        SPECTATORS = 'SPECTATORS'
+    team: Team
+
     fallback_role: Union[None, "RoleDescription"]
+
+    class Config:
+        allow_mutation = False
 
 
 RoleDescription.update_forward_refs()
@@ -54,5 +63,6 @@ Vote for someone to lynch! Whoever gets the most votes will be killed.
 Click someone's icon and click the button. 
     """,
     vote_button_text="Vote for someone to lynch...",
+    team=RoleDescription.Team.VILLAGERS,
     fallback_role=None,
 )

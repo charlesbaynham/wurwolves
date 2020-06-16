@@ -19,6 +19,7 @@ You win if all the wolves are eliminated.
 Choose who to check...
     """,
     vote_text=None,
+    team=RoleDescription.Team.VILLAGERS,
     fallback_role=DEFAULT_ROLE,
 )
 

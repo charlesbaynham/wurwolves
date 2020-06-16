@@ -20,6 +20,7 @@ You win if all the wolves are eliminated.
     night_text="""
 Choose who to save...
     """,
+    team=RoleDescription.Team.VILLAGERS,
     fallback_role=DEFAULT_ROLE,
 )
 

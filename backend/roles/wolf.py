@@ -19,6 +19,7 @@ You win if the wolves kill enough villagers that you are equal in number
 Choose who to kill!
     """,
     vote_text=None,
+    team=RoleDescription.Team.WOLVES,
     fallback_role=DEFAULT_ROLE,
 )
 

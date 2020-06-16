@@ -11,6 +11,7 @@ description = RoleDescription(
     day_text=None,
     night_text=None,
     vote_text=None,
+    team=RoleDescription.Team.VILLAGERS,
     fallback_role=DEFAULT_ROLE,
 )
 
