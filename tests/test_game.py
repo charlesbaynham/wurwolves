@@ -128,7 +128,11 @@ def get_player(db_session, game_id, user_id) -> Game:
 @pytest.fixture
 def demo_game(db_session) -> WurwolvesGame:
     g = WurwolvesGame(GAME_ID)
+
+    # You need at least three players for start_game() to work
     g.join(USER_ID)
+    g.join(uuid())
+    g.join(uuid())
 
     return g
 
