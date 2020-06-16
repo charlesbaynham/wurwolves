@@ -27,13 +27,22 @@ Choose who to save...
 
 
 class AffectedByMedic(ActionMixin):
+    '''
+    Creates attributes `target_saved_by_medic` and `originator_saved_by_medic`
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.target_saved_by_medic = False
+        self.originator_saved_by_medic = False
 
-        self.bind_as_modifier(self.__do_mod, __class__, MedicAction, False)
+        self.bind_as_modifier(self.__orig_saved, __class__, MedicAction, True)
+        self.bind_as_modifier(self.__target_saved, __class__, MedicAction, False)
 
-    def __do_mod(self):
+    def __orig_saved(self):
+        self.originator_saved_by_medic = True
+
+    def __target_saved(self):
         self.target_saved_by_medic = True
 
 

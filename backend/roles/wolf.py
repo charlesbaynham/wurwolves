@@ -26,15 +26,27 @@ Choose who to kill!
 )
 
 
-class AffectedByWolves(ActionMixin):
+class AffectedByWolves(ActionMixin, AffectedByMedic):
+    '''
+    Creates attributes `originator_attacked_by_wolf` and `target_attacked_by_wolf`. 
+    These can be cancelled by medic action
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.originator_attacked_by_wolf = False
+        self.target_attacked_by_wolf = False
 
-        self.bind_as_modifier(self.__do_mod, __class__, WolfAction, True)
+        self.bind_as_modifier(self.__orig_attacked, __class__, WolfAction, True)
+        self.bind_as_modifier(self.__target_attacked, __class__, WolfAction, False)
 
-    def __do_mod(self):
-        self.originator_attacked_by_wolf = True
+    def __orig_attacked(self):
+        if not self.originator_saved_by_medic:
+            self.originator_attacked_by_wolf = True
+
+    def __target_attacked(self):
+        if not self.target_saved_by_medic:
+            self.target_attacked_by_wolf = True
 
 
 class WolfAction(GameAction, AffectedByMedic):
