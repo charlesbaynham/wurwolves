@@ -3,7 +3,8 @@ The Wolf role
 '''
 import logging
 from ..model import PlayerRole
-from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
+from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails, ActionMixin
+from .medic import CancelledByMedic
 
 
 description = RoleDescription(
@@ -24,9 +25,39 @@ Choose who to kill!
 )
 
 
-class WolfAction(GameAction):
+class CancelledByWolf(ActionMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cancelled_by_wolf = False
+
+        self.bind_as_modifier(self.__do_mod, __class__, WolfAction, True)
+
+    def __do_mod(self):
+        self.cancelled_by_wolf = True
+
+
+class WolfAction(GameAction, CancelledByMedic):
+    mixins_affecting_originators = []
+    mixins_affecting_targets = []
+
+    def do_modifiers(self):
+        for MixinClass in self.mixins_affecting_originators:
+            for action in self.target.originated_from:
+                if isinstance(action, MixinClass):
+                    f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
+                    f()
+        for MixinClass in self.mixins_affecting_targets:
+            for action in self.target.targetted_by:
+                if isinstance(action, MixinClass):
+                    f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
+                    f()
+
     def execute(self, game):
-        logging.warning("Wolf action occurred but not written yet")
+
+        if self.cancelled_by_medic:
+            logging.warning("Wolf attacked but the medic saved")
+        else:
+            logging.warning("Wolf attacked successfully")
 
 
 def register(role_map):

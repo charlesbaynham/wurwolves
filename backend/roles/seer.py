@@ -4,6 +4,7 @@ The Seer role
 import logging
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
+from .wolf import CancelledByWolf
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -26,7 +27,7 @@ Choose who to check...
 )
 
 
-class SeerAction(GameAction):
+class SeerAction(GameAction, CancelledByWolf):
     def execute(self, game: 'WurwolvesGame'):
         from .registration import get_role_team
 
@@ -36,7 +37,13 @@ class SeerAction(GameAction):
 
         logging.info(f"Seer: {seer_name} checks {target_name}")
 
-        if target_is_wolf:
+        if self.cancelled_by_wolf:
+            game.send_chat_message(
+                f"You checked {target_name} but were rudely interrupted",
+                is_strong=False,
+                player_list=[self.originator.model.id]
+            )
+        elif target_is_wolf:
             game.send_chat_message(
                 f"You checked {target_name}... they are a wolf!",
                 is_strong=True,

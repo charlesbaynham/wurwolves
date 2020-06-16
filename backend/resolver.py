@@ -162,6 +162,9 @@ class GameAction:
         if self.target:
             self.target.targetted_by.append(self)
 
+        # Init any mixins registered
+        super().__init__()
+
     def execute(self, game):
         raise NotImplementedError
 
