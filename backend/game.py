@@ -190,6 +190,12 @@ class WurwolvesGame():
         ).first()
 
     @db_scoped
+    def get_player_by_id(self, player_id: int) -> Player:
+        return self._session.query(Player).filter(
+            Player.id == player_id
+        ).first()
+
+    @db_scoped
     def get_player_model(self, user_id: UUID) -> PlayerModel:
         p = self.get_player(user_id)
         return PlayerModel.from_orm(p) if p else None
@@ -327,11 +333,16 @@ class WurwolvesGame():
             game_id=self.game_id,
         )
 
+        players = []
+
         for user_id in user_list:
-            player_list.append(self.get_player(user_id))
-        
+            players.append(self.get_player(user_id))
+
         for player_id in player_list:
-            m.visible_to.append(player_id)
+            players.append(self.get_player_by_id(player_id))
+
+        for player in players:
+            m.visible_to.append(player)
 
         self._session.add(m)
 
