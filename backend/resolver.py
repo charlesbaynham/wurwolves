@@ -138,7 +138,55 @@ class GamePlayer:
         self.targetted_by: List[GameAction] = []
 
 
+class ActionMixin():
+    @staticmethod
+    def get_action_method_name(MixinClass):
+        return "mod_" + MixinClass.__name__
+
+    def bind_as_modifier(self, func, MixinClass, ActionClass, alter_originating: bool):
+        '''
+        Bind a function from this mixin to the self object using a name generated from the mixin's class
+
+        All instances of ActionClass will now search for actions of MixinClass
+        in the do_modifiers() stage. If they find any, they will execute the method func. 
+
+        Example usage:
+
+            self.bind_as_modifier(self.__do_mod, CancelledByMedic, MedicAction, False)
+
+        This is used to bind dunder methods of a mixin to the parent GameAction with a predictable name
+
+        alter_originating specifices whether the mixin should alter action which originate from the target 
+        or which also target the target. E.g. a Medic wants to alter actions which target the target, whereas
+        a Prostitute wants to alter actions which originate from the target. 
+        '''
+
+        # Make a new class method which calls func
+        def new_func(self):
+            func()
+
+        mod_func_name = self.get_action_method_name(MixinClass)
+        new_func.__name__ = mod_func_name
+
+        bound_func = new_func.__get__(self, self.__class__)
+        setattr(self, mod_func_name, bound_func)
+
+        # Register the MixinClass as a modifier of targets for this ActionClass
+        if alter_originating:
+            if ActionClass not in GameAction.mixins_affecting_originators:
+                GameAction.mixins_affecting_originators[ActionClass] = []
+            GameAction.mixins_affecting_originators[ActionClass].append(MixinClass)
+        else:
+            if ActionClass not in GameAction.mixins_affecting_targets:
+                GameAction.mixins_affecting_targets[ActionClass] = []
+            GameAction.mixins_affecting_targets[ActionClass].append(MixinClass)
+
+
 class GameAction:
+    # These are lists of mixins that affect child classes of this class, sorted by the child class
+    mixins_affecting_originators = {}
+    mixins_affecting_targets = {}
+
     def __init__(
         self,
         action_model: ActionModel,
@@ -169,7 +217,18 @@ class GameAction:
         raise NotImplementedError
 
     def do_modifiers(self):
-        pass
+        if self.__class__ in GameAction.mixins_affecting_originators:
+            for MixinClass in GameAction.mixins_affecting_originators[self.__class__]:
+                for action in self.target.originated_from:
+                    if isinstance(action, MixinClass):
+                        f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
+                        f()
+        if self.__class__ in GameAction.mixins_affecting_targets:
+            for MixinClass in GameAction.mixins_affecting_targets[self.__class__]:
+                for action in self.target.targetted_by:
+                    if isinstance(action, MixinClass):
+                        f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
+                        f()
 
     @staticmethod
     def get_priority(role: PlayerRole):

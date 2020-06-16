@@ -4,9 +4,10 @@ The Medic role
 The Medic can save one person every night. 
 '''
 import logging
-from ..model import PlayerRole
-from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails, ActionMixin
 
+from ..model import PlayerRole
+from ..resolver import ActionMixin, GameAction
+from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
 
 description = RoleDescription(
     display_name="Medic",
@@ -37,21 +38,6 @@ class CancelledByMedic(ActionMixin):
 
 
 class MedicAction(GameAction):
-    mixins_affecting_originators = []
-    mixins_affecting_targets = []
-
-    def do_modifiers(self):
-        for MixinClass in self.mixins_affecting_originators:
-            for action in self.target.originated_from:
-                if isinstance(action, MixinClass):
-                    f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
-                    f()
-        for MixinClass in self.mixins_affecting_targets:
-            for action in self.target.targetted_by:
-                if isinstance(action, MixinClass):
-                    f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
-                    f()
-
     def execute(self, game):
         logging.warning("Medic action occurred but not written yet")
 

@@ -2,10 +2,11 @@
 The Wolf role
 '''
 import logging
-from ..model import PlayerRole
-from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails, ActionMixin
-from .medic import CancelledByMedic
 
+from ..model import PlayerRole
+from ..resolver import ActionMixin, GameAction
+from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
+from .medic import CancelledByMedic
 
 description = RoleDescription(
     display_name="Wolf",
@@ -37,21 +38,6 @@ class CancelledByWolf(ActionMixin):
 
 
 class WolfAction(GameAction, CancelledByMedic):
-    mixins_affecting_originators = []
-    mixins_affecting_targets = []
-
-    def do_modifiers(self):
-        for MixinClass in self.mixins_affecting_originators:
-            for action in self.target.originated_from:
-                if isinstance(action, MixinClass):
-                    f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
-                    f()
-        for MixinClass in self.mixins_affecting_targets:
-            for action in self.target.targetted_by:
-                if isinstance(action, MixinClass):
-                    f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
-                    f()
-
     def execute(self, game):
 
         if self.cancelled_by_medic:

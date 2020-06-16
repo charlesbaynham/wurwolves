@@ -2,8 +2,10 @@
 The Seer role
 '''
 import logging
+
 from ..model import PlayerRole
-from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails
+from ..resolver import GameAction
+from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
 from .wolf import CancelledByWolf
 
 if False:  # for typing

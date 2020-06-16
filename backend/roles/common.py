@@ -68,37 +68,3 @@ Click someone's icon and click the button.
 )
 
 
-class ActionMixin():
-    @staticmethod
-    def get_action_method_name(MixinClass):
-        return "mod_" + MixinClass.__name__
-
-    def bind_as_modifier(self, func, MixinClass, ActionClass, alter_originating: bool):
-        '''
-        Bind a function from this mixin to the self object using a name generated from the mixin's class
-
-        All instances of ActionClass will now search for actions of MixinClass
-        in the do_modifiers() stage. If they find any, they will execute the method func. 
-
-        This is used to bind dunder methods of a mixin to the parent GameAction with a predictable name
-
-        alter_originating specifices whether the mixin should alter action which originate from the target 
-        or which also target the target. E.g. a Medic wants to alter actions which target the target, whereas
-        a Prostitute wants to alter actions which originate from the target. 
-        '''
-
-        # Make a new class method which calls func
-        def new_func(self):
-            func()
-
-        mod_func_name = self.get_action_method_name(MixinClass)
-        new_func.__name__ = mod_func_name
-
-        bound_func = new_func.__get__(self, self.__class__)
-        setattr(self, mod_func_name, bound_func)
-
-        # Register the MixinClass as a modifier of targets for the ActionClass
-        if alter_originating:
-            ActionClass.mixins_affecting_originators.append(MixinClass)
-        else:
-            ActionClass.mixins_affecting_targets.append(MixinClass)
