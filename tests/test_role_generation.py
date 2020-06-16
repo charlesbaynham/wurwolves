@@ -31,13 +31,13 @@ def test_seer_always_present(num_players):
     assert any(r is PlayerRole.SEER for r in roles)
 
 
-@pytest.mark.parametrize("num_players", [6])
+@pytest.mark.parametrize("num_players", [5])
 def test_num_villagers(num_players):
 
     roles = []
     for _ in range(10):
-        roles += assign_roles(num_players, probability_of_villager=0.75)
+        roles += assign_roles(num_players, probability_of_villager=0.25)
 
     frac_villagers = sum(r is PlayerRole.VILLAGER for r in roles) / len(roles)
 
-    assert 0.7 < frac_villagers < 0.8
+    assert 0.15 < frac_villagers < 0.35
