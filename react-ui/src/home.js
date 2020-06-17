@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import ReactMarkdown from 'react-markdown';
 import Topbar from './features/Topbar'
 
+
 class Home extends Component {
     render() {
         return (
@@ -19,12 +20,8 @@ Play werewolves online with an automated narrator. If you're not in the same roo
 you should probably start a video call. 
 
 The game hasn't started yet: you'll need at least 5 players for the game to be playable,
-but it's more fun with 7 or more. Press the \"Start a new game\" button 
+but it's more fun with 7 or more. Press the "Start a new game" button 
 and then share the link with your friends. 
-
-
-
-
                     `} />
                     </Col></Row>
                     <Row><Col>

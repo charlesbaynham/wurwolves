@@ -34,6 +34,7 @@ function Controls(props) {
     }
 
     const doButtonAction = async () => {
+
         // don't send again while we are sending
         if (isSending) return
         // update state
@@ -44,7 +45,7 @@ function Controls(props) {
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         const r = await fetch(url, { method: 'post' })
-        
+
         setIsSending(false)
 
         if (r.ok) {
@@ -58,7 +59,7 @@ function Controls(props) {
             // Add then remove the "error" class from the button
             setIsError(true);
             await wait(1000);
-            setIsError(false);            
+            setIsError(false);
         }
     }
 
@@ -66,11 +67,13 @@ function Controls(props) {
         <div className="row pt-4 pt-md-0 d-flex  flex-row-reverse align-items-center">
             <div className="col-md">
                 {role.button_visible ?
-                    <Button onClick={doButtonAction} variant="primary"
-                        size="lg" block disabled={!role.button_enabled || isSending}
-                        className={isError ? "error" : ""}>
-                        <em>{role.button_text}</em>
-                    </Button>
+                    <div>
+                        <Button onClick={doButtonAction} variant="primary"
+                            size="lg" block disabled={!role.button_enabled || isSending}
+                            className={isError ? "error" : ""}>
+                            <em>{role.button_text}</em>
+                        </Button>
+                    </div>
                     : null}
             </div>
             <div className="col-md pt-4 pt-md-0">

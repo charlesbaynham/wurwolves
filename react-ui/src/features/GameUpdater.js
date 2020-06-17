@@ -47,7 +47,6 @@ class GameUpdater extends Component {
             r.json().then(new_hash => {
                 this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
                 if (new_hash !== this.props.state_hash) {
-                    console.log(`Got new_hash = ${new_hash}`)
                     this.updateState()
                 }
             })
