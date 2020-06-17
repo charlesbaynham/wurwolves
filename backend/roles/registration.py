@@ -112,6 +112,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
         if ready:
             self.process_actions()
 
+        self.touch()
+
     # Make one for the API router that does / does not require a selected_id
     if ROLE_MAP[role].role_description.night_action_select_person:
         @router.post(f"/{{game_tag}}/{func_name}")
