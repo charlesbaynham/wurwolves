@@ -35,8 +35,6 @@ function Controls(props) {
 
     const doButtonAction = async () => {
 
-        console.log(role)
-
         // don't send again while we are sending
         if (isSending) return
         // update state
