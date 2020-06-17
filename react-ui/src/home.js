@@ -12,7 +12,7 @@ class Home extends Component {
         return (
             <div>
                 <Topbar />
-                <Container id="home-content-box" className="container-sm pt-5 bg-light bg-night-dark">
+                <Container id="home-content-box" className="container-sm pt-5 qbg-night-dark">
                     <Row><Col><h1 id="home-title">Wurwolves</h1></Col></Row>
                     <Row><Col>
                         <ReactMarkdown source={`

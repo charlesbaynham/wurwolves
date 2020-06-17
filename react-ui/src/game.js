@@ -11,7 +11,7 @@ function Game(props) {
     return (
         <div>
             <Topbar game_tag={game_tag} />
-            <Container id="content-box" className="container pt-5 bg-light bg-night-dark">
+            <Container id="content-box" className="container pt-5 bg-night-dark">
                 <GameUpdater game_tag={game_tag} />
                 <GridAndChat game_tag={game_tag} />
                 <h1 className="row col d-md-block d-none">Your role</h1>
