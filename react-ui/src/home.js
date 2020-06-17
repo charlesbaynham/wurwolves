@@ -11,22 +11,27 @@ class Home extends Component {
         return (
             <div>
                 <Topbar />
-                <Container id="content-box" className="pt-5 bg-light bg-night-dark">
-                    <Row><Col><h1>Welcome to Wurwolves...</h1></Col></Row>
-                    <Row>
-                        <Col md>
-                            <ReactMarkdown source={`
-This is where I should write a bit of a description of this site, maybe some instructions. 
+                <Container id="home-content-box" className="container-sm pt-5 bg-light bg-night-dark">
+                    <Row><Col><h1 id="home-title">Wurwolves</h1></Col></Row>
+                    <Row><Col>
+                        <ReactMarkdown source={`
+Play werewolves online with an automated narrator. If you're not in the same room,
+you should probably start a video call. 
 
-Probably some other stuff too. 
+The game hasn't started yet: you'll need at least 5 players for the game to be playable,
+but it's more fun with 7 or more. Press the \"Start a new game\" button 
+and then share the link with your friends. 
+
+
+
+
                     `} />
-                        </Col>
-                        <Col md>
-                            <Button block onClick={this.start_game}>
-                                Start a new game
+                    </Col></Row>
+                    <Row><Col>
+                        <Button block size="lg" onClick={this.start_game}>
+                            Start a new game
                     </Button>
-                        </Col>
-                    </Row>
+                    </Col></Row>
                 </Container>
             </div>
         );

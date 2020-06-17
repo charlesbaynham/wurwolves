@@ -15,6 +15,7 @@ class RoleDescription(pydantic.BaseModel):
     night_button_text: Union[None, str] = None
     vote_button_text: Union[None, str] = None
 
+    lobby_text: Union[None, str] = None
     day_text: Union[None, str] = None
     night_text: Union[None, str] = None
     vote_text: Union[None, str] = None
@@ -50,6 +51,18 @@ class RoleDetails(NamedTuple):
 DEFAULT_ROLE = RoleDescription(
     display_name="Villager",
     night_action=False,
+    lobby_text="""
+Welcome to Wurwolves! 
+The game hasn't started yet: you'll need at least 5 players for the game to be playable,
+but it's more fun with 7 or more. Once everyone has joined, press the \"Start game\" button. 
+
+To invite more people, just send them the link to this page. 
+
+This website is designed for playing with people you already know:
+it handles the gameplay but you'll also need to communicate so you
+can argue and discuss what happens. If you're not in the same room,
+you should probably start a video call. 
+    """,
     day_text="""
 You are a villager. You have no special powers. Try not to get eaten!
 

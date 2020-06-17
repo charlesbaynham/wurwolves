@@ -106,7 +106,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         roles={
             GameStage.LOBBY: FrontendState.RoleState(
                 title=role_details.display_name,
-                text=role_details.day_text or role_details.fallback_role.day_text,
+                text=role_details.lobby_text or role_details.fallback_role.lobby_text,
                 button_visible=True,
                 button_enabled=True,
                 button_submit_func='start_game',
