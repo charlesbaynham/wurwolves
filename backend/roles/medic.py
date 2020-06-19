@@ -1,8 +1,8 @@
-'''
+"""
 The Medic role
 
 The Medic can save one person every night. 
-'''
+"""
 import logging
 
 from ..model import PlayerRole
@@ -27,9 +27,9 @@ Choose who to save...
 
 
 class AffectedByMedic(ActionMixin):
-    '''
+    """
     Creates attributes `target_saved_by_medic` and `originator_saved_by_medic`
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,6 +52,4 @@ class MedicAction(GameAction):
 
 
 def register(role_map):
-    role_map.update({
-        PlayerRole.MEDIC: RoleDetails(description, MedicAction)
-    })
+    role_map.update({PlayerRole.MEDIC: RoleDetails(description, MedicAction)})

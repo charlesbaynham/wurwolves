@@ -1,12 +1,17 @@
-
-
 from uuid import uuid4 as uuid
 
 import pytest
 
 from backend.game import WurwolvesGame
-from backend.model import (Game, GameStage, Player, PlayerRole, PlayerState,
-                           User, hash_game_tag)
+from backend.model import (
+    Game,
+    GameStage,
+    Player,
+    PlayerRole,
+    PlayerState,
+    User,
+    hash_game_tag,
+)
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -100,6 +105,7 @@ def test_chat(demo_game, db_session):
     visible_messages = demo_game.get_messages(USER_ID)
 
     from json import dumps
+
     summary = dumps([v.dict() for v in visible_messages])
 
     assert "Hello world!" in summary
@@ -109,20 +115,15 @@ def test_chat(demo_game, db_session):
 
 
 def get_game(db_session, id) -> Game:
-    return (db_session
-            .query(Game)
-            .filter(Game.id == hash_game_tag(id))
-            .first())
+    return db_session.query(Game).filter(Game.id == hash_game_tag(id)).first()
 
 
 def get_player(db_session, game_id, user_id) -> Game:
-    return (db_session
-            .query(Player)
-            .filter(
-                Player.game_id == hash_game_tag(game_id),
-                Player.user_id == user_id
-            )
-            .first())
+    return (
+        db_session.query(Player)
+        .filter(Player.game_id == hash_game_tag(game_id), Player.user_id == user_id)
+        .first()
+    )
 
 
 @pytest.fixture

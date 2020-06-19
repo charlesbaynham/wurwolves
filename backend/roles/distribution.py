@@ -11,9 +11,7 @@ guaranteed_roles = [
 
 # Roles with weightings
 # Weightings only have meaning relative to each other
-randomised_roles = {
-    PlayerRole.JESTER: 20
-}
+randomised_roles = {PlayerRole.JESTER: 20}
 
 # Average probability that a player is a villager
 # This cannot be satisfied for very small games (because all the guaranteed roles
@@ -42,10 +40,12 @@ def num_wolves(num_players: int):
     try:
         return lookup[num_players]
     except KeyError:
-        return math.ceil(num_players/5)
+        return math.ceil(num_players / 5)
 
 
-def assign_roles(num_players: int, probability_of_villager=PROB_VILLAGER) -> List[PlayerRole]:
+def assign_roles(
+    num_players: int, probability_of_villager=PROB_VILLAGER
+) -> List[PlayerRole]:
     """
     Return a randomised list of roles for this game, or None if not enough players have joined
 
@@ -56,11 +56,13 @@ def assign_roles(num_players: int, probability_of_villager=PROB_VILLAGER) -> Lis
         List[PlayerRole]: A num_players long list of PlayerRoles in a random order
     """
 
-    if num_players < len(guaranteed_roles)+1:
+    if num_players < len(guaranteed_roles) + 1:
         return None
 
     # Decide the number of villagers
-    num_villagers = sum(random.random() < probability_of_villager for _ in range(num_players))
+    num_villagers = sum(
+        random.random() < probability_of_villager for _ in range(num_players)
+    )
     max_num_villagers = num_players - num_wolves(num_players) - len(guaranteed_roles)
     if num_villagers > max_num_villagers:
         num_villagers = max_num_villagers
@@ -109,5 +111,4 @@ def weighted_sample_without_replacement(population, weights, k=1, fallback=None)
             if weights[i]:
                 weights[i] = 0.0
                 indices.append(i)
-    return [fallback if i is None else population[i]
-            for i in indices]
+    return [fallback if i is None else population[i] for i in indices]

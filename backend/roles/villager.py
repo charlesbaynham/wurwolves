@@ -1,6 +1,6 @@
-'''
+"""
 The Villager role
-'''
+"""
 from ..model import PlayerRole
 from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
 
@@ -17,6 +17,4 @@ description = RoleDescription(
 
 
 def register(role_map):
-    role_map.update({
-        PlayerRole.VILLAGER: RoleDetails(description, None)
-    })
+    role_map.update({PlayerRole.VILLAGER: RoleDetails(description, None)})

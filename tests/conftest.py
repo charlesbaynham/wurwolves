@@ -6,13 +6,13 @@ TESTING_DB_URL = "sqlite:///testing.db"
 
 @pytest.fixture(scope="session")
 def engine():
-    ''' Return an engine to the database.
+    """ Return an engine to the database.
 
     This fixture should not be used as the database is not cleaned between
     invocations. Use db_session instead. 
-    '''
-    os.environ['DATABASE_URL'] = TESTING_DB_URL
-    
+    """
+    os.environ["DATABASE_URL"] = TESTING_DB_URL
+
     import backend.database
 
     backend.database.load()
@@ -22,10 +22,10 @@ def engine():
 
 @pytest.fixture
 def db_session(engine):
-    '''
+    """
     Get an SQLAlchemy database session to a clean database with the model schema
     set up. 
-    '''
+    """
     from backend.model import Base
     from backend.database import Session
 
@@ -43,9 +43,9 @@ def db_session(engine):
 
 @pytest.fixture
 def api_client(db_session):
-    '''
+    """
     Get a FastAPI TestClient pointing at the app with a clean database session
-    '''
+    """
     from fastapi.testclient import TestClient
     from backend.main import app
 

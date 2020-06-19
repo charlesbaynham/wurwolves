@@ -38,9 +38,12 @@ def get_role_team(role: PlayerRole):
 def named(n):
     def f(func):
         func.__name__ = f"{n}_action"
-        func.__doc__ = ('An automatically registered function to perform '
-                        f'the action associated with the {n} role')
+        func.__doc__ = (
+            "An automatically registered function to perform "
+            f"the action associated with the {n} role"
+        )
         return func
+
     return f
 
 
@@ -55,37 +58,50 @@ def register_role(WurwolvesGame, role: PlayerRole):
     func_name = get_action_func_name(role)
 
     # Define a function to be added to WurwolvesGame
-    @ WurwolvesGame.db_scoped
-    @ named(func_name)
+    @WurwolvesGame.db_scoped
+    @named(func_name)
     def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID = None):
 
         game = self.get_game()
 
         if not game:
-            raise HTTPException(status_code=404, detail=f"Game {self.game_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Game {self.game_id} not found"
+            )
 
         # Check if this user is entitled to act in this capacity
         player = self.get_player(user_id)
         if not player:
             raise HTTPException(status_code=404, detail=f"Player {user_id} not found")
         if player.role != role:
-            raise HTTPException(status_code=403, detail=f"Player {user_id} is not a {role}")
+            raise HTTPException(
+                status_code=403, detail=f"Player {user_id} is not a {role}"
+            )
         if not ROLE_MAP[role].role_description.night_action:
-            raise HTTPException(status_code=403, detail=f"Player {user_id} in role {role} has no night action")
+            raise HTTPException(
+                status_code=403,
+                detail=f"Player {user_id} in role {role} has no night action",
+            )
         if not game.stage == GameStage.NIGHT:
-            raise HTTPException(status_code=403, detail="Actions may only be performed at night")
+            raise HTTPException(
+                status_code=403, detail="Actions may only be performed at night"
+            )
 
         # Check if this player has already acted this round
-        action = self._session.query(Action).filter(
-            Action.game_id == game.id,
-            Action.stage_id == game.stage_id,
-            Action.player_id == player.id
-        ).first()
+        action = (
+            self._session.query(Action)
+            .filter(
+                Action.game_id == game.id,
+                Action.stage_id == game.stage_id,
+                Action.player_id == player.id,
+            )
+            .first()
+        )
 
         if action:
             raise HTTPException(
                 status_code=403,
-                detail=f"Action already completed for player {user_id} in round {game.stage_id}"
+                detail=f"Action already completed for player {user_id} in round {game.stage_id}",
             )
 
         if selected_id:
@@ -104,8 +120,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
         players = game.players
         ready = True
         for player in players:
-            if (ROLE_MAP[player.role].role_description.night_action and
-                    not any(a.stage_id == game.stage_id for a in player.actions)):
+            if ROLE_MAP[player.role].role_description.night_action and not any(
+                a.stage_id == game.stage_id for a in player.actions
+            ):
                 ready = False
                 break
 
@@ -116,6 +133,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
     # Make one for the API router that does / does not require a selected_id
     if ROLE_MAP[role].role_description.night_action_select_person:
+
         @router.post(f"/{{game_tag}}/{func_name}")
         @named(func_name)
         def api_func(
@@ -126,7 +144,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
             g = WurwolvesGame(game_tag)
             f = getattr(WurwolvesGame, func_name)
             f(g, user_id, selected_id)
+
     else:
+
         @router.post(f"/{{game_tag}}/{func_name}")
         @named(func_name)
         def api_func(

@@ -1,6 +1,6 @@
-'''
+"""
 The Seer role
-'''
+"""
 import logging
 
 from ..model import PlayerRole
@@ -30,12 +30,14 @@ Choose who to check...
 
 
 class SeerAction(GameAction, AffectedByWolves):
-    def execute(self, game: 'WurwolvesGame'):
+    def execute(self, game: "WurwolvesGame"):
         from .registration import get_role_team
 
         seer_name = self.originator.model.user.name
         target_name = self.target.model.user.name
-        target_is_wolf = get_role_team(self.target.model.role) == RoleDescription.Team.WOLVES
+        target_is_wolf = (
+            get_role_team(self.target.model.role) == RoleDescription.Team.WOLVES
+        )
 
         logging.info(f"Seer: {seer_name} checks {target_name}")
 
@@ -43,23 +45,21 @@ class SeerAction(GameAction, AffectedByWolves):
             game.send_chat_message(
                 f"You checked {target_name} but were rudely interrupted",
                 is_strong=False,
-                player_list=[self.originator.model.id]
+                player_list=[self.originator.model.id],
             )
         elif target_is_wolf:
             game.send_chat_message(
                 f"You checked {target_name}... they are a wolf!",
                 is_strong=True,
-                player_list=[self.originator.model.id]
+                player_list=[self.originator.model.id],
             )
         else:
             game.send_chat_message(
                 f"You checked {target_name}... they are not a wolf",
                 is_strong=False,
-                player_list=[self.originator.model.id]
+                player_list=[self.originator.model.id],
             )
 
 
 def register(role_map):
-    role_map.update({
-        PlayerRole.SEER: RoleDetails(description, SeerAction)
-    })
+    role_map.update({PlayerRole.SEER: RoleDetails(description, SeerAction)})

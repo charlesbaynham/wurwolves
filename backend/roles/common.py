@@ -23,10 +23,11 @@ class RoleDescription(pydantic.BaseModel):
     priority: int = 0
 
     class Team(Enum):
-        VILLAGERS = 'VILLAGERS'
-        WOLVES = 'WOLVES'
-        SPECTATORS = 'SPECTATORS'
+        VILLAGERS = "VILLAGERS"
+        WOLVES = "WOLVES"
+        SPECTATORS = "SPECTATORS"
         JESTER = "JESTER"
+
     team: Team
 
     fallback_role: Union[None, "RoleDescription"]
@@ -39,11 +40,12 @@ RoleDescription.update_forward_refs()
 
 
 class RoleDetails(NamedTuple):
-    '''
+    """
     A RoleDetails tuple contains a complete description of what a role entails
     It can be used to figure out how a role should behave and will be stored in
     .registration.ROLE_MAP
-    '''
+    """
+
     role_description: RoleDescription
     role_action: GameAction
 
@@ -80,5 +82,3 @@ Click someone's icon and click the button.
     team=RoleDescription.Team.VILLAGERS,
     fallback_role=None,
 )
-
-

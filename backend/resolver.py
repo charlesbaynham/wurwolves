@@ -1,4 +1,4 @@
-'''
+"""
 Resolve a game stage
 
 At the end of the night, collate all the Actions stored in the database and
@@ -121,7 +121,7 @@ Step 5
     about and left to the garbage collector) and the game moves to the next
     stage
 
-'''
+"""
 
 from typing import Dict, List
 
@@ -138,13 +138,13 @@ class GamePlayer:
         self.targetted_by: List[GameAction] = []
 
 
-class ActionMixin():
+class ActionMixin:
     @staticmethod
     def get_action_method_name(MixinClass):
         return "mod_" + MixinClass.__name__
 
     def bind_as_modifier(self, func, MixinClass, ActionClass, alter_originating: bool):
-        '''
+        """
         Bind a function from this mixin to the self object using a name generated from the mixin's class
 
         All instances of ActionClass will now search for actions of MixinClass
@@ -159,7 +159,7 @@ class ActionMixin():
         alter_originating specifices whether the mixin should alter action which originate from the target 
         or which also target the target. E.g. a Medic wants to alter actions which target the target, whereas
         a Prostitute wants to alter actions which originate from the target. 
-        '''
+        """
 
         # Make a new class method which calls func
         def new_func(self):
@@ -187,11 +187,7 @@ class GameAction:
     mixins_affecting_originators = {}
     mixins_affecting_targets = {}
 
-    def __init__(
-        self,
-        action_model: ActionModel,
-        players: Dict[int, GamePlayer]
-    ):
+    def __init__(self, action_model: ActionModel, players: Dict[int, GamePlayer]):
         self.model: ActionModel = action_model
         self.originator: GamePlayer = None
         self.target: GamePlayer = None
@@ -221,13 +217,17 @@ class GameAction:
             for MixinClass in GameAction.mixins_affecting_originators[self.__class__]:
                 for action in self.target.originated_from:
                     if isinstance(action, MixinClass):
-                        f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
+                        f = getattr(
+                            action, ActionMixin.get_action_method_name(MixinClass)
+                        )
                         f()
         if self.__class__ in GameAction.mixins_affecting_targets:
             for MixinClass in GameAction.mixins_affecting_targets[self.__class__]:
                 for action in self.target.targetted_by:
                     if isinstance(action, MixinClass):
-                        f = getattr(action, ActionMixin.get_action_method_name(MixinClass))
+                        f = getattr(
+                            action, ActionMixin.get_action_method_name(MixinClass)
+                        )
                         f()
 
     @staticmethod
@@ -240,12 +240,11 @@ class GameAction:
             role (PlayerRole): The role
         """
         from .roles import ROLE_MAP
+
         return ROLE_MAP[role].role_description.priority
 
 
-def process_actions(
-    game: 'WurwolvesGame'
-):
+def process_actions(game: "WurwolvesGame"):
     from .roles import ROLE_MAP
 
     players = game.get_players_model()
@@ -261,9 +260,7 @@ def process_actions(
         game_actions.append(action_class(a, game_players))
 
     # Sort actions by priority then by action id
-    game_actions.sort(
-        key=lambda a: (a.priority, a.model.id)
-    )
+    game_actions.sort(key=lambda a: (a.priority, a.model.id))
 
     # In order, modify all other actions
     for a in game_actions:

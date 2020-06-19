@@ -1,6 +1,6 @@
-'''
+"""
 The Wolf role
-'''
+"""
 import logging
 
 from ..model import PlayerRole
@@ -27,10 +27,10 @@ Choose who to kill!
 
 
 class AffectedByWolves(AffectedByMedic):
-    '''
+    """
     Creates attributes `originator_attacked_by_wolf` and `target_attacked_by_wolf`. 
     These can be cancelled by medic action
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,17 +55,13 @@ class WolfAction(GameAction, AffectedByMedic):
 
         if self.target_saved_by_medic:
             game.send_chat_message(
-                f"{target_name} was attacked but survived!",
-                is_strong=True
+                f"{target_name} was attacked but survived!", is_strong=True
             )
         else:
             game.send_chat_message(
-                f"{target_name} was brutally murdered",
-                is_strong=True
+                f"{target_name} was brutally murdered", is_strong=True
             )
 
 
 def register(role_map):
-    role_map.update({
-        PlayerRole.WOLF: RoleDetails(description, WolfAction)
-    })
+    role_map.update({PlayerRole.WOLF: RoleDetails(description, WolfAction)})

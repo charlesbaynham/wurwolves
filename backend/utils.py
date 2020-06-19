@@ -12,4 +12,4 @@ def hash_str_to_int(text: str, N: int = 3):
     hash_bytes = list(hash_obj.digest())
 
     # Slice off the first N bytes and cast to integer
-    return int.from_bytes(hash_bytes[0:N], 'big')
+    return int.from_bytes(hash_bytes[0:N], "big")

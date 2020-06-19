@@ -7,8 +7,16 @@ from uuid import UUID
 import pydantic
 import sqlalchemy.sql.functions as func
 from sqlalchemy.sql import text
-from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
-                        String, Table)
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+)
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
@@ -58,12 +66,13 @@ class GameStage(str, enum.Enum):
 
 
 def update_game_counter(context):
-    val = context.get_current_parameters()['update_counter']
-    return val+1 if val else 1
+    val = context.get_current_parameters()["update_counter"]
+    return val + 1 if val else 1
 
 
 class Game(Base):
     """The current state of a game"""
+
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -71,46 +80,40 @@ class Game(Base):
 
     @declared_attr
     def update_counter(cls):
-        return Column(Integer(), default=1, onupdate=text('update_counter + 1'))
+        return Column(Integer(), default=1, onupdate=text("update_counter + 1"))
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
 
-    players = relationship(
-        'Player', backref='game', lazy=True
-    )
+    players = relationship("Player", backref="game", lazy=True)
 
-    messages = relationship(
-        'Message', backref='game', lazy=True
-    )
+    messages = relationship("Message", backref="game", lazy=True)
 
-    actions = relationship(
-        'Action', backref='game', lazy=True
-    )
+    actions = relationship("Action", backref="game", lazy=True)
 
     def touch(self):
         self.update_counter += 1
 
     def __repr__(self):
-        return '<Game id={}, players={}>'.format(self.id, self.players)
+        return "<Game id={}, players={}>".format(self.id, self.players)
 
 
 class PlayerRole(enum.Enum):
-    VILLAGER = 'VILLAGER'
-    WOLF = 'WOLF'
-    SEER = 'SEER'
-    MEDIC = 'MEDIC'
-    JESTER = 'JESTER'
-    SPECTATOR = 'SPECTATOR'
+    VILLAGER = "VILLAGER"
+    WOLF = "WOLF"
+    SEER = "SEER"
+    MEDIC = "MEDIC"
+    JESTER = "JESTER"
+    SPECTATOR = "SPECTATOR"
 
 
 class PlayerState(str, enum.Enum):
-    ALIVE = 'ALIVE'
-    WOLFED = 'WOLFED'
-    LYNCHED = 'LYNCHED'
-    NOMINATED = 'NOMINATED'
-    SECONDED = 'SECONDED'
-    SPECTATING = 'SPECTATING'
+    ALIVE = "ALIVE"
+    WOLFED = "WOLFED"
+    LYNCHED = "LYNCHED"
+    NOMINATED = "NOMINATED"
+    SECONDED = "SECONDED"
+    SPECTATING = "SPECTATING"
 
 
 class Player(Base):
@@ -119,30 +122,29 @@ class Player(Base):
 
     Each User is a Player in each game that they are in. Each Game has a Player for each player in it. 
     """
+
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    game_id = Column(Integer, ForeignKey('games.id'))
-    user_id = Column(UUIDType, ForeignKey('users.id'))
+    game_id = Column(Integer, ForeignKey("games.id"))
+    user_id = Column(UUIDType, ForeignKey("users.id"))
 
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
-    actions = relationship(
-        'Action', lazy=True, foreign_keys="Action.player_id"
-    )
+    actions = relationship("Action", lazy=True, foreign_keys="Action.player_id")
 
 
 class Action(Base):
     __tablename__ = "actions"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    game_id = Column(Integer, ForeignKey('games.id'))
-    player_id = Column(Integer, ForeignKey('players.id'))
+    game_id = Column(Integer, ForeignKey("games.id"))
+    player_id = Column(Integer, ForeignKey("players.id"))
     stage_id = Column(Integer, index=True, nullable=False)
-    selected_player_id = Column(Integer, ForeignKey('players.id'), nullable=True)
+    selected_player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
 
-    player = relationship('Player', lazy=True, foreign_keys=player_id)
-    selected_player = relationship('Player', lazy=True, foreign_keys=selected_player_id)
+    player = relationship("Player", lazy=True, foreign_keys=player_id)
+    selected_player = relationship("Player", lazy=True, foreign_keys=selected_player_id)
 
 
 class User(Base):
@@ -151,23 +153,22 @@ class User(Base):
 
     A user can be in multiple games and will have a GameRole in each
     """
+
     __tablename__ = "users"
 
-    id = Column(UUIDType,
-                primary_key=True,
-                nullable=False)
+    id = Column(UUIDType, primary_key=True, nullable=False)
     name = Column(String)
     name_is_generated = Column(Boolean, default=True)
 
-    player_roles = relationship(
-        'Player', backref='user', lazy=True)
+    player_roles = relationship("Player", backref="user", lazy=True)
 
 
 # many-to-many relationship between players and messages
 association_table = Table(
-    'message_visibility', Base.metadata,
-    Column('player_id', Integer, ForeignKey('players.id')),
-    Column('message_id', Integer, ForeignKey('messages.id'))
+    "message_visibility",
+    Base.metadata,
+    Column("player_id", Integer, ForeignKey("players.id")),
+    Column("message_id", Integer, ForeignKey("messages.id")),
 )
 
 
@@ -175,11 +176,12 @@ class Message(Base):
     """
     A message in the chatlog of a game. Each Game can have many Messages. 
     """
-    __tablename__ = 'messages'
+
+    __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, nullable=False)
     text = Column(String)
-    game_id = Column(Integer, ForeignKey('games.id'), nullable=False)
+    game_id = Column(Integer, ForeignKey("games.id"), nullable=False)
     is_strong = Column(Boolean, default=False)
 
     visible_to = relationship("Player", secondary=association_table)
@@ -199,14 +201,14 @@ class PlayerModel(pydantic.BaseModel):
     game_id: int
     user_id: UUID
 
-    user: 'UserModel'
+    user: "UserModel"
 
     role: PlayerRole
     state: PlayerState
 
     class Config:
         orm_mode = True
-        extra = 'forbid'
+        extra = "forbid"
 
 
 class MessageModel(pydantic.BaseModel):
@@ -219,7 +221,7 @@ class MessageModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
-        extra = 'forbid'
+        extra = "forbid"
 
 
 class GameModel(pydantic.BaseModel):
@@ -234,7 +236,7 @@ class GameModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
-        extra = 'forbid'
+        extra = "forbid"
 
 
 class UserModel(pydantic.BaseModel):
@@ -244,7 +246,7 @@ class UserModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
-        extra = 'forbid'
+        extra = "forbid"
 
 
 class ActionModel(pydantic.BaseModel):
@@ -260,7 +262,7 @@ class ActionModel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
-        extra = 'forbid'
+        extra = "forbid"
 
 
 PlayerModel.update_forward_refs()

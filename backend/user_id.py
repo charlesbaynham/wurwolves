@@ -8,12 +8,12 @@ no_cookie_clients = {}
 no_cookie_lock = RLock()
 
 
-async def get_user_id(*,
-                      response: Response,
-                      session_UUID: str = Cookie(
-                          None, title="A UUID generated for each user session"),
-                      request: Request,
-                      ):
+async def get_user_id(
+    *,
+    response: Response,
+    session_UUID: str = Cookie(None, title="A UUID generated for each user session"),
+    request: Request,
+):
     ip = request.client.host
 
     if session_UUID is None:
