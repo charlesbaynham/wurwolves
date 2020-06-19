@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NamedTuple, Optional, Union, Dict
+from typing import NamedTuple, Optional, Dict
 
 import pydantic
 
@@ -60,7 +60,7 @@ class RoleDetails(NamedTuple):
     """
 
     role_description: RoleDescription
-    role_action: GameAction
+    actions: Optional[Dict[GameStage, GameAction]]
 
 
 DEFAULT_ROLE = RoleDescription(

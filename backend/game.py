@@ -180,7 +180,6 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
-            altered_game = True
             self.send_chat_message(f"{player.user.name} joined the game", True)
 
         self._session.add(game)

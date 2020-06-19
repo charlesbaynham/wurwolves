@@ -14,4 +14,4 @@ description = RoleDescription(
 
 
 def register(role_map):
-    role_map.update({PlayerRole.VILLAGER: RoleDetails(description, None)})
+    role_map.update({PlayerRole.VILLAGER: RoleDetails(description)})

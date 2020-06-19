@@ -24,4 +24,4 @@ You win if you get yourself lynched by the villagers.
 
 
 def register(role_map):
-    role_map.update({PlayerRole.JESTER: RoleDetails(description, None)})
+    role_map.update({PlayerRole.JESTER: RoleDetails(description)})

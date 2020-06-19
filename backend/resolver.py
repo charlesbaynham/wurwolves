@@ -247,6 +247,7 @@ class GameAction:
 def process_actions(game: "WurwolvesGame"):
     from .roles import ROLE_MAP
 
+    stage = game.get_game_model().stage
     players = game.get_players_model()
     actions = game.get_actions_model()
 
@@ -256,7 +257,7 @@ def process_actions(game: "WurwolvesGame"):
 
     game_actions = []
     for a in actions:
-        action_class = ROLE_MAP[a.player.role].role_action
+        action_class = ROLE_MAP[a.player.role].roles[stage]
         game_actions.append(action_class(a, game_players))
 
     # Sort actions by priority then by action id

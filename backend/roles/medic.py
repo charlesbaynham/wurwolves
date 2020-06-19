@@ -57,4 +57,4 @@ class MedicAction(GameAction):
 
 
 def register(role_map):
-    role_map.update({PlayerRole.MEDIC: RoleDetails(description, MedicAction)})
+    role_map.update({PlayerRole.MEDIC: RoleDetails(description, {GameStage.NIGHT: MedicAction})})
