@@ -11,9 +11,9 @@ from .roles import ROLE_MAP
 
 
 class FrontendState(pydantic.BaseModel):
-    '''
+    """
     Schema for the React state of a client's frontend
-    '''
+    """
 
     state_hash: int
 
@@ -52,11 +52,15 @@ class FrontendState(pydantic.BaseModel):
 
     controls_state: RoleState
 
-    @pydantic.validator('roles')
+    @pydantic.validator("roles")
     def role_for_all_stages(cls, v):
         for stage in list(GameStage):
             if stage not in v:
-                raise ValueError('role must contain an entry for all stages. {} is missing'.format(stage))
+                raise ValueError(
+                    "role must contain an entry for all stages. {} is missing".format(
+                        stage
+                    )
+                )
         return v
 
     myID: UUID
@@ -65,9 +69,9 @@ class FrontendState(pydantic.BaseModel):
 
 
 def parse_game_to_state(game_tag: str, user_id: UUID):
-    '''
+    """
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
-    '''
+    """
     g = WurwolvesGame(game_tag)
 
     game = g.get_game_model()
@@ -86,54 +90,52 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
 
     role_details = ROLE_MAP[player.role].role_description
 
-    options = { 
+    options = {
         GameStage.LOBBY: FrontendState.RoleState(
-                title=role_details.display_name,
-                text=role_details.lobby_text or role_details.fallback_role.lobby_text,
-                button_visible=True,
-                button_enabled=True,
-                button_submit_func='start_game',
-                button_text="Start game"
-            ),
-            GameStage.DAY: FrontendState.RoleState(
-                title=role_details.display_name,
-                text=role_details.day_text or role_details.fallback_role.day_text,
-                button_visible=True,
-                button_enabled=True,
-            ),
-            GameStage.VOTING: FrontendState.RoleState(
-                title=role_details.display_name,
-                text=role_details.vote_text or role_details.fallback_role.vote_text,
-                button_visible=True,
-                button_enabled=True,
-                button_text=role_details.vote_button_text or role_details.fallback_role.vote_button_text,
-            ),
-            GameStage.NIGHT: FrontendState.RoleState(
-                title=role_details.display_name,
-                text=role_details.night_text or role_details.fallback_role.night_text,
-                button_visible=role_details.night_action,
-                button_enabled=role_details.night_action and not actions,
-                button_text=role_details.night_button_text,
-                button_submit_func=get_action_func_name(player.role),
-                button_submit_person=role_details.night_action_select_person,
-            ),
+            title=role_details.display_name,
+            text=role_details.lobby_text or role_details.fallback_role.lobby_text,
+            button_visible=True,
+            button_enabled=True,
+            button_submit_func="start_game",
+            button_text="Start game",
+        ),
+        GameStage.DAY: FrontendState.RoleState(
+            title=role_details.display_name,
+            text=role_details.day_text or role_details.fallback_role.day_text,
+            button_visible=True,
+            button_enabled=True,
+        ),
+        GameStage.VOTING: FrontendState.RoleState(
+            title=role_details.display_name,
+            text=role_details.vote_text or role_details.fallback_role.vote_text,
+            button_visible=True,
+            button_enabled=True,
+            button_text=role_details.vote_button_text
+            or role_details.fallback_role.vote_button_text,
+        ),
+        GameStage.NIGHT: FrontendState.RoleState(
+            title=role_details.display_name,
+            text=role_details.night_text or role_details.fallback_role.night_text,
+            button_visible=role_details.night_action,
+            button_enabled=role_details.night_action and not actions,
+            button_text=role_details.night_button_text,
+            button_submit_func=get_action_func_name(player.role),
+            button_submit_person=role_details.night_action_select_person,
+        ),
     }
 
     state = FrontendState(
         state_hash=game.update_counter,
         players=[
             FrontendState.PlayerState(
-                id=p.user_id,
-                name=p.user.name,
-                status=p.state,
-                selected=False
-            ) for p in game.players
+                id=p.user_id, name=p.user.name, status=p.state, selected=False
+            )
+            for p in game.players
         ],
         chat=[
-            FrontendState.ChatMsg(
-                msg=m.text,
-                isStrong=m.is_strong
-            ) for m in game.messages if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
+            FrontendState.ChatMsg(msg=m.text, isStrong=m.is_strong)
+            for m in game.messages
+            if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
         ],
         stage=game.stage,
         controls=options[game.stage],
