@@ -26,7 +26,7 @@ function Controls(props) {
     const [isSending, setIsSending] = useState(false)
     const [isError, setIsError] = useState(false);
 
-    if (Object.keys(controlsState).length === 0 && controlsState.constructor === Object) {
+    if (typeof(controlsState) == "undefined") {
         controlsState = DEFAULT_STATE
     }
 

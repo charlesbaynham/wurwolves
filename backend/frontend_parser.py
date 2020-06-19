@@ -105,7 +105,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
         ],
         stage=game.stage,
-        controls=controls_state,
+        controls_state=controls_state,
         myID=user_id,
         myName=player.user.name,
         myNameIsGenerated=player.user.name_is_generated,
