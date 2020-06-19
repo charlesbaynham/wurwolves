@@ -55,7 +55,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
     The API endpoint is added to the router in this module which must be imported by main
     """
 
-    for stage in ROLE_MAP[role].role_description.stages:
+    role_description = ROLE_MAP[role].role_description
+
+    for stage in role_description.stages:
 
         func_name = get_action_func_name(role, stage)
 
@@ -79,14 +81,14 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 raise HTTPException(
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
-            if not ROLE_MAP[role].role_description.night_action:
+            if not stage not in role_description.stages:
                 raise HTTPException(
                     status_code=403,
-                    detail=f"Player {user_id} in role {role} has no night action",
+                    detail=f"Player {user_id} in role {role} has no action in this stage",
                 )
-            if not game.stage == GameStage.NIGHT:
+            if not game.stage == stage:
                 raise HTTPException(
-                    status_code=403, detail="Actions may only be performed at night"
+                    status_code=403, detail="That action is not valid in this stage"
                 )
 
             # Check if this player has already acted this round
@@ -122,7 +124,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
             players = game.players
             ready = True
             for player in players:
-                if ROLE_MAP[player.role].role_description.night_action and not any(
+                if stage in ROLE_MAP[player.role].role_description.stages and not any(
                     a.stage_id == game.stage_id for a in player.actions
                 ):
                     ready = False
@@ -134,7 +136,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
             self.get_game().touch()
 
         # Make one for the API router that does / does not require a selected_id
-        if ROLE_MAP[role].role_description.night_action.select_person:
+        if role_description.stages[stage].select_person:
 
             @router.post(f"/{{game_tag}}/{func_name}")
             @named(func_name)
