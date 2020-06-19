@@ -60,7 +60,7 @@ class RoleDetails(NamedTuple):
     """
 
     role_description: RoleDescription
-    actions: Optional[Dict[GameStage, GameAction]]
+    actions: Dict[GameStage, GameAction] = None
 
 
 DEFAULT_ROLE = RoleDescription(
