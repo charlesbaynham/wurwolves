@@ -57,7 +57,10 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
     role_description = ROLE_MAP[role].role_description
 
-    for stage in role_description.stages:
+    for stage, stage_action in role_description.stages.items():
+
+        if not stage_action.button_text:
+            continue
 
         func_name = get_action_func_name(role, stage)
 
