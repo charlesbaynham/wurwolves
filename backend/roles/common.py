@@ -1,26 +1,30 @@
 from enum import Enum
-from typing import NamedTuple, Union
+from typing import NamedTuple, Optional, Union, Dict
 
 import pydantic
 
+from ..model import GameStage
 from ..resolver import GameAction
+
+
+class StageAction(pydantic.BaseModel):
+    text: str
+    button_text: Optional[str]
+    select_person = True
 
 
 class RoleDescription(pydantic.BaseModel):
     display_name: str
-
-    night_action: bool
-    night_action_url: Union[None, str] = None
-    night_action_select_person = True
-    night_button_text: Union[None, str] = None
-    vote_button_text: Union[None, str] = None
-
-    lobby_text: Union[None, str] = None
-    day_text: Union[None, str] = None
-    night_text: Union[None, str] = None
-    vote_text: Union[None, str] = None
-
+    fallback_role: Union[None, "RoleDescription"]
+    stages = Dict[GameStage, StageAction]
     priority: int = 0
+
+    @pydantic.validator("stages")
+    def all_stages_defined(cls, v, values):
+        for stage in list(GameStage):
+            assert stage in v or stage in values["fallback_role"].stages
+        v.update(values["fallback_role"].stages)
+        return v
 
     class Team(Enum):
         VILLAGERS = "VILLAGERS"
@@ -29,8 +33,6 @@ class RoleDescription(pydantic.BaseModel):
         JESTER = "JESTER"
 
     team: Team
-
-    fallback_role: Union[None, "RoleDescription"]
 
     class Config:
         allow_mutation = False
@@ -52,8 +54,9 @@ class RoleDetails(NamedTuple):
 
 DEFAULT_ROLE = RoleDescription(
     display_name="Villager",
-    night_action=False,
-    lobby_text="""
+    stages={
+        GameStage.LOBBY: StageAction(
+            text="""
 Welcome to Wurwolves! 
 The game hasn't started yet: you'll need at least 5 players for the game to be playable,
 but it's more fun with 7 or more. Once everyone has joined, press the \"Start game\" button. 
@@ -64,21 +67,29 @@ This website is designed for playing with people you already know:
 it handles the gameplay but you'll also need to communicate so you
 can argue and discuss what happens. If you're not in the same room,
 you should probably start a video call. 
-    """,
-    day_text="""
+    """
+        ),
+        GameStage.DAY: StageAction(
+            text="""
 You are a villager. You have no special powers. Try not to get eaten!
 
 You win if all the wolves are eliminated. 
-    """,
-    night_text="""
+    """
+        ),
+        GameStage.NIGHT: StageAction(
+            text="""
 You have nothing to do at night. Relax...
-    """,
-    vote_text="""
+    """
+        ),
+        GameStage.VOTE: StageAction(
+            text="""
 Vote for someone to lynch! Whoever gets the most votes will be killed.
 
 Click someone's icon and click the button. 
     """,
-    vote_button_text="Vote for someone to lynch...",
+            button_text="Vote for someone to lynch...",
+        ),
+    },
     team=RoleDescription.Team.VILLAGERS,
     fallback_role=None,
 )

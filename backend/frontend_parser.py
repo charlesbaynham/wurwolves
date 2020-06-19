@@ -52,17 +52,6 @@ class FrontendState(pydantic.BaseModel):
 
     controls_state: RoleState
 
-    @pydantic.validator("roles")
-    def role_for_all_stages(cls, v):
-        for stage in list(GameStage):
-            if stage not in v:
-                raise ValueError(
-                    "role must contain an entry for all stages. {} is missing".format(
-                        stage
-                    )
-                )
-        return v
-
     myID: UUID
     myName: str
     myNameIsGenerated: bool
@@ -104,21 +93,24 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             text=role_details.day_text or role_details.fallback_role.day_text,
             button_visible=True,
             button_enabled=True,
+            button_text=role_details.day_action.text
+            or role_details.fallback_role.day_action.text,
         ),
         GameStage.VOTING: FrontendState.RoleState(
             title=role_details.display_name,
             text=role_details.vote_text or role_details.fallback_role.vote_text,
             button_visible=True,
             button_enabled=True,
-            button_text=role_details.vote_button_text
-            or role_details.fallback_role.vote_button_text,
+            button_text=role_details.vote_action.text
+            or role_details.fallback_role.vote_action.text,
         ),
         GameStage.NIGHT: FrontendState.RoleState(
             title=role_details.display_name,
             text=role_details.night_text or role_details.fallback_role.night_text,
             button_visible=role_details.night_action,
             button_enabled=role_details.night_action and not actions,
-            button_text=role_details.night_button_text,
+            button_text=role_details.night_action.text
+            or role_details.fallback_role.night_action.text,
             button_submit_func=get_action_func_name(player.role),
             button_submit_person=role_details.night_action_select_person,
         ),

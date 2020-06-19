@@ -1,16 +1,17 @@
 """
 The Spectator role
 """
-from ..model import PlayerRole
-from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
+from ..model import PlayerRole, GameStage
+from .common import DEFAULT_ROLE, RoleDescription, RoleDetails, StageAction
 
 
 description = RoleDescription(
     display_name="Spectator",
-    night_action=False,
-    day_text="You're not playing. Guess you were late.",
-    night_text="You're not playing. Guess you were late.",
-    vote_text="You're not playing. Guess you were late.",
+    stages={
+        GameStage.DAY: StageAction(text="You're not playing. Guess you were late."),
+        GameStage.NIGHT: StageAction(text="You're not playing. Guess you were late."),
+        GameStage.VOTE: StageAction(text="You're not playing. Guess you were late."),
+    },
     team=RoleDescription.Team.SPECTATORS,
     fallback_role=DEFAULT_ROLE,
 )

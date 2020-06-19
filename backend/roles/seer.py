@@ -3,9 +3,9 @@ The Seer role
 """
 import logging
 
-from ..model import PlayerRole
+from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
-from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
+from .common import DEFAULT_ROLE, RoleDescription, RoleDetails, StageAction
 from .wolf import AffectedByWolves
 
 if False:  # for typing
@@ -13,17 +13,21 @@ if False:  # for typing
 
 description = RoleDescription(
     display_name="Seer",
-    night_action=True,
-    night_button_text="Select someone to check",
-    day_text="""
+    stages={
+        GameStage.DAY: StageAction(
+            text="""
 You are a Seer! You get to check the identity of one person each night. 
 
 You win if all the wolves are eliminated. 
-    """,
-    night_text="""
+    """
+        ),
+        GameStage.NIGHT: StageAction(
+            text="""
 Choose who to check...
     """,
-    vote_text=None,
+            button_text="Select someone to check",
+        ),
+    },
     team=RoleDescription.Team.VILLAGERS,
     fallback_role=DEFAULT_ROLE,
 )

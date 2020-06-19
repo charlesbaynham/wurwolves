@@ -3,24 +3,28 @@ The Wolf role
 """
 import logging
 
-from ..model import PlayerRole
+from ..model import PlayerRole, GameStage
 from ..resolver import ActionMixin, GameAction
-from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
+from .common import DEFAULT_ROLE, StageAction, RoleDescription, RoleDetails
 from .medic import AffectedByMedic
 
 description = RoleDescription(
     display_name="Wolf",
-    night_action=True,
-    night_button_text="Select someone to maul",
-    day_text="""
+    stages={
+        GameStage.NIGHT: StageAction(
+            text="""
 You are a Wolf! You kill one person each night
 
 You win if the wolves kill enough villagers that you are equal in number
-    """,
-    night_text="""
+    """
+        ),
+        GameStage.NIGHT: StageAction(
+            text="""
 Choose who to kill!
     """,
-    vote_text=None,
+            button_text="Select someone to maul",
+        ),
+    },
     team=RoleDescription.Team.WOLVES,
     fallback_role=DEFAULT_ROLE,
 )

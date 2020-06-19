@@ -9,7 +9,6 @@ from .common import DEFAULT_ROLE, RoleDescription, RoleDetails
 
 description = RoleDescription(
     display_name="Jester",
-    night_action=False,
     day_text="""
 You are a Jester!
 
