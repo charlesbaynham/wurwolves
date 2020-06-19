@@ -66,4 +66,6 @@ class SeerAction(GameAction, AffectedByWolves):
 
 
 def register(role_map):
-    role_map.update({PlayerRole.SEER: RoleDetails(description, {GameStage.NIGHT:SeerAction})})
+    role_map.update(
+        {PlayerRole.SEER: RoleDetails(description, {GameStage.NIGHT: SeerAction})}
+    )

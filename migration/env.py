@@ -66,18 +66,14 @@ def run_migrations_online():
 
     """
     conf = config.get_section(config.config_ini_section)
-    conf['sqlalchemy.url'] = get_url()
+    conf["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        conf,
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
+        conf, prefix="sqlalchemy.", poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True,
+            connection=connection, target_metadata=target_metadata, compare_type=True,
         )
 
         with context.begin_transaction():

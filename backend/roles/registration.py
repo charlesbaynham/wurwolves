@@ -79,7 +79,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
             # Check if this user is entitled to act in this capacity
             player = self.get_player(user_id)
             if not player:
-                raise HTTPException(status_code=404, detail=f"Player {user_id} not found")
+                raise HTTPException(
+                    status_code=404, detail=f"Player {user_id} not found"
+                )
             if player.role != role:
                 raise HTTPException(
                     status_code=403, detail=f"Player {user_id} is not a {role}"

@@ -78,7 +78,9 @@ This website is designed for playing with people you already know:
 it handles the gameplay but you'll also need to communicate so you
 can argue and discuss what happens. If you're not in the same room,
 you should probably start a video call. 
-    """, button_text="Start game", select_person=False,
+    """,
+            button_text="Start game",
+            select_person=False,
         ),
         GameStage.DAY: StageAction(
             text="""

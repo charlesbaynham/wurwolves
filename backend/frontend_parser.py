@@ -90,7 +90,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         button_submit_person=state.select_person,
         button_submit_func=get_action_func_name(player.role, game.stage),
     )
-    
+
     state = FrontendState(
         state_hash=game.update_counter,
         players=[
