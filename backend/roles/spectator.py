@@ -1,9 +1,10 @@
 """
 The Spectator role
 """
-from ..model import PlayerRole, GameStage
-from .common import DEFAULT_ROLE, RoleDescription, RoleDetails, StageAction
+import logging
 
+from ..model import GameStage, PlayerRole
+from .common import DEFAULT_ROLE, GameAction, RoleDescription, RoleDetails, StageAction
 
 description = RoleDescription(
     display_name="Spectator",
@@ -17,5 +18,16 @@ description = RoleDescription(
 )
 
 
+class StartGameAction(GameAction):
+    def execute(self, game):
+        logging.warning("started game: {}".format(self))
+
+
 def register(role_map):
-    role_map.update({PlayerRole.SPECTATOR: RoleDetails(description)})
+    role_map.update(
+        {
+            PlayerRole.SPECTATOR: RoleDetails(
+                description, {GameStage.LOBBY: StartGameAction}
+            )
+        }
+    )
