@@ -429,6 +429,8 @@ def trigger_update_event(game_id: int):
 
 
 # Register the roles with actions
+roles.register_role(WurwolvesGame, PlayerRole.SPECTATOR)
+roles.register_role(WurwolvesGame, PlayerRole.VILLAGER)
 roles.register_role(WurwolvesGame, PlayerRole.MEDIC)
 roles.register_role(WurwolvesGame, PlayerRole.SEER)
 roles.register_role(WurwolvesGame, PlayerRole.WOLF)
