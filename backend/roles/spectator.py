@@ -10,7 +10,7 @@ description = RoleDescription(
     stages={
         GameStage.DAY: StageAction(text="You're not playing. Guess you were late."),
         GameStage.NIGHT: StageAction(text="You're not playing. Guess you were late."),
-        GameStage.VOTE: StageAction(text="You're not playing. Guess you were late."),
+        GameStage.VOTING: StageAction(text="You're not playing. Guess you were late."),
     },
     team=RoleDescription.Team.SPECTATORS,
     fallback_role=DEFAULT_ROLE,

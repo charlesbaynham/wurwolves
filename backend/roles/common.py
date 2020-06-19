@@ -21,19 +21,21 @@ class RoleDescription(pydantic.BaseModel):
 
     @pydantic.validator("stages")
     def all_stages_defined(cls, v, values):
-        # if values["fallback_role"] and values["fallback_role"].stages:
-        #     fallback = values["fallback_role"].stages
-        # else:
-        #     fallback = {}
+        if values["fallback_role"] and values["fallback_role"].stages:
+            fallback = values["fallback_role"].stages
+        else:
+            fallback = {}
 
-        print(values["fallback_role"])
+        if not v:
+            v = {}
 
-        # v = fallback.update(v)
+        out = v
+        out.update(fallback)
 
-        # for stage in list(GameStage):
-        #     assert stage in v
+        for stage in list(GameStage):
+            assert stage in out
 
-        return v
+        return out
 
     class Team(Enum):
         VILLAGERS = "VILLAGERS"
