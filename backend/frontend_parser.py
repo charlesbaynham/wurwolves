@@ -79,42 +79,17 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
 
     role_details = ROLE_MAP[player.role].role_description
 
-    options = {
-        GameStage.LOBBY: FrontendState.RoleState(
-            title=role_details.display_name,
-            text=role_details.lobby_text or role_details.fallback_role.lobby_text,
-            button_visible=True,
-            button_enabled=True,
-            button_submit_func="start_game",
-            button_text="Start game",
-        ),
-        GameStage.DAY: FrontendState.RoleState(
-            title=role_details.display_name,
-            text=role_details.day_text or role_details.fallback_role.day_text,
-            button_visible=True,
-            button_enabled=True,
-            button_text=role_details.day_action.text
-            or role_details.fallback_role.day_action.text,
-        ),
-        GameStage.VOTING: FrontendState.RoleState(
-            title=role_details.display_name,
-            text=role_details.vote_text or role_details.fallback_role.vote_text,
-            button_visible=True,
-            button_enabled=True,
-            button_text=role_details.vote_action.text
-            or role_details.fallback_role.vote_action.text,
-        ),
-        GameStage.NIGHT: FrontendState.RoleState(
-            title=role_details.display_name,
-            text=role_details.night_text or role_details.fallback_role.night_text,
-            button_visible=role_details.night_action,
-            button_enabled=role_details.night_action and not actions,
-            button_text=role_details.night_action.text
-            or role_details.fallback_role.night_action.text,
-            button_submit_func=get_action_func_name(player.role),
-            button_submit_person=role_details.night_action_select_person,
-        ),
-    }
+    state = role_details.stages[game.stage]
+
+    controls_state = FrontendState.RoleState(
+        title=role_details.display_name,
+        text=state.text,
+        button_visible=bool(state.button_text),
+        button_enabled=bool(state.button_text) and not actions,
+        button_text=state.button_text,
+        button_submit_person=state.select_person,
+        button_submit_func=get_action_func_name(player.role, game.stage),
+    )
 
     state = FrontendState(
         state_hash=game.update_counter,
@@ -130,7 +105,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
         ],
         stage=game.stage,
-        controls=options[game.stage],
+        controls=controls_state,
         myID=user_id,
         myName=player.user.name,
         myNameIsGenerated=player.user.name_is_generated,

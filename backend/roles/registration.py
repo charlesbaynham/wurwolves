@@ -27,8 +27,8 @@ if any(r not in ROLE_MAP for r in list(PlayerRole)):
     raise TypeError("Not all roles are registered")
 
 
-def get_action_func_name(role: PlayerRole):
-    return f"{role.value.lower()}_action"
+def get_action_func_name(role: PlayerRole, stage: GameStage):
+    return f"{role.value.lower()}_{stage.value.lower()}_action"
 
 
 def get_role_team(role: PlayerRole):
@@ -55,108 +55,110 @@ def register_role(WurwolvesGame, role: PlayerRole):
     The API endpoint is added to the router in this module which must be imported by main
     """
 
-    func_name = get_action_func_name(role)
+    for stage in ROLE_MAP[role].role_description.stages:
 
-    # Define a function to be added to WurwolvesGame
-    @WurwolvesGame.db_scoped
-    @named(func_name)
-    def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID = None):
+        func_name = get_action_func_name(role, stage)
 
-        game = self.get_game()
+        # Define a function to be added to WurwolvesGame
+        @WurwolvesGame.db_scoped
+        @named(func_name)
+        def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID = None):
 
-        if not game:
-            raise HTTPException(
-                status_code=404, detail=f"Game {self.game_id} not found"
+            game = self.get_game()
+
+            if not game:
+                raise HTTPException(
+                    status_code=404, detail=f"Game {self.game_id} not found"
+                )
+
+            # Check if this user is entitled to act in this capacity
+            player = self.get_player(user_id)
+            if not player:
+                raise HTTPException(status_code=404, detail=f"Player {user_id} not found")
+            if player.role != role:
+                raise HTTPException(
+                    status_code=403, detail=f"Player {user_id} is not a {role}"
+                )
+            if not ROLE_MAP[role].role_description.night_action:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Player {user_id} in role {role} has no night action",
+                )
+            if not game.stage == GameStage.NIGHT:
+                raise HTTPException(
+                    status_code=403, detail="Actions may only be performed at night"
+                )
+
+            # Check if this player has already acted this round
+            action = (
+                self._session.query(Action)
+                .filter(
+                    Action.game_id == game.id,
+                    Action.stage_id == game.stage_id,
+                    Action.player_id == player.id,
+                )
+                .first()
             )
 
-        # Check if this user is entitled to act in this capacity
-        player = self.get_player(user_id)
-        if not player:
-            raise HTTPException(status_code=404, detail=f"Player {user_id} not found")
-        if player.role != role:
-            raise HTTPException(
-                status_code=403, detail=f"Player {user_id} is not a {role}"
-            )
-        if not ROLE_MAP[role].role_description.night_action:
-            raise HTTPException(
-                status_code=403,
-                detail=f"Player {user_id} in role {role} has no night action",
-            )
-        if not game.stage == GameStage.NIGHT:
-            raise HTTPException(
-                status_code=403, detail="Actions may only be performed at night"
-            )
+            if action:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Action already completed for player {user_id} in round {game.stage_id}",
+                )
 
-        # Check if this player has already acted this round
-        action = (
-            self._session.query(Action)
-            .filter(
-                Action.game_id == game.id,
-                Action.stage_id == game.stage_id,
-                Action.player_id == player.id,
+            if selected_id:
+                selected_player_id = self.get_player(selected_id).id
+
+            # Save the action
+            action = Action(
+                game_id=self.game_id,
+                player_id=player.id,
+                selected_player_id=selected_player_id,
+                stage_id=game.stage_id,
             )
-            .first()
-        )
+            self._session.add(action)
 
-        if action:
-            raise HTTPException(
-                status_code=403,
-                detail=f"Action already completed for player {user_id} in round {game.stage_id}",
-            )
+            # If all the actions are complete, process them
+            players = game.players
+            ready = True
+            for player in players:
+                if ROLE_MAP[player.role].role_description.night_action and not any(
+                    a.stage_id == game.stage_id for a in player.actions
+                ):
+                    ready = False
+                    break
 
-        if selected_id:
-            selected_player_id = self.get_player(selected_id).id
+            if ready:
+                self.process_actions()
 
-        # Save the action
-        action = Action(
-            game_id=self.game_id,
-            player_id=player.id,
-            selected_player_id=selected_player_id,
-            stage_id=game.stage_id,
-        )
-        self._session.add(action)
+            self.get_game().touch()
 
-        # If all the actions are complete, process them
-        players = game.players
-        ready = True
-        for player in players:
-            if ROLE_MAP[player.role].role_description.night_action and not any(
-                a.stage_id == game.stage_id for a in player.actions
+        # Make one for the API router that does / does not require a selected_id
+        if ROLE_MAP[role].role_description.night_action.select_person:
+
+            @router.post(f"/{{game_tag}}/{func_name}")
+            @named(func_name)
+            def api_func(
+                selected_id: UUID,
+                game_tag: str = Path(..., title="The four-word ID of the game"),
+                user_id=Depends(get_user_id),
             ):
-                ready = False
-                break
+                g = WurwolvesGame(game_tag)
+                f = getattr(WurwolvesGame, func_name)
+                f(g, user_id, selected_id)
 
-        if ready:
-            self.process_actions()
+        else:
 
-        self.get_game().touch()
+            @router.post(f"/{{game_tag}}/{func_name}")
+            @named(func_name)
+            def api_func(
+                game_tag: str = Path(..., title="The four-word ID of the game"),
+                user_id=Depends(get_user_id),
+            ):
+                g = WurwolvesGame(game_tag)
+                f = getattr(WurwolvesGame, func_name)
+                f(g, user_id)
 
-    # Make one for the API router that does / does not require a selected_id
-    if ROLE_MAP[role].role_description.night_action.select_person:
-
-        @router.post(f"/{{game_tag}}/{func_name}")
-        @named(func_name)
-        def api_func(
-            selected_id: UUID,
-            game_tag: str = Path(..., title="The four-word ID of the game"),
-            user_id=Depends(get_user_id),
-        ):
-            g = WurwolvesGame(game_tag)
-            f = getattr(WurwolvesGame, func_name)
-            f(g, user_id, selected_id)
-
-    else:
-
-        @router.post(f"/{{game_tag}}/{func_name}")
-        @named(func_name)
-        def api_func(
-            game_tag: str = Path(..., title="The four-word ID of the game"),
-            user_id=Depends(get_user_id),
-        ):
-            g = WurwolvesGame(game_tag)
-            f = getattr(WurwolvesGame, func_name)
-            f(g, user_id)
-
-    # Patch the WurwolvesGame function into WurwolvesGame: the API
-    # function is in the router which will be added in main
-    setattr(WurwolvesGame, func_name, game_func)
+        # Patch the WurwolvesGame function into WurwolvesGame: the API
+        # function is in the router which will be added in main
+        setattr(WurwolvesGame, func_name, game_func)
