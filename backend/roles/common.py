@@ -15,15 +15,24 @@ class StageAction(pydantic.BaseModel):
 
 class RoleDescription(pydantic.BaseModel):
     display_name: str
-    fallback_role: Union[None, "RoleDescription"]
-    stages = Dict[GameStage, StageAction]
+    fallback_role: Optional["RoleDescription"]
+    stages: Dict[GameStage, StageAction]
     priority: int = 0
 
     @pydantic.validator("stages")
     def all_stages_defined(cls, v, values):
-        for stage in list(GameStage):
-            assert stage in v or stage in values["fallback_role"].stages
-        v.update(values["fallback_role"].stages)
+        # if values["fallback_role"] and values["fallback_role"].stages:
+        #     fallback = values["fallback_role"].stages
+        # else:
+        #     fallback = {}
+
+        print(values["fallback_role"])
+
+        # v = fallback.update(v)
+
+        # for stage in list(GameStage):
+        #     assert stage in v
+
         return v
 
     class Team(Enum):
@@ -81,7 +90,7 @@ You win if all the wolves are eliminated.
 You have nothing to do at night. Relax...
     """
         ),
-        GameStage.VOTE: StageAction(
+        GameStage.VOTING: StageAction(
             text="""
 Vote for someone to lynch! Whoever gets the most votes will be killed.
 
