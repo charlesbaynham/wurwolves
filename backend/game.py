@@ -216,6 +216,8 @@ class WurwolvesGame():
 
     @db_scoped
     def get_actions(self, stage_id=None, player_id: int = None) -> List[Action]:
+        ''' Get orm objects for any actions performed by the given user in the given stage. Default to the current stage. 
+        '''
         game = self.get_game()
 
         if stage_id is None:
@@ -233,6 +235,8 @@ class WurwolvesGame():
 
     @db_scoped
     def get_actions_model(self, stage_id=None, player_id: int = None) -> List[ActionModel]:
+        ''' Get models for any actions performed by the given user in the given stage. Default to the current stage. 
+        '''
         return [
             ActionModel.from_orm(a) for a in self.get_actions(stage_id, player_id)
         ]

@@ -10,7 +10,7 @@ const backend = createSlice({
     players: [],
     chat: [],
     stage: "LOBBY",
-    roles: {},
+    controls: {},
     myID: "",
     myName: "",
     myNameIsGenerated: true,

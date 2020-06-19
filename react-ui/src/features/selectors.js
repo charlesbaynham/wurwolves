@@ -18,7 +18,7 @@ export const selectPlayerStatus = id => (state => getPlayerById(state.backend.pl
 
 export const selectAllPlayers = state => state.backend.players;
 
-export const selectRoles = (state => state.backend.roles);
+export const selectControls = (state => state.backend.controls);
 
 export const selectStateHash = (state => state.backend.state_hash);
 

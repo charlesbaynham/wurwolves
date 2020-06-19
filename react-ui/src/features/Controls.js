@@ -5,13 +5,13 @@ import ReactMarkdown from 'react-markdown';
 import Button from 'react-bootstrap/Button';
 
 import {
-    selectStage, selectRoles, selectSelectedPlayer
+    selectControls, selectSelectedPlayer
 } from './selectors'
 
 import { unselectAll } from '../app/store'
 
 
-const DEFAULT_ROLE = {
+const DEFAULT_STATE = {
     title: "",
     text: "",
     button_visible: false,
@@ -19,18 +19,15 @@ const DEFAULT_ROLE = {
 }
 
 function Controls(props) {
-    const roles = useSelector(selectRoles);
-    const game_stage = useSelector(selectStage);
+    var controlsState = useSelector(selectControls);
     const selected_player = useSelector(selectSelectedPlayer);
     const dispatch = useDispatch();
 
     const [isSending, setIsSending] = useState(false)
     const [isError, setIsError] = useState(false);
 
-    var role = roles[game_stage]
-
-    if (typeof (role) == "undefined") {
-        role = DEFAULT_ROLE
+    if (Object.keys(controlsState).length === 0 && controlsState.constructor === Object) {
+        controlsState = DEFAULT_STATE
     }
 
     const doButtonAction = async () => {
@@ -40,7 +37,7 @@ function Controls(props) {
         // update state
         setIsSending(true)
 
-        var url = new URL(`/api/${props.game_tag}/${role.button_submit_func}`, document.baseURI),
+        var url = new URL(`/api/${props.game_tag}/${controlsState.button_submit_func}`, document.baseURI),
             params = { selected_id: selected_player }
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
@@ -66,19 +63,19 @@ function Controls(props) {
     return (
         <div className="row pt-4 pt-md-0 d-flex  flex-row-reverse align-items-center">
             <div className="col-md">
-                {role.button_visible ?
+                {controlsState.button_visible ?
                     <div>
                         <Button onClick={doButtonAction} variant="primary"
-                            size="lg" block disabled={!role.button_enabled || isSending}
+                            size="lg" block disabled={!controlsState.button_enabled || isSending}
                             className={isError ? "error" : ""}>
-                            <em>{role.button_text}</em>
+                            <em>{controlsState.button_text}</em>
                         </Button>
                     </div>
                     : null}
             </div>
             <div className="col-md pt-4 pt-md-0">
-                <h5>{role.title}</h5>
-                <ReactMarkdown source={role.text} />
+                <h5>{controlsState.title}</h5>
+                <ReactMarkdown source={controlsState.text} />
             </div>
         </div>
     )

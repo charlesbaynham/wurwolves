@@ -50,7 +50,7 @@ class FrontendState(pydantic.BaseModel):
                 raise ValueError("No button text provided when button is visible")
             return v
 
-    roles: Dict[GameStage, RoleState]
+    controls_state: RoleState
 
     @pydantic.validator('roles')
     def role_for_all_stages(cls, v):
@@ -86,25 +86,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
 
     role_details = ROLE_MAP[player.role].role_description
 
-    state = FrontendState(
-        state_hash=game.update_counter,
-        players=[
-            FrontendState.PlayerState(
-                id=p.user_id,
-                name=p.user.name,
-                status=p.state,
-                selected=False
-            ) for p in game.players
-        ],
-        chat=[
-            FrontendState.ChatMsg(
-                msg=m.text,
-                isStrong=m.is_strong
-            ) for m in game.messages if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
-        ],
-        stage=game.stage,
-        roles={
-            GameStage.LOBBY: FrontendState.RoleState(
+    options = { 
+        GameStage.LOBBY: FrontendState.RoleState(
                 title=role_details.display_name,
                 text=role_details.lobby_text or role_details.fallback_role.lobby_text,
                 button_visible=True,
@@ -115,8 +98,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
             GameStage.DAY: FrontendState.RoleState(
                 title=role_details.display_name,
                 text=role_details.day_text or role_details.fallback_role.day_text,
-                button_visible=False,
-                button_enabled=False,
+                button_visible=True,
+                button_enabled=True,
             ),
             GameStage.VOTING: FrontendState.RoleState(
                 title=role_details.display_name,
@@ -134,7 +117,26 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
                 button_submit_func=get_action_func_name(player.role),
                 button_submit_person=role_details.night_action_select_person,
             ),
-        },
+    }
+
+    state = FrontendState(
+        state_hash=game.update_counter,
+        players=[
+            FrontendState.PlayerState(
+                id=p.user_id,
+                name=p.user.name,
+                status=p.state,
+                selected=False
+            ) for p in game.players
+        ],
+        chat=[
+            FrontendState.ChatMsg(
+                msg=m.text,
+                isStrong=m.is_strong
+            ) for m in game.messages if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
+        ],
+        stage=game.stage,
+        controls=options[game.stage],
         myID=user_id,
         myName=player.user.name,
         myNameIsGenerated=player.user.name_is_generated,
