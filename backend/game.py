@@ -307,12 +307,6 @@ class WurwolvesGame:
         self._set_stage(GameStage.NIGHT)
 
     @db_scoped
-    def _set_stage(self, stage: GameStage):
-        game = self.get_game()
-        game.stage = stage
-        game.stage_id += 1
-
-    @db_scoped
     def get_messages(self, user_id: UUID) -> List[ChatMessage]:
         """ Get chat messages visible to the given user """
 
@@ -385,7 +379,7 @@ class WurwolvesGame:
         """
         logging.info(f"All the actions are in for game {self.game_id}: processing")
 
-        self._set_stage(resolver.process_actions(self, stage, stage_id))
+        resolver.process_actions(self, stage, stage_id)
 
     @db_scoped
     def _set_stage(self, stage: GameStage):

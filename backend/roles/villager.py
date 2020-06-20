@@ -28,6 +28,7 @@ Click someone's icon and click the button.
     """,
             button_text="Vote for someone to lynch...",
         ),
+        GameStage.LOBBY: StageAction(text="",),
     },
     team=RoleDescription.Team.VILLAGERS,
     fallback_role=None,

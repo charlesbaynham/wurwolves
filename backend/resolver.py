@@ -255,9 +255,14 @@ class GameAction:
         return ROLE_MAP[role].role_description.priority
 
 
-def process_actions(
-    game: "WurwolvesGame", stage: GameStage, stage_id: int
-) -> GameStage:
+def do_nothing(game: "WurwolvesGame"):
+    logging.warning("Lobby stage should be resolved here")
+
+
+stage_finalizers = {GameStage.LOBBY: do_nothing}
+
+
+def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> None:
     from .roles import ROLE_MAP
 
     players = game.get_players_model()
@@ -284,5 +289,6 @@ def process_actions(
         logging.info(f"Executing action {a}")
         a.execute(game)
 
-    logging.warning("process_actions just returning same stage: not coded yet")
-    return stage
+    # Perform any final actions (e.g. changing the game stage) that need to happen
+    if stage in stage_finalizers:
+        stage_finalizers[stage](game)

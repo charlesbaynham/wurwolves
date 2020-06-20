@@ -31,10 +31,9 @@ class RoleDescription(pydantic.BaseModel):
 
         out = {**fallback, **v}
 
-        # Check that this role has something defined in all the stages,
-        # except don't worry if the lobby isn't defined
+        # Check that this role has something defined in all the stages
         for stage in list(GameStage):
-            if not (stage in out or stage is GameStage.LOBBY):
+            if stage not in out:
                 raise ValueError(f"stage {stage} not present")
 
         return out
