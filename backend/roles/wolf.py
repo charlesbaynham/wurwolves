@@ -3,10 +3,11 @@ The Wolf role
 """
 import logging
 
-from ..model import PlayerRole, GameStage
+from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction
-from .common import DEFAULT_ROLE, StageAction, RoleDescription, RoleDetails
+from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
+from .villager import description as villager
 
 description = RoleDescription(
     display_name="Wolf",
@@ -26,7 +27,7 @@ Choose who to kill!
         ),
     },
     team=RoleDescription.Team.WOLVES,
-    fallback_role=DEFAULT_ROLE,
+    fallback_role=villager,
 )
 
 

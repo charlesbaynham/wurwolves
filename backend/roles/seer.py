@@ -5,8 +5,9 @@ import logging
 
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
-from .common import DEFAULT_ROLE, RoleDescription, RoleDetails, StageAction
+from .common import RoleDescription, RoleDetails, StageAction
 from .wolf import AffectedByWolves
+from .villager import description as villager
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -29,7 +30,7 @@ Choose who to check...
         ),
     },
     team=RoleDescription.Team.VILLAGERS,
-    fallback_role=DEFAULT_ROLE,
+    fallback_role=villager,
 )
 
 

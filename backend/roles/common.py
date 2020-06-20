@@ -31,8 +31,11 @@ class RoleDescription(pydantic.BaseModel):
 
         out = {**fallback, **v}
 
+        # Check that this role has something defined in all the stages,
+        # except don't worry if the lobby isn't defined
         for stage in list(GameStage):
-            assert stage in out
+            if not (stage in out or stage is GameStage.LOBBY):
+                raise ValueError(f"stage {stage} not present")
 
         return out
 
@@ -60,48 +63,3 @@ class RoleDetails(NamedTuple):
 
     role_description: RoleDescription
     actions: Dict[GameStage, GameAction] = None
-
-
-DEFAULT_ROLE = RoleDescription(
-    display_name="Villager",
-    stages={
-        GameStage.LOBBY: StageAction(
-            text="""
-Welcome to Wurwolves! 
-The game hasn't started yet: you'll need at least 5 players for the game to be playable,
-but it's more fun with 7 or more. Once everyone has joined, press the \"Start game\" button. 
-
-To invite more people, just send them the link to this page. 
-
-This website is designed for playing with people you already know:
-it handles the gameplay but you'll also need to communicate so you
-can argue and discuss what happens. If you're not in the same room,
-you should probably start a video call. 
-    """,
-            button_text="Start game",
-            select_person=False,
-        ),
-        GameStage.DAY: StageAction(
-            text="""
-You are a villager. You have no special powers. Try not to get eaten!
-
-You win if all the wolves are eliminated. 
-    """
-        ),
-        GameStage.NIGHT: StageAction(
-            text="""
-You have nothing to do at night. Relax...
-    """
-        ),
-        GameStage.VOTING: StageAction(
-            text="""
-Vote for someone to lynch! Whoever gets the most votes will be killed.
-
-Click someone's icon and click the button. 
-    """,
-            button_text="Vote for someone to lynch...",
-        ),
-    },
-    team=RoleDescription.Team.VILLAGERS,
-    fallback_role=None,
-)

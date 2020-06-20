@@ -7,7 +7,8 @@ import logging
 
 from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction
-from .common import DEFAULT_ROLE, RoleDescription, RoleDetails, StageAction
+from .common import RoleDescription, RoleDetails, StageAction
+from .villager import description as villager
 
 description = RoleDescription(
     display_name="Medic",
@@ -17,17 +18,12 @@ description = RoleDescription(
 You are a medic! You get to save one person each night. 
 
 You win if all the wolves are eliminated. 
-"""
-        ),
-        GameStage.NIGHT: StageAction(
-            text="""
-Choose who to save...
-    """,
+""",
             button_text="Select someone to save",
         ),
     },
     team=RoleDescription.Team.VILLAGERS,
-    fallback_role=DEFAULT_ROLE,
+    fallback_role=villager,
 )
 
 
