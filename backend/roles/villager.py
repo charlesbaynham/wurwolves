@@ -1,9 +1,11 @@
 """
 The Villager role
 """
-from ..model import PlayerRole, GameStage
-from .common import RoleDescription, RoleDetails, StageAction
+import logging
 
+from ..model import GameStage, PlayerRole
+from ..resolver import GameAction
+from .common import RoleDescription, RoleDetails, StageAction
 
 description = RoleDescription(
     display_name="Villager",
@@ -13,7 +15,9 @@ description = RoleDescription(
 You are a villager. You have no special powers. Try not to get eaten!
 
 You win if all the wolves are eliminated. 
-    """
+    """,
+            button_text="Move to vote",
+            select_person=False,
         ),
         GameStage.NIGHT: StageAction(
             text="""
@@ -33,6 +37,13 @@ Click someone's icon and click the button.
     team=RoleDescription.Team.VILLAGERS,
     fallback_role=None,
 )
+
+
+class MoveToVoteAction(GameAction):
+    def execute(self, game):
+        msg = f"{self.originator.user.name} voted for {self.target.model.user.name}"
+        logging.warning(msg)
+        game.send_chat_message(msg)
 
 
 def register(role_map):
