@@ -255,11 +255,15 @@ class GameAction:
         return ROLE_MAP[role].role_description.priority
 
 
-def do_nothing(game: "WurwolvesGame"):
-    logging.warning("Lobby stage should be resolved here")
+def switch_to_day(game: "WurwolvesGame"):
+    game._set_stage(GameStage.DAY)
 
 
-stage_finalizers = {GameStage.LOBBY: do_nothing}
+# Register finalizers for each stages of the game.
+# These will have access to an instance of WurwolvesGame and are expected
+# to use it to do any actions that are required
+# (e.g. changing the game stage, sending game-end chat messages etc)
+stage_finalizers = {GameStage.NIGHT: switch_to_day}
 
 
 def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> None:
@@ -291,4 +295,7 @@ def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> N
 
     # Perform any final actions (e.g. changing the game stage) that need to happen
     if stage in stage_finalizers:
+        logging.info(f"Stage finalizer registered for {stage}: executing")
         stage_finalizers[stage](game)
+    else:
+        logging.info(f"No finalizer registered for {stage}")
