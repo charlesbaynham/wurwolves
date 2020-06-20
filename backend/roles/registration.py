@@ -97,7 +97,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
             if not game.stage == stage:
                 raise HTTPException(
-                    status_code=403, detail="That action is not valid in this stage"
+                    status_code=403,
+                    detail=f"Action {func_name} is not valid in stage {game.stage}, only in {stage}",
                 )
 
             # Check if this player has already acted this round
