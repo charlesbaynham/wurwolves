@@ -57,7 +57,7 @@ class FrontendState(pydantic.BaseModel):
     myNameIsGenerated: bool
 
 
-def parse_game_to_state(g: WurwolvesGame, user_id: UUID):
+def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     """
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     """

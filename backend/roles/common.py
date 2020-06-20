@@ -20,7 +20,7 @@ class RoleDescription(pydantic.BaseModel):
     priority: int = 0
 
     @pydantic.validator("stages")
-    def all_stages_defined(cls, v, values):
+    def fallback_undefined(cls, v, values):
         if values["fallback_role"] and values["fallback_role"].stages:
             fallback = values["fallback_role"].stages
         else:
@@ -29,8 +29,8 @@ class RoleDescription(pydantic.BaseModel):
         if not v:
             v = {}
 
-        out = v
-        out.update(fallback)
+        out = fallback
+        out.update(v)
 
         for stage in list(GameStage):
             assert stage in out
