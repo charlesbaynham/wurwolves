@@ -117,6 +117,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
             if selected_id:
                 selected_player_id = self.get_player(selected_id).id
+            else:
+                selected_player_id = None
 
             # Save the action
             action = Action(
