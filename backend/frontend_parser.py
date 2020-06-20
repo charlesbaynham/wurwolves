@@ -72,9 +72,9 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
     actions = g.get_actions_model(player_id=player.id)
 
-    logging.info("Game: %s", game)
-    logging.info("Player: %s", player)
-    logging.info("User id: %s", user_id)
+    logging.debug("Game: %s", game)
+    logging.debug("Player: %s", player)
+    logging.debug("User id: %s", user_id)
 
     if not game or not player:
         return None
@@ -95,9 +95,9 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         button_submit_func=get_action_func_name(player.role, game.stage),
     )
 
-    logging.info("role_details.stages: {}".format(role_details.stages))
-    logging.info("state: {}".format(state))
-    logging.info("controls_state: {}".format(controls_state))
+    logging.debug("role_details.stages: {}".format(role_details.stages))
+    logging.debug("state: {}".format(state))
+    logging.debug("controls_state: {}".format(controls_state))
 
     state = FrontendState(
         state_hash=game.update_counter,
