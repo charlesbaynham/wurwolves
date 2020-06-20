@@ -280,6 +280,7 @@ def process_actions(game: "WurwolvesGame") -> GameStage:
 
     # In order, execute the actions
     for a in game_actions:
+        logging.info(f"Executing action {a}")
         a.execute(game)
 
     logging.warning("process_actions just returning same stage: not coded yet")
