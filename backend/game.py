@@ -148,8 +148,6 @@ class WurwolvesGame:
 
         logging.info("User %s joining now", user_id)
 
-        altered_game = False
-
         # Get the user from the user list, adding them if not already present
         user = self._session.query(User).filter(User.id == user_id).first()
 
@@ -157,7 +155,6 @@ class WurwolvesGame:
             user = User(
                 id=user_id, name=WurwolvesGame.generate_name(), name_is_generated=True,
             )
-            altered_game = True
 
             print("Making new player {} = {}".format(user.id, user.name))
 
@@ -358,7 +355,9 @@ class WurwolvesGame:
     def vote_start(self):
         g = self.get_game()
         g.start_votes = Game.start_votes + 1
-        
+
+        if g.start_votes == len(g.players):
+            self.start_game()
 
     @db_scoped
     def process_actions(self):

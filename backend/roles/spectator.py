@@ -20,11 +20,12 @@ description = RoleDescription(
 
 class StartGameAction(GameAction):
     def execute(self, game):
-        logging.warning("started game: {}".format(self))
+        logging.warning("started game: {}".format((self, game)))
 
     @classmethod
     def immediate(cls, game):
-        logging.warning("Immediate fire from spectator")
+        logging.warning("Immediate fire from spectator: {}".format((cls, game)))
+        game.vote_start()
 
 
 def register(role_map):

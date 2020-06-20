@@ -210,7 +210,7 @@ class GameAction:
         super().__init__()
 
     def execute(self, game):
-        """Called once all actions have been submitted"""        
+        """Called once all actions have been submitted"""
         raise NotImplementedError
 
     @classmethod
