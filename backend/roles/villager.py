@@ -26,7 +26,7 @@ Vote for someone to lynch! Whoever gets the most votes will be killed.
 
 Click someone's icon and click the button. 
     """,
-            button_text="Vote for someone to lynch...",
+            # button_text="Vote for someone to lynch...",
         ),
     },
     team=RoleDescription.Team.VILLAGERS,

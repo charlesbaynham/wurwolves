@@ -70,7 +70,14 @@ def register_role(WurwolvesGame, role: PlayerRole):
         # Define a function to be added to WurwolvesGame
         @WurwolvesGame.db_scoped
         @named(func_name)
-        def game_func(self: WurwolvesGame, user_id: UUID, selected_id: UUID = None):
+        def game_func(
+            self: WurwolvesGame,
+            user_id: UUID,
+            selected_id: UUID = None,
+            stage=stage,  # This odd keyword argument forces early binding of stage:
+            # otherwise it will be evaulated once this function runs.
+            # See https://docs.python-guide.org/writing/gotchas/#late-binding-closures
+        ):
 
             game = self.get_game()
 
