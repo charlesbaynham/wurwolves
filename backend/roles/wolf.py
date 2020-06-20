@@ -55,6 +55,11 @@ class AffectedByWolves(AffectedByMedic):
 
 
 class WolfAction(GameAction, AffectedByMedic):
+    def __init__(self, action_model, players):
+        if not action_model.selected_player_id:
+            raise ValueError("WolfAction requires a target")
+        super().__init__(action_model, players)
+
     def execute(self, game):
         target_name = self.target.model.user.name
 
