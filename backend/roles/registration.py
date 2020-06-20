@@ -65,6 +65,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
         func_name = get_action_func_name(role, stage)
 
+        logging.info(f"Registering {func_name} for {stage}")
+
         # Define a function to be added to WurwolvesGame
         @WurwolvesGame.db_scoped
         @named(func_name)
