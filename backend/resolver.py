@@ -125,7 +125,7 @@ Step 5
 
 from typing import Dict, List
 
-from .model import ActionModel, PlayerModel, PlayerRole
+from .model import ActionModel, GameStage, PlayerModel, PlayerRole
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -244,7 +244,7 @@ class GameAction:
         return ROLE_MAP[role].role_description.priority
 
 
-def process_actions(game: "WurwolvesGame"):
+def process_actions(game: "WurwolvesGame") -> GameStage:
     from .roles import ROLE_MAP
 
     stage = game.get_game_model().stage
@@ -270,3 +270,5 @@ def process_actions(game: "WurwolvesGame"):
     # In order, execute the actions
     for a in game_actions:
         a.execute(game)
+
+    return GameStage.NIGHT
