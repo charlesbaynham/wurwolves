@@ -355,6 +355,12 @@ class WurwolvesGame:
         self._session.add(m)
 
     @db_scoped
+    def vote_start(self):
+        g = self.get_game()
+        g.start_votes = Game.start_votes + 1
+        
+
+    @db_scoped
     def process_actions(self):
         """
         Process all the actions of the stage that just passed

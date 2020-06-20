@@ -84,6 +84,7 @@ class Game(Base):
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
+    start_votes = Column(Integer, default=0)
 
     players = relationship("Player", backref="game", lazy=True)
 
