@@ -35,7 +35,7 @@ Click someone's icon and click the button.
         GameStage.LOBBY: StageAction(text="",),
     },
     team=RoleDescription.Team.VILLAGERS,
-    fallback_role=None,
+    fallback_role_description=None,
 )
 
 

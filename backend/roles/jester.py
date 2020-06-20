@@ -20,7 +20,7 @@ You win if you get yourself lynched by the villagers.
         )
     },
     team=RoleDescription.Team.JESTER,
-    fallback_role=villager,
+    fallback_role_description=villager,
 )
 
 

@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import NamedTuple, Optional, Dict
+from typing import Dict, NamedTuple, Optional
 
 import pydantic
 
-from ..model import GameStage
+from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
 
 
@@ -15,14 +15,32 @@ class StageAction(pydantic.BaseModel):
 
 class RoleDescription(pydantic.BaseModel):
     display_name: str
-    fallback_role: Optional["RoleDescription"]
+    fallback_role: Optional[PlayerRole]
+    fallback_role_description: Optional["RoleDescription"]
     stages: Dict[GameStage, StageAction]
     priority: int = 0
 
+    @pydantic.validator("fallback_role_description")
+    def role_and_desc(cls, v, values):
+        if not values["fallback_role"]:
+            raise ValueError("fallback_role_description provided without fallback_role")
+        return v
+
+    @pydantic.validator("fallback_role")
+    def role_and_desc_2(cls, v, values):
+        if not values["fallback_role_description"]:
+            raise ValueError("fallback_role provided without fallback_role_description")
+        return v
+
     @pydantic.validator("stages")
-    def fallback_undefined(cls, v, values):
-        if values["fallback_role"] and values["fallback_role"].stages:
-            fallback = values["fallback_role"].stages
+    def all_stages(cls, v, values):
+        print(values)
+        if (
+            "fallback_role_description" in values
+            and values["fallback_role_description"]
+            and values["fallback_role_description"].stages
+        ):
+            fallback = values["fallback_role_description"].stages
         else:
             fallback = {}
 
