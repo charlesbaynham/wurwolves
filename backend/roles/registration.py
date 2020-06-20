@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 from uuid import UUID
 
@@ -86,7 +87,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 raise HTTPException(
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
-            if not stage not in role_description.stages:
+            if stage not in role_description.stages:
+                logging.info("Stage: {}, stages: {}".format(stage, role_description.stages))
                 raise HTTPException(
                     status_code=403,
                     detail=f"Player {user_id} in role {role} has no action in this stage",

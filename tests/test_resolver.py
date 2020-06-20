@@ -149,7 +149,11 @@ def test_actions_framework(m1, m2, m3, wolf_medic_game_model):
     import backend.roles.wolf as wolf
     import backend.roles.seer as seer
 
+    mock_game_model = Mock()
+    mock_game_model.stage = GameStage.NIGHT
+
     mock_game = Mock()
+    mock_game.get_game_model.return_value = mock_game_model
     mock_game.get_players_model.return_value = wolf_medic_game_model["players"]
     mock_game.get_actions_model.return_value = wolf_medic_game_model["actions"]
 
@@ -163,7 +167,11 @@ def test_actions_framework(m1, m2, m3, wolf_medic_game_model):
 def test_actions_chat(wolf_medic_seer_game_model):
     from backend.resolver import process_actions
 
+    mock_game_model = Mock()
+    mock_game_model.stage = GameStage.NIGHT
+
     mock_game = Mock()
+    mock_game.get_game_model.return_value = mock_game_model
     mock_game.get_players_model.return_value = wolf_medic_seer_game_model["players"]
     mock_game.get_actions_model.return_value = wolf_medic_seer_game_model["actions"]
 
