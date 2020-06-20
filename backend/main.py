@@ -44,17 +44,6 @@ async def get_state_hash(
     return await WurwolvesGame(game_tag).get_hash(known_hash=known_hash)
 
 
-@router.post("/{game_tag}/start_game")
-async def start_game(
-    game_tag: str = Path(..., title="The four-word ID of the game"),
-    user_id=Depends(get_user_id),
-):
-    """
-    Vote to start the game (actually just starts it right now)
-    """
-    WurwolvesGame(game_tag).start_game()
-
-
 @router.post("/{game_tag}/join")
 async def join(
     game_tag: str = Path(..., title="The four-word ID of the game"),

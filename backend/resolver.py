@@ -210,7 +210,13 @@ class GameAction:
         super().__init__()
 
     def execute(self, game):
+        """Called once all actions have been submitted"""        
         raise NotImplementedError
+
+    @classmethod
+    def immediate(cls, game):
+        """Called immediatly on submit"""
+        pass
 
     def do_modifiers(self):
         if self.__class__ in GameAction.mixins_affecting_originators:

@@ -22,6 +22,10 @@ class StartGameAction(GameAction):
     def execute(self, game):
         logging.warning("started game: {}".format(self))
 
+    @classmethod
+    def immediate(cls, game):
+        logging.warning("Immediate fire from spectator")
+
 
 def register(role_map):
     role_map.update(

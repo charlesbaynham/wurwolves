@@ -88,7 +88,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
             if stage not in role_description.stages:
-                logging.info("Stage: {}, stages: {}".format(stage, role_description.stages))
+                logging.info(
+                    "Stage: {}, stages: {}".format(stage, role_description.stages)
+                )
                 raise HTTPException(
                     status_code=403,
                     detail=f"Player {user_id} in role {role} has no action in this stage",
@@ -128,6 +130,10 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 stage_id=game.stage_id,
             )
             self._session.add(action)
+
+            # Perform any immediate actions registered
+            if game.stage in ROLE_MAP[player.role].actions:
+                ROLE_MAP[player.role].actions[game.stage].immediate(self)
 
             # If all the actions are complete, process them
             players = game.players
