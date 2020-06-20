@@ -57,15 +57,19 @@ class FrontendState(pydantic.BaseModel):
     myNameIsGenerated: bool
 
 
-def parse_game_to_state(game_tag: str, user_id: UUID):
+def parse_game_to_state(g: WurwolvesGame, user_id: UUID):
     """
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     """
-    g = WurwolvesGame(game_tag)
 
     game = g.get_game_model()
-
     player = g.get_player_model(user_id)
+
+    if not game or not player:
+        g.join(user_id)
+        game = g.get_game_model()
+        player = g.get_player_model(user_id)
+
     actions = g.get_actions_model(player_id=player.id)
 
     logging.info("Game: %s", game)
@@ -90,6 +94,10 @@ def parse_game_to_state(game_tag: str, user_id: UUID):
         button_submit_person=state.select_person,
         button_submit_func=get_action_func_name(player.role, game.stage),
     )
+
+    logging.info("role_details.stages: {}".format(role_details.stages))
+    logging.info("state: {}".format(state))
+    logging.info("controls_state: {}".format(controls_state))
 
     state = FrontendState(
         state_hash=game.update_counter,

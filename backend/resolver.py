@@ -123,6 +123,7 @@ Step 5
 
 """
 
+import logging
 from typing import Dict, List
 
 from .model import ActionModel, GameStage, PlayerModel, PlayerRole
@@ -219,22 +220,26 @@ class GameAction:
         pass
 
     def do_modifiers(self):
-        if self.__class__ in GameAction.mixins_affecting_originators:
-            for MixinClass in GameAction.mixins_affecting_originators[self.__class__]:
-                for action in self.target.originated_from:
-                    if isinstance(action, MixinClass):
-                        f = getattr(
-                            action, ActionMixin.get_action_method_name(MixinClass)
-                        )
-                        f()
-        if self.__class__ in GameAction.mixins_affecting_targets:
-            for MixinClass in GameAction.mixins_affecting_targets[self.__class__]:
-                for action in self.target.targetted_by:
-                    if isinstance(action, MixinClass):
-                        f = getattr(
-                            action, ActionMixin.get_action_method_name(MixinClass)
-                        )
-                        f()
+        # TODO: check this logic, I don't think it's right
+        if self.target:
+            if self.__class__ in GameAction.mixins_affecting_originators:
+                for MixinClass in GameAction.mixins_affecting_originators[
+                    self.__class__
+                ]:
+                    for action in self.target.originated_from:
+                        if isinstance(action, MixinClass):
+                            f = getattr(
+                                action, ActionMixin.get_action_method_name(MixinClass)
+                            )
+                            f()
+            if self.__class__ in GameAction.mixins_affecting_targets:
+                for MixinClass in GameAction.mixins_affecting_targets[self.__class__]:
+                    for action in self.target.targetted_by:
+                        if isinstance(action, MixinClass):
+                            f = getattr(
+                                action, ActionMixin.get_action_method_name(MixinClass)
+                            )
+                            f()
 
     @staticmethod
     def get_priority(role: PlayerRole):
@@ -277,4 +282,5 @@ def process_actions(game: "WurwolvesGame") -> GameStage:
     for a in game_actions:
         a.execute(game)
 
-    return GameStage.NIGHT
+    logging.warning("process_actions just returning same stage: not coded yet")
+    return stage

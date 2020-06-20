@@ -292,6 +292,10 @@ class WurwolvesGame:
         game = self.get_game()
 
         player_roles = roles.assign_roles(len(game.players))
+
+        logging.info(
+            "Assigning roles for {} game: {}".format(self.game_id, player_roles)
+        )
         if not player_roles:
             raise HTTPException(status_code=400, detail="Not enough players")
 
@@ -355,8 +359,12 @@ class WurwolvesGame:
     def vote_start(self):
         g = self.get_game()
         g.start_votes = Game.start_votes + 1
+        self._session.commit()
+
+        logging.info(f"({self.game_id}) g.start_votes = {g.start_votes}")
 
         if g.start_votes == len(g.players):
+            logging.warning("({}) all votes are in: starting".format(self.game_id))
             self.start_game()
 
     @db_scoped

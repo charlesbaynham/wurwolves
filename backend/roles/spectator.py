@@ -20,7 +20,7 @@ description = RoleDescription(
 
 class StartGameAction(GameAction):
     def execute(self, game):
-        logging.warning("started game: {}".format((self, game)))
+        logging.warning("Spectator action: {}".format((self, game)))
 
     @classmethod
     def immediate(cls, game):
