@@ -29,8 +29,7 @@ class RoleDescription(pydantic.BaseModel):
         if not v:
             v = {}
 
-        out = fallback
-        out.update(v)
+        out = {**fallback, **v}
 
         for stage in list(GameStage):
             assert stage in out
