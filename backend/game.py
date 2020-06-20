@@ -299,14 +299,18 @@ class WurwolvesGame:
         if not player_roles:
             raise HTTPException(status_code=400, detail="Not enough players")
 
-        self._session.add(game)
-
-        game.stage = GameStage.NIGHT
-
         player: Player
         for player, role in zip(game.players, player_roles):
             player.role = role
             player.state = PlayerState.ALIVE
+
+        self._set_stage(GameStage.NIGHT)
+
+    @db_scoped
+    def _set_stage(self, stage: GameStage):
+        game = self.get_game()
+        game.stage = stage
+        game.stage_id += 1
 
     @db_scoped
     def get_messages(self, user_id: UUID) -> List[ChatMessage]:
@@ -368,7 +372,7 @@ class WurwolvesGame:
             self.start_game()
 
     @db_scoped
-    def process_actions(self):
+    def process_actions(self, stage: GameStage, stage_id: int):
         """
         Process all the actions of the stage that just passed
 
@@ -381,7 +385,7 @@ class WurwolvesGame:
         """
         logging.info(f"All the actions are in for game {self.game_id}: processing")
 
-        self._set_stage(resolver.process_actions(self))
+        self._set_stage(resolver.process_actions(self, stage, stage_id))
 
     @db_scoped
     def _set_stage(self, stage: GameStage):

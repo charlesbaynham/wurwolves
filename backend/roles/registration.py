@@ -81,6 +81,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
             game = self.get_game()
 
+            # Save the stage ID now in case the immediate actions change it
+            stage_id = game.stage_id
+
             if not game:
                 raise HTTPException(
                     status_code=404, detail=f"Game {self.game_id} not found"
@@ -111,7 +114,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
 
             # Check if this player has already acted this round
-            action = (
+            if (
                 self._session.query(Action)
                 .filter(
                     Action.game_id == game.id,
@@ -119,9 +122,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                     Action.player_id == player.id,
                 )
                 .first()
-            )
-
-            if action:
+            ):
                 raise HTTPException(
                     status_code=403,
                     detail=f"Action already completed for player {user_id} in round {game.stage_id}",
@@ -150,13 +151,13 @@ def register_role(WurwolvesGame, role: PlayerRole):
             ready = True
             for player in players:
                 if stage in ROLE_MAP[player.role].role_description.stages and not any(
-                    a.stage_id == game.stage_id for a in player.actions
+                    a.stage_id == stage_id for a in player.actions
                 ):
                     ready = False
                     break
 
             if ready:
-                self.process_actions()
+                self.process_actions(stage, stage_id)
 
             self.get_game().touch()
 

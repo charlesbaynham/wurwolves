@@ -231,6 +231,7 @@ class GameModel(pydantic.BaseModel):
     update_counter: int
 
     stage: GameStage
+    stage_id: int
 
     players: List[PlayerModel]
     messages: List[MessageModel]

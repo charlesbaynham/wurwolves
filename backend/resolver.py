@@ -255,12 +255,13 @@ class GameAction:
         return ROLE_MAP[role].role_description.priority
 
 
-def process_actions(game: "WurwolvesGame") -> GameStage:
+def process_actions(
+    game: "WurwolvesGame", stage: GameStage, stage_id: int
+) -> GameStage:
     from .roles import ROLE_MAP
 
-    stage = game.get_game_model().stage
     players = game.get_players_model()
-    actions = game.get_actions_model()
+    actions = game.get_actions_model(stage_id)
 
     game_players = {}
     for p in players:
