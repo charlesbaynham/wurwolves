@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 from typing import Dict
 from uuid import UUID
 
@@ -164,9 +165,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
         # Make one for the API router that does / does not require a selected_id
         if role_description.stages[stage].select_person:
 
-            @router.post(f"/{{game_tag}}/{func_name}")
-            @named(func_name)
             def api_func(
+                func_name,  #  For early binding
                 selected_id: UUID,
                 game_tag: str = Path(..., title="The four-word ID of the game"),
                 user_id=Depends(get_user_id),
@@ -177,15 +177,21 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
         else:
 
-            @router.post(f"/{{game_tag}}/{func_name}")
-            @named(func_name)
             def api_func(
+                func_name,  #  For early binding
                 game_tag: str = Path(..., title="The four-word ID of the game"),
                 user_id=Depends(get_user_id),
             ):
                 g = WurwolvesGame(game_tag)
                 f = getattr(WurwolvesGame, func_name)
                 f(g, user_id)
+
+        # Force early binding of the func_name by using partial
+        bound_api_func = partial(api_func, func_name)
+        bound_api_func = named(func_name)(bound_api_func)
+
+        # Register it with the API router
+        router.post(f"/{{game_tag}}/{func_name}")(bound_api_func)
 
         # Patch the WurwolvesGame function into WurwolvesGame: the API
         # function is in the router which will be added in main
