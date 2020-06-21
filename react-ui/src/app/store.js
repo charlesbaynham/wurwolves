@@ -9,6 +9,7 @@ const backend = createSlice({
     state_hash: 0,
     players: [],
     chat: [],
+    showSecretChat: false,
     stage: "LOBBY",
     controls_state: {},
     myID: "",
@@ -27,7 +28,7 @@ const selectedPlayer = createSlice({
   initialState: null,
   reducers: {
     selectPlayer: (state, action) => action.payload,
-    unselectAll: state => null, 
+    unselectAll: state => null,
   }
 })
 

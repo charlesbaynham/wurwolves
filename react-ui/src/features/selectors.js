@@ -22,6 +22,8 @@ export const selectControls = (state => state.backend.controls_state);
 
 export const selectStateHash = (state => state.backend.state_hash);
 
+export const selectShowSecretChat = (state => state.backend.showSecretChat)
+
 // Frontend stuff:
 
 export const selectSelectedPlayer = (state => state.selectedPlayer)

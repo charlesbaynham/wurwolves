@@ -29,6 +29,7 @@ class FrontendState(pydantic.BaseModel):
         isStrong = False
 
     chat: List[ChatMsg]
+    showSecretChat = False
 
     stage: GameStage
 
@@ -85,6 +86,8 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
     state = role_details.get_stage_action(game.stage)
 
+    role_action = get_role_action(player.role, game.stage)
+
     controls_state = FrontendState.RoleState(
         title=role_details.display_name,
         text=state.text,
@@ -92,8 +95,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         button_enabled=(
             bool(state.button_text)
             and not actions
-            and player.state
-            in get_role_action(player.role, game.stage).allowed_player_states
+            and (role_action and player.state in role_action.allowed_player_states)
         ),
         button_text=state.button_text,
         button_submit_person=state.select_person,
@@ -117,6 +119,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             for m in game.messages
             if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
         ],
+        showSecretChat=role_details.secret_chat_enabled,
         stage=game.stage,
         controls_state=controls_state,
         myID=user_id,

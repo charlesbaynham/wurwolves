@@ -20,6 +20,7 @@ class RoleDescription(pydantic.BaseModel):
     fallback_role_description: Optional["RoleDescription"]
     stages: Dict[GameStage, StageAction]
     priority: int = 0
+    secret_chat_enabled = False
 
     @pydantic.validator("fallback_role_description", always=True)
     def role_and_desc(cls, v, values):
