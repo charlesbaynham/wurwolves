@@ -9,6 +9,7 @@ from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .villager import description as villager
+from .teams import Team
 
 description = RoleDescription(
     display_name="Medic",
@@ -22,7 +23,7 @@ You win if all the wolves are eliminated.
             button_text="Select someone to save",
         ),
     },
-    team=RoleDescription.Team.VILLAGERS,
+    team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )

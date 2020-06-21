@@ -5,6 +5,7 @@ import logging
 
 from ..model import GameStage, PlayerRole
 from .common import GameAction, RoleDescription, RoleDetails, StageAction
+from .teams import Team
 
 description = RoleDescription(
     display_name="Spectator",
@@ -29,7 +30,7 @@ you should probably start a video call.
         GameStage.NIGHT: StageAction(text="You're not playing. Guess you were late."),
         GameStage.VOTING: StageAction(text="You're not playing. Guess you were late."),
     },
-    team=RoleDescription.Team.SPECTATORS,
+    team=Team.SPECTATORS,
 )
 
 

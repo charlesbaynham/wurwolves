@@ -8,6 +8,7 @@ from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .wolf import AffectedByWolves
 from .villager import description as villager
+from .teams import Team
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -29,7 +30,7 @@ Choose who to check...
             button_text="Select someone to check",
         ),
     },
-    team=RoleDescription.Team.VILLAGERS,
+    team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )
@@ -41,9 +42,7 @@ class SeerAction(GameAction, AffectedByWolves):
 
         seer_name = self.originator.model.user.name
         target_name = self.target.model.user.name
-        target_is_wolf = (
-            get_role_team(self.target.model.role) == RoleDescription.Team.WOLVES
-        )
+        target_is_wolf = get_role_team(self.target.model.role) == Team.WOLVES
 
         logging.info(f"Seer: {seer_name} checks {target_name}")
 

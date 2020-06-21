@@ -7,6 +7,7 @@ from ..resolver import GameAction, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
 from .villager import description as villager
+from .teams import Team
 
 description = RoleDescription(
     display_name="Wolf",
@@ -25,7 +26,7 @@ Choose who to kill!
             button_text="Select someone to maul",
         ),
     },
-    team=RoleDescription.Team.WOLVES,
+    team=Team.WOLVES,
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )

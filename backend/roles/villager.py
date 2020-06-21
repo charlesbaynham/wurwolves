@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction, NoTargetRequired, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
+from .teams import Team
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
@@ -38,7 +39,7 @@ Click someone's icon and click the button.
         ),
         GameStage.LOBBY: StageAction(text="",),
     },
-    team=RoleDescription.Team.VILLAGERS,
+    team=Team.VILLAGERS,
 )
 
 

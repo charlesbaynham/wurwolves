@@ -1,10 +1,10 @@
-from enum import Enum
 from typing import Dict, NamedTuple, Optional
 
 import pydantic
 
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
+from .teams import Team
 
 
 class StageAction(pydantic.BaseModel):
@@ -73,12 +73,6 @@ class RoleDescription(pydantic.BaseModel):
             stage_action = self.fallback_role_description.stages[stage]
 
         return stage_action
-
-    class Team(Enum):
-        VILLAGERS = "VILLAGERS"
-        WOLVES = "WOLVES"
-        SPECTATORS = "SPECTATORS"
-        JESTER = "JESTER"
 
     team: Team
 

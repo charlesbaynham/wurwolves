@@ -7,6 +7,7 @@ The jester wins by getting themselves lynched by the villagers
 from ..model import GameStage, PlayerRole
 from .common import RoleDescription, RoleDetails, StageAction
 from .villager import description as villager
+from .teams import Team
 
 description = RoleDescription(
     display_name="Jester",
@@ -19,7 +20,7 @@ You win if you get yourself lynched by the villagers.
     """
         )
     },
-    team=RoleDescription.Team.JESTER,
+    team=Team.JESTER,
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )

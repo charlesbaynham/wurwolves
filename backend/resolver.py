@@ -296,6 +296,8 @@ class NoTargetRequired(ActionMixin):
 
 
 def switch_to_day(game: "WurwolvesGame"):
+    from roles import team_has_won, win_ends_game
+
     game._set_stage(GameStage.DAY)
     game.send_chat_message("Day breaks...", is_strong=True)
 
