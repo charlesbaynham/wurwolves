@@ -38,16 +38,18 @@ Click someone's icon and click the button.
 )
 
 
-class MoveToVoteAction(GameAction):
+class MoveToVoteAction(GameAction, NoTargetRequired):
     def execute(self, game):
-        msg = f"{self.originator.user.name} voted for {self.target.model.user.name}"
+        msg = f"{self.originator.model.user.name}"
         logging.warning(msg)
         game.send_chat_message(msg)
 
 
-class VoteAction(GameAction):
+class VoteAction(GameAction, TargetRequired):
     def execute(self, game):
-        msg = f"{self.originator.user.name} voted for {self.target.model.user.name}"
+        msg = (
+            f"{self.originator.model.user.name} voted for {self.target.model.user.name}"
+        )
         logging.warning(msg)
         game.send_chat_message(msg)
 

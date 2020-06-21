@@ -120,3 +120,18 @@ def test_actions_processed_day(demo_game):
             demo_game.seer_day_action(player.user_id)
 
     demo_game.process_actions.assert_called_once()
+
+
+def test_actions_processed_day_noerrors(demo_game):
+    demo_game.start_game()
+    demo_game._set_stage(GameStage.DAY)
+
+    players = demo_game.get_players_model()
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_day_action(player.user_id)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_day_action(player.user_id)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_day_action(player.user_id)

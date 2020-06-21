@@ -285,7 +285,7 @@ stage_finalizers = {GameStage.NIGHT: switch_to_day}
 
 
 def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> None:
-    from .roles import ROLE_MAP
+    from .roles import get_role_action
 
     players = game.get_players_model()
     actions = game.get_actions_model(stage_id)
@@ -296,19 +296,7 @@ def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> N
 
     game_actions = []
     for a in actions:
-        originator_role_details = ROLE_MAP[a.player.role]
-        try:
-            action_class = originator_role_details.actions[stage]
-        except KeyError:
-            fallback_role_details = ROLE_MAP[
-                originator_role_details.role_description.fallback_role
-            ]
-            try:
-                action_class = fallback_role_details.actions[stage]
-            except KeyError:
-                raise KeyError(
-                    f"Attempted action for {a.player.role} in state {stage} but none for role or fallback"
-                )
+        action_class = get_role_action(a.player.role, stage)
         game_actions.append(action_class(a, game_players))
 
     # Sort actions by priority then by action id
