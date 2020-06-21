@@ -1,7 +1,13 @@
+import random
+
 import pytest
 
 from backend.model import PlayerRole
 from backend.roles import assign_roles
+
+
+# For determinism
+random.seed(123)
 
 
 def test_basics():
