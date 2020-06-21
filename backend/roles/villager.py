@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction, NoTargetRequired, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
+from .spectator import VoteStartNewGame
+from .spectator import description as spectator
 from .teams import Team
 
 if TYPE_CHECKING:
@@ -39,9 +41,7 @@ Click someone's icon and click the button.
         ),
         GameStage.LOBBY: StageAction(text="",),
         GameStage.ENDED: StageAction(
-            text="""
-The game has ended!
-        """,
+            text="The game has ended!", button_text="Vote to restart"
         ),
     },
     team=Team.VILLAGERS,
@@ -79,7 +79,11 @@ def register(role_map):
         {
             PlayerRole.VILLAGER: RoleDetails(
                 description,
-                {GameStage.DAY: MoveToVoteAction, GameStage.VOTING: VoteAction},
+                {
+                    GameStage.DAY: MoveToVoteAction,
+                    GameStage.VOTING: VoteAction,
+                    GameStage.ENDED: VoteStartNewGame,
+                },
             )
         }
     )

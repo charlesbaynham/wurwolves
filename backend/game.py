@@ -311,6 +311,8 @@ class WurwolvesGame:
 
         self._set_stage(GameStage.NIGHT)
 
+        self.clear_chat_messages()
+
     @db_scoped
     def get_messages(self, user_id: UUID) -> List[ChatMessage]:
         """ Get chat messages visible to the given user """
@@ -329,6 +331,10 @@ class WurwolvesGame:
             out.append(ChatMessage(text=m.text, is_strong=m.is_strong))
 
         return out
+
+    @db_scoped
+    def clear_chat_messages(self):
+        self.get_game().messages = []
 
     @db_scoped
     def send_chat_message(self, msg, is_strong=False, user_list=[], player_list=[]):
@@ -368,6 +374,7 @@ class WurwolvesGame:
 
         if g.start_votes == len(g.players):
             logging.warning("({}) all votes are in: starting".format(self.game_id))
+            g.start_votes = 0
             self.start_game()
 
     @db_scoped

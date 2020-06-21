@@ -4,6 +4,7 @@ The Spectator role
 import logging
 
 from ..model import GameStage, PlayerRole
+from ..resolver import NoTargetRequired
 from .common import GameAction, RoleDescription, RoleDetails, StageAction
 from .teams import Team
 
@@ -29,7 +30,9 @@ you should probably start a video call.
         GameStage.DAY: StageAction(text="You're not playing. Guess you were late."),
         GameStage.NIGHT: StageAction(text="You're not playing. Guess you were late."),
         GameStage.VOTING: StageAction(text="You're not playing. Guess you were late."),
-        GameStage.ENDED: StageAction(text="The game has ended!"),
+        GameStage.ENDED: StageAction(
+            text="The game has ended!", button_text="Vote to restart"
+        ),
     },
     team=Team.SPECTATORS,
 )
@@ -45,11 +48,20 @@ class StartGameAction(GameAction):
         game.vote_start()
 
 
+class VoteStartNewGame(GameAction, NoTargetRequired):
+    def execute(self, game):
+        msg = f"{self.originator.model.user.name} wants to start a new game"
+        logging.info(f"({game.game_id}) {msg}")
+        game.send_chat_message(msg)
+        game.vote_start(self.target.model.id)
+
+
 def register(role_map):
     role_map.update(
         {
             PlayerRole.SPECTATOR: RoleDetails(
-                description, {GameStage.LOBBY: StartGameAction}
+                description,
+                {GameStage.LOBBY: StartGameAction, GameStage.ENDED: VoteStartNewGame},
             )
         }
     )

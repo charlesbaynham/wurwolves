@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, NamedTuple, Optional
 
 import pydantic
@@ -28,7 +29,7 @@ class RoleDescription(pydantic.BaseModel):
 
     @pydantic.validator("stages")
     def all_stages(cls, v, values):
-        print(values)
+        logging.info(f"values: {values}")
         if (
             "fallback_role_description" in values
             and values["fallback_role_description"]
