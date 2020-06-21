@@ -46,4 +46,10 @@ class MoveToVoteAction(GameAction):
 
 
 def register(role_map):
-    role_map.update({PlayerRole.VILLAGER: RoleDetails(description)})
+    role_map.update(
+        {
+            PlayerRole.VILLAGER: RoleDetails(
+                description, {GameStage.DAY: MoveToVoteAction}
+            )
+        }
+    )
