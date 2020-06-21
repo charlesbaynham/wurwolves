@@ -68,20 +68,22 @@ def test_wolf_kill(five_player_game):
     assert game.get_player_model(roles_map["Medic"]).state == PlayerState.WOLFED
 
 
-def test_wolf_win(five_player_game):
+def test_dead_no_vote(five_player_game):
     game, roles_map = five_player_game
 
     # Kill the medic and a villager
     player = game.get_player_model(roles_map["Medic"])
     game.set_player_state(player.id, PlayerState.LYNCHED)
     player = game.get_player_model(roles_map["Villager 1"])
-    game.set_player_state(player.id, PlayerState.LYNCHED)
+    game.set_player_state(player.id, PlayerState.WOLFED)
 
-    # Wolves get the seer:
+    game._set_stage(GameStage.VOTING)
+
+    # Try to vote
     with pytest.raises(HTTPException):
-        game.medic_night_action(roles_map["Medic"], roles_map["Seer"])
+        game.medic_voting_action(roles_map["Medic"], roles_map["Seer"])
+    with pytest.raises(HTTPException):
+        game.villager_voting_action(roles_map["Medic"], roles_map["Seer"])
 
-    game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
-    game.seer_night_action(roles_map["Seer"], roles_map["Wolf"])
-
-    assert game.get_game_model().stage == GameStage.ENDED
+    game.wolf_voting_action(roles_map["Wolf"], roles_map["Seer"])
+    game.seer_voting_action(roles_map["Seer"], roles_map["Wolf"])
