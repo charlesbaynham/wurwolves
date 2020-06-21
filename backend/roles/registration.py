@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import Dict
+from typing import TYPE_CHECKING, Dict, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
@@ -9,6 +9,9 @@ from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
 from . import jester, medic, seer, spectator, villager, wolf
 from .common import RoleDetails
+
+if TYPE_CHECKING:
+    from ..resolver import GameAction
 
 router = APIRouter()
 
@@ -35,6 +38,23 @@ def get_action_func_name(role: PlayerRole, stage: GameStage):
 
 def get_role_team(role: PlayerRole):
     return ROLE_MAP[role].role_description.team
+
+
+def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameAction"]:
+    """ Get the action class associated with a role and stage, or None """
+    role_details = ROLE_MAP[role]
+
+    action_class = None
+    if stage in role_details.actions:
+        action_class = role_details.actions[stage]
+    elif role_details.role_description.fallback_role:
+        fallback_role_details = ROLE_MAP[role_details.role_description.fallback_role]
+        if fallback_role_details and stage in fallback_role_details.actions:
+            action_class = fallback_role_details.actions[stage]
+        else:
+            action_class = None
+
+    return action_class
 
 
 def named(n):
@@ -100,7 +120,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 raise HTTPException(
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
-            if stage not in role_description.stages:
+            if not get_role_action(role, stage):
                 logging.info(
                     "Stage: {}, stages: {}".format(stage, role_description.stages)
                 )
@@ -144,14 +164,14 @@ def register_role(WurwolvesGame, role: PlayerRole):
             self._session.add(action)
 
             # Perform any immediate actions registered
-            if game.stage in ROLE_MAP[player.role].actions:
+            if stage in ROLE_MAP[player.role].actions:
                 ROLE_MAP[player.role].actions[game.stage].immediate(self)
 
             # If all the actions are complete, process them
             players = game.players
             ready = True
             for player in players:
-                if stage in ROLE_MAP[player.role].role_description.stages and not any(
+                if get_role_action(player.role, stage) and not any(
                     a.stage_id == stage_id for a in player.actions
                 ):
                     ready = False

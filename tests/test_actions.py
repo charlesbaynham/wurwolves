@@ -1,3 +1,4 @@
+from unittest.mock import Mock
 from uuid import uuid4 as uuid
 
 import pytest
@@ -62,3 +63,41 @@ def test_medic_forbidden_wolf(demo_game):
         if player.role == PlayerRole.MEDIC:
             with pytest.raises(HTTPException):
                 demo_game.wolf_night_action(player.user_id)
+
+
+def test_actions_processed_with_spectator(demo_game):
+    demo_game.start_game()
+
+    demo_game.join(uuid())
+
+    demo_game.process_actions = Mock(unsafe=True)
+
+    players = demo_game.get_players_model()
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_night_action(player.user_id)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_night_action(player.user_id)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_night_action(player.user_id)
+
+    demo_game.process_actions.assert_called_once()
+
+
+def test_actions_processed(demo_game):
+    demo_game.start_game()
+
+    demo_game.process_actions = Mock(unsafe=True)
+
+    players = demo_game.get_players_model()
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_night_action(player.user_id)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_night_action(player.user_id)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_night_action(player.user_id)
+
+    demo_game.process_actions.assert_called_once()
