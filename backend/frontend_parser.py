@@ -98,7 +98,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             and (role_action and player.state in role_action.allowed_player_states)
         ),
         button_text=state.button_text,
-        button_submit_person=state.select_person,
+        button_submit_person=state.button_text and state.select_person,
         button_submit_func=get_action_func_name(player.role, game.stage),
     )
 
