@@ -5,7 +5,7 @@ import pytest
 from fastapi import HTTPException
 
 from backend.game import WurwolvesGame
-from backend.model import PlayerRole
+from backend.model import PlayerRole, GameStage
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -99,5 +99,24 @@ def test_actions_processed(demo_game):
             demo_game.wolf_night_action(player.user_id)
         elif player.role == PlayerRole.SEER:
             demo_game.seer_night_action(player.user_id)
+
+    demo_game.process_actions.assert_called_once()
+
+
+def test_actions_processed_day(demo_game):
+    demo_game.start_game()
+    demo_game._set_stage(GameStage.DAY)
+
+    demo_game.process_actions = Mock(unsafe=True)
+
+    players = demo_game.get_players_model()
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_day_action(player.user_id)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_day_action(player.user_id)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_day_action(player.user_id)
 
     demo_game.process_actions.assert_called_once()

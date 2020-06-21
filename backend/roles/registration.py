@@ -45,11 +45,15 @@ def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameActi
     role_details = ROLE_MAP[role]
 
     action_class = None
-    if stage in role_details.actions:
+    if role_details.actions and stage in role_details.actions:
         action_class = role_details.actions[stage]
     elif role_details.role_description.fallback_role:
         fallback_role_details = ROLE_MAP[role_details.role_description.fallback_role]
-        if fallback_role_details and stage in fallback_role_details.actions:
+        if (
+            fallback_role_details
+            and fallback_role_details.actions
+            and stage in fallback_role_details.actions
+        ):
             action_class = fallback_role_details.actions[stage]
         else:
             action_class = None
@@ -81,7 +85,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
     for stage, stage_action in role_description.stages.items():
 
-        if not stage_action.button_text:
+        if not get_role_action(role, stage):
             continue
 
         func_name = get_action_func_name(role, stage)
@@ -126,7 +130,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
                 raise HTTPException(
                     status_code=403,
-                    detail=f"Player {user_id} in role {role} has no action in this stage",
+                    detail=f"Player {user_id} in role {role} has no action in stage {stage}",
                 )
             if not game.stage == stage:
                 raise HTTPException(
