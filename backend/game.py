@@ -334,7 +334,8 @@ class WurwolvesGame:
 
     @db_scoped
     def clear_chat_messages(self):
-        self.get_game().messages = []
+        for m in self.get_game().messages:
+            self._session.delete(m)
 
     @db_scoped
     def send_chat_message(self, msg, is_strong=False, user_list=[], player_list=[]):
