@@ -65,4 +65,19 @@ def win_ends_game(team: Team) -> bool:
 
 
 def win_action(game: "WurwolvesGame", team: Team):
+    from .registration import get_role_team
+
     logging.info(f"Team {team} has won!")
+    if win_ends_game(team):
+        game.send_chat_message(
+            f"The game is ended and the {team} have won!", is_strong=True
+        )
+    else:
+        players_in_team = [
+            p.id for p in game.get_players_model() if get_role_team(p.role) == team
+        ]
+        game.send_chat_message(
+            "You have won! But the game isn't over...",
+            is_strong=True,
+            player_list=players_in_team,
+        )
