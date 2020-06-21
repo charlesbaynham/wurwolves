@@ -416,8 +416,8 @@ class WurwolvesGame:
 
         if g.start_votes == len(g.players):
             logging.warning("({}) all votes are in: starting".format(self.game_id))
-            g.start_votes = 0
             self.start_game()
+            g.start_votes = 0
 
     @db_scoped
     def set_player_state(self, player_id, state: PlayerState):
