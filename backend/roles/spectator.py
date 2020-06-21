@@ -38,7 +38,7 @@ class StartGameAction(GameAction):
         logging.warning("Spectator action: {}".format((self, game)))
 
     @classmethod
-    def immediate(cls, game=game, **kwargs):
+    def immediate(cls, game=None, **kwargs):
         logging.warning("Immediate fire from spectator: {}".format((cls, game)))
         game.vote_start()
 

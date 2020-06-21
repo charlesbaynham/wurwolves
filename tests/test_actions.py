@@ -125,6 +125,7 @@ def test_actions_processed_day(demo_game):
 def test_actions_processed_day_noerrors(demo_game):
     demo_game.start_game()
     demo_game._set_stage(GameStage.DAY)
+    assert demo_game.get_game_model().stage == GameStage.DAY
 
     players = demo_game.get_players_model()
 
@@ -135,3 +136,5 @@ def test_actions_processed_day_noerrors(demo_game):
             demo_game.wolf_day_action(player.user_id)
         elif player.role == PlayerRole.SEER:
             demo_game.seer_day_action(player.user_id)
+
+    assert demo_game.get_game_model().stage == GameStage.VOTING

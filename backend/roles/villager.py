@@ -49,8 +49,11 @@ class MoveToVoteAction(GameAction, NoTargetRequired):
     This just sends a message: the round completes when all players have moved to vote
     """
 
+    def execute(self, game):
+        pass
+
     @classmethod
-    def immediate(cls, game: WurwolvesGame = None, user_id=None, **kwargs):
+    def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kwargs):
         msg = f"{game.get_user_name(user_id)} moved to vote"
         game.send_chat_message(msg)
 
