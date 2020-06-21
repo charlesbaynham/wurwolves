@@ -4,7 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
     selectPlayerName,
     selectPlayerStatus,
-    selectSelectedPlayer
+    selectSelectedPlayer,
+    selectPlayerSelectable
 } from './selectors'
 
 import { selectPlayer, unselectAll } from '../app/store'
@@ -42,7 +43,9 @@ function Player(props) {
     const status = useSelector(selectPlayerStatus(player_id));
 
     const selectedPlayer = useSelector(selectSelectedPlayer);
-    const selected = selectedPlayer === player_id
+    const playerSelectable = useSelector(selectPlayerSelectable);
+
+    const selected = selectedPlayer === player_id && playerSelectable;
 
     const dispatch = useDispatch()
 
