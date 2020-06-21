@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import Form from 'react-bootstrap/Form';
 
 import {
     selectMessages, selectShowSecretChat
@@ -13,14 +14,25 @@ export function Chatbox() {
     const chat_messages = useSelector(selectMessages)
     const showSecretChat = useSelector(selectShowSecretChat)
 
-    console.log(`showSecretChat=${showSecretChat}`)
+    const [chatMessage, setChatMessage] = useState("");
+
+    const sendChatMessage = (msg) => {
+        console.log(msg)
+    }
 
     const secretChat = (
         showSecretChat ?
-            <div className="mt-3">
-                <input type="text" className="form-control" id="chatInput"
-                    placeholder="Secret message to the wolves" />
-            </div>
+            <Form className="mt-3" onSubmit={e => {
+                e.preventDefault()
+                sendChatMessage(chatMessage);
+                setChatMessage("");
+            }}>
+                <Form.Control
+                    placeholder="Secret message to team..."
+                    onChange={e => setChatMessage(e.target.value)}
+                    value={chatMessage}
+                />
+            </Form>
             :
             null
     )
