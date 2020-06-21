@@ -5,7 +5,7 @@ import pytest
 from fastapi import HTTPException
 
 from backend.game import WurwolvesGame
-from backend.model import PlayerRole, GameStage
+from backend.model import GameStage, PlayerRole, PlayerState
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -138,3 +138,42 @@ def test_actions_processed_day_noerrors(demo_game):
             demo_game.seer_day_action(player.user_id)
 
     assert demo_game.get_game_model().stage == GameStage.VOTING
+
+
+def test_actions_processed_voting_noerrors(demo_game):
+    demo_game.start_game()
+    demo_game._set_stage(GameStage.VOTING)
+    assert demo_game.get_game_model().stage == GameStage.VOTING
+
+    players = demo_game.get_players_model()
+
+    the_dick = players[0].user_id
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_voting_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_voting_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_voting_action(player.user_id, the_dick)
+
+
+def test_actions_processed_voting_results(demo_game):
+    demo_game.start_game()
+    demo_game._set_stage(GameStage.VOTING)
+    assert demo_game.get_game_model().stage == GameStage.VOTING
+
+    players = demo_game.get_players_model()
+
+    the_dick = players[0].user_id
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_voting_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_voting_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_voting_action(player.user_id, the_dick)
+
+    assert demo_game.get_player_model(the_dick).state == PlayerState.LYNCHED
+    assert demo_game.get_game_model().stage == GameStage.NIGHT

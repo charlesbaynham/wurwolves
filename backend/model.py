@@ -129,6 +129,7 @@ class Player(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     game_id = Column(Integer, ForeignKey("games.id"))
     user_id = Column(UUIDType, ForeignKey("users.id"))
+    votes = Column(Integer, default=0)
 
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
@@ -201,6 +202,7 @@ class PlayerModel(pydantic.BaseModel):
     id: int
     game_id: int
     user_id: UUID
+    votes: int = 0
 
     user: "UserModel"
 

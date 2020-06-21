@@ -366,6 +366,31 @@ class WurwolvesGame:
             self.start_game()
 
     @db_scoped
+    def set_player_state(self, player_id, state: PlayerState):
+        p = self.get_player_by_id(player_id)
+        p.state = state
+
+    @db_scoped
+    def vote_player(self, player_id):
+        """ Record a vote for a player
+
+        Called by the execute() stage of vote actions
+        """
+        p = self.get_player_by_id(player_id)
+        p.votes = Player.votes + 1
+        self._session.commit()
+
+        logging.info(f"Player {p.user.name} has {p.votes} votes")
+
+    @db_scoped
+    def reset_votes(self):
+        game = self.get_game()
+        for p in game.players:
+            p.votes = 0
+        game.stage_id += 1
+        logging.info("Votes reset")
+
+    @db_scoped
     def process_actions(self, stage: GameStage, stage_id: int):
         """
         Process all the actions of the stage that just passed

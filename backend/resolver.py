@@ -126,7 +126,7 @@ Step 5
 import logging
 from typing import Dict, List
 
-from .model import ActionModel, GameStage, PlayerModel, PlayerRole
+from .model import ActionModel, GameStage, PlayerModel, PlayerRole, PlayerState
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -281,11 +281,29 @@ def switch_to_vote(game: "WurwolvesGame"):
     game._set_stage(GameStage.VOTING)
 
 
+def count_votes(game: "WurwolvesGame"):
+    players: List[PlayerModel] = game.get_players_model()
+    votes = [p.votes for p in players]
+    voted_player, num_votes = max(zip(players, votes), key=lambda tup: tup[1])
+    if votes.count(num_votes) > 1:
+        game.send_chat_message("The vote was a tie! Revote...", is_strong=True)
+    else:
+        game.send_chat_message(f"{voted_player.user.name} got lynched", is_strong=True)
+        game.set_player_state(voted_player.id, PlayerState.LYNCHED)
+        game._set_stage(GameStage.NIGHT)
+
+    game.reset_votes()
+
+
 # Register finalizers for each stages of the game.
 # These will have access to an instance of WurwolvesGame and are expected
 # to use it to do any actions that are required
 # (e.g. changing the game stage, sending game-end chat messages etc)
-stage_finalizers = {GameStage.NIGHT: switch_to_day, GameStage.DAY: switch_to_vote}
+stage_finalizers = {
+    GameStage.NIGHT: switch_to_day,
+    GameStage.DAY: switch_to_vote,
+    GameStage.VOTING: count_votes,
+}
 
 
 def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> None:
