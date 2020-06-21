@@ -296,10 +296,23 @@ class NoTargetRequired(ActionMixin):
 
 
 def switch_to_day(game: "WurwolvesGame"):
-    from .roles import team_has_won, win_ends_game
+    from .roles import team_has_won, win_ends_game, Team, win_action
 
-    game._set_stage(GameStage.DAY)
-    game.send_chat_message("Day breaks...", is_strong=True)
+    wins = [team for team in list(Team) if team_has_won(game, team)]
+    for winning_team in wins:
+        win_action(game, winning_team)
+
+    game_ending_wins = [w for w in wins if win_ends_game(w)]
+
+    for winning_team in game_ending_wins:
+        logging.error("The game has ended! Not implemented yet")
+        game.send_chat_message(
+            "The game has ended! Not implemented yet", is_strong=False
+        )
+
+    if not game_ending_wins:
+        game._set_stage(GameStage.DAY)
+        game.send_chat_message("Day breaks...", is_strong=True)
 
 
 def switch_to_vote(game: "WurwolvesGame"):

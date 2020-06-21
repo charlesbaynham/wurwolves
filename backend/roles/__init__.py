@@ -7,7 +7,7 @@ from .registration import (
     register_role,
     router,
 )
-from .teams import team_has_won, win_ends_game
+from .teams import team_has_won, win_ends_game, Team, win_action
 
 __all__ = [
     "assign_roles",
@@ -19,4 +19,6 @@ __all__ = [
     "router",
     "team_has_won",
     "win_ends_game",
+    "Team",
+    "win_action",
 ]

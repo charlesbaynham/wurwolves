@@ -30,3 +30,7 @@ def team_has_won(game: "WurwolvesGame", team: Team) -> bool:
 
 def win_ends_game(team: Team) -> bool:
     return True
+
+
+def win_action(game: "WurwolvesGame", team: Team):
+    pass
