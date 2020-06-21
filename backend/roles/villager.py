@@ -46,6 +46,7 @@ Click someone's icon and click the button.
         ),
     },
     team=Team.VILLAGERS,
+    secret_chat_enabled=True,
 )
 
 

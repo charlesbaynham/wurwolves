@@ -10,14 +10,19 @@ function ChatEntry(props) {
     return (<p>{props.msg}</p>)
 }
 
-export function Chatbox() {
+export function Chatbox(props) {
+
     const chat_messages = useSelector(selectMessages)
     const showSecretChat = useSelector(selectShowSecretChat)
 
     const [chatMessage, setChatMessage] = useState("");
 
     const sendChatMessage = (msg) => {
-        console.log(msg)
+        var url = new URL(`/api/${props.game_tag}/chat`, document.baseURI)
+        const params = { message: msg }
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+
+        fetch(url, { method: 'post', params: params })
     }
 
     const secretChat = (

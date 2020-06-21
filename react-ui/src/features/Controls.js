@@ -26,7 +26,7 @@ function Controls(props) {
     const [isSending, setIsSending] = useState(false)
     const [isError, setIsError] = useState(false);
 
-    if (typeof(controlsState) == "undefined") {
+    if (typeof (controlsState) == "undefined") {
         controlsState = DEFAULT_STATE
     }
 

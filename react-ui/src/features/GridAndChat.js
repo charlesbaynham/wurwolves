@@ -3,11 +3,12 @@ import { PlayerGrid } from './Playergrid'
 import { Chatbox } from './Chatbox'
 
 
-function GridAndChat() {
+function GridAndChat(props) {
+
     return (
         <div id="grid-and-chat" className="row">
             <PlayerGrid />
-            <Chatbox />
+            <Chatbox game_tag={props.game_tag} />
         </div>
     )
 }

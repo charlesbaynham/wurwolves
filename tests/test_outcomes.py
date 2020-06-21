@@ -48,6 +48,12 @@ def test_setup(five_player_game):
     pass
 
 
+def test_secret_chat(five_player_game):
+    game, roles_map = five_player_game
+
+    game.send_secret_message(roles_map["Wolf"], "hello")
+
+
 def test_medic_save(five_player_game):
     game, roles_map = five_player_game
 
