@@ -320,6 +320,7 @@ class WurwolvesGame:
                     f"Remove player {p.user.name} for inactivity (p.user.last_seen="
                     f"{p.user.last_seen}, threshold={threshold}"
                 )
+                self.send_chat_message(f"{p.user.name} has left the game")
                 self._session.delete(p)
 
     @db_scoped
