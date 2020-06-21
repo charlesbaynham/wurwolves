@@ -3,7 +3,7 @@ The Spectator role
 """
 import logging
 
-from ..model import GameStage, PlayerRole
+from ..model import GameStage, PlayerRole, PlayerState
 from ..resolver import NoTargetRequired
 from .common import GameAction, RoleDescription, RoleDetails, StageAction
 from .teams import Team
@@ -39,6 +39,9 @@ you should probably start a video call.
 
 
 class StartGameAction(GameAction):
+
+    allowed_player_states = list(PlayerState)
+
     def execute(self, game):
         logging.warning("Spectator action: {}".format((self, game)))
 

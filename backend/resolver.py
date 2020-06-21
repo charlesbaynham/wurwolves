@@ -201,6 +201,9 @@ class GameAction(ActionMixin):
     mixins_affecting_originators = {}
     mixins_affecting_targets = {}
 
+    # Override to change the allowed states
+    allowed_player_states = [PlayerState.ALIVE]
+
     def __init__(self, action_model: ActionModel, players: Dict[int, GamePlayer]):
         self.model: ActionModel = action_model
         self.originator: GamePlayer = None

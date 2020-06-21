@@ -134,14 +134,17 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 raise HTTPException(
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
-            if player.state != PlayerState.ALIVE:
-                raise HTTPException(
-                    status_code=403, detail=f"Player {user_id} is dead!"
-                )
-            if not get_role_action(role, stage):
+
+            action_class = get_role_action(player.role, game.stage)
+
+            if not action_class:
                 raise HTTPException(
                     status_code=403,
                     detail=f"Player {user_id} in role {role} has no action in stage {stage}",
+                )
+            if player.state not in action_class.allowed_player_states:
+                raise HTTPException(
+                    status_code=403, detail=f"Player {user_id} is dead!"
                 )
             if not game.stage == stage:
                 raise HTTPException(
@@ -179,7 +182,6 @@ def register_role(WurwolvesGame, role: PlayerRole):
             self._session.add(action)
 
             # Perform any immediate actions registered
-            action_class = get_role_action(player.role, game.stage)
             if action_class:
                 action_class.immediate(
                     game=self, user_id=user_id, selected_id=selected_id
