@@ -85,8 +85,19 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
     for stage, stage_action in role_description.stages.items():
 
+        #  Check if there's a role action for this stage
         if not get_role_action(role, stage):
+            if role_description.stages[stage].button_text:
+                raise ValueError(
+                    f"Role {role} has no action in {stage} but the button is set to visible"
+                )
             continue
+
+        # Confirm that the button is displayed
+        if not role_description.stages[stage].button_text:
+            raise ValueError(
+                f"Role {role} has a {stage} action but the button is not displayed"
+            )
 
         func_name = get_action_func_name(role, stage)
 
