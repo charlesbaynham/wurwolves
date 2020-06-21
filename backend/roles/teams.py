@@ -9,10 +9,10 @@ if TYPE_CHECKING:
 
 
 class Team(Enum):
-    VILLAGERS = "VILLAGERS"
-    WOLVES = "WOLVES"
-    SPECTATORS = "SPECTATORS"
-    JESTER = "JESTER"
+    VILLAGERS = "villagers"
+    WOLVES = "wolves"
+    SPECTATORS = "spectators"
+    JESTER = "jester"
 
 
 def villagers_won(game):
@@ -70,7 +70,7 @@ def win_action(game: "WurwolvesGame", team: Team):
     logging.info(f"Team {team} has won!")
     if win_ends_game(team):
         game.send_chat_message(
-            f"The game is ended and the {team} have won!", is_strong=True
+            f"The game is ended and the {team.value} have won!", is_strong=True
         )
     else:
         players_in_team = [

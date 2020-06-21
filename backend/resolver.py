@@ -307,12 +307,6 @@ def game_ended(game):
 
     game_ending_wins = [w for w in wins if win_ends_game(w)]
 
-    for winning_team in game_ending_wins:
-        logging.error("The game has ended! Not implemented yet")
-        game.send_chat_message(
-            "The game has ended! Not implemented yet", is_strong=False
-        )
-
     return bool(game_ending_wins)
 
 

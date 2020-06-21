@@ -48,19 +48,25 @@ class StartGameAction(GameAction):
         logging.warning("Spectator action: {}".format((self, game)))
 
     @classmethod
-    def immediate(cls, game=None, **kwargs):
-        logging.warning("Immediate fire from spectator: {}".format((cls, game)))
+    def immediate(cls, game=None, user_id=None, **kwargs):
+        msg = f"{game.get_user_name(user_id)} wants to start the game"
+        logging.info(f"({game.game_id}) {msg}")
+        game.send_chat_message(msg)
         game.vote_start()
 
 
 class VoteStartNewGame(GameAction, NoTargetRequired):
     allowed_player_states = list(PlayerState)
 
-    def execute(self, game):
-        msg = f"{self.originator.model.user.name} wants to start a new game"
+    @classmethod
+    def immediate(cls, game=None, user_id=None, **kwargs):
+        msg = f"{game.get_user_name(user_id)} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
         game.send_chat_message(msg)
-        game.vote_start(self.target.model.id)
+        game.vote_start()
+
+    def execute(self, game):
+        pass
 
 
 def register(role_map):

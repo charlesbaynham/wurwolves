@@ -7,7 +7,7 @@ import pydantic
 
 from .game import WurwolvesGame
 from .model import GameStage, PlayerState
-from .roles import ROLE_MAP
+from .roles import ROLE_MAP, get_role_action
 
 
 class FrontendState(pydantic.BaseModel):
@@ -89,7 +89,12 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         title=role_details.display_name,
         text=state.text,
         button_visible=bool(state.button_text),
-        button_enabled=bool(state.button_text) and not actions,
+        button_enabled=(
+            bool(state.button_text)
+            and not actions
+            and player.state
+            in get_role_action(player.role, game.stage).allowed_player_states
+        ),
         button_text=state.button_text,
         button_submit_person=state.select_person,
         button_submit_func=get_action_func_name(player.role, game.stage),
