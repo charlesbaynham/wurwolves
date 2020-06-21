@@ -312,6 +312,7 @@ class WurwolvesGame:
         self._set_stage(GameStage.NIGHT)
 
         self.clear_chat_messages()
+        self.send_chat_message("A new game has started. Night falls in the village")
 
     @db_scoped
     def get_messages(self, user_id: UUID) -> List[ChatMessage]:
