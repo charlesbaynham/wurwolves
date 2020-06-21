@@ -1,10 +1,9 @@
 """
 The Wolf role
 """
-import logging
 
-from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction, TargetRequired
+from ..model import GameStage, PlayerRole, PlayerState
+from ..resolver import GameAction, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
 from .villager import description as villager
@@ -64,14 +63,11 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
     def execute(self, game):
         target_name = self.target.model.user.name
 
-        if self.target_saved_by_medic:
-            game.send_chat_message(
-                f"{target_name} was attacked but survived!", is_strong=True
-            )
-        else:
+        if not self.target_saved_by_medic:
             game.send_chat_message(
                 f"{target_name} was brutally murdered", is_strong=True
             )
+            game.set_player_state(self.target.model.id, PlayerState.WOLFED)
 
 
 def register(role_map):

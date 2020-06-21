@@ -145,8 +145,12 @@ class ActionMixin:
         pass
 
     @staticmethod
-    def get_action_method_name(MixinClass):
-        return "mod_" + MixinClass.__name__
+    def get_action_method_name(MixinClass, alter_originating: bool):
+        return (
+            "mod_"
+            + MixinClass.__name__
+            + ("_originating" if alter_originating else "_targetted")
+        )
 
     def bind_as_modifier(self, func, MixinClass, ActionClass, alter_originating: bool):
         """
@@ -155,22 +159,27 @@ class ActionMixin:
         All instances of ActionClass will now search for actions of MixinClass
         in the do_modifiers() stage. If they find any, they will execute the method func. 
 
+        Specifically, the target of this action will have func called for all the actions
+        targetting them if func is available and alter_originating = False. The target of this action
+        will have func called for all the actions originating from them if func is available and
+        alter_originating = True. 
+
         Example usage:
 
             self.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, False)
 
         This is used to bind dunder methods of a mixin to the parent GameAction with a predictable name
 
-        alter_originating specifices whether the mixin should alter action which originate from the target 
+        alter_originating specifices whether the mixin should alter actions which originate from the target 
         or which also target the target. E.g. a Medic wants to alter actions which target the target, whereas
         a Prostitute wants to alter actions which originate from the target. 
         """
 
         # Make a new class method which calls func
-        def new_func(self):
+        def new_func(self, func=func):
             func()
 
-        mod_func_name = self.get_action_method_name(MixinClass)
+        mod_func_name = self.get_action_method_name(MixinClass, alter_originating)
         new_func.__name__ = mod_func_name
 
         bound_func = new_func.__get__(self, self.__class__)
@@ -224,24 +233,37 @@ class GameAction(ActionMixin):
         pass
 
     def do_modifiers(self):
-        # TODO: check this logic, I don't think it's right
+        """
+        Modify actions that relate to the target of this action.
+
+        For each action that either targets or originates from the target of this action, call the
+        registered MixinClass actions.
+        """
         if self.target:
+            # "if I am listed as affecting actions which my target originates..."
             if self.__class__ in GameAction.mixins_affecting_originators:
+                # "...loop over the classes of actions which I affect"
                 for MixinClass in GameAction.mixins_affecting_originators[
                     self.__class__
                 ]:
+                    # "For each action that my target originated..."
                     for action in self.target.originated_from:
+                        # "...if it is the affected action we're considering..."
                         if isinstance(action, MixinClass):
+                            # "...call the 'originator' method to change its behaviour."
                             f = getattr(
-                                action, ActionMixin.get_action_method_name(MixinClass)
+                                action,
+                                ActionMixin.get_action_method_name(MixinClass, True),
                             )
                             f()
+            # Do the same, but for actions which my target is targetted by
             if self.__class__ in GameAction.mixins_affecting_targets:
                 for MixinClass in GameAction.mixins_affecting_targets[self.__class__]:
                     for action in self.target.targetted_by:
                         if isinstance(action, MixinClass):
                             f = getattr(
-                                action, ActionMixin.get_action_method_name(MixinClass)
+                                action,
+                                ActionMixin.get_action_method_name(MixinClass, False),
                             )
                             f()
 

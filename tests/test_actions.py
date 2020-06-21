@@ -16,9 +16,10 @@ def demo_game(db_session) -> WurwolvesGame:
     g = WurwolvesGame(GAME_ID)
 
     # You need at least three players for start_game() to work
-    g.join(USER_ID)
-    g.join(uuid())
-    g.join(uuid())
+    ids = [USER_ID, uuid(), uuid()]
+    for i, id in enumerate(ids):
+        g.join(id)
+        g.set_user_name(id, f"Player {i}")
 
     return g
 
@@ -138,6 +139,28 @@ def test_actions_processed_day_noerrors(demo_game):
             demo_game.seer_day_action(player.user_id)
 
     assert demo_game.get_game_model().stage == GameStage.VOTING
+
+
+def test_actions_processed_night_wolfing(demo_game):
+    demo_game.start_game()
+
+    assert demo_game.get_game_model().stage == GameStage.NIGHT
+
+    players = demo_game.get_players_model()
+
+    lucky = players[0].user.id
+    unlucky = players[1].user.id
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_night_action(player.user_id, lucky)
+        elif player.role == PlayerRole.WOLF:
+            demo_game.wolf_night_action(player.user_id, unlucky)
+        elif player.role == PlayerRole.SEER:
+            demo_game.seer_night_action(player.user_id, unlucky)
+
+    assert demo_game.get_player_model(unlucky).state == PlayerState.WOLFED
+    assert demo_game.get_game_model().stage == GameStage.DAY
 
 
 def test_actions_processed_voting_noerrors(demo_game):

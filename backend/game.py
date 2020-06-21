@@ -210,6 +210,11 @@ class WurwolvesGame:
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
+    def get_player_model_by_id(self, player_id: int) -> PlayerModel:
+        p = self.get_player_by_id(player_id)
+        return PlayerModel.from_orm(p) if p else None
+
+    @db_scoped
     def get_players(self) -> List[Player]:
         return self._session.query(Player).filter(Player.game_id == self.game_id).all()
 
