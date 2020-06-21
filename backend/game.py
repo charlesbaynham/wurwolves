@@ -322,6 +322,7 @@ class WurwolvesGame:
                 )
                 self.send_chat_message(f"{p.user.name} has left the game")
                 self._session.delete(p)
+                self.get_game().touch()
 
     @db_scoped
     def create_game(self):
