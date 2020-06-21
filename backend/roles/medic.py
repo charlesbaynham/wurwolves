@@ -23,6 +23,7 @@ You win if all the wolves are eliminated.
         ),
     },
     team=RoleDescription.Team.VILLAGERS,
+    fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )
 

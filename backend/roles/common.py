@@ -20,16 +20,10 @@ class RoleDescription(pydantic.BaseModel):
     stages: Dict[GameStage, StageAction]
     priority: int = 0
 
-    @pydantic.validator("fallback_role_description")
+    @pydantic.validator("fallback_role_description", always=True)
     def role_and_desc(cls, v, values):
-        if not values["fallback_role"]:
+        if v and ("fallback_role" not in values or not values["fallback_role"]):
             raise ValueError("fallback_role_description provided without fallback_role")
-        return v
-
-    @pydantic.validator("fallback_role")
-    def role_and_desc_2(cls, v, values):
-        if not values["fallback_role_description"]:
-            raise ValueError("fallback_role provided without fallback_role_description")
         return v
 
     @pydantic.validator("stages")

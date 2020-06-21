@@ -30,6 +30,7 @@ Choose who to check...
         ),
     },
     team=RoleDescription.Team.VILLAGERS,
+    fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )
 

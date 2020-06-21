@@ -27,6 +27,7 @@ Choose who to kill!
         ),
     },
     team=RoleDescription.Team.WOLVES,
+    fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )
 
