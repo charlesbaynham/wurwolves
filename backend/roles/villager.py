@@ -60,8 +60,10 @@ class MoveToVoteAction(GameAction, NoTargetRequired):
 
 class VoteAction(GameAction, TargetRequired):
     def execute(self, game):
-        msg = f"({game.game_id}) {self.originator.model.user.name} voted for {self.target.model.user.name}"
-        logging.info(msg)
+        msg = (
+            f"{self.originator.model.user.name} voted for {self.target.model.user.name}"
+        )
+        logging.info(f"({game.game_id}) {msg}")
         game.send_chat_message(msg)
         game.vote_player(self.target.model.id)
 

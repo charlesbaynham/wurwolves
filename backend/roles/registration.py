@@ -175,8 +175,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
             self._session.add(action)
 
             # Perform any immediate actions registered
-            if stage in ROLE_MAP[player.role].actions:
-                ROLE_MAP[player.role].actions[game.stage].immediate(
+            action_class = get_role_action(player.role, game.stage)
+            if action_class:
+                action_class.immediate(
                     game=self, user_id=user_id, selected_id=selected_id
                 )
 
