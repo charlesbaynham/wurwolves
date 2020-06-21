@@ -18,7 +18,14 @@ You are a Jester!
 
 You win if you get yourself lynched by the villagers. 
     """
-        )
+        ),
+        GameStage.NIGHT: StageAction(
+            text="""
+You win if you get yourself lynched by the villagers. 
+
+You have nothing to do at night. Plot your jesting. 
+    """
+        ),
     },
     team=Team.JESTER,
     fallback_role=PlayerRole.VILLAGER,

@@ -25,7 +25,9 @@ You win if all the wolves are eliminated.
         ),
         GameStage.NIGHT: StageAction(
             text="""
-Choose who to check...
+You are a Seer! You get to check the identity of one person each night. 
+
+Choose who to check: at the end of the night, you'll find out if they are a wolf. 
     """,
             button_text="Select someone to check",
         ),

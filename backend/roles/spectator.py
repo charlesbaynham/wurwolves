@@ -31,7 +31,10 @@ you should probably start a video call.
         GameStage.NIGHT: StageAction(text="You're not playing. Guess you were late."),
         GameStage.VOTING: StageAction(text="You're not playing. Guess you were late."),
         GameStage.ENDED: StageAction(
-            text="The game has ended!",
+            text="""
+The game has ended!
+
+Click the button to play again. The game will start once all spectators have voted to start. """,
             button_text="Vote to restart",
             select_person=False,
         ),

@@ -18,9 +18,16 @@ description = RoleDescription(
             text="""
 You are a medic! You get to save one person each night. 
 
+It's night time now, so select one person to save then click the button to submit. 
+
 You win if all the wolves are eliminated. 
 """,
             button_text="Select someone to save",
+        ),
+        GameStage.DAY: StageAction(
+            text="""
+You are a medic! You get to save one person each night. 
+        """
         ),
     },
     team=Team.VILLAGERS,

@@ -27,7 +27,9 @@ You win if all the wolves are eliminated.
         ),
         GameStage.NIGHT: StageAction(
             text="""
-You have nothing to do at night. Relax...
+You are a villager. You have no special powers. Try not to get eaten!
+
+You have nothing to do at night. Try to relax...
     """
         ),
         GameStage.VOTING: StageAction(
