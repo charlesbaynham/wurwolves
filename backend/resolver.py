@@ -297,6 +297,7 @@ class NoTargetRequired(ActionMixin):
 
 def switch_to_day(game: "WurwolvesGame"):
     game._set_stage(GameStage.DAY)
+    game.send_chat_message("Day breaks...", is_strong=True)
 
 
 def switch_to_vote(game: "WurwolvesGame"):
