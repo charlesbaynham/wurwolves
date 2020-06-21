@@ -4,7 +4,7 @@ The Wolf role
 import logging
 
 from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction
+from ..resolver import ActionMixin, GameAction, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
 from .villager import description as villager
@@ -55,7 +55,7 @@ class AffectedByWolves(AffectedByMedic):
             self.target_attacked_by_wolf = True
 
 
-class WolfAction(GameAction, AffectedByMedic):
+class WolfAction(GameAction, AffectedByMedic, TargetRequired):
     def __init__(self, action_model, players):
         if not action_model.selected_player_id:
             raise ValueError("WolfAction requires a target")

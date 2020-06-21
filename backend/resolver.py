@@ -255,6 +255,20 @@ class GameAction:
         return ROLE_MAP[role].role_description.priority
 
 
+class TargetRequired:
+    def __init__(self, action_model, players):
+        if not action_model.selected_player_id:
+            raise ValueError(f"{self.__class__} requires a target")
+        super().__init__(action_model, players)
+
+
+class NoTargetRequired:
+    def __init__(self, action_model, players):
+        if action_model.selected_player_id:
+            raise ValueError(f"{self.__class__} doesn't need a target")
+        super().__init__(action_model, players)
+
+
 def switch_to_day(game: "WurwolvesGame"):
     game._set_stage(GameStage.DAY)
 

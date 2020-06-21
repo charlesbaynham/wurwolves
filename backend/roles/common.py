@@ -48,7 +48,31 @@ class RoleDescription(pydantic.BaseModel):
             if stage not in out:
                 raise ValueError(f"stage {stage} not present")
 
-        return out
+        return v
+
+    def get_stage_action(self, stage: GameStage) -> StageAction:
+        """Get the StageAction for this stage, getting values from the role or fallback role as required. 
+
+        To do this, first get the main StageAction. If there isn't one, get the fallback StageAction. If 
+        there is one but there's no button text, get the button text from the fallback role if there is any. 
+        """
+        if stage in self.stages:
+            stage_action = StageAction(self.stages[stage])
+            if (
+                not stage_action.button_text
+                and self.fallback_role_description
+                and stage in self.fallback_role_description.stages
+            ):
+                stage_action.button_text = self.fallback_role_description.stages[
+                    stage
+                ].button_text
+                stage_action.select_person = self.fallback_role_description.stages[
+                    stage
+                ].select_person
+        else:
+            stage_action = self.fallback_role_description.stages[stage]
+
+        return stage_action
 
     class Team(Enum):
         VILLAGERS = "VILLAGERS"

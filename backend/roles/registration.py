@@ -83,18 +83,17 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
     role_description = ROLE_MAP[role].role_description
 
-    for stage, stage_action in role_description.stages.items():
-
+    for stage in list(GameStage):
         #  Check if there's a role action for this stage
         if not get_role_action(role, stage):
-            if role_description.stages[stage].button_text:
+            if role_description.get_stage_action(stage).button_text:
                 raise ValueError(
                     f"Role {role} has no action in {stage} but the button is set to visible"
                 )
             continue
 
         # Confirm that the button is displayed
-        if not role_description.stages[stage].button_text:
+        if not role_description.get_stage_action(stage).button_text:
             raise ValueError(
                 f"Role {role} has a {stage} action but the button is not displayed"
             )
@@ -136,9 +135,6 @@ def register_role(WurwolvesGame, role: PlayerRole):
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
             if not get_role_action(role, stage):
-                logging.info(
-                    "Stage: {}, stages: {}".format(stage, role_description.stages)
-                )
                 raise HTTPException(
                     status_code=403,
                     detail=f"Player {user_id} in role {role} has no action in stage {stage}",
@@ -198,7 +194,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
             self.get_game().touch()
 
         # Make one for the API router that does / does not require a selected_id
-        if role_description.stages[stage].select_person:
+        if role_description.get_stage_action(stage).select_person:
 
             def api_func(
                 func_name,  #  For early binding

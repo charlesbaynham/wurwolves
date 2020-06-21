@@ -83,7 +83,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
     role_details = ROLE_MAP[player.role].role_description
 
-    state = role_details.stages[game.stage]
+    state = role_details.get_stage_action(game.stage)
 
     controls_state = FrontendState.RoleState(
         title=role_details.display_name,

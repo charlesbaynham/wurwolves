@@ -4,7 +4,7 @@ The Villager role
 import logging
 
 from ..model import GameStage, PlayerRole
-from ..resolver import GameAction
+from ..resolver import GameAction, NoTargetRequired, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 
 description = RoleDescription(
@@ -38,7 +38,14 @@ Click someone's icon and click the button.
 )
 
 
-class MoveToVoteAction(GameAction):
+class MoveToVoteAction(GameAction, NoTargetRequired):
+    def execute(self, game):
+        msg = f"{self.originator.user.name} voted for {self.target.model.user.name}"
+        logging.warning(msg)
+        game.send_chat_message(msg)
+
+
+class VoteAction(GameAction, TargetRequired):
     def execute(self, game):
         msg = f"{self.originator.user.name} voted for {self.target.model.user.name}"
         logging.warning(msg)
@@ -49,7 +56,8 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.VILLAGER: RoleDetails(
-                description, {GameStage.DAY: MoveToVoteAction}
+                description,
+                {GameStage.DAY: MoveToVoteAction, GameStage.VOTING: VoteAction},
             )
         }
     )
