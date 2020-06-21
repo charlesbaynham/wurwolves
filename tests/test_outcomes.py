@@ -1,6 +1,7 @@
 from uuid import uuid4 as uuid
 
 import pytest
+from fastapi import HTTPException
 
 from backend.database import session_scope
 from backend.game import WurwolvesGame
@@ -77,6 +78,9 @@ def test_wolf_win(five_player_game):
     game.set_player_state(player.id, PlayerState.LYNCHED)
 
     # Wolves get the seer:
+    with pytest.raises(HTTPException):
+        game.medic_night_action(roles_map["Medic"], roles_map["Seer"])
+
     game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
     game.seer_night_action(roles_map["Seer"], roles_map["Wolf"])
 

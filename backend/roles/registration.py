@@ -134,6 +134,10 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 raise HTTPException(
                     status_code=403, detail=f"Player {user_id} is not a {role}"
                 )
+            if player.state != PlayerState.ALIVE:
+                raise HTTPException(
+                    status_code=403, detail=f"Player {user_id} is dead!"
+                )
             if not get_role_action(role, stage):
                 raise HTTPException(
                     status_code=403,

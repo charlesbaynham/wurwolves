@@ -1,9 +1,11 @@
+import logging
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from ..model import PlayerState
+
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
-from ..model import PlayerState
 
 
 class Team(Enum):
@@ -84,4 +86,4 @@ def win_ends_game(team: Team) -> bool:
 
 
 def win_action(game: "WurwolvesGame", team: Team):
-    pass
+    logging.info(f"Team {team} has won!")
