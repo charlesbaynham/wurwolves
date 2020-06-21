@@ -30,7 +30,7 @@ function Topbar(props) {
           placeholder="Your name..."
           onChange={e => setChosenName(e.target.value)}
           onBlur={() => requestNewName(chosenName)}
-          value={chosenName}
+          value={chosenName ? chosenName : ""}
         />
       </Form>
     </Navbar>
