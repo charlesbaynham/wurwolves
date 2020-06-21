@@ -313,8 +313,10 @@ def game_ended(game):
     return bool(game_ending_wins)
 
 
-def switch_to_day(game: "WurwolvesGame"):
-    if not game_ended(game):
+def judge_night(game: "WurwolvesGame"):
+    if game_ended(game):
+        game._set_stage(GameStage.ENDED)
+    else:
         game._set_stage(GameStage.DAY)
         game.send_chat_message("Day breaks...", is_strong=True)
 
@@ -349,7 +351,7 @@ def count_votes(game: "WurwolvesGame"):
 # to use it to do any actions that are required
 # (e.g. changing the game stage, sending game-end chat messages etc)
 stage_finalizers = {
-    GameStage.NIGHT: switch_to_day,
+    GameStage.NIGHT: judge_night,
     GameStage.DAY: switch_to_vote,
     GameStage.VOTING: count_votes,
 }

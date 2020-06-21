@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 
-from ..model import Action, GameStage, PlayerRole
+from ..model import Action, GameStage, PlayerRole, PlayerState
 from ..user_id import get_user_id
 from . import jester, medic, seer, spectator, villager, wolf
 from .common import RoleDetails
@@ -185,8 +185,14 @@ def register_role(WurwolvesGame, role: PlayerRole):
             players = game.players
             ready = True
             for player in players:
-                if get_role_action(player.role, stage) and not any(
-                    a.stage_id == stage_id for a in player.actions
+                if (
+                    get_role_action(
+                        player.role, stage
+                    )  # Player has an action in this stage...
+                    and (player.state == PlayerState.ALIVE)  #  ...isn't dead
+                    and not any(
+                        a.stage_id == stage_id for a in player.actions
+                    )  #  ..and hasn't yet acted
                 ):
                     ready = False
                     break

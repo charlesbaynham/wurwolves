@@ -70,12 +70,14 @@ def test_wolf_kill(five_player_game):
 def test_wolf_win(five_player_game):
     game, roles_map = five_player_game
 
-    # Kill a villager and the medic and see if wolves win
-    game.set_player_state(roles_map["Villager 1"], PlayerState.LYNCHED)
+    # Kill the medic and a villager
+    player = game.get_player_model(roles_map["Medic"])
+    game.set_player_state(player.id, PlayerState.LYNCHED)
+    player = game.get_player_model(roles_map["Villager 1"])
+    game.set_player_state(player.id, PlayerState.LYNCHED)
 
-    # Wolves get medic:
-    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
-    game.medic_night_action(roles_map["Medic"], roles_map["Wolf"])
-    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+    # Wolves get the seer:
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Wolf"])
 
     assert game.get_game_model().stage == GameStage.ENDED
