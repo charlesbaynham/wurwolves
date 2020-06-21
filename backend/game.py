@@ -249,6 +249,21 @@ class WurwolvesGame:
         return [ActionModel.from_orm(a) for a in self.get_actions(stage_id, player_id)]
 
     @db_scoped
+    def send_secret_message(self, user_id: int, message: str):
+        player = self.get_player(user_id)
+        role = player.role
+        team = roles.get_role_team(role)
+        role_description = roles.ROLE_MAP[role].role_description
+        if not role_description.secret_chat_enabled:
+            raise HTTPException(f"Role {role} does not have secret chat")
+        players_on_team = [
+            p.id for p in self.get_players() if roles.get_role_team(p.role) == team
+        ]
+        self.send_chat_message(
+            msg=f"({player.user.name}) {message}", player_list=players_on_team
+        )
+
+    @db_scoped
     def get_hash_now(self):
         g = self.get_game()
         return g.update_counter if g else 0
