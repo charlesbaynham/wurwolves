@@ -3,8 +3,6 @@ The Medic role
 
 The Medic can save one person every night. 
 """
-import logging
-
 from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction
 from .common import RoleDescription, RoleDetails, StageAction

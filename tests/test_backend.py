@@ -1,9 +1,9 @@
-from fastapi.testclient import TestClient
+# from fastapi.testclient import TestClient
 
-from backend.game import WurwolvesGame
-from backend.main import app
+# from backend.game import WurwolvesGame
+# from backend.main import app
 
-GAME_ID = "hot-potato"
+# GAME_ID = "hot-potato"
 
 
 # def test_client(api_client):
