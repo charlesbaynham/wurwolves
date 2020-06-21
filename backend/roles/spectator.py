@@ -54,6 +54,8 @@ class StartGameAction(GameAction):
 
 
 class VoteStartNewGame(GameAction, NoTargetRequired):
+    allowed_player_states = list(PlayerState)
+
     def execute(self, game):
         msg = f"{self.originator.model.user.name} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
