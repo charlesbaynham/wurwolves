@@ -57,7 +57,7 @@ class RoleDescription(pydantic.BaseModel):
         there is one but there's no button text, get the button text from the fallback role if there is any. 
         """
         if stage in self.stages:
-            stage_action = StageAction(self.stages[stage])
+            stage_action = self.stages[stage].copy()
             if (
                 not stage_action.button_text
                 and self.fallback_role_description
