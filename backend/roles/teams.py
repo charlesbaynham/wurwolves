@@ -16,57 +16,36 @@ class Team(Enum):
 
 
 def villagers_won(game):
-    from .registration import get_role_team
-
-    players = game.get_players_model()
-
-    num_alive_villagers = 0
-    num_alive_wolves = 0
-
-    for player in players:
-        team = get_role_team(player.role)
-        if team == Team.VILLAGERS and player.state == PlayerState.ALIVE:
-            num_alive_villagers += 1
-        if team == Team.WOLVES and player.state == PlayerState.ALIVE:
-            num_alive_wolves += 1
+    num_alive_wolves = number_of(game, Team.WOLVES, PlayerState.ALIVE)
 
     return num_alive_wolves == 0
 
 
 def wolves_won(game):
-    from .registration import get_role_team
-
-    players = game.get_players_model()
-
-    num_alive_villagers = 0
-    num_alive_wolves = 0
-
-    for player in players:
-        team = get_role_team(player.role)
-        if team == Team.VILLAGERS and player.state == PlayerState.ALIVE:
-            num_alive_villagers += 1
-        if team == Team.WOLVES and player.state == PlayerState.ALIVE:
-            num_alive_wolves += 1
+    num_alive_villagers = number_of(game, Team.VILLAGERS, PlayerState.ALIVE)
+    num_alive_wolves = number_of(game, Team.WOLVES, PlayerState.ALIVE)
 
     return num_alive_wolves >= num_alive_villagers
 
 
-def jester_won(game):
+def number_of(game, team: Team, state: PlayerState):
     from .registration import get_role_team
 
+    num = 0
+
     players = game.get_players_model()
-
-    jester_in_game = False
-    jester_voted_off = False
-
     for player in players:
-        team = get_role_team(player.role)
-        if team == Team.JESTER:
-            jester_in_game = True
-            if player.state == PlayerState.LYNCHED:
-                jester_voted_off = True
+        player_team = get_role_team(player.role)
+        if player_team == team and player.state == state:
+            num += 1
 
-    return jester_in_game and jester_voted_off
+    return num
+
+
+def jester_won(game):
+    num_lynched_jester = number_of(game, Team.JESTER, PlayerState.LYNCHED)
+
+    return bool(num_lynched_jester)
 
 
 win_map = {
