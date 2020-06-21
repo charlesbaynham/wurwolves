@@ -50,7 +50,9 @@ class AffectedByMedic(ActionMixin):
 
 class MedicAction(GameAction):
     def execute(self, game):
-        logging.warning("Medic action occurred but not written yet")
+        # No action required: the medic's effect is to modify other actions
+        # through the AffectedByMedic ActionMixin
+        pass
 
 
 def register(role_map):
