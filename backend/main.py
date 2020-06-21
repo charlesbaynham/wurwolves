@@ -28,6 +28,15 @@ def get_state(
     return state
 
 
+@router.post("/{game_tag}/chat")
+def send_chat(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+    user_id=Depends(get_user_id),
+    message: str = Query(..., description="Chat message for secret chat"),
+):
+    WurwolvesGame(game_tag).send_secret_message(user_id, message)
+
+
 @router.get("/{game_tag}/state_hash")
 async def get_state_hash(
     game_tag: str = Path(..., title="The four-word ID of the game"),

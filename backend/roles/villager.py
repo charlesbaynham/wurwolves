@@ -8,7 +8,6 @@ from ..model import GameStage, PlayerRole
 from ..resolver import GameAction, NoTargetRequired, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 from .spectator import VoteStartNewGame
-from .spectator import description as spectator
 from .teams import Team
 
 if TYPE_CHECKING:
