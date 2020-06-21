@@ -295,7 +295,7 @@ class NoTargetRequired(ActionMixin):
         super().__init__(action_model, players)
 
 
-def switch_to_day(game: "WurwolvesGame"):
+def game_ended(game):
     from .roles import team_has_won, win_ends_game, Team, win_action
 
     wins = [team for team in list(Team) if team_has_won(game, team)]
@@ -310,7 +310,11 @@ def switch_to_day(game: "WurwolvesGame"):
             "The game has ended! Not implemented yet", is_strong=False
         )
 
-    if not game_ending_wins:
+    return bool(game_ending_wins)
+
+
+def switch_to_day(game: "WurwolvesGame"):
+    if not game_ended(game):
         game._set_stage(GameStage.DAY)
         game.send_chat_message("Day breaks...", is_strong=True)
 
@@ -323,14 +327,19 @@ def count_votes(game: "WurwolvesGame"):
     players: List[PlayerModel] = game.get_players_model()
     votes = [p.votes for p in players]
     voted_player, num_votes = max(zip(players, votes), key=lambda tup: tup[1])
+
     if votes.count(num_votes) > 1:
+        tied = True
         game.send_chat_message("The vote was a tie! Revote...", is_strong=True)
     else:
+        tied = False
         game.send_chat_message(f"{voted_player.user.name} got lynched", is_strong=True)
         game.set_player_state(voted_player.id, PlayerState.LYNCHED)
-        game._set_stage(GameStage.NIGHT)
 
     game.reset_votes()
+
+    if not game_ended(game) and not tied:
+        game._set_stage(GameStage.NIGHT)
 
 
 # Register finalizers for each stages of the game.
