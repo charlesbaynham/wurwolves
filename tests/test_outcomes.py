@@ -87,3 +87,24 @@ def test_dead_no_vote(five_player_game):
 
     game.wolf_voting_action(roles_map["Wolf"], roles_map["Seer"])
     game.seer_voting_action(roles_map["Seer"], roles_map["Wolf"])
+
+
+def test_dead_no_move(five_player_game):
+    game, roles_map = five_player_game
+
+    # Kill the medic and a villager
+    player = game.get_player_model(roles_map["Medic"])
+    game.set_player_state(player.id, PlayerState.LYNCHED)
+    player = game.get_player_model(roles_map["Villager 1"])
+    game.set_player_state(player.id, PlayerState.WOLFED)
+
+    game._set_stage(GameStage.DAY)
+
+    # Try to vote
+    with pytest.raises(HTTPException):
+        game.medic_day_action(roles_map["Medic"], roles_map["Seer"])
+    with pytest.raises(HTTPException):
+        game.villager_day_action(roles_map["Medic"], roles_map["Seer"])
+
+    game.wolf_day_action(roles_map["Wolf"], roles_map["Seer"])
+    game.seer_day_action(roles_map["Seer"], roles_map["Wolf"])
