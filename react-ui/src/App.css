@@ -10,6 +10,11 @@
   color: white;
 }
 
+#logo {
+  width: 1cm;
+  margin-right: 0.5cm;
+}
+
 .player {
   cursor: pointer;
   transition: transform .2s;
