@@ -119,6 +119,14 @@ html {
   line-height: 30px;
 }
 
+#bike {
+  height: 100%;
+  margin: 0 0.5em;
+}
+#bike img {
+  height: 80%;
+}
+
 /* Shake animation */
 .error {
   animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
