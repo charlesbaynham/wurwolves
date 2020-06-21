@@ -140,6 +140,10 @@ class GamePlayer:
 
 
 class ActionMixin:
+    def __init__(self, *args, **kwargs):
+        # End of the line for super() calls: discard all params and stop
+        pass
+
     @staticmethod
     def get_action_method_name(MixinClass):
         return "mod_" + MixinClass.__name__
@@ -183,7 +187,7 @@ class ActionMixin:
             GameAction.mixins_affecting_targets[ActionClass].append(MixinClass)
 
 
-class GameAction:
+class GameAction(ActionMixin):
     # These are lists of mixins that affect child classes of this class, sorted by the child class
     mixins_affecting_originators = {}
     mixins_affecting_targets = {}
@@ -208,7 +212,7 @@ class GameAction:
             self.target.targetted_by.append(self)
 
         # Init any mixins registered
-        super().__init__()
+        super().__init__(action_model, players)
 
     def execute(self, game):
         """Called once all actions have been submitted"""
@@ -255,14 +259,14 @@ class GameAction:
         return ROLE_MAP[role].role_description.priority
 
 
-class TargetRequired:
+class TargetRequired(ActionMixin):
     def __init__(self, action_model, players):
         if not action_model.selected_player_id:
             raise ValueError(f"{self.__class__} requires a target")
         super().__init__(action_model, players)
 
 
-class NoTargetRequired:
+class NoTargetRequired(ActionMixin):
     def __init__(self, action_model, players):
         if action_model.selected_player_id:
             raise ValueError(f"{self.__class__} doesn't need a target")
