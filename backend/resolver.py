@@ -219,7 +219,7 @@ class GameAction(ActionMixin):
         raise NotImplementedError
 
     @classmethod
-    def immediate(cls, game):
+    def immediate(cls, **kwargs):
         """Called immediatly on submit"""
         pass
 
@@ -277,11 +277,15 @@ def switch_to_day(game: "WurwolvesGame"):
     game._set_stage(GameStage.DAY)
 
 
+def switch_to_vote(game: "WurwolvesGame"):
+    game._set_stage(GameStage.VOTING)
+
+
 # Register finalizers for each stages of the game.
 # These will have access to an instance of WurwolvesGame and are expected
 # to use it to do any actions that are required
 # (e.g. changing the game stage, sending game-end chat messages etc)
-stage_finalizers = {GameStage.NIGHT: switch_to_day}
+stage_finalizers = {GameStage.NIGHT: switch_to_day, GameStage.DAY: switch_to_vote}
 
 
 def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> None:

@@ -2,10 +2,14 @@
 The Villager role
 """
 import logging
+from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction, NoTargetRequired, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
+
+if TYPE_CHECKING:
+    from ..game import WurwolvesGame
 
 description = RoleDescription(
     display_name="Villager",
@@ -39,9 +43,15 @@ Click someone's icon and click the button.
 
 
 class MoveToVoteAction(GameAction, NoTargetRequired):
-    def execute(self, game):
-        msg = f"{self.originator.model.user.name}"
-        logging.warning(msg)
+    """
+    Move to vote
+
+    This just sends a message: the round completes when all players have moved to vote
+    """
+
+    @classmethod
+    def immediate(cls, game: WurwolvesGame = None, user_id=None, **kwargs):
+        msg = f"{game.get_user_name(user_id)} moved to vote"
         game.send_chat_message(msg)
 
 

@@ -391,6 +391,13 @@ class WurwolvesGame:
         g.stage = stage
         g.stage_id = Game.stage_id + 1
 
+    @db_scoped
+    def get_user_name(self, user_id: UUID):
+        u = self._session.query(User).filter_by(id=user_id).first()
+        if not u:
+            raise KeyError(f"User {user_id} does not exist")
+        return u.name
+
     @classmethod
     def set_user_name(cls, user_id: UUID, name: str):
         """

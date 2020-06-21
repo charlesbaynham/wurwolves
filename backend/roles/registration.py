@@ -176,7 +176,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
             # Perform any immediate actions registered
             if stage in ROLE_MAP[player.role].actions:
-                ROLE_MAP[player.role].actions[game.stage].immediate(self)
+                ROLE_MAP[player.role].actions[game.stage].immediate(
+                    game=self, user_id=user_id, selected_id=selected_id
+                )
 
             # If all the actions are complete, process them
             players = game.players
