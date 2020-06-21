@@ -41,7 +41,9 @@ Click someone's icon and click the button.
         ),
         GameStage.LOBBY: StageAction(text="",),
         GameStage.ENDED: StageAction(
-            text="The game has ended!", button_text="Vote to restart"
+            text="The game has ended!",
+            button_text="Vote to restart",
+            select_person=False,
         ),
     },
     team=Team.VILLAGERS,

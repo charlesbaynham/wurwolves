@@ -31,7 +31,9 @@ you should probably start a video call.
         GameStage.NIGHT: StageAction(text="You're not playing. Guess you were late."),
         GameStage.VOTING: StageAction(text="You're not playing. Guess you were late."),
         GameStage.ENDED: StageAction(
-            text="The game has ended!", button_text="Vote to restart"
+            text="The game has ended!",
+            button_text="Vote to restart",
+            select_person=False,
         ),
     },
     team=Team.SPECTATORS,
