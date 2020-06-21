@@ -160,7 +160,6 @@ def test_actions_processed_night_wolfing(demo_game):
             demo_game.seer_night_action(player.user_id, unlucky)
 
     assert demo_game.get_player_model(unlucky).state == PlayerState.WOLFED
-    assert demo_game.get_game_model().stage == GameStage.DAY
 
 
 def test_actions_processed_voting_noerrors(demo_game):
@@ -199,4 +198,3 @@ def test_actions_processed_voting_results(demo_game):
             demo_game.seer_voting_action(player.user_id, the_dick)
 
     assert demo_game.get_player_model(the_dick).state == PlayerState.LYNCHED
-    assert demo_game.get_game_model().stage == GameStage.NIGHT

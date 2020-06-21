@@ -338,7 +338,9 @@ def count_votes(game: "WurwolvesGame"):
 
     game.reset_votes()
 
-    if not game_ended(game) and not tied:
+    if game_ended(game):
+        game._set_stage(GameStage.ENDED)
+    elif not tied:
         game._set_stage(GameStage.NIGHT)
 
 

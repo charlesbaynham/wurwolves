@@ -38,6 +38,11 @@ Click someone's icon and click the button.
             button_text="Vote for someone to lynch...",
         ),
         GameStage.LOBBY: StageAction(text="",),
+        GameStage.ENDED: StageAction(
+            text="""
+The game has ended!
+        """,
+        ),
     },
     team=Team.VILLAGERS,
 )

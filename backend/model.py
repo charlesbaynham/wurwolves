@@ -63,6 +63,7 @@ class GameStage(str, enum.Enum):
     DAY = "DAY"
     VOTING = "VOTING"
     NIGHT = "NIGHT"
+    ENDED = "ENDED"
 
 
 def update_game_counter(context):
