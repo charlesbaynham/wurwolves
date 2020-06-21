@@ -4,6 +4,7 @@ Game module
 This module provides the WurwolvesGame class, for interacting with a single game
 """
 import asyncio
+import datetime
 import logging
 import os
 import random
@@ -29,6 +30,8 @@ from .model import (
     User,
     hash_game_tag,
 )
+
+SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), "names.txt")
 names = None
@@ -301,6 +304,25 @@ class WurwolvesGame:
             return current_hash
 
     @db_scoped
+    def player_keepalive(self, user_id: UUID):
+        u = self.get_user(user_id)
+        u.touch()
+        self._session.commit()
+
+        players = self.get_players()
+
+        threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
+
+        # Clear out any old players
+        for p in players:
+            if p.role == PlayerRole.SPECTATOR and p.user.last_seen < threshold:
+                logging.info(
+                    f"Remove player {p.user.name} for inactivity (p.user.last_seen="
+                    f"{p.user.last_seen}, threshold={threshold}"
+                )
+                self._session.delete(p)
+
+    @db_scoped
     def create_game(self):
         game = Game(id=self.game_id)
 
@@ -447,10 +469,15 @@ class WurwolvesGame:
         g.stage_id = Game.stage_id + 1
 
     @db_scoped
-    def get_user_name(self, user_id: UUID):
+    def get_user(self, user_id: UUID):
         u = self._session.query(User).filter_by(id=user_id).first()
         if not u:
             raise KeyError(f"User {user_id} does not exist")
+        return u
+
+    @db_scoped
+    def get_user_name(self, user_id: UUID):
+        u = self.get_user(user_id)
         return u.name
 
     @classmethod

@@ -162,8 +162,12 @@ class User(Base):
     id = Column(UUIDType, primary_key=True, nullable=False)
     name = Column(String)
     name_is_generated = Column(Boolean, default=True)
+    last_seen = Column(DateTime, default=func.now())
 
     player_roles = relationship("Player", backref="user", lazy=True)
+
+    def touch(self):
+        self.last_seen = func.now()
 
 
 # many-to-many relationship between players and messages

@@ -91,6 +91,10 @@ def test_start_game(db_session):
     assert p.role == PlayerRole.SPECTATOR
 
 
+def test_keepalive(demo_game, db_session):
+    demo_game.player_keepalive(USER_ID)
+
+
 def test_chat(demo_game, db_session):
     other_user = uuid()
     demo_game.join(other_user)

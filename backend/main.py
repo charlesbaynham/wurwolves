@@ -51,7 +51,9 @@ async def get_state_hash(
 
     Basically a hash: this string is guaranteed to change if the state changes
     """
-    return await WurwolvesGame(game_tag).get_hash(known_hash=known_hash)
+    game = WurwolvesGame(game_tag)
+    game.player_keepalive(user_id)
+    return await game.get_hash(known_hash=known_hash)
 
 
 @router.post("/{game_tag}/join")
