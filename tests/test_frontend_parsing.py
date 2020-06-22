@@ -4,7 +4,7 @@ import pytest
 
 from backend.frontend_parser import parse_game_to_state
 from backend.game import WurwolvesGame
-from backend.model import GameStage
+from backend.model import GameStage, PlayerState
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -58,3 +58,27 @@ def test_parse_new_spectator(db_session, demo_game):
     assert "Spectator" in state.controls_state.title
     assert state.stage == GameStage.NIGHT
     assert not state.controls_state.button_enabled
+
+
+def test_no_vote_dead(demo_game):
+    demo_game.join(uuid())
+    demo_game.join(uuid())
+
+    other_player = uuid()
+    demo_game.join(other_player)
+
+    demo_game.start_game()
+
+    # 6 player game
+
+    # Kill one of the players and set to VOTING
+    player = demo_game.get_player_model(USER_ID)
+    demo_game.set_player_state(player.id, PlayerState.LYNCHED)
+    demo_game._set_stage(GameStage.VOTING)
+
+    # Ensure that the dead player can't see the vote button
+    dead_state = parse_game_to_state(demo_game, USER_ID)
+    alive_state = parse_game_to_state(demo_game, other_player)
+
+    assert not dead_state.controls_state.button_visible
+    assert alive_state.controls_state.button_visible
