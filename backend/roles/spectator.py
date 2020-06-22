@@ -43,21 +43,6 @@ Click the button to play again. The game will start once all spectators have vot
 )
 
 
-class StartGameAction(GameAction):
-
-    allowed_player_states = list(PlayerState)
-
-    def execute(self, game):
-        logging.warning("Spectator action: {}".format((self, game)))
-
-    @classmethod
-    def immediate(cls, game=None, user_id=None, **kwargs):
-        msg = f"{game.get_user_name(user_id)} wants to start the game"
-        logging.info(f"({game.game_id}) {msg}")
-        game.send_chat_message(msg)
-        game.vote_start()
-
-
 class VoteStartNewGame(GameAction, NoTargetRequired):
     allowed_player_states = list(PlayerState)
 
@@ -77,7 +62,7 @@ def register(role_map):
         {
             PlayerRole.SPECTATOR: RoleDetails(
                 description,
-                {GameStage.LOBBY: StartGameAction, GameStage.ENDED: VoteStartNewGame},
+                {GameStage.LOBBY: VoteStartNewGame, GameStage.ENDED: VoteStartNewGame},
             )
         }
     )
