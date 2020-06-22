@@ -23,9 +23,10 @@ def villagers_won(game):
 
 def wolves_won(game):
     num_alive_villagers = number_of(game, Team.VILLAGERS, PlayerState.ALIVE)
+    num_alive_jesters = number_of(game, Team.JESTER, PlayerState.ALIVE)
     num_alive_wolves = number_of(game, Team.WOLVES, PlayerState.ALIVE)
 
-    return num_alive_wolves >= num_alive_villagers
+    return num_alive_wolves >= num_alive_villagers + num_alive_jesters
 
 
 def number_of(game, team: Team, state: PlayerState):
