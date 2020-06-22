@@ -12,7 +12,7 @@ from .teams import Team
 description = RoleDescription(
     display_name="Wolf",
     stages={
-        GameStage.NIGHT: StageAction(
+        GameStage.DAY: StageAction(
             text="""
 You are a Wolf! You kill one person each night
 
@@ -21,7 +21,9 @@ You win if the wolves kill enough villagers that you are equal in number
         ),
         GameStage.NIGHT: StageAction(
             text="""
-Choose who to kill!
+You are a Wolf! You kill one person each night
+
+It's night now, so choose whom to kill! Click their icon then click the button to submit. 
     """,
             button_text="Select someone to maul",
         ),
