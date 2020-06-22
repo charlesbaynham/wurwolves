@@ -22,6 +22,10 @@ class RoleDescription(pydantic.BaseModel):
     priority: int = 0
     secret_chat_enabled = False
 
+    #  If present, announce to this role who else has this role.
+    # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")
+    reveal_others_text = ""
+
     @pydantic.validator("fallback_role_description", always=True)
     def role_and_desc(cls, v, values):
         if v and ("fallback_role" not in values or not values["fallback_role"]):

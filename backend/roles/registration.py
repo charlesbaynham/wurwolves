@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from ..model import Action, GameStage, PlayerRole, PlayerState
 from ..user_id import get_user_id
 from . import jester, medic, seer, spectator, villager, wolf
-from .common import RoleDetails
+from .common import RoleDetails, RoleDescription
 
 if TYPE_CHECKING:
     from ..resolver import GameAction
@@ -30,6 +30,10 @@ jester.register(ROLE_MAP)
 
 if any(r not in ROLE_MAP for r in list(PlayerRole)):
     raise TypeError("Not all roles are registered")
+
+
+def get_role_description(role) -> RoleDescription:
+    return ROLE_MAP[role].role_description
 
 
 def get_action_func_name(role: PlayerRole, stage: GameStage):

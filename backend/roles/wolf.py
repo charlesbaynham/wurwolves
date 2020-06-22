@@ -17,6 +17,8 @@ description = RoleDescription(
 You are a Wolf! You kill one person each night
 
 You win if the wolves kill enough villagers that you are equal in number
+
+You have access to secret chat: use it to chat with the other wolves (if there are any).
     """
         ),
         GameStage.NIGHT: StageAction(
@@ -24,12 +26,15 @@ You win if the wolves kill enough villagers that you are equal in number
 You are a Wolf! You kill one person each night
 
 It's night now, so choose whom to kill! Click their icon then click the button to submit. 
+
+You have access to secret chat: use it to chat with the other wolves (if there are any) and decide who to kill.
     """,
             button_text="Select someone to maul",
         ),
     },
     team=Team.WOLVES,
     secret_chat_enabled=True,
+    reveal_others_text="fellow wolves",
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )

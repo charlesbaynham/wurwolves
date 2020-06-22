@@ -332,6 +332,13 @@ class WurwolvesGame:
 
         return game
 
+    @staticmethod
+    def list_join(input_list):
+        my_list = [str(i) for i in input_list]
+        return "&".join(
+            [",".join(my_list[:-1]), my_list[-1]] if len(my_list) > 2 else my_list
+        )
+
     @db_scoped
     def start_game(self):
         game = self.get_game()
@@ -349,10 +356,31 @@ class WurwolvesGame:
             player.role = role
             player.state = PlayerState.ALIVE
 
-        self._set_stage(GameStage.NIGHT)
-
         self.clear_chat_messages()
         self.send_chat_message("A new game has started. Night falls in the village")
+
+        for player in game.players:
+            desc = roles.get_role_description(player.role)
+            if desc.reveal_others_text:
+                fellows = [
+                    p for p in game.players if p.role == player.role and p != player
+                ]
+                if fellows:
+                    self.send_chat_message(
+                        f"You are a {player.role.value}! Your {desc.reveal_others_text} are {self.list_join(fellows)}",
+                        player_list=[player.id],
+                    )
+                else:
+                    self.send_chat_message(
+                        f"You are a {player.role.value}! You're all by yourself...",
+                        player_list=[player.id],
+                    )
+            else:
+                self.send_chat_message(
+                    f"You are a {player.role.value}!", player_list=[player.id]
+                )
+
+        self._set_stage(GameStage.NIGHT)
 
     @db_scoped
     def get_messages(self, user_id: UUID) -> List[ChatMessage]:

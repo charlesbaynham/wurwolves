@@ -101,12 +101,12 @@ class Game(Base):
 
 
 class PlayerRole(enum.Enum):
-    VILLAGER = "VILLAGER"
-    WOLF = "WOLF"
-    SEER = "SEER"
-    MEDIC = "MEDIC"
-    JESTER = "JESTER"
-    SPECTATOR = "SPECTATOR"
+    VILLAGER = "Villager"
+    WOLF = "Wolf"
+    SEER = "Seer"
+    MEDIC = "Medic"
+    JESTER = "Jester"
+    SPECTATOR = "Spectator"
 
 
 class PlayerState(str, enum.Enum):
