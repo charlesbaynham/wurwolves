@@ -13,6 +13,7 @@ class Team(Enum):
     WOLVES = "wolves"
     SPECTATORS = "spectators"
     JESTER = "jester"
+    NARRATOR = "narrator"
 
 
 def villagers_won(game):
@@ -54,7 +55,11 @@ win_map = {
     Team.VILLAGERS: villagers_won,
     Team.JESTER: jester_won,
     Team.SPECTATORS: lambda _: False,
+    Team.NARRATOR: lambda _: False,
 }
+
+if any(team not in win_map for team in list(Team)):
+    raise TypeError("Not all teams are in the win_map")
 
 
 def team_has_won(game: "WurwolvesGame", team: Team) -> bool:

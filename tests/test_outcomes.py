@@ -141,3 +141,26 @@ def test_no_wolves_double_kill(five_player_game):
 
     assert game.get_player_model(roles_map["Medic"]).state == PlayerState.WOLFED
     assert game.get_player_model(roles_map["Seer"]).state == PlayerState.ALIVE
+
+
+def test_no_move_to_vote_with_narrator(five_player_game):
+    game, roles_map = five_player_game
+
+    game.start_game()
+    game._set_stage(GameStage.DAY)
+
+    # Add a narrator
+    narrator_id = uuid()
+    game.join(narrator_id)
+    with session_scope() as s:
+        u = game.get_player(narrator_id)
+        u.role = PlayerRole.NARRATOR
+        u.state = PlayerState.SPECTATING
+        game.set_user_name(narrator_id, "The narrator")
+        s.add(u)
+
+    # Try to move to vote as a villager
+    game.villager_day_action(roles_map["Villager"])
+
+    # And as narrator
+    game.narrator_day_action(roles_map["Narrator"])

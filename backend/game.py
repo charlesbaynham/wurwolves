@@ -9,7 +9,7 @@ import logging
 import os
 import random
 from functools import wraps
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 from uuid import UUID
 
 import pydantic
@@ -555,6 +555,24 @@ class WurwolvesGame:
                 WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
                     msg=f"{old_name} has changed their name to {name}"
                 )
+
+    @db_scoped
+    def is_role_present(
+        self, role: Optional[PlayerRole], state: Optional[PlayerState] = None
+    ) -> bool:
+        """
+        Is there at least one player with this role and stage in the game?
+        """
+
+        q = self._session.query(Player).filter(Player.game_id == self.game_id)
+
+        if role:
+            q = q.filter(Player.role == role)
+
+        if state:
+            q = q.filter(Player.state == state)
+
+        return bool(q.first())
 
     @db_scoped
     def player_has_action(
