@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction, NoTargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
+from .spectator import description as spectator_description
 from .teams import Team
 
 if TYPE_CHECKING:
@@ -56,6 +57,7 @@ The players should be voting! The game will automatically progress once they're 
     },
     team=Team.NARRATOR,
     fallback_role=PlayerRole.SPECTATOR,
+    fallback_role_description=spectator_description,
 )
 
 

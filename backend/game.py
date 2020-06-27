@@ -644,12 +644,5 @@ def trigger_update_event(game_id: int):
         del update_events[game_id]
 
 
-# Register the roles with actions
-roles.register_role(WurwolvesGame, PlayerRole.SPECTATOR)
-roles.register_role(WurwolvesGame, PlayerRole.VILLAGER)
-roles.register_role(WurwolvesGame, PlayerRole.MEDIC)
-roles.register_role(WurwolvesGame, PlayerRole.SEER)
-roles.register_role(WurwolvesGame, PlayerRole.WOLF)
-roles.register_role(WurwolvesGame, PlayerRole.JESTER)
-
-roles.check_all_roles_registered()
+# Create API endpoints and methods in WurwolvesGame for all the role actions
+roles.register_roles(WurwolvesGame)

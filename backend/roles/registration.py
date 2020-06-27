@@ -36,11 +36,6 @@ if any(r not in ROLE_MAP for r in list(PlayerRole)):
 registered_with_game = []
 
 
-def check_all_roles_registered():
-    if any(r not in registered_with_game for r in list(PlayerRole)):
-        raise TypeError("Not all roles are registered with game")
-
-
 def get_role_description(role) -> RoleDescription:
     desc = ROLE_MAP[role].role_description
     if callable(desc):
@@ -84,6 +79,15 @@ def named(n):
         return func
 
     return f
+
+
+def register_roles(WurwolvesGame):
+    """
+    Register all roles by creating an API endpoint at <role_name>_action which calls a new method on
+    WurwolvesGame called the same.
+    """
+    for role in list(PlayerRole):
+        register_role(WurwolvesGame, role)
 
 
 def register_role(WurwolvesGame, role: PlayerRole):
