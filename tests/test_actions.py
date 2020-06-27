@@ -38,7 +38,7 @@ def test_wolf_night(demo_game):
 
     for player in players:
         if player.role == PlayerRole.WOLF:
-            demo_game.wolf_night_action(player.user_id)
+            demo_game.wolf_night_action(player.user_id, player.user_id)
 
 
 def test_medic_night(demo_game):
@@ -76,11 +76,11 @@ def test_actions_processed_with_spectator(resolver_mock, demo_game):
 
     for player in players:
         if player.role == PlayerRole.MEDIC:
-            demo_game.medic_night_action(player.user_id)
+            demo_game.medic_night_action(player.user_id, player.user_id)
         elif player.role == PlayerRole.WOLF:
-            demo_game.wolf_night_action(player.user_id)
+            demo_game.wolf_night_action(player.user_id, player.user_id)
         elif player.role == PlayerRole.SEER:
-            demo_game.seer_night_action(player.user_id)
+            demo_game.seer_night_action(player.user_id, player.user_id)
 
     resolver_mock.assert_called_once()
 
@@ -114,11 +114,11 @@ def test_actions_processed(resolver_mock, demo_game):
 
     for player in players:
         if player.role == PlayerRole.MEDIC:
-            demo_game.medic_night_action(player.user_id)
+            demo_game.medic_night_action(player.user_id, player.user_id)
         elif player.role == PlayerRole.WOLF:
-            demo_game.wolf_night_action(player.user_id)
+            demo_game.wolf_night_action(player.user_id, player.user_id)
         elif player.role == PlayerRole.SEER:
-            demo_game.seer_night_action(player.user_id)
+            demo_game.seer_night_action(player.user_id, player.user_id)
 
     resolver_mock.assert_called_once()
 
