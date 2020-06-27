@@ -326,10 +326,12 @@ class WurwolvesGame:
 
         threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
 
-        # Clear out any old players
+        # Clear out any old players if it's the lobby or ended stage, or if the player is
+        # a pure spectator (i.e. not a dead player)
         for p in players:
             if (
-                p.role == PlayerRole.SPECTATOR or game.stage == GameStage.ENDED
+                (game.stage == GameStage.LOBBY or game.stage == GameStage.ENDED)
+                or p.state == PlayerState.SPECTATING
             ) and p.user.last_seen < threshold:
                 logging.info(
                     f"Remove player {p.user.name} for inactivity (p.user.last_seen="
