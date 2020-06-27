@@ -146,7 +146,6 @@ def test_no_wolves_double_kill(five_player_game):
 def test_no_move_to_vote_with_narrator(five_player_game):
     game, roles_map = five_player_game
 
-    game.start_game()
     game._set_stage(GameStage.DAY)
 
     # Add a narrator
@@ -160,7 +159,7 @@ def test_no_move_to_vote_with_narrator(five_player_game):
         s.add(u)
 
     # Try to move to vote as a villager
-    game.villager_day_action(roles_map["Villager"])
+    game.villager_day_action(roles_map["Villager 1"])
 
     # And as narrator
     game.narrator_day_action(roles_map["Narrator"])

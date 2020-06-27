@@ -30,7 +30,15 @@ jester.register(ROLE_MAP)
 narrator.register(ROLE_MAP)
 
 if any(r not in ROLE_MAP for r in list(PlayerRole)):
-    raise TypeError("Not all roles are registered")
+    raise TypeError("Not all roles are registered with roles.registration")
+
+
+registered_with_game = []
+
+
+def check_all_roles_registered():
+    if any(r not in registered_with_game for r in list(PlayerRole)):
+        raise TypeError("Not all roles are registered with game")
 
 
 def get_role_description(role) -> RoleDescription:
@@ -85,6 +93,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
     The API endpoint is added to the router in this module which must be imported by main
     """
+
+    registered_with_game.append(role)
 
     role_description = get_role_description(role)
 

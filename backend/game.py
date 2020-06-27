@@ -651,3 +651,5 @@ roles.register_role(WurwolvesGame, PlayerRole.MEDIC)
 roles.register_role(WurwolvesGame, PlayerRole.SEER)
 roles.register_role(WurwolvesGame, PlayerRole.WOLF)
 roles.register_role(WurwolvesGame, PlayerRole.JESTER)
+
+roles.check_all_roles_registered()

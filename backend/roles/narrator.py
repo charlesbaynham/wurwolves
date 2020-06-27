@@ -76,7 +76,7 @@ class CancelledByNarrator:
         return not game.is_role_present(PlayerRole.NARRATOR)
 
 
-class MoveToVoteAction(GameAction, NoTargetRequired):
+class NarratorMoveToVoteAction(GameAction, NoTargetRequired):
     """
     Move to vote
 
@@ -96,7 +96,7 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.NARRATOR: RoleDetails(
-                description, {GameStage.DAY: MoveToVoteAction},
+                description, {GameStage.DAY: NarratorMoveToVoteAction},
             )
         }
     )
