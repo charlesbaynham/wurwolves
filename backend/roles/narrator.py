@@ -1,6 +1,7 @@
 """
 The Narrator role
 """
+import logging
 from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole, PlayerState
@@ -77,7 +78,11 @@ class CancelledByNarrator(ActionMixin):
         Check if a narrator is present and allow / disallow
         the villagers from voting accordingly
         """
-        return not game.is_role_present(PlayerRole.NARRATOR)
+        narrator_is_present = game.is_role_present(PlayerRole.NARRATOR)
+        logging.info(
+            f"In narrator is_action_available, game.is_role_present(PlayerRole.NARRATOR) = {narrator_is_present}"
+        )
+        return not narrator_is_present
 
 
 class NarratorMoveToVoteAction(GameAction, NoTargetRequired):

@@ -215,6 +215,7 @@ class GameAction(ActionMixin):
 
         For example, the Mayor prevents everyone from being able to vote. 
         """
+        logging.info("Default is_action_available used")
         return True
 
     def __init__(self, action_model: ActionModel, players: Dict[int, GamePlayer]):
@@ -241,7 +242,7 @@ class GameAction(ActionMixin):
 
     def execute(self, game):
         """Called once all actions have been submitted"""
-        raise NotImplementedError
+        pass
 
     @classmethod
     def immediate(cls, **kwargs):

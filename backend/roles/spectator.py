@@ -84,8 +84,10 @@ def register(role_map):
         CancelledByNarrator so that only one person can narrate. 
         """
 
+        allowed_player_states = list(PlayerState)
+
         @classmethod
-        def immediate(cls, game: "WurwolvesGame" = None, user_id=None):
+        def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kw):
             game.set_player_role(game.get_player_id(user_id), PlayerRole.NARRATOR)
 
     role_map.update(

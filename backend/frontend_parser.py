@@ -88,6 +88,10 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         player.id, game.stage, game.stage_id
     )
 
+    logging.info(
+        f"Player {player.user.name} is a {player.role.value}, has_action={has_action}, action_enabled={action_enabled}"
+    )
+
     controls_state = FrontendState.RoleState(
         title=role_details.display_name,
         text=state.text,

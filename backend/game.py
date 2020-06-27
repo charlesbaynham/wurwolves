@@ -609,6 +609,10 @@ class WurwolvesGame:
         if not action_class:
             return False, False
 
+        logging.info(
+            f"player.state = {player.state}, action_class.allowed_player_states = {action_class.allowed_player_states}"
+        )
+
         # Player has an action in this stage...
         has_action = (
             player.state in action_class.allowed_player_states
