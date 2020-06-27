@@ -47,7 +47,7 @@ class ChatMessage(pydantic.BaseModel):
 class WurwolvesGame:
     """
     Provides methods for accessing all the properties of a wurwolves game. This
-    object is initialised with the ID of a game and loads all other information
+    object is initialized with the ID of a game and loads all other information
     from the database on request.
     """
 
