@@ -207,6 +207,16 @@ class GameAction(ActionMixin):
     # Override to have this action performed once per team, not once per player
     team_action = False
 
+    @classmethod
+    def is_action_available(cls, game, stage, stage_id, player_id):
+        """
+        Is the action enabled at this stage? Override this function if a role needs to prevent
+        other actions from even being submitted.
+
+        For example, the Mayor prevents everyone from being able to vote. 
+        """
+        return True
+
     def __init__(self, action_model: ActionModel, players: Dict[int, GamePlayer]):
         self.model: ActionModel = action_model
         self.originator: GamePlayer = None

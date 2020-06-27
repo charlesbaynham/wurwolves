@@ -572,7 +572,10 @@ class WurwolvesGame:
             return False, False
 
         # Player has an action in this stage...
-        has_action = player.state in action_class.allowed_player_states
+        has_action = (
+            player.state in action_class.allowed_player_states
+            and action_class.is_action_available(self, stage, stage_id, player.id)
+        )
 
         #  ..and hasn't yet acted
         if not has_action:
