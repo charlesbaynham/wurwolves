@@ -571,7 +571,7 @@ class WurwolvesGame:
                 .filter(
                     Action.game_id == self.game_id,
                     Action.stage_id == stage_id,
-                    Player.role in my_team_roles,
+                    Player.role.in_(my_team_roles),
                 )
                 .all()
             )

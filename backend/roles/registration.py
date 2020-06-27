@@ -173,6 +173,10 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 selected_player_id = None
 
             # Save the action
+            # Do this as a subtransaction so that the "all actions finished"
+            # query has access to this action, but touch the game so an update
+            # is triggered
+            self._session.begin_nested()
             action = Action(
                 game_id=self.game_id,
                 player_id=player.id,
@@ -180,6 +184,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 stage_id=game.stage_id,
             )
             self._session.add(action)
+            self._session.commit()
 
             # Perform any immediate actions registered
             if action_class:
