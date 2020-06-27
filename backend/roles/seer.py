@@ -63,7 +63,7 @@ class SeerAction(GameAction, AffectedByWolves):
         else:
             game.send_chat_message(
                 f"You checked {target_name}... they are not a wolf",
-                is_strong=False,
+                is_strong=True,
                 player_list=[self.originator.model.id],
             )
 
