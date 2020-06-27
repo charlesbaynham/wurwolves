@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction, NoTargetRequired, TargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
+from .narrator import CancelledByNarrator
 from .spectator import VoteStartNewGame
 from .teams import Team
 
@@ -51,7 +52,7 @@ Click someone's icon and click the button.
 )
 
 
-class MoveToVoteAction(GameAction, NoTargetRequired):
+class MoveToVoteAction(CancelledByNarrator, NoTargetRequired, GameAction):
     """
     Move to vote
 

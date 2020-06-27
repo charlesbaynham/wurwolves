@@ -4,7 +4,7 @@ The Narrator role
 from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction, NoTargetRequired
+from ..resolver import ActionMixin, GameAction, NoTargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 from .spectator import description as spectator_description
 from .teams import Team
@@ -61,10 +61,12 @@ The players should be voting! The game will automatically progress once they're 
 )
 
 
-class CancelledByNarrator:
+class CancelledByNarrator(ActionMixin):
     """
-    This mixin should be added to actions which should be cancelled if the Narrator
+    This mixin should be added to actions which should be prevented if the Narrator
     is present, i.e. the villagers' Move to Vote
+
+    Note that this isn't the sa
     """
 
     @classmethod
