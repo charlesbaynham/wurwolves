@@ -194,7 +194,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 has_action, action_enabled = self.player_has_action(
                     player, game.stage, game.stage_id
                 )
-                if action_enabled:
+                if has_action and action_enabled:
                     ready = False
                     break
 
