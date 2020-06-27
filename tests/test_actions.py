@@ -86,6 +86,27 @@ def test_actions_processed_with_spectator(demo_game):
     demo_game.process_actions.assert_called_once()
 
 
+def test_actions_update_state(demo_game):
+    demo_game.start_game()
+
+    demo_game.process_actions = Mock(unsafe=True)
+
+    players = demo_game.get_players_model()
+
+    old_game_hash = demo_game.get_hash_now()
+
+    num_calls = 0
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            demo_game.medic_night_action(player.user_id)
+            num_calls += 1
+
+    new_game_hash = demo_game.get_hash_now()
+
+    assert num_calls == 1
+    assert old_game_hash != new_game_hash
+
+
 def test_actions_processed(demo_game):
     demo_game.start_game()
 

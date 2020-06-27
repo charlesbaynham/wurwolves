@@ -124,19 +124,20 @@ def test_no_wolves_double_kill(five_player_game):
     game.join(new_wolf)
     with session_scope() as s:
         u = game.get_player(new_wolf)
-        s.add(new_wolf)
         u.role = PlayerRole.WOLF
+        u.state = PlayerState.ALIVE
         game.set_user_name(new_wolf, "Wolf 2")
+        s.add(u)
 
     game._set_stage(GameStage.NIGHT)
 
     # Try to kill twice
-    game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
+    game.wolf_night_action(new_wolf, roles_map["Medic"])
     with pytest.raises(HTTPException):
-        game.wolf_night_action(new_wolf, roles_map["Medic"])
+        game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
 
-    game.medic_day_action(roles_map["Medic"], roles_map["Villager"])
-    game.seer_day_action(roles_map["Seer"], roles_map["Wolf"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Villager 1"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Wolf"])
 
-    assert game.get_player_model(roles_map["Seer"]).state == PlayerState.WOLFED
-    assert game.get_player_model(roles_map["Medic"]).state == PlayerState.ALIVE
+    assert game.get_player_model(roles_map["Medic"]).state == PlayerState.WOLFED
+    assert game.get_player_model(roles_map["Seer"]).state == PlayerState.ALIVE

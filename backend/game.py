@@ -114,6 +114,7 @@ class WurwolvesGame:
                     # And mark the game as altered in the database
                     g = self.get_game()
                     g.touch()
+                    self._session.add(g)
                     self._session.commit()
                     trigger_update_event(self.game_id)
 
