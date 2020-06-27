@@ -86,8 +86,6 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
     state = role_details.get_stage_action(game.stage)
 
-    role_action = get_role_action(player.role, game.stage)
-
     has_action, action_enabled = g.player_has_action(
         player.id, game.stage, game.stage_id
     )
@@ -95,15 +93,8 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     controls_state = FrontendState.RoleState(
         title=role_details.display_name,
         text=state.text,
-        button_visible=(
-            bool(state.button_text)
-            and (role_action and player.state in role_action.allowed_player_states)
-        ),
-        button_enabled=(
-            bool(state.button_text)
-            and (role_action and player.state in role_action.allowed_player_states)
-            and not actions
-        ),
+        button_visible=has_action,
+        button_enabled=action_enabled,
         button_text=state.button_text,
         button_submit_person=state.button_text and state.select_person,
         button_submit_func=get_action_func_name(player.role, game.stage),
