@@ -216,3 +216,23 @@ def test_actions_processed_voting_results(demo_game):
             demo_game.seer_voting_action(player.user_id, the_dick)
 
     assert demo_game.get_player_model(the_dick).state == PlayerState.LYNCHED
+
+
+def test_action_preventable(demo_game):
+    demo_game.start_game()
+
+    def do_medic():
+        for player in demo_game.get_players_model():
+            if player.role == PlayerRole.MEDIC:
+                demo_game.medic_night_action(player.user_id, player.user_id)
+
+    demo_game._set_stage(GameStage.NIGHT)
+    do_medic()
+
+    demo_game._set_stage(GameStage.NIGHT)
+
+    with patch(
+        "backend.roles.medic.MedicAction.is_action_available", return_value=False
+    ):
+        with pytest.raises(HTTPException):
+            do_medic()

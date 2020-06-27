@@ -164,7 +164,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
             if not action_enabled:
                 raise HTTPException(
                     status_code=403,
-                    detail=f"Action already completed for player {user_id} in round {game.stage_id}",
+                    detail=f"Action already completed / disabled for player {user_id} in round {game.stage_id}",
                 )
 
             if selected_id:
