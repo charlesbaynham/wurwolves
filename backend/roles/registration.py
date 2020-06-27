@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import TYPE_CHECKING, Dict, Union
+from typing import TYPE_CHECKING, Callable, Dict, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 # The ROLE_MAP maps PlayerRoles to RoleDetails. It is therefore a way of looking
-# up how a role should behave given it a PlayerRole enum
+# up how a role should behave given it a PlayerRole enum.
 ROLE_MAP: Dict[PlayerRole, RoleDetails] = {}
 
 # Populate ROLE_MAP
@@ -33,7 +33,10 @@ if any(r not in ROLE_MAP for r in list(PlayerRole)):
 
 
 def get_role_description(role) -> RoleDescription:
-    return ROLE_MAP[role].role_description
+    desc = ROLE_MAP[role].role_description
+    if callable(desc):
+        desc = desc()
+    return desc
 
 
 def get_action_func_name(role: PlayerRole, stage: GameStage):

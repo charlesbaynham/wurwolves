@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, NamedTuple, Optional
+from typing import Callable, Dict, NamedTuple, Optional, Union
 
 import pydantic
 
@@ -93,8 +93,11 @@ class RoleDetails(NamedTuple):
     """
     A RoleDetails tuple contains a complete description of what a role entails
     It can be used to figure out how a role should behave and will be stored in
-    .registration.ROLE_MAP
+    registration.ROLE_MAP. 
+
+    If role_description is a Callable, calling it without arguments should return 
+    a RoleDescripton
     """
 
-    role_description: RoleDescription
+    role_description: Union[RoleDescription, Callable]
     actions: Dict[GameStage, GameAction] = None
