@@ -545,13 +545,10 @@ class WurwolvesGame:
         if isinstance(player, int):
             player = self.get_player_by_id(player)
 
-        # Player has an action in this stage...
-        has_action = (
-            roles.get_role_action(player.role, stage)
-            and player.state == PlayerState.ALIVE
-        )
-
         action_class = roles.get_role_action(player.role, stage)
+
+        # Player has an action in this stage...
+        has_action = action_class and player.state in action_class.allowed_player_states
 
         #  ..and hasn't yet acted
         if not has_action:
