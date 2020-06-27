@@ -2,11 +2,16 @@
 The Spectator role
 """
 import logging
+from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole, PlayerState
 from ..resolver import NoTargetRequired
 from .common import GameAction, RoleDescription, RoleDetails, StageAction
+from .narrator import CancelledByNarrator
 from .teams import Team
+
+if TYPE_CHECKING:
+    from ..game import WurwolvesGame
 
 description = RoleDescription(
     display_name="Spectator",
@@ -57,12 +62,30 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
         pass
 
 
+class BecomeNarratorAction(CancelledByNarrator, GameAction):
+    """
+    Allow spectators to become the narrator if they want. 
+
+    CancelledByNarrator so that only one person can narrate. 
+    """
+
+    @classmethod
+    def immediate(cls, game: "WurwolvesGame" = None, user_id=None):
+        game.set_player_role(game.get_player_id(user_id), PlayerRole.NARRATOR)
+
+
 def register(role_map):
     role_map.update(
         {
             PlayerRole.SPECTATOR: RoleDetails(
                 description,
-                {GameStage.LOBBY: VoteStartNewGame, GameStage.ENDED: VoteStartNewGame},
+                {
+                    GameStage.LOBBY: VoteStartNewGame,
+                    GameStage.ENDED: VoteStartNewGame,
+                    GameStage.DAY: BecomeNarratorAction,
+                    GameStage.NIGHT: BecomeNarratorAction,
+                    GameStage.VOTING: BecomeNarratorAction,
+                },
             )
         }
     )

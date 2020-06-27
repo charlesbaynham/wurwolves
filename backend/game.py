@@ -197,6 +197,14 @@ class WurwolvesGame:
         return GameModel.from_orm(g) if g else None
 
     @db_scoped
+    def get_player_id(self, user_id: UUID) -> int:
+        return (
+            self._session.query(Player.id)
+            .filter(Player.game_id == self.game_id, Player.user_id == user_id)
+            .first()
+        )[0]
+
+    @db_scoped
     def get_player(self, user_id: UUID) -> Player:
         return (
             self._session.query(Player)
@@ -462,6 +470,11 @@ class WurwolvesGame:
     def set_player_state(self, player_id, state: PlayerState):
         p = self.get_player_by_id(player_id)
         p.state = state
+
+    @db_scoped
+    def set_player_role(self, player_id, role: PlayerRole):
+        p = self.get_player_by_id(player_id)
+        p.role = role
 
     @db_scoped
     def vote_player(self, player_id):
