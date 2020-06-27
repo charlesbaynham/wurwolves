@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from uuid import uuid4 as uuid
 
 import pytest
@@ -66,12 +66,11 @@ def test_medic_forbidden_wolf(demo_game):
                 demo_game.wolf_night_action(player.user_id)
 
 
-def test_actions_processed_with_spectator(demo_game):
+@patch("backend.resolver.process_actions")
+def test_actions_processed_with_spectator(resolver_mock, demo_game):
     demo_game.start_game()
 
     demo_game.join(uuid())
-
-    demo_game.process_actions = Mock(unsafe=True)
 
     players = demo_game.get_players_model()
 
@@ -83,7 +82,7 @@ def test_actions_processed_with_spectator(demo_game):
         elif player.role == PlayerRole.SEER:
             demo_game.seer_night_action(player.user_id)
 
-    demo_game.process_actions.assert_called_once()
+    resolver_mock.assert_called_once()
 
 
 def test_actions_update_state(demo_game):
@@ -107,10 +106,9 @@ def test_actions_update_state(demo_game):
     assert old_game_hash != new_game_hash
 
 
-def test_actions_processed(demo_game):
+@patch("backend.resolver.process_actions")
+def test_actions_processed(resolver_mock, demo_game):
     demo_game.start_game()
-
-    demo_game.process_actions = Mock(unsafe=True)
 
     players = demo_game.get_players_model()
 
@@ -122,14 +120,13 @@ def test_actions_processed(demo_game):
         elif player.role == PlayerRole.SEER:
             demo_game.seer_night_action(player.user_id)
 
-    demo_game.process_actions.assert_called_once()
+    resolver_mock.assert_called_once()
 
 
-def test_actions_processed_day(demo_game):
+@patch("backend.resolver.process_actions")
+def test_actions_processed_day(resolver_mock, demo_game):
     demo_game.start_game()
     demo_game._set_stage(GameStage.DAY)
-
-    demo_game.process_actions = Mock(unsafe=True)
 
     players = demo_game.get_players_model()
 
@@ -141,7 +138,7 @@ def test_actions_processed_day(demo_game):
         elif player.role == PlayerRole.SEER:
             demo_game.seer_day_action(player.user_id)
 
-    demo_game.process_actions.assert_called_once()
+    resolver_mock.assert_called_once()
 
 
 def test_actions_processed_day_no_errors(demo_game):

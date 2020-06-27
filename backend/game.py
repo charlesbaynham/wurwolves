@@ -328,6 +328,9 @@ class WurwolvesGame:
                 self._session.delete(p)
                 self.get_game().touch()
 
+                # Reevaluate processed actions
+                self.process_actions(game.stage, game.stage_id)
+
     @db_scoped
     def create_game(self):
         game = Game(id=self.game_id)
