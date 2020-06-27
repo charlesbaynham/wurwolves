@@ -159,7 +159,8 @@ def test_no_move_to_vote_with_narrator(five_player_game):
         s.add(u)
 
     # Try to move to vote as a villager
-    game.villager_day_action(roles_map["Villager 1"])
+    with pytest.raises(HTTPException):
+        game.villager_day_action(roles_map["Villager 1"])
 
     # And as narrator
-    game.narrator_day_action(roles_map["Narrator"])
+    game.narrator_day_action(narrator_id)

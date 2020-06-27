@@ -3,7 +3,7 @@ The Narrator role
 """
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole
+from ..model import GameStage, PlayerRole, PlayerState
 from ..resolver import GameAction, NoTargetRequired
 from .common import RoleDescription, RoleDetails, StageAction
 from .spectator import description as spectator_description
@@ -85,6 +85,8 @@ class NarratorMoveToVoteAction(GameAction, NoTargetRequired):
     The narrator is the only one who is allowed to vote, so the round will
     complete as soon as their action is submitted. 
     """
+
+    allowed_player_states = list(PlayerState)
 
     def execute(self, game):
         pass
