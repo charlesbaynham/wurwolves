@@ -292,9 +292,9 @@ class GameAction(ActionMixin):
         Args:
             role (PlayerRole): The role
         """
-        from .roles import ROLE_MAP
+        from .roles import get_role_description
 
-        return ROLE_MAP[role].role_description.priority
+        return get_role_description(role).priority
 
 
 class TargetRequired(ActionMixin):

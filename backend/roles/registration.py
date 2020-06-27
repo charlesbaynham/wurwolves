@@ -41,7 +41,7 @@ def get_action_func_name(role: PlayerRole, stage: GameStage):
 
 
 def get_role_team(role: PlayerRole):
-    return ROLE_MAP[role].role_description.team
+    return get_role_description(role).team
 
 
 def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameAction"]:
@@ -85,7 +85,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
     The API endpoint is added to the router in this module which must be imported by main
     """
 
-    role_description = ROLE_MAP[role].role_description
+    role_description = get_role_description(role)
 
     for stage in list(GameStage):
         #  Check if there's a role action for this stage

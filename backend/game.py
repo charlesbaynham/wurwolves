@@ -262,7 +262,7 @@ class WurwolvesGame:
     def send_team_message(self, user_id: UUID, message: str):
         role = self.get_player(user_id).role
         team = roles.get_role_team(role)
-        role_description = roles.ROLE_MAP[role].role_description
+        role_description = roles.get_role_description(role)
 
         if not role_description.secret_chat_enabled:
             raise HTTPException(f"Role {role} does not have secret chat")
@@ -585,7 +585,7 @@ class WurwolvesGame:
             my_team = roles.get_role_team(player.role)
             my_team_roles = [
                 role
-                for role in roles.ROLE_MAP.keys()
+                for role in list(PlayerRole)
                 if roles.get_role_team(role) == my_team
             ]
 
