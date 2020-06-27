@@ -14,9 +14,11 @@ if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
 general_description = """
-You are the narrator. You are not playing the game and cannot win, but you have full information 
-about what goes on. You control when the vote begins and you should announce the deaths that happen
-in the night (although they'll still get written in the chat). 
+You are the narrator. You are not playing the game and cannot win, but you 
+are in charge of keeping the game on track. 
+
+You control when the vote begins and you should announce the deaths that happen
+in the night (although they'll still get written in the chat). If you're feeling inventive, add a backstory. 
 
 Try to keep the game moving! It's up to you to ensure that the conversation doesn't get bogged down. 
 """
