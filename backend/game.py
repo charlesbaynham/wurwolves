@@ -480,18 +480,27 @@ class WurwolvesGame:
     @db_scoped
     def process_actions(self, stage: GameStage, stage_id: int):
         """
-        Process all the actions of the stage that just passed
+        Process all the actions of the stage that just passed if all are in
 
-        This function contains basically all the rules of the game. It is called
+        This function evaluates basically all the rules of the game. It is called
         by the role registered action functions when all the expected actions in
         a stage (usually the night) have been completed. It will parse the
         current state of the game and all the submitted actions, decide what
         should happen, dispatch the appropriate chat messages and alter the game
         state as required. 
         """
-        logging.info(f"All the actions are in for game {self.game_id}: processing")
+        players = self.get_players()
 
-        resolver.process_actions(self, stage, stage_id)
+        ready = True
+        for player in players:
+            has_action, action_enabled = self.player_has_action(player, stage, stage_id)
+            if has_action and action_enabled:
+                ready = False
+                break
+
+        if ready:
+            logging.info(f"All the actions are in for game {self.game_id}: processing")
+            resolver.process_actions(self, stage, stage_id)
 
     @db_scoped
     def _set_stage(self, stage: GameStage):

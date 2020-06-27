@@ -181,7 +181,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 game_id=self.game_id,
                 player_id=player.id,
                 selected_player_id=selected_player_id,
-                stage_id=game.stage_id,
+                stage_id=stage_id,
             )
             self._session.add(action)
             self._session.commit()
@@ -193,18 +193,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
 
             # If all the actions are complete, process them
-            players = game.players
-            ready = True
-            for player in players:
-                has_action, action_enabled = self.player_has_action(
-                    player, game.stage, game.stage_id
-                )
-                if has_action and action_enabled:
-                    ready = False
-                    break
-
-            if ready:
-                self.process_actions(stage, stage_id)
+            # Note that game.stage / game.stage_id may have been changed by the immediate actions,
+            # so we use the saved versions here which have not changed.
+            self.process_actions(stage, stage_id)
 
             self.get_game().touch()
 
