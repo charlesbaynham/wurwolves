@@ -77,7 +77,9 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
     def immediate(cls, game=None, user_id=None, selected_id=None):
         originator = game.get_user_name(user_id)
         attacked = game.get_user_name(selected_id)
-        game.send_team_message(user_id, f"(secret) {originator} attacked {attacked}")
+        game.send_team_message(
+            user_id, f"(wolves) {originator} has attacked {attacked}"
+        )
 
     def execute(self, game):
         target_name = self.target.model.user.name
