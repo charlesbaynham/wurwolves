@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 
-from ..model import Action, GameStage, PlayerModel, PlayerRole, PlayerState, Player
+from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
 from . import jester, medic, seer, spectator, villager, wolf
 from .common import RoleDescription, RoleDetails

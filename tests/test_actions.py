@@ -123,7 +123,7 @@ def test_actions_processed_day(demo_game):
     demo_game.process_actions.assert_called_once()
 
 
-def test_actions_processed_day_noerrors(demo_game):
+def test_actions_processed_day_no_errors(demo_game):
     demo_game.start_game()
     demo_game._set_stage(GameStage.DAY)
     assert demo_game.get_game_model().stage == GameStage.DAY
@@ -162,7 +162,7 @@ def test_actions_processed_night_wolfing(demo_game):
     assert demo_game.get_player_model(unlucky).state == PlayerState.WOLFED
 
 
-def test_actions_processed_voting_noerrors(demo_game):
+def test_actions_processed_voting_no_errors(demo_game):
     demo_game.start_game()
     demo_game._set_stage(GameStage.VOTING)
     assert demo_game.get_game_model().stage == GameStage.VOTING

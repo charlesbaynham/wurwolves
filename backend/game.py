@@ -548,7 +548,9 @@ class WurwolvesGame:
         action_class = roles.get_role_action(player.role, stage)
 
         # Player has an action in this stage...
-        has_action = action_class and player.state in action_class.allowed_player_states
+        has_action = (
+            bool(action_class) and player.state in action_class.allowed_player_states
+        )
 
         #  ..and hasn't yet acted
         if not has_action:
