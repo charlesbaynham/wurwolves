@@ -57,10 +57,10 @@ def test_parse_new_spectator(db_session, demo_game):
     assert "You're not playing" in state.controls_state.text
     assert "Spectator" in state.controls_state.title
     assert state.stage == GameStage.NIGHT
-    assert not state.controls_state.button_enabled
 
 
 def test_no_vote_dead(demo_game):
+
     demo_game.join(uuid())
     demo_game.join(uuid())
 
@@ -68,6 +68,11 @@ def test_no_vote_dead(demo_game):
     demo_game.join(other_player)
 
     demo_game.start_game()
+
+    # add a narrator too
+    narrator_id = uuid()
+    demo_game.join(narrator_id)
+    demo_game.spectator_night_action(narrator_id)
 
     # 6 player game
 
