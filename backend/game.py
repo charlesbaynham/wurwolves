@@ -311,12 +311,15 @@ class WurwolvesGame:
         self._session.commit()
 
         players = self.get_players()
+        game = self.get_game()
 
         threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
 
         # Clear out any old players
         for p in players:
-            if p.role == PlayerRole.SPECTATOR and p.user.last_seen < threshold:
+            if (
+                p.role == PlayerRole.SPECTATOR or game.stage == GameStage.ENDED
+            ) and p.user.last_seen < threshold:
                 logging.info(
                     f"Remove player {p.user.name} for inactivity (p.user.last_seen="
                     f"{p.user.last_seen}, threshold={threshold}"
@@ -368,7 +371,8 @@ class WurwolvesGame:
                 ]
                 if fellows:
                     self.send_chat_message(
-                        f"You are a {player.role.value}! Your {desc.reveal_others_text} are {self.list_join(fellows)}",
+                        f"You are a {player.role.value}! Your {desc.reveal_others_text} are "
+                        f"{self.list_join(p.user.name for p in fellows)}",
                         player_list=[player.id],
                     )
                 else:
