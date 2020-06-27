@@ -215,7 +215,7 @@ class GameAction(ActionMixin):
 
         For example, the Mayor prevents everyone from being able to vote. 
         """
-        logging.info("Default is_action_available used")
+        logging.debug("Default is_action_available used")
         return True
 
     def __init__(self, action_model: ActionModel, players: Dict[int, GamePlayer]):
@@ -336,6 +336,10 @@ def switch_to_vote(game: "WurwolvesGame"):
     game._set_stage(GameStage.VOTING)
 
 
+def start_game(game: "WurwolvesGame"):
+    game.start_game()
+
+
 def count_votes(game: "WurwolvesGame"):
     players: List[PlayerModel] = game.get_players_model()
     votes = [p.votes for p in players]
@@ -365,6 +369,8 @@ stage_finalizers = {
     GameStage.NIGHT: judge_night,
     GameStage.DAY: switch_to_vote,
     GameStage.VOTING: count_votes,
+    GameStage.ENDED: start_game,
+    GameStage.LOBBY: start_game,
 }
 
 

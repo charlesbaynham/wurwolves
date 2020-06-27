@@ -60,6 +60,13 @@ Click the button to play again. The game will start once all spectators have vot
 
 
 class VoteStartNewGame(GameAction, NoTargetRequired):
+    """
+    Vote to start a new game. 
+
+    When all eligable players have voted, the finalizer will be called which will advance the game. This
+    GameAction doesn't therefore have to do it. 
+    """
+
     allowed_player_states = list(PlayerState)
 
     @classmethod
@@ -67,7 +74,6 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
         msg = f"{game.get_user_name(user_id)} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
         game.send_chat_message(msg)
-        game.vote_start()
 
     def execute(self, game):
         pass

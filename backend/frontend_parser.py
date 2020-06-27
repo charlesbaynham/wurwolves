@@ -88,7 +88,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         player.id, game.stage, game.stage_id
     )
 
-    logging.info(
+    logging.debug(
         f"Player {player.user.name} is a {player.role.value}, has_action={has_action}, action_enabled={action_enabled}"
     )
 

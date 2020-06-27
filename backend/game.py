@@ -328,6 +328,10 @@ class WurwolvesGame:
 
         # Clear out any old players if it's the lobby or ended stage, or if the player is
         # a pure spectator (i.e. not a dead player)
+        someone_kicked = False
+
+        # Start a nested session so that process_actions can check the database
+        self._session.begin_nested()
         for p in players:
             if (
                 (game.stage == GameStage.LOBBY or game.stage == GameStage.ENDED)
@@ -339,10 +343,14 @@ class WurwolvesGame:
                 )
                 self.send_chat_message(f"{p.user.name} has left the game")
                 self._session.delete(p)
-                self.get_game().touch()
+                someone_kicked = True
 
-                # Reevaluate processed actions
-                self.process_actions(game.stage, game.stage_id)
+        self._session.commit()
+
+        if someone_kicked:
+            self.get_game().touch()
+            # Reevaluate processed actions
+            self.process_actions(game.stage, game.stage_id)
 
     @db_scoped
     def create_game(self):
@@ -456,19 +464,6 @@ class WurwolvesGame:
         self._session.add(m)
 
     @db_scoped
-    def vote_start(self):
-        g = self.get_game()
-        g.start_votes = Game.start_votes + 1
-        self._session.commit()
-
-        logging.info(f"({self.game_id}) g.start_votes = {g.start_votes}")
-
-        if g.start_votes == len(g.players):
-            logging.warning("({}) all votes are in: starting".format(self.game_id))
-            self.start_game()
-            g.start_votes = 0
-
-    @db_scoped
     def kill_player(self, player_id, new_state: PlayerState):
         self.set_player_role(player_id, PlayerRole.SPECTATOR)
         self.set_player_state(player_id, new_state)
@@ -496,14 +491,6 @@ class WurwolvesGame:
         logging.info(f"Player {p.user.name} has {p.votes} votes")
 
     @db_scoped
-    def reset_votes(self):
-        game = self.get_game()
-        for p in game.players:
-            p.votes = 0
-        game.stage_id += 1
-        logging.info("Votes reset")
-
-    @db_scoped
     def process_actions(self, stage: GameStage, stage_id: int):
         """
         Process all the actions of the stage that just passed if all are in
@@ -521,6 +508,7 @@ class WurwolvesGame:
         for player in players:
             has_action, action_enabled = self.player_has_action(player, stage, stage_id)
             if has_action and action_enabled:
+                logging.info("Stage not complete: %s has not acted", player.user.name)
                 ready = False
                 break
 
@@ -609,7 +597,7 @@ class WurwolvesGame:
         if not action_class:
             return False, False
 
-        logging.info(
+        logging.debug(
             f"player.state = {player.state}, action_class.allowed_player_states = {action_class.allowed_player_states}"
         )
 
