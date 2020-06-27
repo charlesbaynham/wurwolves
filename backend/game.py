@@ -536,6 +536,46 @@ class WurwolvesGame:
                     msg=f"{old_name} has changed their name to {name}"
                 )
 
+    @db_scoped
+    def player_has_action(self, player: Player, stage: GameStage, stage_id: int):
+        """Does this player have an action this turn? And have they already performed it?"""
+        # Player has an action in this stage...
+        has_action = (
+            roles.get_role_action(player.role, stage)
+            and player.state == PlayerState.ALIVE
+        )
+
+        action_class = roles.get_role_action(player.role, stage)
+
+        #  ..and hasn't yet acted
+        if action_class.team_action:
+            # Which roles are on my team?
+            my_team = roles.get_role_team(player.role)
+            my_team_roles = [
+                role
+                for role in roles.ROLE_MAP.keys()
+                if roles.get_role_team(role) == my_team
+            ]
+
+            team_actions = (
+                self._session.query(Action)
+                .filter(
+                    Action.game_id == self.game_id,
+                    Action.stage_id == stage_id,
+                    Action.player.role in my_team_roles,
+                )
+                .all()
+            )
+
+            action_enabled = not bool(team_actions)
+
+        else:
+            action_enabled = has_action and not any(
+                a.stage_id == stage_id for a in player.actions
+            )
+
+        return has_action, action_enabled
+
     @staticmethod
     def generate_name():
         global names

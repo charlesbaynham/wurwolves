@@ -5,10 +5,10 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 
-from ..model import Action, GameStage, PlayerRole, PlayerState
+from ..model import Action, GameStage, PlayerModel, PlayerRole, PlayerState, Player
 from ..user_id import get_user_id
 from . import jester, medic, seer, spectator, villager, wolf
-from .common import RoleDetails, RoleDescription
+from .common import RoleDescription, RoleDetails
 
 if TYPE_CHECKING:
     from ..resolver import GameAction
@@ -114,7 +114,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
             user_id: UUID,
             selected_id: UUID = None,
             stage=stage,  # This odd keyword argument forces early binding of stage:
-            # otherwise it will be evaulated once this function runs.
+            # otherwise it will be evaluated once this function runs.
             # See https://docs.python-guide.org/writing/gotchas/#late-binding-closures
         ):
 
@@ -157,15 +157,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
 
             # Check if this player has already acted this round
-            if (
-                self._session.query(Action)
-                .filter(
-                    Action.game_id == game.id,
-                    Action.stage_id == game.stage_id,
-                    Action.player_id == player.id,
-                )
-                .first()
-            ):
+            if not player_has_action(player, game.stage, game.stage_id):
                 raise HTTPException(
                     status_code=403,
                     detail=f"Action already completed for player {user_id} in round {game.stage_id}",
