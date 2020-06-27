@@ -491,6 +491,14 @@ class WurwolvesGame:
         logging.info(f"Player {p.user.name} has {p.votes} votes")
 
     @db_scoped
+    def reset_votes(self):
+        game = self.get_game()
+        for p in game.players:
+            p.votes = 0
+        game.stage_id += 1
+        logging.info("Votes reset")
+
+    @db_scoped
     def process_actions(self, stage: GameStage, stage_id: int):
         """
         Process all the actions of the stage that just passed if all are in
