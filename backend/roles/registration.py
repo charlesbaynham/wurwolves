@@ -187,25 +187,28 @@ def register_role(WurwolvesGame, role: PlayerRole):
             else:
                 selected_player_id = None
 
-            # Save the action
+            # Perform any immediate actions registered
+            if action_class:
+                immediate_return = action_class.immediate(
+                    game=self, user_id=user_id, selected_id=selected_id
+                )
+            else:
+                immediate_return = True
+
+            # Save the action, unless aborted by immediate.
             # Do this as a subtransaction so that the "all actions finished"
             # query has access to this action, but touch the game so an update
             # is triggered
-            self._session.begin_nested()
-            action = Action(
-                game_id=self.game_id,
-                player_id=player.id,
-                selected_player_id=selected_player_id,
-                stage_id=stage_id,
-            )
-            self._session.add(action)
-            self._session.commit()
-
-            # Perform any immediate actions registered
-            if action_class:
-                action_class.immediate(
-                    game=self, user_id=user_id, selected_id=selected_id
+            if immediate_return is not False:
+                self._session.begin_nested()
+                action = Action(
+                    game_id=self.game_id,
+                    player_id=player.id,
+                    selected_player_id=selected_player_id,
+                    stage_id=stage_id,
                 )
+                self._session.add(action)
+                self._session.commit()
 
             # If all the actions are complete, process them
             # Note that game.stage / game.stage_id may have been changed by the immediate actions,

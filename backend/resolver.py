@@ -246,8 +246,13 @@ class GameAction(ActionMixin):
 
     @classmethod
     def immediate(cls, **kwargs):
-        """Called immediately on submit"""
-        pass
+        """
+        Called immediately on submit
+
+        If this method returns False, the storage of the action will be aborted. Note
+        that this must actually be "false", not just a falsy value. 
+        """
+        return True
 
     def do_modifiers(self):
         """

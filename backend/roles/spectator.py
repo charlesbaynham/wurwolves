@@ -96,6 +96,10 @@ def register(role_map):
         def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kw):
             game.set_player_role(game.get_player_id(user_id), PlayerRole.NARRATOR)
 
+            # Return false to abort the storage of this action, otherwise it'll count
+            # as this player's action for the round
+            return False
+
     role_map.update(
         {
             PlayerRole.SPECTATOR: RoleDetails(
