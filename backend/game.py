@@ -260,8 +260,7 @@ class WurwolvesGame:
 
     @db_scoped
     def send_team_message(self, user_id: UUID, message: str):
-        player = self.get_player(user_id)
-        role = player.role
+        role = self.get_player(user_id).role
         team = roles.get_role_team(role)
         role_description = roles.ROLE_MAP[role].role_description
 
@@ -270,9 +269,7 @@ class WurwolvesGame:
         players_on_team = [
             p.id for p in self.get_players() if roles.get_role_team(p.role) == team
         ]
-        self.send_chat_message(
-            msg=f"({player.user.name}) {message}", player_list=players_on_team
-        )
+        self.send_chat_message(msg=f"{message}", player_list=players_on_team)
 
     @db_scoped
     def get_hash_now(self):
