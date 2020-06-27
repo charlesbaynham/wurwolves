@@ -255,6 +255,12 @@ class WurwolvesGame:
     @db_scoped
     def send_secret_message(self, user_id: UUID, message: str):
         player = self.get_player(user_id)
+
+        self.send_team_message(user_id, f"({player.user.name}) {message}")
+
+    @db_scoped
+    def send_team_message(self, user_id: UUID, message: str):
+        player = self.get_player(user_id)
         role = player.role
         team = roles.get_role_team(role)
         role_description = roles.ROLE_MAP[role].role_description
