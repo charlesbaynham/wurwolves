@@ -114,3 +114,29 @@ def test_dead_no_move(five_player_game):
 
     game.wolf_day_action(roles_map["Wolf"], roles_map["Seer"])
     game.seer_day_action(roles_map["Seer"], roles_map["Wolf"])
+
+
+def test_no_wolves_double_kill(five_player_game):
+    game, roles_map = five_player_game
+
+    # Add another wolf
+    new_wolf = uuid()
+    game.join(new_wolf)
+    with session_scope() as s:
+        u = game.get_player(new_wolf)
+        s.add(new_wolf)
+        u.role = PlayerRole.WOLF
+        game.set_user_name(new_wolf, "Wolf 2")
+
+    game._set_stage(GameStage.NIGHT)
+
+    # Try to kill twice
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
+    with pytest.raises(HTTPException):
+        game.wolf_night_action(new_wolf, roles_map["Medic"])
+
+    game.medic_day_action(roles_map["Medic"], roles_map["Villager"])
+    game.seer_day_action(roles_map["Seer"], roles_map["Wolf"])
+
+    assert game.get_player_model(roles_map["Seer"]).state == PlayerState.WOLFED
+    assert game.get_player_model(roles_map["Medic"]).state == PlayerState.ALIVE
