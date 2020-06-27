@@ -47,23 +47,20 @@ def get_role_team(role: PlayerRole):
     return get_role_description(role).team
 
 
+def get_role_actions(role: PlayerRole):
+    return ROLE_MAP[role].actions
+
+
 def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameAction"]:
     """ Get the action class associated with a role and stage, or None """
-    role_details = ROLE_MAP[role]
+    role_description = get_role_description(role)
+    role_actions = get_role_actions(role)
 
     action_class = None
-    if role_details.actions and stage in role_details.actions:
-        action_class = role_details.actions[stage]
-    elif role_details.role_description.fallback_role:
-        fallback_role_details = ROLE_MAP[role_details.role_description.fallback_role]
-        if (
-            fallback_role_details
-            and fallback_role_details.actions
-            and stage in fallback_role_details.actions
-        ):
-            action_class = fallback_role_details.actions[stage]
-        else:
-            action_class = None
+    if role_actions and stage in role_actions:
+        action_class = role_actions[stage]
+    elif role_description.fallback_role:
+        action_class = get_role_action(role_description.fallback_role, stage)
 
     return action_class
 

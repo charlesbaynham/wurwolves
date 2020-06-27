@@ -13,7 +13,7 @@ from .teams import Team
 if False:  # for typing
     from ..game import WurwolvesGame
 
-description = RoleDescription(
+test_description = RoleDescription(
     display_name="Seer",
     stages={
         GameStage.DAY: StageAction(
@@ -36,6 +36,10 @@ Choose whom to check: at the end of the night, you'll find out if they are a wol
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )
+
+
+def description():
+    return test_description
 
 
 class SeerAction(GameAction, AffectedByWolves):
