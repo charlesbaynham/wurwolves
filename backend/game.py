@@ -514,9 +514,12 @@ class WurwolvesGame:
 
         ready = True
         for player in players:
-            round_end_behaviour = roles.get_role_action(
-                player.role, stage
-            ).round_end_behaviour
+            role_action = roles.get_role_action(player.role, stage)
+
+            if not role_action:
+                continue
+
+            round_end_behaviour = role_action.round_end_behaviour
 
             if (
                 round_end_behaviour == resolver.RoundEndBehaviour.ONCE_OPTIONAL
@@ -628,7 +631,10 @@ class WurwolvesGame:
         #  ..and hasn't yet acted
         if not has_action:
             action_enabled = False
-        elif action_class.round_end_behaviour == resolver.RoundEndBehaviour.MULTIPLE_OPTIONAL:
+        elif (
+            action_class.round_end_behaviour
+            == resolver.RoundEndBehaviour.MULTIPLE_OPTIONAL
+        ):
             action_enabled = True
         elif action_class.team_action:
             # Which roles are on my team?
