@@ -567,10 +567,11 @@ class WurwolvesGame:
 
             team_actions = (
                 self._session.query(Action)
+                .join(Action.player)
                 .filter(
                     Action.game_id == self.game_id,
                     Action.stage_id == stage_id,
-                    Action.player.role in my_team_roles,
+                    Player.role in my_team_roles,
                 )
                 .all()
             )

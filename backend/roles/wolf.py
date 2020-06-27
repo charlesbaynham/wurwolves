@@ -64,6 +64,10 @@ class AffectedByWolves(AffectedByMedic):
 
 
 class WolfAction(GameAction, AffectedByMedic, TargetRequired):
+
+    # Any wolf kill counts as the kill for all the wolves
+    team_action = True
+
     def __init__(self, action_model, players):
         if not action_model.selected_player_id:
             raise ValueError("WolfAction requires a target")
