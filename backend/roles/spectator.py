@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import NoTargetRequired
+from ..resolver import NoTargetRequired, RoundEndBehaviour
 from .common import GameAction, RoleDescription, RoleDetails, StageAction
 from .teams import Team
 
@@ -91,6 +91,8 @@ def register(role_map):
         """
 
         allowed_player_states = list(PlayerState)
+
+        round_end_behaviour = RoundEndBehaviour.ONCE_OPTIONAL
 
         @classmethod
         def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kw):

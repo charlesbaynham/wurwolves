@@ -124,6 +124,7 @@ Step 5
 """
 
 import logging
+from enum import Enum
 from typing import Dict, List
 
 from .model import ActionModel, GameStage, PlayerModel, PlayerRole, PlayerState
@@ -196,6 +197,12 @@ class ActionMixin:
             GameAction.mixins_affecting_targets[ActionClass].append(MixinClass)
 
 
+class RoundEndBehaviour(Enum):
+    ONCE_REQUIRED = 1
+    ONCE_OPTIONAL = 2
+    MULTIPLE_OPTIONAL = 3
+
+
 class GameAction(ActionMixin):
     # These are lists of mixins that affect child classes of this class, sorted by the child class
     mixins_affecting_originators = {}
@@ -206,6 +213,9 @@ class GameAction(ActionMixin):
 
     # Override to have this action performed once per team, not once per player
     team_action = False
+
+    # Override to change how this action does / doesn't hold up the round end
+    round_end_behaviour = RoundEndBehaviour.ONCE_REQUIRED
 
     @classmethod
     def is_action_available(cls, game, stage, stage_id, player_id):
