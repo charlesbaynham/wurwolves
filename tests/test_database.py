@@ -29,12 +29,13 @@ def test_update(db_session):
     db_session.expire_all()
     g = db_session.query(Game).filter_by(id=g.id).first()
 
-    assert g.update_counter == 1
+    counter = g.update_counter
 
     g.stage = GameStage.NIGHT
     db_session.commit()
 
-    assert g.update_counter == 2
+    assert g.update_counter != counter
+    counter = g.update_counter
 
     g.touch()
     db_session.commit()
@@ -42,7 +43,8 @@ def test_update(db_session):
     db_session.expire_all()
     g = db_session.query(Game).filter_by(id=g.id).first()
 
-    assert g.update_counter == 3
+    assert g.update_counter != counter
+    counter = g.update_counter
 
     # How about with an uncommitted session?
     db_session.add(Game())
@@ -52,4 +54,4 @@ def test_update(db_session):
     db_session.expire_all()
     g = db_session.query(Game).filter_by(id=g.id).first()
 
-    assert g.update_counter == 4
+    assert g.update_counter != counter

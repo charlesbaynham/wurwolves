@@ -1,12 +1,12 @@
 import datetime
 import enum
 import json
+import random
 from typing import List, Union
 from uuid import UUID
 
 import pydantic
 import sqlalchemy.sql.functions as func
-from sqlalchemy.sql import text
 from sqlalchemy import (
     Boolean,
     Column,
@@ -17,7 +17,7 @@ from sqlalchemy import (
     String,
     Table,
 )
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import VARCHAR, TypeDecorator
 from sqlalchemy_utils import UUIDType
@@ -66,9 +66,8 @@ class GameStage(str, enum.Enum):
     ENDED = "ENDED"
 
 
-def update_game_counter(context):
-    val = context.get_current_parameters()["update_counter"]
-    return val + 1 if val else 1
+def random_counter_value():
+    return random.randint(1, 2147483646)
 
 
 class Game(Base):
@@ -79,9 +78,9 @@ class Game(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     created = Column(DateTime, default=func.now())
 
-    @declared_attr
-    def update_counter(cls):
-        return Column(Integer(), default=1, onupdate=text("update_counter + 1"))
+    update_counter = Column(
+        Integer(), default=random_counter_value, onupdate=random_counter_value
+    )
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
@@ -94,7 +93,7 @@ class Game(Base):
     actions = relationship("Action", backref="game", lazy=True)
 
     def touch(self):
-        self.update_counter += 1
+        self.update_counter = random_counter_value()
 
     def __repr__(self):
         return "<Game id={}, players={}>".format(self.id, self.players)
