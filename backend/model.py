@@ -78,7 +78,7 @@ class Game(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     created = Column(DateTime, default=func.now())
 
-    update_counter = Column(
+    update_tag = Column(
         Integer(), default=random_counter_value, onupdate=random_counter_value
     )
 
@@ -93,7 +93,7 @@ class Game(Base):
     actions = relationship("Action", backref="game", lazy=True)
 
     def touch(self):
-        self.update_counter = random_counter_value()
+        self.update_tag = random_counter_value()
 
     def __repr__(self):
         return "<Game id={}, players={}>".format(self.id, self.players)
@@ -235,7 +235,7 @@ class MessageModel(pydantic.BaseModel):
 class GameModel(pydantic.BaseModel):
     id: int
     created: datetime.datetime
-    update_counter: int
+    update_tag: int
 
     stage: GameStage
     stage_id: int

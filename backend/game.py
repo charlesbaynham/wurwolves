@@ -282,7 +282,7 @@ class WurwolvesGame:
     @db_scoped
     def get_hash_now(self):
         g = self.get_game()
-        return g.update_counter if g else 0
+        return g.update_tag if g else 0
 
     async def get_hash(self, known_hash=None, timeout=15) -> int:
         """

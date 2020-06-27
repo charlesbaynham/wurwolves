@@ -103,7 +103,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     logging.debug("controls_state: {}".format(controls_state))
 
     state = FrontendState(
-        state_hash=game.update_counter,
+        state_hash=game.update_tag,
         players=[
             FrontendState.PlayerState(
                 id=p.user_id, name=p.user.name, status=p.state, selected=False

@@ -60,7 +60,7 @@ def wolf_medic_game_model():
     game = GameModel(
         id=1,
         created=datetime.datetime.now(),
-        update_counter=1,
+        update_tag=1,
         stage=GameStage.NIGHT,
         stage_id=1,
         players=players,
