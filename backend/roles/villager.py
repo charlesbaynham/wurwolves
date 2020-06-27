@@ -37,7 +37,7 @@ You have nothing to do at night. Try to relax...
             text="""
 Vote for someone to lynch! Whoever gets the most votes will be killed.
 
-Click someone's icon and click the button. 
+Click someone's icon to select them. 
     """,
             button_text="Vote for someone to lynch...",
         ),
