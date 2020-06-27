@@ -148,7 +148,8 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
             if player.state not in action_class.allowed_player_states:
                 raise HTTPException(
-                    status_code=403, detail=f"Player {user_id} is dead!"
+                    status_code=403,
+                    detail=f"Player {user_id} is not in the right state",
                 )
             if not game.stage == stage:
                 raise HTTPException(
@@ -157,7 +158,10 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 )
 
             # Check if this player has already acted this round
-            if not player_has_action(player, game.stage, game.stage_id):
+            has_action, action_enabled = self.player_has_action(
+                player, game.stage, game.stage_id
+            )
+            if not action_enabled:
                 raise HTTPException(
                     status_code=403,
                     detail=f"Action already completed for player {user_id} in round {game.stage_id}",
@@ -187,15 +191,10 @@ def register_role(WurwolvesGame, role: PlayerRole):
             players = game.players
             ready = True
             for player in players:
-                if (
-                    get_role_action(
-                        player.role, stage
-                    )  # Player has an action in this stage...
-                    and (player.state == PlayerState.ALIVE)  #  ...isn't dead
-                    and not any(
-                        a.stage_id == stage_id for a in player.actions
-                    )  #  ..and hasn't yet acted
-                ):
+                has_action, action_enabled = self.player_has_action(
+                    player, game.stage, game.stage_id
+                )
+                if action_enabled:
                     ready = False
                     break
 

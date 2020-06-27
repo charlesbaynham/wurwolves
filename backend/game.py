@@ -9,7 +9,7 @@ import logging
 import os
 import random
 from functools import wraps
-from typing import Dict, List
+from typing import Dict, List, Union
 from uuid import UUID
 
 import pydantic
@@ -537,8 +537,14 @@ class WurwolvesGame:
                 )
 
     @db_scoped
-    def player_has_action(self, player: Player, stage: GameStage, stage_id: int):
+    def player_has_action(
+        self, player: Union[int, Player], stage: GameStage, stage_id: int
+    ):
         """Does this player have an action this turn? And have they already performed it?"""
+
+        if isinstance(player, int):
+            player = self.get_player_by_id(player)
+
         # Player has an action in this stage...
         has_action = (
             roles.get_role_action(player.role, stage)
@@ -548,7 +554,9 @@ class WurwolvesGame:
         action_class = roles.get_role_action(player.role, stage)
 
         #  ..and hasn't yet acted
-        if action_class.team_action:
+        if not has_action:
+            action_enabled = False
+        elif action_class.team_action:
             # Which roles are on my team?
             my_team = roles.get_role_team(player.role)
             my_team_roles = [
@@ -568,11 +576,8 @@ class WurwolvesGame:
             )
 
             action_enabled = not bool(team_actions)
-
         else:
-            action_enabled = has_action and not any(
-                a.stage_id == stage_id for a in player.actions
-            )
+            action_enabled = not any(a.stage_id == stage_id for a in player.actions)
 
         return has_action, action_enabled
 
