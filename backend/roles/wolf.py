@@ -73,6 +73,7 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
             raise ValueError("WolfAction requires a target")
         super().__init__(action_model, players)
 
+    @classmethod
     def immediate(cls, game=None, user_id=None, selected_id=None):
         originator = game.get_user_name(user_id)
         attacked = game.get_user_name(selected_id)
