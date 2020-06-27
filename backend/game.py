@@ -469,6 +469,11 @@ class WurwolvesGame:
             g.start_votes = 0
 
     @db_scoped
+    def kill_player(self, player_id, new_state: PlayerState):
+        self.set_player_role(player_id, PlayerRole.SPECTATOR)
+        self.set_player_state(player_id, new_state)
+
+    @db_scoped
     def set_player_state(self, player_id, state: PlayerState):
         p = self.get_player_by_id(player_id)
         p.state = state

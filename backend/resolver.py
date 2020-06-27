@@ -346,7 +346,7 @@ def count_votes(game: "WurwolvesGame"):
     else:
         tied = False
         game.send_chat_message(f"{voted_player.user.name} got lynched", is_strong=True)
-        game.set_player_state(voted_player.id, PlayerState.LYNCHED)
+        game.kill_player(voted_player.id, PlayerState.LYNCHED)
 
     game.reset_votes()
 

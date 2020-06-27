@@ -73,7 +73,7 @@ def test_no_vote_dead(demo_game):
 
     # Kill one of the players and set to VOTING
     player = demo_game.get_player_model(USER_ID)
-    demo_game.set_player_state(player.id, PlayerState.LYNCHED)
+    demo_game.kill_player(player.id, PlayerState.LYNCHED)
     demo_game._set_stage(GameStage.VOTING)
 
     # Ensure that the dead player can't see the vote button

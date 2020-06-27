@@ -79,9 +79,9 @@ def test_dead_no_vote(five_player_game):
 
     # Kill the medic and a villager
     player = game.get_player_model(roles_map["Medic"])
-    game.set_player_state(player.id, PlayerState.LYNCHED)
+    game.kill_player(player.id, PlayerState.LYNCHED)
     player = game.get_player_model(roles_map["Villager 1"])
-    game.set_player_state(player.id, PlayerState.WOLFED)
+    game.kill_player(player.id, PlayerState.WOLFED)
 
     game._set_stage(GameStage.VOTING)
 
@@ -100,9 +100,9 @@ def test_dead_no_move(five_player_game):
 
     # Kill the medic and a villager
     player = game.get_player_model(roles_map["Medic"])
-    game.set_player_state(player.id, PlayerState.LYNCHED)
+    game.kill_player(player.id, PlayerState.LYNCHED)
     player = game.get_player_model(roles_map["Villager 1"])
-    game.set_player_state(player.id, PlayerState.WOLFED)
+    game.kill_player(player.id, PlayerState.WOLFED)
 
     game._set_stage(GameStage.DAY)
 

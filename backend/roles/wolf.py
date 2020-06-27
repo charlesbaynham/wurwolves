@@ -88,7 +88,7 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
             game.send_chat_message(
                 f"{target_name} was brutally murdered", is_strong=True
             )
-            game.set_player_state(self.target.model.id, PlayerState.WOLFED)
+            game.kill_player(self.target.model.id, PlayerState.WOLFED)
 
 
 def register(role_map):

@@ -84,7 +84,7 @@ def win_action(game: "WurwolvesGame", team: Team):
                     get_role_team(player.role) == Team.VILLAGERS
                     and player.state == PlayerState.ALIVE
                 ):
-                    game.set_player_state(player.id, PlayerState.WOLFED)
+                    game.kill_player(player.id, PlayerState.WOLFED)
     else:
         players_in_team = [
             p.id for p in game.get_players_model() if get_role_team(p.role) == team
