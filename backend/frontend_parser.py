@@ -7,7 +7,7 @@ import pydantic
 
 from .game import WurwolvesGame
 from .model import GameStage, PlayerState
-from .roles import ROLE_MAP, get_role_action
+from .roles import ROLE_MAP
 
 
 class FrontendState(pydantic.BaseModel):
@@ -70,8 +70,6 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         g.join(user_id)
         game = g.get_game_model()
         player = g.get_player_model(user_id)
-
-    actions = g.get_actions_model(player_id=player.id)
 
     logging.debug("Game: %s", game)
     logging.debug("Player: %s", player)
