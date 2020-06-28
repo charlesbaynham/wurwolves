@@ -144,6 +144,7 @@ class Action(Base):
     player_id = Column(Integer, ForeignKey("players.id"))
     stage_id = Column(Integer, index=True, nullable=False)
     selected_player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
+    stage = Column(Enum(GameStage), nullable=False)
 
     player = relationship("Player", lazy=True, foreign_keys=player_id)
     selected_player = relationship("Player", lazy=True, foreign_keys=selected_player_id)
@@ -263,6 +264,7 @@ class ActionModel(pydantic.BaseModel):
     player_id: int
     stage_id: int
     selected_player_id: Union[int, None]
+    stage: GameStage
 
     game: GameModel
     player: PlayerModel
