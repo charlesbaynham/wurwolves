@@ -398,6 +398,7 @@ class WurwolvesGame:
             player.state = PlayerState.ALIVE
 
         self.clear_chat_messages()
+        self.clear_actions()
         self.send_chat_message("A new game has started. Night falls in the village")
 
         for player in game.players:
@@ -447,6 +448,11 @@ class WurwolvesGame:
     def clear_chat_messages(self):
         for m in self.get_game().messages:
             self._session.delete(m)
+
+    @db_scoped
+    def clear_actions(self):
+        for a in self.get_game().actions:
+            self._session.delete(a)
 
     @db_scoped
     def send_chat_message(self, msg, is_strong=False, user_list=[], player_list=[]):

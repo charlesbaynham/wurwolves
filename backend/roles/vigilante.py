@@ -22,9 +22,9 @@ description = RoleDescription(
     stages={
         GameStage.NIGHT: StageAction(
             text="""
-You are a medic! You get to save one person each night. 
+You are a vigilante! Once per game, you can shoot someone in the night. 
 
-It's night time now, so select one person to save then click the button to submit. 
+It's night time now, so if you want to act, select someone to shoot. 
 
 You win if all the wolves are eliminated. 
 """,
@@ -32,7 +32,7 @@ You win if all the wolves are eliminated.
         ),
         GameStage.DAY: StageAction(
             text="""
-You are a medic! You get to save one person each night. 
+You are a vigilante! Once per game, you can shoot someone in the night. 
         """
         ),
     },
@@ -42,27 +42,20 @@ You are a medic! You get to save one person each night.
 )
 
 
-class AffectedByMedic(ActionMixin):
-    """
-    Creates attributes `target_saved_by_medic` and `originator_saved_by_medic`
-    """
+class VigilanteAction(GameAction):
+    @classmethod
+    def is_action_available(
+        cls, game: "WurwolvesGame", stage: GameStage, stage_id: int, player_id: int
+    ):
+        """
+        Disallow the action if it's already been done this game
+        """
+        previous_actions = game.get_actions_model(
+            player_id=player_id, stage=GameStage.NIGHT
+        )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.target_saved_by_medic = False
-        self.originator_saved_by_medic = False
+        return not bool(previous_actions)
 
-        self.bind_as_modifier(self.__orig_saved, __class__, MedicAction, True)
-        self.bind_as_modifier(self.__target_saved, __class__, MedicAction, False)
-
-    def __orig_saved(self):
-        self.originator_saved_by_medic = True
-
-    def __target_saved(self):
-        self.target_saved_by_medic = True
-
-
-class MedicAction(GameAction):
     @classmethod
     def immediate(
         cls,
@@ -73,7 +66,7 @@ class MedicAction(GameAction):
         **kw,
     ):
         """
-        Decide if this medic action is valid. If not, raise an exception so that the user is informed
+        Decide if this vigilante action is valid. If not, raise an exception so that the user is informed
         """
         my_player_id = game.get_player_id(user_id)
         selected_player_id = game.get_player_id(selected_id)
@@ -99,5 +92,9 @@ class MedicAction(GameAction):
 
 def register(role_map):
     role_map.update(
-        {PlayerRole.MEDIC: RoleDetails(description, {GameStage.NIGHT: MedicAction})}
+        {
+            PlayerRole.VIGILANTE: RoleDetails(
+                description, {GameStage.NIGHT: VigilanteAction}
+            )
+        }
     )
