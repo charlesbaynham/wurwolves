@@ -94,7 +94,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
     controls_state = FrontendState.RoleState(
         title=role_details.display_name,
-        text=action_desc.text,
+        text=action_desc.text[player.state],
         button_visible=has_action,
         button_enabled=action_enabled,
         button_text=action_desc.button_text,

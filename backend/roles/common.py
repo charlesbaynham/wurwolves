@@ -9,9 +9,22 @@ from .teams import Team
 
 
 class StageAction(pydantic.BaseModel):
-    text: str
+    text: Dict[PlayerState, str]
     button_text: Optional[str]
     select_person = True
+
+    @pydantic.validator("text", pre=True)
+    def build_text(cls, v):
+
+        # If text for only one PlayerState has been provided, turn it into a dict for all states
+        if not isinstance(v, dict):
+            v = {state: v for state in list(PlayerState)}
+        else:
+            for state in list(PlayerState):
+                if state not in v:
+                    raise KeyError("Not all PlayerStates defined")
+
+        return v
 
 
 class RoleDescription(pydantic.BaseModel):
