@@ -19,10 +19,18 @@ class StageAction(pydantic.BaseModel):
         # If text for only one PlayerState has been provided, turn it into a dict for all states
         if not isinstance(v, dict):
             v = {state: v for state in list(PlayerState)}
+
         else:
+            # If a default entry was provided, use it to fill in missing roles
             for state in list(PlayerState):
                 if state not in v:
-                    raise KeyError("Not all PlayerStates defined")
+                    if "default" in v:
+                        v[state] = v["default"]
+                    else:
+                        raise KeyError("Not all PlayerStates defined")
+
+            if "default" in v:
+                del v["default"]
 
         return v
 

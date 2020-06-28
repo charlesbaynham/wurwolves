@@ -37,7 +37,7 @@ you should probably start a video call.
             select_person=False,
         ),
         GameStage.NIGHT: StageAction(
-            text="You're not playing. Guess you were late.",
+            text={"default": "You're not playing. Guess you were late."},
             button_text="Become narrator",
             select_person=False,
         ),
