@@ -3,7 +3,7 @@ from typing import Callable, Dict, NamedTuple, Optional, Union
 
 import pydantic
 
-from ..model import GameStage, PlayerRole
+from ..model import GameStage, PlayerRole, PlayerState
 from ..resolver import GameAction
 from .teams import Team
 
@@ -21,7 +21,7 @@ class RoleDescription(pydantic.BaseModel):
     stages: Dict[GameStage, StageAction]
     secret_chat_enabled = False
 
-    #  If present, announce to this role who else has this role.
+    # If present, announce to this role who else has this role.
     # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")
     reveal_others_text = ""
 
@@ -34,24 +34,20 @@ class RoleDescription(pydantic.BaseModel):
     @pydantic.validator("stages")
     def all_stages(cls, v, values):
         logging.info(f"values: {values}")
-        if (
-            "fallback_role_description" in values
-            and values["fallback_role_description"]
-            and values["fallback_role_description"].stages
-        ):
-            fallback = values["fallback_role_description"].stages
-        else:
-            fallback = {}
 
         if not v:
             v = {}
 
-        out = {**fallback, **v}
-
-        # Check that this role has something defined in all the stages
-        for stage in list(GameStage):
-            if stage not in out:
-                raise ValueError(f"stage {stage} not present")
+        # Check that this role either has something defined in all the stages or has a fallback
+        if not (
+            "fallback_role_description" in values
+            and values["fallback_role_description"]
+        ):
+            for stage in list(GameStage):
+                if stage not in v:
+                    raise ValueError(
+                        f"stage {stage} not present and no fallback provided"
+                    )
 
         return v
 
