@@ -64,19 +64,15 @@ class RoleDescription(pydantic.BaseModel):
         """
         if stage in self.stages:
             stage_action = self.stages[stage].copy()
-            if (
-                not stage_action.button_text
-                and self.fallback_role_description
-                and stage in self.fallback_role_description.stages
-            ):
-                stage_action.button_text = self.fallback_role_description.stages[
-                    stage
-                ].button_text
-                stage_action.select_person = self.fallback_role_description.stages[
-                    stage
-                ].select_person
+            if not stage_action.button_text and self.fallback_role_description:
+                fallback_desc = self.fallback_role_description.get_stage_action(stage)
+
+                stage_action.button_text = fallback_desc.button_text
+                stage_action.select_person = fallback_desc.select_person
+        elif self.fallback_role_description:
+            stage_action = self.fallback_role_description.get_stage_action(stage)
         else:
-            stage_action = self.fallback_role_description.stages[stage]
+            raise KeyError(f"Stage {stage} not present and fallback not provided")
 
         return stage_action
 
