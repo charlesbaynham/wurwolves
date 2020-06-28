@@ -1,14 +1,13 @@
 import logging
 from functools import partial
-from typing import TYPE_CHECKING, Callable, Dict, Union
+from typing import TYPE_CHECKING, Dict, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 
 from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
-from . import (jester, medic, narrator, seer, spectator, vigilante, villager,
-               wolf)
+from . import jester, medic, narrator, seer, spectator, vigilante, villager, wolf
 from .common import RoleDescription, RoleDetails
 
 if TYPE_CHECKING:
