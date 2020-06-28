@@ -13,6 +13,15 @@ guaranteed_roles = [
 # Weightings only have meaning relative to each other
 randomised_roles = {PlayerRole.JESTER: 20}
 
+all_distributed_roles = (
+    guaranteed_roles
+    + list(randomised_roles.keys())
+    + [PlayerRole.WOLF, PlayerRole.VILLAGER, PlayerRole.NARRATOR, PlayerRole.SPECTATOR]
+)
+for role in list(PlayerRole):
+    if role not in all_distributed_roles:
+        raise TypeError(f"Role {role} is not available to be assigned")
+
 # Average probability that a player is a villager
 # This cannot be satisfied for very small games (because all the guaranteed roles
 # must be handed out) or for very large games (because there aren't enough optional
