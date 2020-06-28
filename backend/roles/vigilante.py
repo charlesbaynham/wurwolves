@@ -6,7 +6,7 @@ Once per game, the vigilante may kill one person in the night
 from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction
+from ..resolver import GameAction, RoundEndBehaviour
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
 from .teams import Team
@@ -28,7 +28,7 @@ It's night time now, so if you want to act, select someone to shoot.
 
 You win if all the wolves are eliminated. 
 """,
-            button_text="Select someone to save",
+            button_text="Select someone to shoot",
         ),
         GameStage.DAY: StageAction(
             text="""
@@ -43,6 +43,9 @@ You are a vigilante! Once per game, you can shoot someone in the night.
 
 
 class VigilanteAction(OncePerGame, AffectedByMedic, GameAction):
+
+    round_end_behaviour = RoundEndBehaviour.ONCE_OPTIONAL
+
     @classmethod
     def immediate(
         cls, game: "WurwolvesGame" = None, **kwargs,
