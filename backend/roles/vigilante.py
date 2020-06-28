@@ -5,11 +5,10 @@ Once per game, the vigilante may kill one person in the night
 """
 from typing import TYPE_CHECKING
 
-from fastapi import HTTPException
-
-from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction
+from ..model import GameStage, PlayerRole, PlayerState
+from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
+from .medic import AffectedByMedic
 from .teams import Team
 from .utility_mixins import OncePerGame
 from .villager import description as villager
@@ -43,23 +42,20 @@ You are a vigilante! Once per game, you can shoot someone in the night.
 )
 
 
-class VigilanteAction(OncePerGame, GameAction):
+class VigilanteAction(OncePerGame, AffectedByMedic, GameAction):
     @classmethod
     def immediate(
-        cls,
-        game: "WurwolvesGame" = None,
-        user_id=None,
-        selected_id=None,
-        stage_id=None,
-        **kw,
+        cls, game: "WurwolvesGame" = None, **kwargs,
     ):
         """Send the traditional message"""
         game.send_chat_message("BANG!!!", is_strong=True)
 
     def execute(self, game):
-        # No action required: the medic's effect is to modify other actions
-        # through the AffectedByMedic ActionMixin
-        pass
+        target_name = self.target.model.user.name
+
+        if not self.target_saved_by_medic:
+            game.send_chat_message(f"{target_name} was shot", is_strong=True)
+            game.kill_player(self.target.model.id, PlayerState.SHOT)
 
 
 def register(role_map):

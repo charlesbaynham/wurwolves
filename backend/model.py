@@ -112,6 +112,7 @@ class PlayerRole(enum.Enum):
 class PlayerState(str, enum.Enum):
     ALIVE = "ALIVE"
     WOLFED = "WOLFED"
+    SHOT = "SHOT"
     LYNCHED = "LYNCHED"
     NOMINATED = "NOMINATED"
     SECONDED = "SECONDED"

@@ -7,7 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 
 from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
-from . import jester, medic, narrator, seer, spectator, villager, wolf
+from . import (jester, medic, narrator, seer, spectator, vigilante, villager,
+               wolf)
 from .common import RoleDescription, RoleDetails
 
 if TYPE_CHECKING:
@@ -27,6 +28,7 @@ villager.register(ROLE_MAP)
 wolf.register(ROLE_MAP)
 spectator.register(ROLE_MAP)
 jester.register(ROLE_MAP)
+vigilante.register(ROLE_MAP)
 narrator.register(ROLE_MAP)
 
 if any(r not in ROLE_MAP for r in list(PlayerRole)):
