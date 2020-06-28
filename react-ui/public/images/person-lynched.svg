@@ -14,22 +14,22 @@
    viewBox="0 0 30.778448 30.778448"
    version="1.1"
    id="svg8391"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
    sodipodi:docname="person-lynched.svg">
   <defs
      id="defs8385">
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
-       id="filter2372"
-       x="-0.024"
-       width="1.048"
-       y="-0.024"
-       height="1.048">
+       id="filter849"
+       x="-0.012"
+       width="1.024"
+       y="-0.012"
+       height="1.024">
       <feGaussianBlur
          inkscape:collect="always"
-         stdDeviation="0.2936875"
-         id="feGaussianBlur2374" />
+         stdDeviation="0.14684375"
+         id="feGaussianBlur851" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -39,16 +39,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="738.164"
-     inkscape:cy="1035.3069"
+     inkscape:zoom="4.1864385"
+     inkscape:cx="58.163992"
+     inkscape:cy="58.164011"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="986"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
+     inkscape:window-width="1280"
+     inkscape:window-height="700"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -62,7 +62,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -73,7 +73,7 @@
      transform="translate(220.25232,-391.97983)">
     <g
        id="g1575"
-       style="display:inline;filter:url(#filter2372)"
+       style="display:inline;filter:url(#filter849)"
        transform="translate(-302.28618,220.38951)">
       <g
          id="g876-0-2"

@@ -14,22 +14,22 @@
    viewBox="0 0 30.778448 30.778448"
    version="1.1"
    id="svg7747"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
    sodipodi:docname="person-wolfed.svg">
   <defs
      id="defs7741">
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
-       id="filter2336"
-       x="-0.024"
-       width="1.048"
-       y="-0.024"
-       height="1.048">
+       id="filter841"
+       x="-0.012"
+       width="1.024"
+       y="-0.012"
+       height="1.024">
       <feGaussianBlur
          inkscape:collect="always"
-         stdDeviation="0.2936875"
-         id="feGaussianBlur2338" />
+         stdDeviation="0.14684375"
+         id="feGaussianBlur843" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -39,16 +39,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="89.592555"
-     inkscape:cy="283.87828"
+     inkscape:zoom="4.1864385"
+     inkscape:cx="58.164"
+     inkscape:cy="58.164007"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="986"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
+     inkscape:window-width="1280"
+     inkscape:window-height="700"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -62,7 +62,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -73,7 +73,7 @@
      transform="translate(48.651126,-193.16435)">
     <g
        id="g2318"
-       style="display:inline;filter:url(#filter2336)"
+       style="display:inline;filter:url(#filter841)"
        transform="translate(-169.97102,64.389868)">
       <g
          transform="translate(75.987246,44.67516)"
