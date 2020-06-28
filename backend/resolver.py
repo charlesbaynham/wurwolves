@@ -310,20 +310,6 @@ class GameAction(ActionMixin):
         return cls.priority
 
 
-class TargetRequired(ActionMixin):
-    def __init__(self, action_model, players):
-        if not action_model.selected_player_id:
-            raise ValueError(f"{self.__class__} requires a target")
-        super().__init__(action_model, players)
-
-
-class NoTargetRequired(ActionMixin):
-    def __init__(self, action_model, players):
-        if action_model.selected_player_id:
-            raise ValueError(f"{self.__class__} doesn't need a target")
-        super().__init__(action_model, players)
-
-
 def game_ended(game):
     from .roles import team_has_won, win_ends_game, Team, win_action
 

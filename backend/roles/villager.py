@@ -5,11 +5,12 @@ import logging
 from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole
-from ..resolver import GameAction, NoTargetRequired, TargetRequired
+from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .narrator import CancelledByNarrator
 from .spectator import VoteStartNewGame
 from .teams import Team
+from .utility_mixins import NoTargetRequired, TargetRequired
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame

@@ -5,9 +5,10 @@ import logging
 from typing import TYPE_CHECKING
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import NoTargetRequired, RoundEndBehaviour
+from ..resolver import RoundEndBehaviour
 from .common import GameAction, RoleDescription, RoleDetails, StageAction
 from .teams import Team
+from .utility_mixins import NoTargetRequired
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame

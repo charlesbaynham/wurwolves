@@ -3,11 +3,12 @@ The Wolf role
 """
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction, TargetRequired
+from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
-from .villager import description as villager
 from .teams import Team
+from .utility_mixins import TargetRequired
+from .villager import description as villager
 
 description = RoleDescription(
     display_name="Wolf",

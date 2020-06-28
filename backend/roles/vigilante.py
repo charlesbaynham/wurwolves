@@ -11,6 +11,7 @@ from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
+from .utility_mixins import OncePerGame
 from .villager import description as villager
 
 if TYPE_CHECKING:
@@ -42,20 +43,7 @@ You are a vigilante! Once per game, you can shoot someone in the night.
 )
 
 
-class VigilanteAction(GameAction):
-    @classmethod
-    def is_action_available(
-        cls, game: "WurwolvesGame", stage: GameStage, stage_id: int, player_id: int
-    ):
-        """
-        Disallow the action if it's already been done this game
-        """
-        previous_actions = game.get_actions_model(
-            player_id=player_id, stage=GameStage.NIGHT
-        )
-
-        return not bool(previous_actions)
-
+class VigilanteAction(OncePerGame, GameAction):
     @classmethod
     def immediate(
         cls,
@@ -65,24 +53,8 @@ class VigilanteAction(GameAction):
         stage_id=None,
         **kw,
     ):
-        """
-        Decide if this vigilante action is valid. If not, raise an exception so that the user is informed
-        """
-        my_player_id = game.get_player_id(user_id)
-        selected_player_id = game.get_player_id(selected_id)
-
-        medic_actions = game.get_actions_model(
-            player_id=my_player_id, stage=GameStage.NIGHT
-        )
-
-        if not medic_actions:
-            return
-
-        # Sort medic actions by stage_id to get the most recent
-        sorted_actions = sorted(medic_actions, key=lambda a: a.stage_id, reverse=True)
-
-        if sorted_actions[0].selected_player_id == selected_player_id:
-            raise HTTPException(403, "You can't save the same person twice in a row")
+        """Send the traditional message"""
+        game.send_chat_message("BANG!!!", is_strong=True)
 
     def execute(self, game):
         # No action required: the medic's effect is to modify other actions

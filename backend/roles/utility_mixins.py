@@ -1,4 +1,4 @@
-from ..resolver import GameAction
+from ..resolver import GameAction, ActionMixin
 from ..model import GameStage
 
 from typing import TYPE_CHECKING
@@ -20,3 +20,17 @@ class OncePerGame(GameAction):
         )
 
         return not bool(previous_actions)
+
+
+class TargetRequired(ActionMixin):
+    def __init__(self, action_model, players):
+        if not action_model.selected_player_id:
+            raise ValueError(f"{self.__class__} requires a target")
+        super().__init__(action_model, players)
+
+
+class NoTargetRequired(ActionMixin):
+    def __init__(self, action_model, players):
+        if action_model.selected_player_id:
+            raise ValueError(f"{self.__class__} doesn't need a target")
+        super().__init__(action_model, players)
