@@ -12,6 +12,18 @@ from .teams import Team
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
+
+game_desc = StageAction(
+    text={
+        "default": "You're not playing. Guess you were late.",
+        PlayerState.WOLFED: "You were killed by a werewolf!",
+        PlayerState.LYNCHED: "You got lynched! Ouch.",
+    },
+    button_text="Become narrator",
+    select_person=False,
+)
+
+
 description = RoleDescription(
     display_name="Spectator",
     stages={
@@ -31,21 +43,9 @@ you should probably start a video call.
             button_text="Start game",
             select_person=False,
         ),
-        GameStage.DAY: StageAction(
-            text="You're not playing. Guess you were late.",
-            button_text="Become narrator",
-            select_person=False,
-        ),
-        GameStage.NIGHT: StageAction(
-            text={"default": "You're not playing. Guess you were late."},
-            button_text="Become narrator",
-            select_person=False,
-        ),
-        GameStage.VOTING: StageAction(
-            text="You're not playing. Guess you were late.",
-            button_text="Become narrator",
-            select_person=False,
-        ),
+        GameStage.DAY: game_desc,
+        GameStage.NIGHT: game_desc,
+        GameStage.VOTING: game_desc,
         GameStage.ENDED: StageAction(
             text="""
 The game has ended!
