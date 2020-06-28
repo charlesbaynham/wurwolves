@@ -235,30 +235,41 @@ class WurwolvesGame:
         return [PlayerModel.from_orm(p) for p in self.get_players()]
 
     @db_scoped
-    def get_actions(self, stage_id=None, player_id: int = None) -> List[Action]:
-        """ Get orm objects for any actions performed by the given user in the given stage. Default to the current stage. 
+    def get_actions(
+        self, stage_id=None, player_id: int = None, stage: GameStage = None
+    ) -> List[Action]:
+        """ Get orm objects for Actions in this game. 
+
+        Filter by the passed parameters if any. 
         """
         game = self.get_game()
 
         if stage_id is None:
             stage_id = game.stage_id
 
-        q = self._session.query(Action).filter(
-            Action.game_id == game.id, Action.stage_id == game.stage_id
-        )
+        q = self._session.query(Action).filter(Action.game_id == game.id)
+
+        if stage_id:
+            q = q.filter(Action.stage_id == game.stage_id)
 
         if player_id:
             q = q.filter(Action.player_id == player_id)
+
+        if stage:
+            q = q.filter(Action.stage == stage)
 
         return q.all()
 
     @db_scoped
     def get_actions_model(
-        self, stage_id=None, player_id: int = None
+        self, stage_id=None, player_id: int = None, stage: GameStage = None
     ) -> List[ActionModel]:
         """ Get models for any actions performed by the given user in the given stage. Default to the current stage. 
         """
-        return [ActionModel.from_orm(a) for a in self.get_actions(stage_id, player_id)]
+        return [
+            ActionModel.from_orm(a)
+            for a in self.get_actions(stage_id, player_id, stage)
+        ]
 
     @db_scoped
     def send_secret_message(self, user_id: UUID, message: str):

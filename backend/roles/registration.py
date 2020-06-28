@@ -190,7 +190,11 @@ def register_role(WurwolvesGame, role: PlayerRole):
             # Perform any immediate actions registered
             if action_class:
                 immediate_return = action_class.immediate(
-                    game=self, user_id=user_id, selected_id=selected_id
+                    game=self,
+                    user_id=user_id,
+                    selected_id=selected_id,
+                    stage=stage,
+                    stage_id=stage_id,
                 )
             else:
                 immediate_return = True
