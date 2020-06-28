@@ -198,11 +198,16 @@ class WurwolvesGame:
 
     @db_scoped
     def get_player_id(self, user_id: UUID) -> int:
-        return (
+
+        o = (
             self._session.query(Player.id)
             .filter(Player.game_id == self.game_id, Player.user_id == user_id)
             .first()
-        )[0]
+        )
+        if o:
+            return o[0]
+        else:
+            raise KeyError(f"User {user_id} not found in this game")
 
     @db_scoped
     def get_player(self, user_id: UUID) -> Player:

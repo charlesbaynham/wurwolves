@@ -74,7 +74,7 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
         super().__init__(action_model, players)
 
     @classmethod
-    def immediate(cls, game=None, user_id=None, selected_id=None):
+    def immediate(cls, game=None, user_id=None, selected_id=None, **kw):
         originator = game.get_user_name(user_id)
         attacked = game.get_user_name(selected_id)
         game.send_team_message(

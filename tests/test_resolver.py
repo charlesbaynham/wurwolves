@@ -77,6 +77,7 @@ def wolf_medic_game_model():
             player=players[2],
             selected_player_id=players[0].id,
             selected_player=players[0],
+            stage=GameStage.NIGHT,
         ),
         # But medic saves player 1
         ActionModel(
@@ -88,6 +89,7 @@ def wolf_medic_game_model():
             player=players[3],
             selected_player_id=players[0].id,
             selected_player=players[0],
+            stage=GameStage.NIGHT,
         ),
     ]
 
@@ -125,6 +127,7 @@ def wolf_medic_seer_game_model(wolf_medic_game_model):
         player=seer_player,
         selected_player_id=players[2].id,
         selected_player=players[2],
+        stage=GameStage.NIGHT,
     )
 
     users.append(seer_user)

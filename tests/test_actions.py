@@ -51,7 +51,7 @@ def test_medic_night(demo_game):
 
     for player in players:
         if player.role == PlayerRole.MEDIC:
-            demo_game.medic_night_action(player.user_id)
+            demo_game.medic_night_action(player.user_id, player.user_id)
 
 
 def test_medic_forbidden_wolf(demo_game):
@@ -98,7 +98,7 @@ def test_actions_update_state(demo_game):
     num_calls = 0
     for player in players:
         if player.role == PlayerRole.MEDIC:
-            demo_game.medic_night_action(player.user_id)
+            demo_game.medic_night_action(player.user_id, player.user_id)
             num_calls += 1
 
     new_game_hash = demo_game.get_hash_now()
