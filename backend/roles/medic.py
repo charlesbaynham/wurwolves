@@ -89,7 +89,7 @@ class MedicAction(GameAction):
         sorted_actions = sorted(medic_actions, key=lambda a: a.stage_id, reverse=True)
 
         if sorted_actions[0].selected_player_id == selected_player_id:
-            raise HTTPException("You can't save the same person twice in a row")
+            raise HTTPException(403, "You can't save the same person twice in a row")
 
     def execute(self, game):
         # No action required: the medic's effect is to modify other actions

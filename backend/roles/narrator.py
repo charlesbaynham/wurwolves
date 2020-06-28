@@ -68,8 +68,6 @@ class CancelledByNarrator(ActionMixin):
     """
     This mixin should be added to actions which should be prevented if the Narrator
     is present, i.e. the villagers' Move to Vote
-
-    Note that this isn't the sa
     """
 
     @classmethod

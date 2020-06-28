@@ -64,6 +64,28 @@ def test_medic_save(five_player_game):
     assert game.get_player_model(roles_map["Medic"]).state == PlayerState.ALIVE
 
 
+def test_medic_try_save_twice(five_player_game):
+    game, roles_map = five_player_game
+
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_player_model(roles_map["Medic"]).state == PlayerState.ALIVE
+
+    game._set_stage(GameStage.NIGHT)
+
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    with pytest.raises(HTTPException):
+        game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+
+    game.medic_night_action(roles_map["Medic"], roles_map["Seer"])
+
+    assert game.get_player_model(roles_map["Medic"]).state == PlayerState.WOLFED
+
+
 def test_wolf_kill(five_player_game):
     game, roles_map = five_player_game
 

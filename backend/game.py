@@ -249,9 +249,6 @@ class WurwolvesGame:
         """
         game = self.get_game()
 
-        if stage_id is None:
-            stage_id = game.stage_id
-
         q = self._session.query(Action).filter(Action.game_id == game.id)
 
         if stage_id:
