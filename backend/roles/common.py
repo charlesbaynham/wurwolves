@@ -19,7 +19,6 @@ class RoleDescription(pydantic.BaseModel):
     fallback_role: Optional[PlayerRole]
     fallback_role_description: Optional["RoleDescription"]
     stages: Dict[GameStage, StageAction]
-    priority: int = 0
     secret_chat_enabled = False
 
     #  If present, announce to this role who else has this role.

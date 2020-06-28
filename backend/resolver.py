@@ -43,7 +43,7 @@ To resolve the night's actions, the following process will happen:
     the GamePlayers.
 
 3. All GameActions have their do_modifiers() methods called. These are called in
-    priority order, starting with the roles with the highest priority. If a tie
+    priority order, starting with the actions with the highest priority. If a tie
     occurs, resolve the one whose Action was submitted first. 
 
     This method inspects the originated_from and targetted_by lists of the
@@ -217,6 +217,10 @@ class GameAction(ActionMixin):
     # Override to change how this action does / doesn't hold up the round end
     round_end_behaviour = RoundEndBehaviour.ONCE_REQUIRED
 
+    # The priority of this action determine which actions execute first. Higher numbers
+    # are higher priority
+    priority = 0
+
     @classmethod
     def is_action_available(cls, game, stage, stage_id, player_id):
         """
@@ -239,8 +243,6 @@ class GameAction(ActionMixin):
         # If there's a target, get it too
         if action_model.selected_player_id:
             self.target = players[action_model.selected_player_id]
-
-        self.priority = GameAction.get_priority(self.model.player.role)
 
         # Add this object to the target and originator's lists
         self.originator.originated_from.append(self)
@@ -299,18 +301,13 @@ class GameAction(ActionMixin):
                             )
                             f()
 
-    @staticmethod
-    def get_priority(role: PlayerRole):
-        """Get a numerical priority for a given role
+    @classmethod
+    def get_priority(cls):
+        """Get a numerical priority for this role
 
         Higher numbers will be higher priority.
-
-        Args:
-            role (PlayerRole): The role
         """
-        from .roles import get_role_description
-
-        return get_role_description(role).priority
+        return cls.priority
 
 
 class TargetRequired(ActionMixin):
