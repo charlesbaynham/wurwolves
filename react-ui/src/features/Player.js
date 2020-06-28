@@ -31,6 +31,10 @@ const IMAGE_LOOKUP = {
         'img': '/images/person-seconded.svg',
         'alt': 'A seconded player'
     },
+    'SHOT': {
+        'img': '/images/person-shot.svg',
+        'alt': 'A player who has been shot'
+    },
     'SPECTATING': {
         'img': '/images/person-spectating.svg',
         'alt': 'A spectator'
