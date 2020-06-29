@@ -285,7 +285,7 @@ class WurwolvesGame:
         )
 
         if stage_id:
-            q = q.filter(Action.stage_id <= stage_id)
+            q = q.filter(Action.stage_id < stage_id)
 
         return len(set(q.all()))
 
