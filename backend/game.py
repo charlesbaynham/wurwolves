@@ -247,12 +247,10 @@ class WurwolvesGame:
 
         Filter by the passed parameters if any. 
         """
-        game = self.get_game()
-
-        q = self._session.query(Action).filter(Action.game_id == game.id)
+        q = self._session.query(Action).filter(Action.game_id == self.game_id)
 
         if stage_id:
-            q = q.filter(Action.stage_id == game.stage_id)
+            q = q.filter(Action.stage_id == stage_id)
 
         if player_id:
             q = q.filter(Action.player_id == player_id)
@@ -272,6 +270,24 @@ class WurwolvesGame:
             ActionModel.from_orm(a)
             for a in self.get_actions(stage_id, player_id, stage)
         ]
+
+    @db_scoped
+    def num_previous_stages(self, stage_type: GameStage, stage_id=None):
+        """
+        Number of stages of the given type which have occured prior to this one, identified by stage_id. 
+        If stage_id not given, return number of all stages of this type which have any actions stored.
+
+        This function uses the fact that stage_id is guaranteed to be monotonic, if not consecutive. 
+        """
+
+        q = self._session.query(Action.stage_id).filter(
+            Action.game_id == self.game_id, Action.stage == stage_type
+        )
+
+        if stage_id:
+            q = q.filter(Action.stage_id <= stage_id)
+
+        return len(set(q.all()))
 
     @db_scoped
     def send_secret_message(self, user_id: UUID, message: str):
@@ -699,6 +715,21 @@ def trigger_update_event(game_id: int):
     if game_id in update_events:
         update_events[game_id].set()
         del update_events[game_id]
+
+
+class SwitchStage(resolver.GameAction):
+    """
+    This action does nothing! It just records that the stage has been switched. 
+    Unlike most role actions, this one has no originator and no target. It simple exists in the
+    action log and does nothing when called, to serve as a log that the stage occured. 
+
+    Later, I could expand the game to expect this action to exist before process_actions succeeds. 
+    Then, I could submit this action on a timer to end the rounds automatically. Now, however, this
+    does not happen: process_actions does not expect this action to be present, but won't complain if
+    it is. 
+
+    Currently, this action is submitted by _set_stage() to serve as a marker. 
+    """
 
 
 # Create API endpoints and methods in WurwolvesGame for all the role actions

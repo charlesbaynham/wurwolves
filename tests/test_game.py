@@ -212,3 +212,19 @@ def test_async_get_start_game(db_session, demo_game):
         assert task_waiter.done()
 
     asyncio.get_event_loop().run_until_complete(tester())
+
+
+@pytest.mark.parametrize("num_prev_stages", [0, 1, 2, 3, 5, 10])
+def test_num_previous_stages(demo_game, num_prev_stages):
+    demo_game._set_stage(GameStage.DAY)
+
+    for i in range(num_prev_stages):
+        demo_game._set_stage(GameStage.NIGHT)
+
+    assert demo_game.num_previous_stages(GameStage.NIGHT) == num_prev_stages
+    assert (
+        demo_game.num_previous_stages(
+            GameStage.NIGHT, demo_game.get_game_model().stage_id
+        )
+        == num_prev_stages - 1
+    )
