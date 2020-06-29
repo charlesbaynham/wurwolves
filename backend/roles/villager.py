@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
-from .narrator import CancelledByNarrator
 from .spectator import VoteStartNewGame
 from .teams import Team
 from .utility_mixins import NoTargetRequired, TargetRequired
@@ -53,24 +52,26 @@ Click someone's icon to select them.
 )
 
 
-class MoveToVoteAction(CancelledByNarrator, NoTargetRequired, GameAction):
-    """
-    Move to vote
-
-    This just sends a message: the round completes when all players have moved to vote
-    """
-
-    def execute(self, game):
-        pass
-
-    @classmethod
-    def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kwargs):
-        msg = f"{game.get_user_name(user_id)} moved to vote"
-        game.send_chat_message(msg)
-
-
 def register(role_map):
     from .mayor import CancelledByMayor
+    from .narrator import CancelledByNarrator
+
+    class MoveToVoteAction(
+        CancelledByMayor, CancelledByNarrator, NoTargetRequired, GameAction
+    ):
+        """
+        Move to vote
+
+        This just sends a message: the round completes when all players have moved to vote
+        """
+
+        def execute(self, game):
+            pass
+
+        @classmethod
+        def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kwargs):
+            msg = f"{game.get_user_name(user_id)} moved to vote"
+            game.send_chat_message(msg)
 
     class VoteAction(CancelledByMayor, GameAction, TargetRequired):
         def execute(self, game):
