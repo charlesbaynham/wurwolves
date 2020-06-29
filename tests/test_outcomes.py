@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from uuid import uuid4 as uuid
 
 import pytest
@@ -274,3 +275,37 @@ def test_vigilante_shoot_twice(five_player_game):
     game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
 
     assert game.get_player_model(roles_map["Villager 2"]).state == PlayerState.ALIVE
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
+        PlayerRole.JESTER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_jester_announced(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+
+    game.join(wolf_id)
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    visible_messages = game.get_messages(wolf_id)
+
+    from json import dumps
+
+    summary = dumps([v.dict() for v in visible_messages])
+
+    assert "There's a jester in the game" in summary
