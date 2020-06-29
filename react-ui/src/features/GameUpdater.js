@@ -41,16 +41,22 @@ class GameUpdater extends Component {
 
     checkAndReschedule() {
         const errorCheckRate = 1000
-        const successCheckRate = 300
+        const successCheckRate = 500
 
         const successHandler = r => {
-            r.json().then(new_hash => {
-                this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
+            this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
+
+            if (!r.ok) {
+                throw Error("Fetch state failed with error " + r.status)
+            }
+
+            return r.json().then(new_hash => {
                 if (new_hash !== this.props.state_hash) {
                     this.updateState()
                 }
             })
         }
+
         const failureHandler = r => {
             this.timeoutID = setTimeout(this.checkAndReschedule, errorCheckRate)
         }
