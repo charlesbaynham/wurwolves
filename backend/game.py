@@ -444,6 +444,9 @@ class WurwolvesGame:
                     f"You are a {player.role.value}!", player_list=[player.id]
                 )
 
+        for role in list(PlayerRole):
+            roles.do_startup_callback(role)
+
         self._set_stage(GameStage.NIGHT)
 
     @db_scoped

@@ -113,3 +113,4 @@ class RoleDetails(NamedTuple):
 
     role_description: Union[RoleDescription, Callable]
     actions: Dict[GameStage, GameAction] = None
+    startup_callback: Callable = None

@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import TYPE_CHECKING, Dict, Union
+from typing import TYPE_CHECKING, Callable, Dict, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
@@ -58,6 +58,10 @@ def get_role_actions(role: PlayerRole):
     return ROLE_MAP[role].actions
 
 
+def get_role_callback(role: PlayerRole) -> Union[Callable, None]:
+    return ROLE_MAP[role].startup_callback
+
+
 def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameAction"]:
     """ Get the action class associated with a role and stage, or None """
     role_description = get_role_description(role)
@@ -70,6 +74,14 @@ def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameActi
         action_class = get_role_action(role_description.fallback_role, stage)
 
     return action_class
+
+
+def do_startup_callback(role: PlayerRole) -> None:
+    """ Call the startup callback for a role if one is registered """
+    callback = get_role_callback(role)
+
+    if callback:
+        callback()
 
 
 def named(n):

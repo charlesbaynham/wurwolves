@@ -4,6 +4,7 @@ from .registration import (
     get_role_action,
     get_role_description,
     get_role_team,
+    do_startup_callback,
     register_roles,
     router,
 )
@@ -15,6 +16,7 @@ __all__ = [
     "get_role_action",
     "get_role_description",
     "get_role_team",
+    "do_startup_callback",
     "register_roles",
     "router",
     "team_has_won",
