@@ -34,4 +34,4 @@ You have nothing to do at night. Plot your jesting.
 
 
 def register(role_map):
-    role_map.update({PlayerRole.JESTER: RoleDetails(description)})
+    role_map.update({PlayerRole.JESTER: RoleDetails(role_description=description)})

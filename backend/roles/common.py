@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Dict, NamedTuple, Optional, Union
+from typing import Callable, Dict, NamedTuple, Optional, Type, Union
 
 import pydantic
 
@@ -101,7 +101,7 @@ class RoleDescription(pydantic.BaseModel):
 RoleDescription.update_forward_refs()
 
 
-class RoleDetails(NamedTuple):
+class RoleDetails(pydantic.BaseModel):
     """
     A RoleDetails tuple contains a complete description of what a role entails
     It can be used to figure out how a role should behave and will be stored in
@@ -112,5 +112,8 @@ class RoleDetails(NamedTuple):
     """
 
     role_description: Union[RoleDescription, Callable]
-    actions: Dict[GameStage, GameAction] = None
+    actions: Dict[GameStage, Type[GameAction]] = None
     startup_callback: Callable = None
+
+    class Config:
+        arbitrary_types_allowed = True

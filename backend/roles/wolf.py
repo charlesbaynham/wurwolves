@@ -89,5 +89,9 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
 
 def register(role_map):
     role_map.update(
-        {PlayerRole.WOLF: RoleDetails(description, {GameStage.NIGHT: WolfAction})}
+        {
+            PlayerRole.WOLF: RoleDetails(
+                role_description=description, actions={GameStage.NIGHT: WolfAction}
+            )
+        }
     )

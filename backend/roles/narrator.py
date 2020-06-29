@@ -115,7 +115,8 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.NARRATOR: RoleDetails(
-                description, {GameStage.DAY: NarratorMoveToVoteAction},
+                role_description=description,
+                actions={GameStage.DAY: NarratorMoveToVoteAction},
             )
         }
     )

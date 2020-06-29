@@ -65,7 +65,7 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.VIGILANTE: RoleDetails(
-                description, {GameStage.NIGHT: VigilanteAction}
+                role_description=description, actions={GameStage.NIGHT: VigilanteAction}
             )
         }
     )

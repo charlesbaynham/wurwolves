@@ -113,8 +113,8 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.MAYOR: RoleDetails(
-                description,
-                {
+                role_description=description,
+                actions={
                     GameStage.DAY: MayorMoveToVoteAction,
                     GameStage.VOTING: MayorVoteAction,
                 },

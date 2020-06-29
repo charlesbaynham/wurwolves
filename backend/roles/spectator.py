@@ -106,8 +106,8 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.SPECTATOR: RoleDetails(
-                description,
-                {
+                role_description=description,
+                actions={
                     GameStage.LOBBY: VoteStartNewGame,
                     GameStage.ENDED: VoteStartNewGame,
                     GameStage.DAY: BecomeNarratorAction,
