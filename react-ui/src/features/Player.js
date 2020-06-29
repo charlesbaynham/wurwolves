@@ -38,6 +38,10 @@ const IMAGE_LOOKUP = {
     'SPECTATING': {
         'img': '/images/person-spectating.svg',
         'alt': 'A spectator'
+    },
+    'MAYOR': {
+        'img': '/images/person-mayor.svg',
+        'alt': 'The mayor'
     }
 }
 

@@ -1,4 +1,3 @@
-from .roles import get_action_func_name
 import logging
 from typing import List, Union
 from uuid import UUID
@@ -6,8 +5,8 @@ from uuid import UUID
 import pydantic
 
 from .game import WurwolvesGame
-from .model import GameStage, PlayerState
-from .roles import get_role_description
+from .model import GameStage, PlayerRole, PlayerState
+from .roles import get_action_func_name, get_role_description
 
 
 class FrontendState(pydantic.BaseModel):
@@ -106,14 +105,22 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     logging.debug("action_desc: {}".format(action_desc))
     logging.debug("controls_state: {}".format(controls_state))
 
+    player_states = []
+    for p in game.players:
+        if p.role == PlayerRole.MAYOR:
+            status = "MAYOR"
+        else:
+            status = p.state
+
+        player_states.append(
+            FrontendState.PlayerState(
+                id=p.user_id, name=p.user.name, status=status, selected=False
+            )
+        )
+
     state = FrontendState(
         state_hash=game.update_tag,
-        players=[
-            FrontendState.PlayerState(
-                id=p.user_id, name=p.user.name, status=p.state, selected=False
-            )
-            for p in game.players
-        ],
+        players=player_states,
         chat=[
             FrontendState.ChatMsg(msg=m.text, isStrong=m.is_strong)
             for m in game.messages
