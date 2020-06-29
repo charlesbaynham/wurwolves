@@ -15,20 +15,20 @@ from .villager import description as villager
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
+general_text = """
+You win if you get yourself lynched by the villagers. The wolves know who
+you are and shouldn't kill you, since you'll confuse the villagers which
+helps the wolves. They can if they want to though, so don't annoy them...
+
+"""
 
 description = RoleDescription(
-    display_name="Jester",
+    display_name="You are a Jester!",
     stages={
-        GameStage.DAY: StageAction(
-            text="""
-You are a Jester!
-
-You win if you get yourself lynched by the villagers. 
-    """
-        ),
+        GameStage.DAY: StageAction(text=general_text),
         GameStage.NIGHT: StageAction(
-            text="""
-You win if you get yourself lynched by the villagers. 
+            text=f"""
+{general_text}
 
 You have nothing to do at night. Plot your jesting. 
     """
