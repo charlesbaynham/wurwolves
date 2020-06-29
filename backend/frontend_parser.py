@@ -19,7 +19,15 @@ class FrontendState(pydantic.BaseModel):
     class PlayerState(pydantic.BaseModel):
         id: UUID
         name: str
-        status: PlayerState
+        status: str
+
+        @pydantic.validator("status")
+        def status_valid(cls, v):
+            try:
+                PlayerState(v)
+            except ValueError:
+                assert v in ["MAYOR"]
+            return v
 
     players: List[PlayerState]
 
