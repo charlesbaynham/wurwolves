@@ -450,7 +450,7 @@ class WurwolvesGame:
                 )
 
         for role in list(PlayerRole):
-            roles.do_startup_callback(role)
+            roles.do_startup_callback(self, role)
 
         self._set_stage(GameStage.NIGHT)
 

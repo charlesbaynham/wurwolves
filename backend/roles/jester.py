@@ -46,6 +46,10 @@ def announce_to_wolves(game: "WurwolvesGame"):
     jester = game.get_players_model(role=PlayerRole.JESTER)
 
     if jester:
+        if len(jester) > 1:
+            raise TypeError("More than one jester! Not programmed for this...")
+
+        jester = jester[0]
         wolves = game.get_players_model(role=PlayerRole.WOLF)
 
         game.send_chat_message(
@@ -57,6 +61,9 @@ def announce_to_wolves(game: "WurwolvesGame"):
 
 def register(role_map):
     role_map.update(
-        {PlayerRole.JESTER: RoleDetails(role_description=description)},
-        startup_callback=announce_to_wolves,
+        {
+            PlayerRole.JESTER: RoleDetails(
+                role_description=description, startup_callback=announce_to_wolves
+            )
+        },
     )

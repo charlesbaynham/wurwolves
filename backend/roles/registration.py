@@ -76,12 +76,12 @@ def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameActi
     return action_class
 
 
-def do_startup_callback(role: PlayerRole) -> None:
+def do_startup_callback(game, role: PlayerRole) -> None:
     """ Call the startup callback for a role if one is registered """
     callback = get_role_callback(role)
 
     if callback:
-        callback()
+        callback(game)
 
 
 def named(n):
