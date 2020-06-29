@@ -83,7 +83,13 @@ class CancelledByNarrator(ActionMixin):
         logging.info(
             f"In narrator is_action_available, game.is_role_present(PlayerRole.NARRATOR) = {narrator_is_present}"
         )
-        return not narrator_is_present
+
+        out = not narrator_is_present
+
+        if hasattr(super(), "is_action_available"):
+            out = out and super().is_action_available(game, stage, stage_id, player_id)
+
+        return out
 
 
 def register(role_map):

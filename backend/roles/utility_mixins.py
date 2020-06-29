@@ -19,7 +19,12 @@ class OncePerGame(GameAction):
             player_id=player_id, stage=GameStage.NIGHT
         )
 
-        return not bool(previous_actions)
+        out = not bool(previous_actions)
+
+        if hasattr(super(), "is_action_available"):
+            out = out and super().is_action_available(game, stage, stage_id, player_id)
+
+        return out
 
 
 class TargetRequired(ActionMixin):

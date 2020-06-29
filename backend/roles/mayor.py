@@ -74,7 +74,13 @@ class CancelledByMayor(ActionMixin):
         logging.debug(
             f"In mayor is_action_available, game.is_role_present(PlayerRole.MAYOR) = {mayor_is_present}"
         )
-        return not mayor_is_present
+
+        out = not mayor_is_present
+
+        if hasattr(super(), "is_action_available"):
+            out = out and super().is_action_available(game, stage, stage_id, player_id)
+
+        return out
 
 
 class MayorMoveToVoteAction(GameAction, NoTargetRequired):
