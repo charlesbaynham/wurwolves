@@ -69,17 +69,16 @@ class MoveToVoteAction(CancelledByNarrator, NoTargetRequired, GameAction):
         game.send_chat_message(msg)
 
 
-class VoteAction(GameAction, TargetRequired):
-    def execute(self, game):
-        msg = (
-            f"{self.originator.model.user.name} voted for {self.target.model.user.name}"
-        )
-        logging.info(f"({game.game_id}) {msg}")
-        game.send_chat_message(msg)
-        game.vote_player(self.target.model.id)
-
-
 def register(role_map):
+    from .mayor import CancelledByMayor
+
+    class VoteAction(CancelledByMayor, GameAction, TargetRequired):
+        def execute(self, game):
+            msg = f"{self.originator.model.user.name} voted for {self.target.model.user.name}"
+            logging.info(f"({game.game_id}) {msg}")
+            game.send_chat_message(msg)
+            game.vote_player(self.target.model.id)
+
     role_map.update(
         {
             PlayerRole.VILLAGER: RoleDetails(

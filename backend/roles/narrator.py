@@ -86,25 +86,26 @@ class CancelledByNarrator(ActionMixin):
         return not narrator_is_present
 
 
-class NarratorMoveToVoteAction(GameAction, NoTargetRequired):
-    """
-    Move to vote
-
-    The narrator is the only one who is allowed to vote, so the round will
-    complete as soon as their action is submitted. 
-    """
-
-    allowed_player_states = list(PlayerState)
-
-    def execute(self, game):
-        pass
-
-    @classmethod
-    def immediate(cls, game: "WurwolvesGame" = None, **kwargs):
-        game.send_chat_message("The narrator started the voting session")
-
-
 def register(role_map):
+    from .mayor import CancelledByMayor
+
+    class NarratorMoveToVoteAction(CancelledByMayor, GameAction, NoTargetRequired):
+        """
+        Move to vote
+
+        The narrator is the only one who is allowed to mote to vote (unless a mayor is present),
+        so the round will complete as soon as their action is submitted. 
+        """
+
+        allowed_player_states = list(PlayerState)
+
+        def execute(self, game):
+            pass
+
+        @classmethod
+        def immediate(cls, game: "WurwolvesGame" = None, **kwargs):
+            game.send_chat_message("The narrator started the voting session")
+
     role_map.update(
         {
             PlayerRole.NARRATOR: RoleDetails(

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 
 from ..model import Action, GameStage, PlayerRole
 from ..user_id import get_user_id
-from . import jester, medic, narrator, seer, spectator, vigilante, villager, wolf
+from . import jester, mayor, medic, narrator, seer, spectator, vigilante, villager, wolf
 from .common import RoleDescription, RoleDetails
 
 if TYPE_CHECKING:
@@ -29,9 +29,11 @@ spectator.register(ROLE_MAP)
 jester.register(ROLE_MAP)
 vigilante.register(ROLE_MAP)
 narrator.register(ROLE_MAP)
+mayor.register(ROLE_MAP)
 
-if any(r not in ROLE_MAP for r in list(PlayerRole)):
-    raise TypeError("Not all roles are registered with roles.registration")
+for r in list(PlayerRole):
+    if r not in ROLE_MAP:
+        raise TypeError(f"{r} is not registered with roles.registration")
 
 
 registered_with_game = []

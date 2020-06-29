@@ -13,7 +13,8 @@ guaranteed_roles = [
 # Weightings only have meaning relative to each other
 randomised_roles = {
     PlayerRole.JESTER: 20,
-    PlayerRole.VIGILANTE: 2000,
+    PlayerRole.VIGILANTE: 20,
+    PlayerRole.MAYOR: 10,
 }
 
 all_distributed_roles = (
