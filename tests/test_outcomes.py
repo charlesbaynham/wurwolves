@@ -186,3 +186,91 @@ def test_no_move_to_vote_with_narrator(five_player_game):
 
     # And as narrator
     game.narrator_day_action(narrator_id)
+
+
+def test_vigilante_shoot(five_player_game):
+    game, roles_map = five_player_game
+
+    game._set_stage(GameStage.NIGHT)
+
+    # Add a narrator
+    vig_id = uuid()
+    game.join(vig_id)
+    with session_scope() as s:
+        u = game.get_player(vig_id)
+        u.role = PlayerRole.VIGILANTE
+        u.state = PlayerState.ALIVE
+        game.set_user_name(vig_id, "The vigilante")
+        s.add(u)
+
+    # Shoot the first villager
+    game.vigilante_night_action(vig_id, roles_map["Villager 1"])
+
+    # Others
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_player_model(roles_map["Villager 1"]).state == PlayerState.SHOT
+
+
+def test_vigilante_no_shoot(five_player_game):
+    game, roles_map = five_player_game
+
+    game._set_stage(GameStage.NIGHT)
+
+    # Add a narrator
+    vig_id = uuid()
+    game.join(vig_id)
+    with session_scope() as s:
+        u = game.get_player(vig_id)
+        u.role = PlayerRole.VIGILANTE
+        u.state = PlayerState.ALIVE
+        game.set_user_name(vig_id, "The vigilante")
+        s.add(u)
+
+    # Other actions
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_game_model().stage == GameStage.DAY
+
+
+def test_vigilante_shoot_twice(five_player_game):
+    game, roles_map = five_player_game
+
+    game._set_stage(GameStage.NIGHT)
+
+    # Add a narrator
+    vig_id = uuid()
+    game.join(vig_id)
+    with session_scope() as s:
+        u = game.get_player(vig_id)
+        u.role = PlayerRole.VIGILANTE
+        u.state = PlayerState.ALIVE
+        game.set_user_name(vig_id, "The vigilante")
+        s.add(u)
+
+    # Shoot the first villager
+    game.vigilante_night_action(vig_id, roles_map["Villager 1"])
+
+    # Others
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_player_model(roles_map["Villager 1"]).state == PlayerState.SHOT
+
+    game._set_stage(GameStage.NIGHT)
+
+    # Shoot the second villager
+    with pytest.raises(HTTPException):
+        game.vigilante_night_action(vig_id, roles_map["Villager 2"])
+
+    # Others
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Seer"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Seer"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_player_model(roles_map["Villager 2"]).state == PlayerState.ALIVE
