@@ -108,6 +108,7 @@ class PlayerRole(enum.Enum):
     NARRATOR = "Narrator"
     VIGILANTE = "Vigilante"
     MAYOR = "Mayor"
+    MILLER = "Miller"
 
 
 class PlayerState(str, enum.Enum):

@@ -309,3 +309,42 @@ def test_jester_announced(mock_roles, db_session):
     summary = dumps([v.dict() for v in visible_messages])
 
     assert "There's a jester in the game" in summary
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
+        PlayerRole.SEER,
+        PlayerRole.MILLER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_miller_works(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+    seer_id = uuid()
+    miller_id = uuid()
+    villager_id = uuid()
+
+    game.join(wolf_id)
+    game.join(seer_id)
+    game.join(miller_id)
+    game.join(villager_id)
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+    game.seer_night_action(seer_id, miller_id)
+    game.wolf_night_action(wolf_id, villager_id)
+
+    visible_messages = game.get_messages(seer_id)
+
+    from json import dumps
+
+    summary = dumps([v.dict() for v in visible_messages])
+
+    assert "they are a wolf!" in summary

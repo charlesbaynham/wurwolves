@@ -6,9 +6,10 @@ import logging
 from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
-from .wolf import AffectedByWolves
-from .villager import description as villager
+from .miller import ConfusedByMiller
 from .teams import Team
+from .villager import description as villager
+from .wolf import AffectedByWolves
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -38,7 +39,7 @@ Choose whom to check: at the end of the night, you'll find out if they are a wol
 )
 
 
-class SeerAction(GameAction, AffectedByWolves):
+class SeerAction(ConfusedByMiller, AffectedByWolves, GameAction):
     def execute(self, game: "WurwolvesGame"):
         from .registration import get_role_team
 
@@ -54,7 +55,7 @@ class SeerAction(GameAction, AffectedByWolves):
                 is_strong=False,
                 player_list=[self.originator.model.id],
             )
-        elif target_is_wolf:
+        elif target_is_wolf or self.target_is_miller:
             game.send_chat_message(
                 f"You checked {target_name}... they are a wolf!",
                 is_strong=True,
