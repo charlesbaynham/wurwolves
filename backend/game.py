@@ -513,8 +513,11 @@ class WurwolvesGame:
 
     @db_scoped
     def kill_player(self, player_id, new_state: PlayerState):
-        self.set_player_role(player_id, PlayerRole.SPECTATOR)
-        self.set_player_state(player_id, new_state)
+        p = self.get_player_by_id(player_id)
+
+        p.previous_role = p.role
+        p.role = PlayerRole.SPECTATOR
+        p.state = new_state
 
     @db_scoped
     def set_player_state(self, player_id, state: PlayerState):

@@ -14,6 +14,7 @@ from . import (
     medic,
     miller,
     narrator,
+    priest,
     seer,
     spectator,
     vigilante,
@@ -44,6 +45,7 @@ narrator.register(ROLE_MAP)
 mayor.register(ROLE_MAP)
 miller.register(ROLE_MAP)
 acolyte.register(ROLE_MAP)
+priest.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:

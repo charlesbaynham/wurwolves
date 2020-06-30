@@ -2,7 +2,7 @@ import datetime
 import enum
 import json
 import random
-from typing import List, Union
+from typing import List, Optional, Union
 from uuid import UUID
 
 import pydantic
@@ -110,6 +110,7 @@ class PlayerRole(enum.Enum):
     MAYOR = "Mayor"
     MILLER = "Miller"
     ACOLYTE = "Acolyte"
+    PRIEST = "Priest"
 
 
 class PlayerState(str, enum.Enum):
@@ -120,6 +121,9 @@ class PlayerState(str, enum.Enum):
     NOMINATED = "NOMINATED"
     SECONDED = "SECONDED"
     SPECTATING = "SPECTATING"
+
+
+DEAD_STATES = [PlayerState.WOLFED, PlayerState.SHOT, PlayerState.LYNCHED]
 
 
 class Player(Base):
@@ -138,6 +142,9 @@ class Player(Base):
 
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
+
+    previous_role: Column(Enum(PlayerRole), nullable=True)
+
     actions = relationship("Action", lazy=True, foreign_keys="Action.player_id")
 
 
@@ -218,6 +225,8 @@ class PlayerModel(pydantic.BaseModel):
 
     role: PlayerRole
     state: PlayerState
+
+    previous_role: Optional[PlayerRole]
 
     class Config:
         orm_mode = True
