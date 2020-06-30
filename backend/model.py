@@ -111,6 +111,7 @@ class PlayerRole(enum.Enum):
     MILLER = "Miller"
     ACOLYTE = "Acolyte"
     PRIEST = "Priest"
+    PROSTITUTE = "Prostitute"
 
 
 class PlayerState(str, enum.Enum):

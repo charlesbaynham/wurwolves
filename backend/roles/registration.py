@@ -15,6 +15,7 @@ from . import (
     miller,
     narrator,
     priest,
+    prostitute,
     seer,
     spectator,
     vigilante,
@@ -46,6 +47,7 @@ mayor.register(ROLE_MAP)
 miller.register(ROLE_MAP)
 acolyte.register(ROLE_MAP)
 priest.register(ROLE_MAP)
+prostitute.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:

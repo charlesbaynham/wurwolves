@@ -145,56 +145,62 @@ class ActionMixin:
         # End of the line for super() calls: discard all params and stop
         pass
 
-    @staticmethod
-    def get_action_method_name(MixinClass, alter_originating: bool):
-        return (
-            "mod_"
-            + MixinClass.__name__
-            + ("_originating" if alter_originating else "_targetted")
-        )
+    class Search(Enum):
+        TARGETTING_TARGET = "TARGETTING_TARGET"
+        ORIGINATING_FROM_TARGET = "ORIGINATING_FROM_TARGET"
+        TARGETTING_ORIGINATOR = "TARGETTING_ORIGINATOR"
+        ORIGINATING_FROM_ORIGINATOR = "ORIGINATING_FROM_ORIGINATOR"
 
-    def bind_as_modifier(self, func, MixinClass, ActionClass, alter_originating: bool):
+    @staticmethod
+    def get_action_method_name(MixinClass, search: Search):
+        return f"mod_{MixinClass.__name__}_{search.value}"
+
+    def bind_as_modifier(self, func, MixinClass, ActionClass, search: Search):
         """
         Bind a function from this mixin to the self object using a name generated from the mixin's class
 
         All instances of ActionClass will now search for actions of MixinClass
         in the do_modifiers() stage. If they find any, they will execute the method func. 
+        ``search`` specifies where they search. 
 
-        Specifically, the target of this action will have func called for all the actions
-        targetting them if func is available and alter_originating = False. The target of this action
-        will have func called for all the actions originating from them if func is available and
-        alter_originating = True. 
+        For example, the target of this action will have func called for all the actions
+        targetting them if func is available and ``search`` = TARGETTING_TARGET. 
+
+        The originator of this action will have func called for all the actions targetting
+        from them if func is available and ``search`` = TARGETTING_ORIGINATOR. 
 
         Example usage:
 
-            self.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, False)
+            self.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
 
-        This is used to bind dunder methods of a mixin to the parent GameAction with a predictable name
+        This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name
 
-        alter_originating specifices whether the mixin should alter actions which originate from the target 
-        or which also target the target. E.g. a Medic wants to alter actions which target the target, whereas
-        a Prostitute wants to alter actions which originate from the target. 
+        ``search`` specifices which actions should be searched for the registered method.
+        E.g. a Medic wants to alter actions which target the target, whereas a Prostitute
+        wants to alter actions which originate from the target. 
         """
 
         # Make a new class method which calls func
         def new_func(self, func=func):
             func()
 
-        mod_func_name = self.get_action_method_name(MixinClass, alter_originating)
+        mod_func_name = self.get_action_method_name(MixinClass, search)
         new_func.__name__ = mod_func_name
 
         bound_func = new_func.__get__(self, self.__class__)
         setattr(self, mod_func_name, bound_func)
 
         # Register the MixinClass as a modifier of targets for this ActionClass
-        if alter_originating:
+        if search == ActionClass.Search.ORIGINATING_FROM_TARGET:
             if ActionClass not in GameAction.mixins_affecting_originators:
                 GameAction.mixins_affecting_originators[ActionClass] = []
             GameAction.mixins_affecting_originators[ActionClass].append(MixinClass)
-        else:
+        elif search == ActionClass.Search.TARGETTING_TARGET:
             if ActionClass not in GameAction.mixins_affecting_targets:
                 GameAction.mixins_affecting_targets[ActionClass] = []
             GameAction.mixins_affecting_targets[ActionClass].append(MixinClass)
+        else:
+            raise NotImplementedError
 
 
 class RoundEndBehaviour(Enum):
