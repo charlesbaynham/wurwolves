@@ -519,15 +519,19 @@ class WurwolvesGame:
         p.role = PlayerRole.SPECTATOR
         p.state = new_state
 
+        self._session.add(p)
+
     @db_scoped
     def set_player_state(self, player_id, state: PlayerState):
         p = self.get_player_by_id(player_id)
         p.state = state
+        self._session.add(p)
 
     @db_scoped
     def set_player_role(self, player_id, role: PlayerRole):
         p = self.get_player_by_id(player_id)
         p.role = role
+        self._session.add(p)
 
     @db_scoped
     def vote_player(self, player_id):

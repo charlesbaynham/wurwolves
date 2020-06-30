@@ -56,10 +56,11 @@ class PriestCheckRole(OncePerGame, GameAction):
         cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs,
     ):
         """Confirm that the selected player is dead"""
-        if game.get_player_model_by_id(selected_id).role not in DEAD_STATES:
+        if game.get_player_model(selected_id).state not in DEAD_STATES:
             raise HTTPException(403, "Your target must have died")
 
     def execute(self, game):
+        originator_id = self.originator.model.id
         target_name = self.target.model.user.name
         role = self.target.model.previous_role
 
@@ -67,7 +68,9 @@ class PriestCheckRole(OncePerGame, GameAction):
             raise RuntimeError(f"previous_role not specified for player {target_name}")
 
         game.send_chat_message(
-            f"You remember that {target_name} was a {role}", is_strong=True
+            f"You remember that {target_name} was a {role.value}",
+            is_strong=True,
+            player_list=[originator_id],
         )
 
 

@@ -95,6 +95,20 @@ def test_keepalive(demo_game, db_session):
     demo_game.player_keepalive(USER_ID)
 
 
+def test_kill(demo_game, db_session):
+    player_id = demo_game.get_player_id(USER_ID)
+
+    p = demo_game.get_player_model(USER_ID)
+    assert p.previous_role is None
+
+    demo_game.kill_player(player_id, PlayerState.LYNCHED)
+
+    db_session.expire_all()
+
+    p = demo_game.get_player_model(USER_ID)
+    assert p.previous_role is not None
+
+
 def test_chat(demo_game, db_session):
     other_user = uuid()
     demo_game.join(other_user)

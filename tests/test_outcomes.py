@@ -1,3 +1,4 @@
+import re
 from unittest.mock import patch
 from uuid import uuid4 as uuid
 
@@ -348,3 +349,51 @@ def test_miller_works(mock_roles, db_session):
     summary = dumps([v.dict() for v in visible_messages])
 
     assert "they are a wolf!" in summary
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
+        PlayerRole.PRIEST,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_priest_works(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+    priest_id = uuid()
+    villager1_id = uuid()
+    villager2_id = uuid()
+
+    game.join(wolf_id)
+    game.join(priest_id)
+    game.join(villager1_id)
+    game.join(villager2_id)
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    with pytest.raises(HTTPException):
+        game.priest_night_action(priest_id, villager1_id)
+    game.wolf_night_action(wolf_id, villager1_id)
+
+    assert game.get_player_model(villager1_id).state == PlayerState.WOLFED
+
+    game._set_stage(GameStage.NIGHT)
+
+    game.priest_night_action(priest_id, villager1_id)
+    game.wolf_night_action(wolf_id, villager2_id)
+
+    visible_messages = game.get_messages(priest_id)
+
+    from json import dumps
+
+    summary = dumps([v.dict() for v in visible_messages])
+
+    assert re.search(r"You remember that .+ was a Villager", summary)

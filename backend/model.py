@@ -143,7 +143,7 @@ class Player(Base):
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
 
-    previous_role: Column(Enum(PlayerRole), nullable=True)
+    previous_role = Column(Enum(PlayerRole), nullable=True)
 
     actions = relationship("Action", lazy=True, foreign_keys="Action.player_id")
 
