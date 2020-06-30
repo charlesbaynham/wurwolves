@@ -16,6 +16,7 @@ randomised_roles = {
     PlayerRole.VIGILANTE: 10,
     PlayerRole.MAYOR: 10,
     PlayerRole.MILLER: 10,
+    PlayerRole.ACOLYTE: 5,
 }
 
 all_distributed_roles = (

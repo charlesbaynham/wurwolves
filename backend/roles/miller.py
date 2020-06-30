@@ -3,18 +3,13 @@ The Miller role
 
 The Miller can't do shit, and if the seer checks them they look like a wolf
 """
-from typing import TYPE_CHECKING
-
-from fastapi import HTTPException
 
 from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction
+from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
 from .villager import description as villager
 
-if TYPE_CHECKING:
-    from ..game import WurwolvesGame
 
 general_desc = """
 Oh dear, you're the miller. 
