@@ -351,12 +351,7 @@ class WurwolvesGame:
 
     @db_scoped
     def player_keepalive(self, user_id: UUID):
-        try:
-            u = self.get_user(user_id)
-        except KeyError:
-            self.join(user_id)
-            u = self.get_user(user_id)
-
+        u = self.get_user(user_id)
         u.touch()
         self._session.commit()
 
