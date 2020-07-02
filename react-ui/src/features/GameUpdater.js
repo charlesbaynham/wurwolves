@@ -47,7 +47,8 @@ class GameUpdater extends Component {
             this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
 
             if (!r.ok) {
-                throw Error("Fetch state failed with error " + r.status)
+                console.log("Fetch state failed with error " + r.status)
+                window.location.reload(false);
             }
 
             return r.json().then(new_hash => {
