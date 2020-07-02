@@ -376,7 +376,7 @@ class WurwolvesGame:
                     f"{p.user.last_seen}, threshold={threshold}"
                 )
                 self.send_chat_message(f"{p.user.name} has left the game")
-                self._session.delete(p)
+                self.kick(p)
                 someone_kicked = True
 
         self._session.commit()
@@ -385,6 +385,12 @@ class WurwolvesGame:
             self.get_game().touch()
             # Reevaluate processed actions
             self.process_actions(game.stage, game.stage_id)
+
+    @db_scoped
+    def kick(self, player: Player):
+        for a in player.actions:
+            self._session.delete(a)
+        self._session.delete(player)
 
     @db_scoped
     def create_game(self):
