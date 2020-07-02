@@ -607,7 +607,7 @@ class WurwolvesGame:
     def get_user(self, user_id: UUID):
         u = self._session.query(User).filter_by(id=user_id).first()
         if not u:
-            raise KeyError(f"User {user_id} does not exist")
+            raise HTTPException(404, f"User {user_id} does not exist")
         return u
 
     @db_scoped
