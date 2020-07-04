@@ -19,7 +19,10 @@ RANDOMISED_ROLES = {
     PlayerRole.ACOLYTE: 7,
     PlayerRole.PRIEST: 10,
     PlayerRole.PROSTITUTE: 10,
+    PlayerRole.MASON: 7,
 }
+
+DUAL_ROLES = [PlayerRole.MASON]
 
 all_distributed_roles = (
     guaranteed_roles
@@ -29,8 +32,6 @@ all_distributed_roles = (
 for role in list(PlayerRole):
     if role not in all_distributed_roles:
         raise TypeError(f"Role {role} is not available to be assigned")
-
-DUAL_ROLES = []
 
 # Average probability that a player is a villager
 # This cannot be satisfied for very small games (because all the guaranteed roles

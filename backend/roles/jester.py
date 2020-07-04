@@ -41,8 +41,6 @@ You have nothing to do at night. Plot your jesting.
 
 
 def announce_to_wolves(game: "WurwolvesGame"):
-    logging.warning("jester announce to wolves")
-
     jester = game.get_players_model(role=PlayerRole.JESTER)
 
     if jester:

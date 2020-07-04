@@ -11,6 +11,7 @@ from ..user_id import get_user_id
 from . import (
     acolyte,
     jester,
+    mason,
     mayor,
     medic,
     miller,
@@ -49,6 +50,7 @@ miller.register(ROLE_MAP)
 acolyte.register(ROLE_MAP)
 priest.register(ROLE_MAP)
 prostitute.register(ROLE_MAP)
+mason.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:

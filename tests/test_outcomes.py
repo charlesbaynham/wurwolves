@@ -316,6 +316,54 @@ def test_jester_announced(mock_roles, db_session):
     "backend.roles.assign_roles",
     return_value=[
         PlayerRole.WOLF,
+        PlayerRole.MASON,
+        PlayerRole.MASON,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_masons_announced(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+    mason_1_id = uuid()
+    mason_2_id = uuid()
+    villager_id = uuid()
+
+    game.join(wolf_id)
+    game.join(mason_1_id)
+    game.join(mason_2_id)
+    game.join(villager_id)
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    def get_message_json(game, player_id):
+        from json import dumps
+
+        visible_messages = game.get_messages(player_id)
+        return dumps([v.dict() for v in visible_messages])
+
+    mason_1_name = game.get_user_name(mason_1_id)
+    mason_2_name = game.get_user_name(mason_2_id)
+
+    assert f"Your fellow masons are {mason_2_name}" in get_message_json(
+        game, mason_1_id
+    )
+    assert f"Your fellow masons are {mason_1_name}" in get_message_json(
+        game, mason_2_id
+    )
+
+    assert "Your fellow masons are" not in get_message_json(game, wolf_id)
+    assert "Your fellow masons are" not in get_message_json(game, villager_id)
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
         PlayerRole.SEER,
         PlayerRole.MILLER,
         PlayerRole.VILLAGER,
