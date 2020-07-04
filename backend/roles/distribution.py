@@ -11,7 +11,7 @@ guaranteed_roles = [
 
 # Roles with weightings
 # Weightings only have meaning relative to each other
-randomised_roles = {
+RANDOMISED_ROLES = {
     PlayerRole.JESTER: 10,
     PlayerRole.VIGILANTE: 10,
     PlayerRole.MAYOR: 10,
@@ -23,12 +23,14 @@ randomised_roles = {
 
 all_distributed_roles = (
     guaranteed_roles
-    + list(randomised_roles.keys())
+    + list(RANDOMISED_ROLES.keys())
     + [PlayerRole.WOLF, PlayerRole.VILLAGER, PlayerRole.NARRATOR, PlayerRole.SPECTATOR]
 )
 for role in list(PlayerRole):
     if role not in all_distributed_roles:
         raise TypeError(f"Role {role} is not available to be assigned")
+
+DUAL_ROLES = []
 
 # Average probability that a player is a villager
 # This cannot be satisfied for very small games (because all the guaranteed roles
@@ -93,39 +95,32 @@ def assign_roles(
 
     # For the rest, pick from the optional roles
     # Prepare a list of optional roles and weightings
-    opt_roles, opt_weighs = zip(*randomised_roles.items())
+    remaining_roles_and_weights = RANDOMISED_ROLES.copy()
 
-    roles += weighted_sample_without_replacement(
-        opt_roles, opt_weighs, num_players - len(roles), fallback=PlayerRole.VILLAGER
-    )
+    while len(roles) < num_players:
+        if not remaining_roles_and_weights:
+            # Raised if there are no roles remaining
+            roles.append(PlayerRole.VILLAGER)
+        else:
+            remaining_roles, remaining_weights = zip(
+                *remaining_roles_and_weights.items()
+            )
+            chosen_role = random.choices(remaining_roles, remaining_weights)[0]
+
+            if chosen_role in DUAL_ROLES:
+                remaining_slots = len(roles) - num_players
+
+                if remaining_slots < 2:
+                    # If we can't fit two more players, remove this role from the options and try again
+                    pass
+                else:
+                    roles += [chosen_role] * 2
+            else:
+                roles.append(chosen_role)
+
+            del remaining_roles_and_weights[chosen_role]
 
     # Shuffle the list and return
     random.shuffle(roles)
 
     return roles
-
-
-def weighted_sample_without_replacement(population, weights, k=1, fallback=None):
-    """
-    Random sample without replacement but with weights
-
-    If we run out of the population, fill the rest of the sample with fallback
-
-    From https://stackoverflow.com/questions/43549515/weighted-random-sample-without-replacement-in-python
-    """
-    if k < 0 or not isinstance(k, int):
-        raise ValueError
-    weights = list(weights)
-    positions = range(len(population))
-    indices = []
-    while True:
-        needed = k - len(indices)
-        if not needed:
-            break
-        for i in random.choices(positions, weights, k=needed):
-            if not any(weights):
-                indices.append(None)
-            if weights[i]:
-                weights[i] = 0.0
-                indices.append(i)
-    return [fallback if i is None else population[i] for i in indices]
