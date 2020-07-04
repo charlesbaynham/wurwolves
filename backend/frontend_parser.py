@@ -125,7 +125,12 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             status = p.state
 
         ready = False
-        if game.stage in [GameStage.LOBBY, GameStage.ENDED, GameStage.VOTING]:
+        if game.stage in [
+            GameStage.LOBBY,
+            GameStage.ENDED,
+            GameStage.VOTING,
+            GameStage.DAY,
+        ]:
             has_action, action_enabled = g.player_has_action(
                 p.id, game.stage, game.stage_id
             )

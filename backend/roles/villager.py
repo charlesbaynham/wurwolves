@@ -67,8 +67,7 @@ def register(role_map):
 
         @classmethod
         def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kwargs):
-            msg = f"{game.get_user_name(user_id)} moved to vote"
-            game.send_chat_message(msg)
+            pass
 
     class VoteAction(CancelledByMayor, GameAction, TargetRequired):
         def execute(self, game):
