@@ -11,6 +11,7 @@ from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction, GamePlayer, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
+from .utility_mixins import TargetMustBeAlive
 from .villager import description as villager
 
 if TYPE_CHECKING:
@@ -86,7 +87,7 @@ def is_saved_by_medic(player: GamePlayer):
     return saved
 
 
-class MedicAction(GameAction):
+class MedicAction(TargetMustBeAlive, GameAction):
     @classmethod
     def immediate(
         cls,
@@ -99,6 +100,10 @@ class MedicAction(GameAction):
         """
         Decide if this medic action is valid. If not, raise an exception so that the user is informed
         """
+        super().immediate(
+            game=game, user_id=user_id, selected_id=selected_id, stage_id=stage_id, **kw
+        )
+
         my_player_id = game.get_player_id(user_id)
         selected_player_id = game.get_player_id(selected_id)
 

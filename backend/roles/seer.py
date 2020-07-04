@@ -8,6 +8,7 @@ from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .miller import ConfusedByMiller
 from .teams import Team
+from .utility_mixins import TargetMustBeAlive
 from .villager import description as villager
 from .wolf import AffectedByWolves
 
@@ -39,7 +40,7 @@ Choose whom to check: at the end of the night, you'll find out if they are a wol
 )
 
 
-class SeerAction(ConfusedByMiller, AffectedByWolves, GameAction):
+class SeerAction(ConfusedByMiller, AffectedByWolves, TargetMustBeAlive, GameAction):
     def execute(self, game: "WurwolvesGame"):
         from .registration import get_role_team
 

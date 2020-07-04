@@ -10,7 +10,7 @@ from ..resolver import GameAction, RoundEndBehaviour
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
 from .teams import Team
-from .utility_mixins import OncePerGame
+from .utility_mixins import OncePerGame, TargetMustBeAlive
 from .villager import description as villager
 
 if TYPE_CHECKING:
@@ -42,7 +42,7 @@ You are a vigilante! Once per game, you can shoot someone in the night.
 )
 
 
-class VigilanteAction(OncePerGame, AffectedByMedic, GameAction):
+class VigilanteAction(OncePerGame, AffectedByMedic, TargetMustBeAlive, GameAction):
 
     round_end_behaviour = RoundEndBehaviour.ONCE_OPTIONAL
 
@@ -51,6 +51,7 @@ class VigilanteAction(OncePerGame, AffectedByMedic, GameAction):
         cls, game: "WurwolvesGame" = None, **kwargs,
     ):
         """Send the traditional message"""
+        super().immediate(game=game, **kwargs)
         game.send_chat_message("BANG!!!", is_strong=True)
 
     def execute(self, game):

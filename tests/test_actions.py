@@ -252,6 +252,30 @@ def test_no_voting_dead_people(demo_game):
                 demo_game.seer_voting_action(player.user_id, the_dick)
 
 
+def test_no_night_action_on_dead_people(demo_game):
+    demo_game.start_game()
+    demo_game._set_stage(GameStage.NIGHT)
+    assert demo_game.get_game_model().stage == GameStage.NIGHT
+
+    players = demo_game.get_players_model()
+
+    the_dick = players[0].user_id
+    demo_game.set_player_state(demo_game.get_player_id(the_dick), PlayerState.WOLFED)
+
+    players = demo_game.get_players_model()
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            with pytest.raises(HTTPException):
+                demo_game.medic_night_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.WOLF:
+            with pytest.raises(HTTPException):
+                demo_game.wolf_night_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.SEER:
+            with pytest.raises(HTTPException):
+                demo_game.seer_night_action(player.user_id, the_dick)
+
+
 def test_action_preventable(demo_game):
     demo_game.start_game()
 

@@ -11,18 +11,12 @@ another wolf buddy acting.
 that person, they are not home and so don't die. However if the wolves attack
 the prostitute, they get both of them. 
 """
-from typing import TYPE_CHECKING
-
-from fastapi import HTTPException
-
 from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction, GamePlayer, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
+from .utility_mixins import TargetMustBeAlive
 from .villager import description as villager
-
-if TYPE_CHECKING:
-    from ..game import WurwolvesGame
 
 
 general_desc = """
@@ -90,7 +84,7 @@ class AffectedByProstitute(ActionMixin):
         self.target_sleeping_with_prostitute = True
 
 
-class ProstituteAction(GameAction):
+class ProstituteAction(TargetMustBeAlive, GameAction):
     def do_modifiers(self):
         # Disable any actions originating from the prostitute's target
         for a in self.target.originated_from:

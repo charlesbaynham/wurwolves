@@ -98,7 +98,7 @@ class MayorMoveToVoteAction(GameAction, NoTargetRequired):
         game.send_chat_message("The mayor started the lynching session")
 
 
-class MayorVoteAction(GameAction, TargetMustBeAlive):
+class MayorVoteAction(TargetMustBeAlive, GameAction):
     def execute(self, game):
         msg = f"The mayor has executed {self.target.model.user.name}"
         logging.info(f"({game.game_id}) {msg}")

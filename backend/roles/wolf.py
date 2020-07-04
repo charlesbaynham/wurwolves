@@ -8,7 +8,7 @@ from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic, is_saved_by_medic
 from .prostitute import AffectedByProstitute, prostitute_sleeping_with
 from .teams import Team
-from .utility_mixins import TargetRequired
+from .utility_mixins import TargetRequired, TargetMustBeAlive
 from .villager import description as villager
 
 description = RoleDescription(
@@ -78,13 +78,16 @@ class AffectedByWolves(AffectedByMedic):
             self.target_attacked_by_wolf = True
 
 
-class WolfAction(GameAction, AffectedByMedic, AffectedByProstitute, TargetRequired):
+class WolfAction(
+    TargetMustBeAlive, TargetRequired, AffectedByMedic, AffectedByProstitute, GameAction
+):
 
     # Any wolf kill counts as the kill for all the wolves
     team_action = TeamBehaviour.DUPLICATED_PER_ROLE
 
     @classmethod
     def immediate(cls, game=None, user_id=None, selected_id=None, **kw):
+        super().immediate(game=game, user_id=user_id, selected_id=selected_id, **kw)
         originator = game.get_user_name(user_id)
         attacked = game.get_user_name(selected_id)
         game.send_team_message(
