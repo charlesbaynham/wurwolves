@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from fastapi import HTTPException
 
 from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction
+from ..resolver import ActionMixin, GameAction, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .prostitute import AffectedByProstitute
 from .teams import Team
@@ -53,8 +53,15 @@ class AffectedByMedic(AffectedByProstitute, ActionMixin):
         self.target_saved_by_medic = False
         self.originator_saved_by_medic = False
 
-        self.bind_as_modifier(self.__orig_saved, __class__, MedicAction, True)
-        self.bind_as_modifier(self.__target_saved, __class__, MedicAction, False)
+        self.bind_as_modifier(
+            self.__orig_saved,
+            __class__,
+            MedicAction,
+            ModifierType.ORIGINATING_FROM_TARGET,
+        )
+        self.bind_as_modifier(
+            self.__target_saved, __class__, MedicAction, ModifierType.TARGETTING_TARGET
+        )
 
     def __orig_saved(self):
         self.originator_saved_by_medic = True

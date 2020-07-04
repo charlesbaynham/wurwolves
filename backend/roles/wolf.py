@@ -3,7 +3,7 @@ The Wolf role
 """
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction
+from ..resolver import GameAction, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic
 from .teams import Team
@@ -52,8 +52,18 @@ class AffectedByWolves(AffectedByMedic):
         self.originator_attacked_by_wolf = False
         self.target_attacked_by_wolf = False
 
-        self.bind_as_modifier(self.__orig_attacked, __class__, WolfAction, True)
-        self.bind_as_modifier(self.__target_attacked, __class__, WolfAction, False)
+        self.bind_as_modifier(
+            self.__orig_attacked,
+            __class__,
+            WolfAction,
+            ModifierType.ORIGINATING_FROM_TARGET,
+        )
+        self.bind_as_modifier(
+            self.__target_attacked,
+            __class__,
+            WolfAction,
+            ModifierType.TARGETTING_TARGET,
+        )
 
     def __orig_attacked(self):
         if not self.originator_saved_by_medic:

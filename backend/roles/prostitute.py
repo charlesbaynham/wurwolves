@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from fastapi import HTTPException
 
 from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction
+from ..resolver import ActionMixin, GameAction, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
 from .villager import description as villager
@@ -68,9 +68,17 @@ class AffectedByProstitute(ActionMixin):
         self.originator_sleeping_with_prostitute = False
         self.target_sleeping_with_prostitute = False
 
-        self.bind_as_modifier(self.__orig_sleeping, __class__, ProstituteAction, True)
         self.bind_as_modifier(
-            self.__target_sleeping, __class__, ProstituteAction, False
+            self.__orig_sleeping,
+            __class__,
+            ProstituteAction,
+            ModifierType.ORIGINATING_FROM_TARGET,
+        )
+        self.bind_as_modifier(
+            self.__target_sleeping,
+            __class__,
+            ProstituteAction,
+            ModifierType.TARGETTING_TARGET,
         )
 
     def __orig_sleeping(self):
