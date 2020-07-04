@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Path
 
 from ..model import Action, GameStage, PlayerRole
+from ..resolver import TeamBehaviour
 from ..user_id import get_user_id
 from . import (
     acolyte,
@@ -238,14 +239,22 @@ def register_role(WurwolvesGame, role: PlayerRole):
             # is triggered
             if immediate_return is not False:
                 self._session.begin_nested()
-                action = Action(
-                    game_id=self.game_id,
-                    player_id=player.id,
-                    selected_player_id=selected_player_id,
-                    stage=stage,
-                    stage_id=stage_id,
-                )
-                self._session.add(action)
+
+                if action_class.team_action == TeamBehaviour.DUPLICATED_PER_ROLE:
+                    submit_players = self.get_players(role=player.role)
+                else:
+                    submit_players = [player]
+
+                for p in submit_players:
+                    action = Action(
+                        game_id=self.game_id,
+                        player_id=p.id,
+                        selected_player_id=selected_player_id,
+                        stage=stage,
+                        stage_id=stage_id,
+                    )
+                    self._session.add(action)
+
                 self._session.commit()
 
             # If all the actions are complete, process them

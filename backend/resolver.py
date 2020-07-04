@@ -203,6 +203,18 @@ class RoundEndBehaviour(Enum):
     MULTIPLE_OPTIONAL = 3
 
 
+class TeamBehaviour(Enum):
+    # Each player can submit this action independently
+    ONCE_PER_PLAYER = 1
+
+    # The first player to submit this action is the only player on their team allowed to
+    ONCE_PER_TEAM = 2
+
+    # The first player to submit, chooses on behalf of every player on their team.
+    # The action is duplicated and assigned to all their team mates
+    DUPLICATED_PER_ROLE = 3
+
+
 class GameAction(ActionMixin):
     # This is a dict of mixins which affect child classes of this class. There is one entry for each
     # type of interaction, i.e. each ModifierType. Each ModifierType has a dict of child class -> mixins
@@ -219,7 +231,7 @@ class GameAction(ActionMixin):
     allowed_player_states = [PlayerState.ALIVE]
 
     # Override to have this action performed once per team, not once per player
-    team_action = False
+    team_action = TeamBehaviour.ONCE_PER_PLAYER
 
     # Override to change how this action does / doesn't hold up the round end
     round_end_behaviour = RoundEndBehaviour.ONCE_REQUIRED

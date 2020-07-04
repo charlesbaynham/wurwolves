@@ -3,7 +3,7 @@ The Wolf role
 """
 
 from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction, ModifierType
+from ..resolver import GameAction, ModifierType, TeamBehaviour
 from .common import RoleDescription, RoleDetails, StageAction
 from .medic import AffectedByMedic, is_saved_by_medic
 from .prostitute import AffectedByProstitute, prostitute_sleeping_with
@@ -81,7 +81,7 @@ class AffectedByWolves(AffectedByMedic):
 class WolfAction(GameAction, AffectedByMedic, AffectedByProstitute, TargetRequired):
 
     # Any wolf kill counts as the kill for all the wolves
-    team_action = True
+    team_action = TeamBehaviour.DUPLICATED_PER_ROLE
 
     @classmethod
     def immediate(cls, game=None, user_id=None, selected_id=None, **kw):
@@ -101,11 +101,14 @@ class WolfAction(GameAction, AffectedByMedic, AffectedByProstitute, TargetRequir
             kills.append(prostitute_sleeping_with(self.target))
 
         for kill in kills:
-            if not is_saved_by_medic(kill):
+            if not is_saved_by_medic(kill) and kill.model.state == PlayerState.ALIVE:
                 target_name = kill.model.user.name
                 game.send_chat_message(
                     f"{target_name} was brutally murdered", is_strong=True
                 )
+                # Be sure to keep the model in-sync with the database, since later
+                # actions might read it
+                kill.model.state = PlayerState.WOLFED
                 game.kill_player(kill.model.id, PlayerState.WOLFED)
 
 

@@ -692,7 +692,7 @@ class WurwolvesGame:
             == resolver.RoundEndBehaviour.MULTIPLE_OPTIONAL
         ):
             action_enabled = True
-        elif action_class.team_action:
+        elif action_class.team_action == resolver.TeamBehaviour.ONCE_PER_TEAM:
             # Which roles are on my team?
             my_team = roles.get_role_team(player.role)
             my_team_roles = [
