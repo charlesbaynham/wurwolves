@@ -49,7 +49,13 @@ class SeerAction(ConfusedByMiller, AffectedByWolves, GameAction):
 
         logging.info(f"Seer: {seer_name} checks {target_name}")
 
-        if self.originator_attacked_by_wolf:
+        if self.prevented:
+            game.send_chat_message(
+                f"You tried to check {target_name} but you couldn't concentrate",
+                is_strong=False,
+                player_list=[self.originator.model.id],
+            )
+        elif self.originator_attacked_by_wolf:
             game.send_chat_message(
                 f"You checked {target_name} but were rudely interrupted",
                 is_strong=False,

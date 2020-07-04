@@ -56,7 +56,7 @@ class VigilanteAction(OncePerGame, AffectedByMedic, GameAction):
     def execute(self, game):
         target_name = self.target.model.user.name
 
-        if not self.target_saved_by_medic:
+        if not self.target_saved_by_medic and not self.prevented:
             game.send_chat_message(f"{target_name} was shot", is_strong=True)
             game.kill_player(self.target.model.id, PlayerState.SHOT)
 

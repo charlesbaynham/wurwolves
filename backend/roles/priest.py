@@ -64,14 +64,26 @@ class PriestCheckRole(OncePerGame, GameAction):
         target_name = self.target.model.user.name
         role = self.target.model.previous_role
 
-        if not role:
-            raise RuntimeError(f"previous_role not specified for player {target_name}")
+        if self.prevented:
+            game.send_chat_message(
+                (
+                    f"You think hard about {target_name} but you just can't remember. "
+                    "Maybe something is distracting you..."
+                ),
+                is_strong=True,
+                player_list=[originator_id],
+            )
+        else:
+            if not role:
+                raise RuntimeError(
+                    f"previous_role not specified for player {target_name}"
+                )
 
-        game.send_chat_message(
-            f"You remember that {target_name} was a {role.value}",
-            is_strong=True,
-            player_list=[originator_id],
-        )
+            game.send_chat_message(
+                f"You remember that {target_name} was a {role.value}",
+                is_strong=True,
+                player_list=[originator_id],
+            )
 
 
 def register(role_map):
