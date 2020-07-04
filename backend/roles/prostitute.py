@@ -68,18 +68,18 @@ class AffectedByProstitute(ActionMixin):
         self.originator_sleeping_with_prostitute = False
         self.target_sleeping_with_prostitute = False
 
-        self.bind_as_modifier(
-            self.__orig_sleeping,
-            __class__,
-            ProstituteAction,
-            ModifierType.ORIGINATING_FROM_TARGET,
-        )
-        self.bind_as_modifier(
-            self.__target_sleeping,
-            __class__,
-            ProstituteAction,
-            ModifierType.TARGETTING_TARGET,
-        )
+        # self.bind_as_modifier(
+        #     self.__orig_sleeping,
+        #     __class__,
+        #     ProstituteAction,
+        #     ModifierType.ORIGINATING_FROM_TARGET,
+        # )
+        # self.bind_as_modifier(
+        #     self.__target_sleeping,
+        #     __class__,
+        #     ProstituteAction,
+        #     ModifierType.TARGETTING_TARGET,
+        # )
 
     def __orig_sleeping(self, *args):
         self.originator_sleeping_with_prostitute = True

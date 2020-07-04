@@ -47,23 +47,19 @@ class AffectedByWolves(AffectedByMedic):
     These can be cancelled by medic action
     """
 
+    def __init_subclass__(cls):
+        cls.bind_as_modifier(
+            cls.__orig_attacked, cls, WolfAction, ModifierType.ORIGINATING_FROM_TARGET,
+        )
+
+        cls.bind_as_modifier(
+            cls.__target_attacked, cls, WolfAction, ModifierType.TARGETTING_TARGET,
+        )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.originator_attacked_by_wolf = False
         self.target_attacked_by_wolf = False
-
-        self.bind_as_modifier(
-            self.__orig_attacked,
-            __class__,
-            WolfAction,
-            ModifierType.ORIGINATING_FROM_TARGET,
-        )
-        self.bind_as_modifier(
-            self.__target_attacked,
-            __class__,
-            WolfAction,
-            ModifierType.TARGETTING_TARGET,
-        )
 
     def __orig_attacked(self, *args):
         if not self.originator_saved_by_medic:

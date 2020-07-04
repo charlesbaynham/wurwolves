@@ -156,11 +156,12 @@ class ActionMixin:
     def get_action_method_name(MixinClass, modifier_type: ModifierType):
         return f"mod_{MixinClass.__name__}_{modifier_type.value}"
 
+    @classmethod
     def bind_as_modifier(
-        self, func, MixinClass, ActionClass, modifier_type: ModifierType
+        cls, func, MixinClass, ActionClass, modifier_type: ModifierType
     ):
         """
-        Bind a function from this mixin to the self object using a name generated from the mixin's class
+        Bind a function from this mixin to this class using a name generated from the mixin's class
 
         All instances of ActionClass will now search for actions of MixinClass
         in the do_modifiers() stage. If they find any, they will execute the method func. 
@@ -174,26 +175,20 @@ class ActionMixin:
 
         Example usage:
 
-            self.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
+            cls.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
 
         This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name.
-        The bound function (__do_mod) must accept the action which triggered the call as an argument
+        It should probably be called when setting up the modified classes, e.g. in __init_subclass__ of the 
+        action mixin. The bound function (__do_mod) must accept the action which triggered the call as an
+        argument.
 
         ``modifier_type`` specifices which actions should be searched for the registered method.
         E.g. a Medic wants to alter actions which target the target, whereas a Prostitute
         wants to alter actions which originate from the target. 
         """
 
-        # Make a new class method which calls func.
-        # func default is to force early-binding
-        def new_func(self, action, func=func):
-            func(action)
-
-        mod_func_name = self.get_action_method_name(MixinClass, modifier_type)
-        new_func.__name__ = mod_func_name
-
-        bound_func = new_func.__get__(self, self.__class__)
-        setattr(self, mod_func_name, bound_func)
+        mod_func_name = cls.get_action_method_name(MixinClass, modifier_type)
+        setattr(cls, mod_func_name, func)
 
         # Register the MixinClass as a modifier of targets for this ActionClass
         mixin_dict = GameAction.mixins_registered[modifier_type]

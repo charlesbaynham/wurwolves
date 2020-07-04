@@ -48,25 +48,23 @@ class AffectedByMedic(AffectedByProstitute, ActionMixin):
     Creates attributes `target_saved_by_medic` and `originator_saved_by_medic`
     """
 
+    def __init_subclass__(cls):
+        cls.bind_as_modifier(
+            cls.__orig_saved, cls, MedicAction, ModifierType.ORIGINATING_FROM_TARGET,
+        )
+        cls.bind_as_modifier(
+            cls.__target_saved, cls, MedicAction, ModifierType.TARGETTING_TARGET,
+        )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.target_saved_by_medic = False
         self.originator_saved_by_medic = False
 
-        self.bind_as_modifier(
-            self.__orig_saved,
-            __class__,
-            MedicAction,
-            ModifierType.ORIGINATING_FROM_TARGET,
-        )
-        self.bind_as_modifier(
-            self.__target_saved, __class__, MedicAction, ModifierType.TARGETTING_TARGET
-        )
-
-    def __orig_saved(self, action):
+    def __orig_saved(self, action: "MedicAction"):
         self.originator_saved_by_medic = True
 
-    def __target_saved(self, action):
+    def __target_saved(self, action: "MedicAction"):
         self.target_saved_by_medic = True
 
 
