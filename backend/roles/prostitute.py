@@ -63,28 +63,29 @@ class AffectedByProstitute(ActionMixin):
     `target_sleeping_with_prostitute`
     """
 
+    def __init_subclass__(cls):
+        cls.bind_as_modifier(
+            AffectedByProstitute.__orig_sleeping,
+            AffectedByProstitute,
+            ProstituteAction,
+            ModifierType.ORIGINATING_FROM_TARGET,
+        )
+        cls.bind_as_modifier(
+            AffectedByProstitute.__target_sleeping,
+            AffectedByProstitute,
+            ProstituteAction,
+            ModifierType.TARGETTING_TARGET,
+        )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.originator_sleeping_with_prostitute = False
         self.target_sleeping_with_prostitute = False
 
-        # self.bind_as_modifier(
-        #     self.__orig_sleeping,
-        #     __class__,
-        #     ProstituteAction,
-        #     ModifierType.ORIGINATING_FROM_TARGET,
-        # )
-        # self.bind_as_modifier(
-        #     self.__target_sleeping,
-        #     __class__,
-        #     ProstituteAction,
-        #     ModifierType.TARGETTING_TARGET,
-        # )
-
-    def __orig_sleeping(self, *args):
+    def __orig_sleeping(self, action: GameAction):
         self.originator_sleeping_with_prostitute = True
 
-    def __target_sleeping(self, *args):
+    def __target_sleeping(self, action: GameAction):
         self.target_sleeping_with_prostitute = True
 
 

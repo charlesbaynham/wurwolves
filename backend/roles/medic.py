@@ -50,10 +50,16 @@ class AffectedByMedic(AffectedByProstitute, ActionMixin):
 
     def __init_subclass__(cls):
         cls.bind_as_modifier(
-            cls.__orig_saved, cls, MedicAction, ModifierType.ORIGINATING_FROM_TARGET,
+            AffectedByMedic.__orig_saved,
+            AffectedByMedic,
+            MedicAction,
+            ModifierType.ORIGINATING_FROM_TARGET,
         )
         cls.bind_as_modifier(
-            cls.__target_saved, cls, MedicAction, ModifierType.TARGETTING_TARGET,
+            AffectedByMedic.__target_saved,
+            AffectedByMedic,
+            MedicAction,
+            ModifierType.TARGETTING_TARGET,
         )
 
     def __init__(self, *args, **kwargs):

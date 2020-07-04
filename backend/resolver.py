@@ -175,7 +175,7 @@ class ActionMixin:
 
         Example usage:
 
-            cls.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
+            AffectedByMedic.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
 
         This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name.
         It should probably be called when setting up the modified classes, e.g. in __init_subclass__ of the 
@@ -337,7 +337,7 @@ class GameAction(ActionMixin):
                                     MixinClass, modifier_type
                                 ),
                             )
-                            f(action)
+                            f(self)
 
     @classmethod
     def get_priority(cls):

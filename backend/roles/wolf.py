@@ -49,11 +49,17 @@ class AffectedByWolves(AffectedByMedic):
 
     def __init_subclass__(cls):
         cls.bind_as_modifier(
-            cls.__orig_attacked, cls, WolfAction, ModifierType.ORIGINATING_FROM_TARGET,
+            AffectedByWolves.__orig_attacked,
+            AffectedByWolves,
+            WolfAction,
+            ModifierType.ORIGINATING_FROM_TARGET,
         )
 
         cls.bind_as_modifier(
-            cls.__target_attacked, cls, WolfAction, ModifierType.TARGETTING_TARGET,
+            AffectedByWolves.__target_attacked,
+            AffectedByWolves,
+            WolfAction,
+            ModifierType.TARGETTING_TARGET,
         )
 
     def __init__(self, *args, **kwargs):
