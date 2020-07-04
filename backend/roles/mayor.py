@@ -93,9 +93,6 @@ class MayorMoveToVoteAction(GameAction, NoTargetRequired):
 
     allowed_player_states = list(PlayerState)
 
-    def execute(self, game):
-        pass
-
     @classmethod
     def immediate(cls, game: "WurwolvesGame" = None, **kwargs):
         game.send_chat_message("The mayor started the lynching session")

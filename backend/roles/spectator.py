@@ -76,9 +76,6 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
         logging.info(f"({game.game_id}) {msg}")
         game.send_chat_message(msg)
 
-    def execute(self, game):
-        pass
-
 
 def register(role_map):
     from .narrator import CancelledByNarrator

@@ -104,11 +104,6 @@ class MedicAction(GameAction):
         if sorted_actions[0].selected_player_id == selected_player_id:
             raise HTTPException(403, "You can't save the same person twice in a row")
 
-    def execute(self, game):
-        # No action required: the medic's effect is to modify other actions
-        # through the AffectedByMedic ActionMixin
-        pass
-
 
 def register(role_map):
     role_map.update(

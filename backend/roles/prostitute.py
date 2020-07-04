@@ -98,11 +98,6 @@ class ProstituteAction(GameAction):
         # Execute the normal modifier search
         super().do_modifiers()
 
-    def execute(self, game):
-        # No action required: the prostitute's effect is to modify other actions
-        # through the AffectedByProstitute ActionMixin
-        pass
-
 
 def register(role_map):
     role_map.update(

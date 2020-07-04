@@ -261,7 +261,11 @@ class GameAction(ActionMixin):
         super().__init__(action_model, players)
 
     def execute(self, game):
-        """Called once all actions have been submitted"""
+        """
+        Called once all actions have been submitted
+        
+        This method should respect the state of self.prevented
+        """
         pass
 
     @classmethod
