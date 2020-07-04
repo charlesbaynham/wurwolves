@@ -350,6 +350,10 @@ class WurwolvesGame:
             return current_hash
 
     @db_scoped
+    def touch(self):
+        self.get_game().touch()
+
+    @db_scoped
     def player_keepalive(self, user_id: UUID):
         u = self.get_user(user_id)
         u.touch()
@@ -382,7 +386,7 @@ class WurwolvesGame:
         self._session.commit()
 
         if someone_kicked:
-            self.get_game().touch()
+            self.touch()
             # Reevaluate processed actions
             self.process_actions(game.stage, game.stage_id)
 
@@ -635,11 +639,9 @@ class WurwolvesGame:
             u.name = name
             u.name_is_generated = False
 
-            # Send a message to all games in which this user plays
-            # for player_role in u.player_roles:
-            #     WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
-            #         msg=f"{old_name} has changed their name to {name}"
-            #     )
+            # Bump all games in which this user plays
+            for player_role in u.player_roles:
+                WurwolvesGame.from_id(player_role.game_id, session=s).touch()
 
     @db_scoped
     def is_role_present(
