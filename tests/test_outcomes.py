@@ -440,6 +440,51 @@ def test_prostitute_prevents_medic(mock_roles, db_session):
     "backend.roles.assign_roles",
     return_value=[
         PlayerRole.WOLF,
+        PlayerRole.SEER,
+        PlayerRole.PROSTITUTE,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_prostitute_prevents_seer(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+    seer_id = uuid()
+    prostitute_id = uuid()
+    villager_id = uuid()
+
+    game.join(wolf_id)
+    game.join(seer_id)
+    game.join(prostitute_id)
+    game.join(villager_id)
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    # Seer checks villager but prostitute sleeps with seer.
+    # Wolf kills villager, so villager dies
+    game.prostitute_night_action(prostitute_id, seer_id)
+    game.seer_night_action(seer_id, villager_id)
+    game.wolf_night_action(wolf_id, villager_id)
+
+    assert game.get_player_model(villager_id).state == PlayerState.WOLFED
+
+    visible_messages = game.get_messages(seer_id)
+
+    from json import dumps
+
+    summary = dumps([v.dict() for v in visible_messages])
+
+    assert re.search(r"you couldn't concentrate", summary)
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
         PlayerRole.PROSTITUTE,
         PlayerRole.VILLAGER,
         PlayerRole.VILLAGER,
