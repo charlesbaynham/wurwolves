@@ -18,7 +18,7 @@ randomised_roles = {
     PlayerRole.MILLER: 10,
     PlayerRole.ACOLYTE: 7,
     PlayerRole.PRIEST: 10,
-    PlayerRole.PROSTITUTE: 10,
+    PlayerRole.PROSTITUTE: 1000,
 }
 
 all_distributed_roles = (
@@ -34,7 +34,7 @@ for role in list(PlayerRole):
 # This cannot be satisfied for very small games (because all the guaranteed roles
 # must be handed out) or for very large games (because there aren't enough optional
 # roles to go around) but the algorithm will do its best
-PROB_VILLAGER = 0.15
+PROB_VILLAGER = 0.20
 
 
 def num_wolves(num_players: int):

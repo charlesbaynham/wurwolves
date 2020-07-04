@@ -636,10 +636,10 @@ class WurwolvesGame:
             u.name_is_generated = False
 
             # Send a message to all games in which this user plays
-            for player_role in u.player_roles:
-                WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
-                    msg=f"{old_name} has changed their name to {name}"
-                )
+            # for player_role in u.player_roles:
+            #     WurwolvesGame.from_id(player_role.game_id, session=s).send_chat_message(
+            #         msg=f"{old_name} has changed their name to {name}"
+            #     )
 
     @db_scoped
     def is_role_present(
