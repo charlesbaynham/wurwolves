@@ -5,7 +5,8 @@ import {
     selectPlayerName,
     selectPlayerStatus,
     selectSelectedPlayer,
-    selectPlayerSelectable
+    selectPlayerSelectable,
+    selectPlayerReady
 } from './selectors'
 
 import { selectPlayer, unselectAll } from '../app/store'
@@ -49,6 +50,7 @@ function Player(props) {
     const player_id = props.player_id
     const name = useSelector(selectPlayerName(player_id));
     const status = useSelector(selectPlayerStatus(player_id));
+    const playerReady = useSelector(selectPlayerReady(player_id));
 
     const selectedPlayer = useSelector(selectSelectedPlayer);
     const playerSelectable = useSelector(selectPlayerSelectable);
@@ -66,6 +68,7 @@ function Player(props) {
             <img src={IMAGE_LOOKUP[status].img}
                 className={`figure-img img-fluid w-100 ${selected ? "selected" : ""}`}
                 alt={IMAGE_LOOKUP[status].alt} />
+            {playerReady ? <img src='/images/tick.svg' className='tick' /> : null}
             <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
         </figure>
     )

@@ -15,6 +15,7 @@ export const selectPlayer = id => (state => getPlayerById(state.backend.players,
 
 export const selectPlayerName = id => (state => getPlayerById(state.backend.players, id).name);
 export const selectPlayerStatus = id => (state => getPlayerById(state.backend.players, id).status);
+export const selectPlayerReady = id => (state => getPlayerById(state.backend.players, id).ready);
 
 export const selectAllPlayers = state => state.backend.players;
 

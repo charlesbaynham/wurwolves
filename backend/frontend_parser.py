@@ -20,6 +20,7 @@ class FrontendState(pydantic.BaseModel):
         id: UUID
         name: str
         status: str
+        ready: bool = False
 
         @pydantic.validator("status")
         def status_valid(cls, v):
@@ -123,9 +124,21 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         else:
             status = p.state
 
+        ready = False
+        if game.stage in [GameStage.LOBBY, GameStage.ENDED, GameStage.VOTING]:
+            has_action, action_enabled = g.player_has_action(
+                p.id, game.stage, game.stage_id
+            )
+            if has_action and not action_enabled:
+                ready = True
+
         player_states.append(
             FrontendState.PlayerState(
-                id=p.user_id, name=p.user.name, status=status, selected=False
+                id=p.user_id,
+                name=p.user.name,
+                status=status,
+                selected=False,
+                ready=ready,
             )
         )
 

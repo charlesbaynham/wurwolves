@@ -32,6 +32,15 @@
   border: 0.3rem solid blue !important;
 }
 
+.player .tick {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 25%;
+  transform: translateX(50%);
+  transform: translateY(-50%);
+}
+
 .NIGHT .player img {
   background: #AAA;
 }

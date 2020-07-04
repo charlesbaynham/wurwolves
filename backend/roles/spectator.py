@@ -74,7 +74,7 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
     def immediate(cls, game=None, user_id=None, **kwargs):
         msg = f"{game.get_user_name(user_id)} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
-        game.send_chat_message(msg)
+        # game.send_chat_message(msg)
 
 
 def register(role_map):

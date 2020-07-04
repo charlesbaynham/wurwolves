@@ -18,7 +18,7 @@ randomised_roles = {
     PlayerRole.MILLER: 10,
     PlayerRole.ACOLYTE: 7,
     PlayerRole.PRIEST: 10,
-    PlayerRole.PROSTITUTE: 1000,
+    PlayerRole.PROSTITUTE: 10,
 }
 
 all_distributed_roles = (
