@@ -90,6 +90,14 @@ class AffectedByProstitute(ActionMixin):
 
 
 class ProstituteAction(GameAction):
+    def do_modifiers(self):
+        # Disable any actions originating from the prostitute's target
+        for a in self.target.originated_from:
+            a.prevented = True
+
+        # Execute the normal modifier search
+        super().do_modifiers()
+
     def execute(self, game):
         # No action required: the prostitute's effect is to modify other actions
         # through the AffectedByProstitute ActionMixin

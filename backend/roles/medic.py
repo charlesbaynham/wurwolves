@@ -68,10 +68,12 @@ class AffectedByMedic(AffectedByProstitute, ActionMixin):
         self.originator_saved_by_medic = False
 
     def __orig_saved(self, action: "MedicAction"):
-        self.originator_saved_by_medic = True
+        if not action.prevented:
+            self.originator_saved_by_medic = True
 
     def __target_saved(self, action: "MedicAction"):
-        self.target_saved_by_medic = True
+        if not action.prevented:
+            self.target_saved_by_medic = True
 
 
 class MedicAction(GameAction):

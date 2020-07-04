@@ -243,6 +243,7 @@ class GameAction(ActionMixin):
         self.model: ActionModel = action_model
         self.originator: GamePlayer = None
         self.target: GamePlayer = None
+        self.prevented = False
 
         # Get the originator
         self.originator = players[action_model.player_id]
@@ -434,8 +435,11 @@ def process_actions(game: "WurwolvesGame", stage: GameStage, stage_id: int) -> N
 
     # In order, execute the actions
     for a in game_actions:
-        logging.info(f"Executing action {a}")
-        a.execute(game)
+        if a.prevented:
+            logging.info(f"Action {a} prevented")
+        else:
+            logging.info(f"Executing action {a}")
+            a.execute(game)
 
     # Perform any final actions (e.g. changing the game stage) that need to happen
     if stage in stage_finalizers:
