@@ -82,10 +82,10 @@ class AffectedByProstitute(ActionMixin):
         self.originator_sleeping_with_prostitute = False
         self.target_sleeping_with_prostitute = False
 
-    def __orig_sleeping(self, action: GameAction):
+    def __orig_sleeping(self, action: "ProstituteAction"):
         self.originator_sleeping_with_prostitute = True
 
-    def __target_sleeping(self, action: GameAction):
+    def __target_sleeping(self, action: "ProstituteAction"):
         self.target_sleeping_with_prostitute = True
 
 
