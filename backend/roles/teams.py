@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from ..model import PlayerState
+from ..model import PlayerState, PlayerRole
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
@@ -83,6 +83,7 @@ def win_action(game: "WurwolvesGame", team: Team):
                 if (
                     get_role_team(player.role) == Team.VILLAGERS
                     and player.state == PlayerState.ALIVE
+                    and player.role != PlayerRole.ACOLYTE
                 ):
                     game.kill_player(player.id, PlayerState.WOLFED)
     else:
