@@ -4,6 +4,7 @@ import pytest
 
 from backend.model import PlayerRole
 from backend.roles import assign_roles
+from backend.roles.distribution import DUAL_ROLES
 
 
 # For determinism
@@ -47,3 +48,33 @@ def test_num_villagers(num_players):
     frac_villagers = sum(r is PlayerRole.VILLAGER for r in roles) / len(roles)
 
     assert 0.15 < frac_villagers < 0.35
+
+
+def test_dual_roles_are_dual():
+
+    num_players = 20
+    num_repeats = 100
+
+    for _ in range(num_repeats):
+        roles = assign_roles(num_players, probability_of_villager=0.25)
+
+        for r in DUAL_ROLES:
+            if r in roles:
+                assert roles.count(r) == 2
+
+
+def test_dual_roles_assigned():
+
+    num_players = 20
+    num_repeats = 100
+
+    dual_roles_seen = {r: False for r in DUAL_ROLES}
+
+    for _ in range(num_repeats):
+        roles = assign_roles(num_players, probability_of_villager=0.25)
+
+        for r in DUAL_ROLES:
+            if r in roles:
+                dual_roles_seen[r] = True
+
+    assert all(dual_roles_seen.values())

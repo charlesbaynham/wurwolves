@@ -109,7 +109,7 @@ def assign_roles(
             chosen_role = random.choices(remaining_roles, remaining_weights)[0]
 
             if chosen_role in DUAL_ROLES:
-                remaining_slots = len(roles) - num_players
+                remaining_slots = num_players - len(roles)
 
                 if remaining_slots < 2:
                     # If we can't fit two more players, remove this role from the options and try again
