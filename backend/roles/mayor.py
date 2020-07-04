@@ -95,6 +95,7 @@ class MayorMoveToVoteAction(GameAction, NoTargetRequired):
 
     @classmethod
     def immediate(cls, game: "WurwolvesGame" = None, **kwargs):
+        super().immediate(game=game, **kwargs)
         game.send_chat_message("The mayor started the lynching session")
 
 

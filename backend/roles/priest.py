@@ -56,6 +56,7 @@ class PriestCheckRole(OncePerGame, GameAction):
         cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs,
     ):
         """Confirm that the selected player is dead"""
+        super().immediate(game=game, selected_id=selected_id, **kwargs)
         if game.get_player_model(selected_id).state not in DEAD_STATES:
             raise HTTPException(403, "Your target must have died")
 

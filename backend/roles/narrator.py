@@ -110,6 +110,7 @@ def register(role_map):
 
         @classmethod
         def immediate(cls, game: "WurwolvesGame" = None, **kwargs):
+            super().immediate(game=game, **kwargs)
             game.send_chat_message("The narrator started the voting session")
 
     role_map.update(

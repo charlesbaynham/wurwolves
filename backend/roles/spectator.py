@@ -72,6 +72,7 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
 
     @classmethod
     def immediate(cls, game=None, user_id=None, **kwargs):
+        super().immediate(game=game, user_id=user_id, **kwargs)
         msg = f"{game.get_user_name(user_id)} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
         # game.send_chat_message(msg)
@@ -94,6 +95,8 @@ def register(role_map):
 
         @classmethod
         def immediate(cls, game: "WurwolvesGame" = None, user_id=None, **kw):
+            super().immediate(game=game, user_id=user_id, **kw)
+
             game.set_player_role(game.get_player_id(user_id), PlayerRole.NARRATOR)
 
             # Return false to abort the storage of this action, otherwise it'll count
