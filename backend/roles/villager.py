@@ -70,7 +70,6 @@ def register(role_map):
     class VoteAction(CancelledByMayor, GameAction, TargetRequired):
         @classmethod
         def immediate(cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs):
-
             selected_player = game.get_player_model(selected_id)
 
             if selected_player.state != PlayerState.ALIVE:
