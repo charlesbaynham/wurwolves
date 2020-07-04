@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from fastapi import HTTPException
 
 from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction, ModifierType
+from ..resolver import ActionMixin, GameAction, GamePlayer, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
 from .villager import description as villager
@@ -64,6 +64,7 @@ class AffectedByProstitute(ActionMixin):
     """
 
     def __init_subclass__(cls):
+        super().__init_subclass__()
         cls.bind_as_modifier(
             AffectedByProstitute.__orig_sleeping,
             AffectedByProstitute,
@@ -97,6 +98,18 @@ class ProstituteAction(GameAction):
 
         # Execute the normal modifier search
         super().do_modifiers()
+
+
+def prostitute_sleeping_with(prostitute: GamePlayer) -> GamePlayer:
+    """
+    Given a prostitute, return the GamePlayer that they are sleeping with
+    """
+    if prostitute.model.role != PlayerRole.PROSTITUTE:
+        raise TypeError(f"Player {prostitute} is not a prostitute")
+
+    assert len(prostitute.originated_from) == 1
+
+    return prostitute.originated_from[0].target
 
 
 def register(role_map):

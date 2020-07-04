@@ -263,7 +263,7 @@ class GameAction(ActionMixin):
     def execute(self, game):
         """
         Called once all actions have been submitted
-        
+
         This method should respect the state of self.prevented
         """
         pass

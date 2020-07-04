@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from fastapi import HTTPException
 
 from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction, ModifierType
+from ..resolver import ActionMixin, GameAction, GamePlayer, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
 from .villager import description as villager
@@ -48,6 +48,7 @@ class AffectedByMedic(ActionMixin):
     """
 
     def __init_subclass__(cls):
+        super().__init_subclass__()
         cls.bind_as_modifier(
             AffectedByMedic.__orig_saved,
             AffectedByMedic,
@@ -73,6 +74,16 @@ class AffectedByMedic(ActionMixin):
     def __target_saved(self, action: "MedicAction"):
         if not action.prevented:
             self.target_saved_by_medic = True
+
+
+def is_saved_by_medic(player: GamePlayer):
+    saved = False
+    for action in player.targetted_by:
+        if hasattr(action, "target_saved_by_medic") and action.target_saved_by_medic:
+            saved = True
+            break
+
+    return saved
 
 
 class MedicAction(GameAction):

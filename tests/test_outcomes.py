@@ -550,3 +550,79 @@ def test_prostitute_dooms_villager(mock_roles, db_session):
 
     assert game.get_player_model(villager_id).state == PlayerState.WOLFED
     assert game.get_player_model(prostitute_id).state == PlayerState.WOLFED
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
+        PlayerRole.WOLF,
+        PlayerRole.PROSTITUTE,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_prostitute_prevents_only_one_wolf(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_1_id = uuid()
+    wolf_2_id = uuid()
+    prostitute_id = uuid()
+    villager_id = uuid()
+
+    game.join(wolf_1_id)
+    game.join(wolf_2_id)
+    game.join(prostitute_id)
+    game.join(villager_id)
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    # Prostitute sleep with wolf 1, wolves attack villager.
+    # First wolf if disabled but second wolf kills
+    game.prostitute_night_action(prostitute_id, wolf_1_id)
+    game.wolf_night_action(wolf_1_id, villager_id)
+
+    assert game.get_player_model(villager_id).state == PlayerState.WOLFED
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
+        PlayerRole.WOLF,
+        PlayerRole.PROSTITUTE,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_prostitute_prevents_only_one_wolf_alt(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_1_id = uuid()
+    wolf_2_id = uuid()
+    prostitute_id = uuid()
+    villager_id = uuid()
+
+    game.join(wolf_1_id)
+    game.join(wolf_2_id)
+    game.join(prostitute_id)
+    game.join(villager_id)
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    # Prostitute sleep with wolf 1, wolves attack villager.
+    # First wolf if disabled but second wolf kills
+    game.prostitute_night_action(prostitute_id, wolf_1_id)
+    game.wolf_night_action(wolf_2_id, villager_id)
+
+    assert game.get_player_model(villager_id).state == PlayerState.WOLFED

@@ -5,7 +5,8 @@ The Wolf role
 from ..model import GameStage, PlayerRole, PlayerState
 from ..resolver import GameAction, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
-from .medic import AffectedByMedic
+from .medic import AffectedByMedic, is_saved_by_medic
+from .prostitute import AffectedByProstitute, prostitute_sleeping_with
 from .teams import Team
 from .utility_mixins import TargetRequired
 from .villager import description as villager
@@ -48,6 +49,7 @@ class AffectedByWolves(AffectedByMedic):
     """
 
     def __init_subclass__(cls):
+        super().__init_subclass__()
         cls.bind_as_modifier(
             AffectedByWolves.__orig_attacked,
             AffectedByWolves,
@@ -76,7 +78,7 @@ class AffectedByWolves(AffectedByMedic):
             self.target_attacked_by_wolf = True
 
 
-class WolfAction(GameAction, AffectedByMedic, TargetRequired):
+class WolfAction(GameAction, AffectedByMedic, AffectedByProstitute, TargetRequired):
 
     # Any wolf kill counts as the kill for all the wolves
     team_action = True
@@ -90,13 +92,21 @@ class WolfAction(GameAction, AffectedByMedic, TargetRequired):
         )
 
     def execute(self, game):
-        target_name = self.target.model.user.name
+        kills = [self.target]
 
-        if not self.target_saved_by_medic and not self.prevented:
-            game.send_chat_message(
-                f"{target_name} was brutally murdered", is_strong=True
-            )
-            game.kill_player(self.target.model.id, PlayerState.WOLFED)
+        if self.prevented or self.target_sleeping_with_prostitute:
+            return
+
+        if self.target.model.role == PlayerRole.PROSTITUTE:
+            kills.append(prostitute_sleeping_with(self.target))
+
+        for kill in kills:
+            if not is_saved_by_medic(kill):
+                target_name = kill.model.user.name
+                game.send_chat_message(
+                    f"{target_name} was brutally murdered", is_strong=True
+                )
+                game.kill_player(kill.model.id, PlayerState.WOLFED)
 
 
 def register(role_map):
