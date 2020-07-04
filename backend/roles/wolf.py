@@ -65,11 +65,11 @@ class AffectedByWolves(AffectedByMedic):
             ModifierType.TARGETTING_TARGET,
         )
 
-    def __orig_attacked(self):
+    def __orig_attacked(self, *args):
         if not self.originator_saved_by_medic:
             self.originator_attacked_by_wolf = True
 
-    def __target_attacked(self):
+    def __target_attacked(self, *args):
         if not self.target_saved_by_medic:
             self.target_attacked_by_wolf = True
 

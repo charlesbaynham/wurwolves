@@ -127,7 +127,7 @@ import logging
 from enum import Enum
 from typing import Dict, List
 
-from .model import ActionModel, GameStage, PlayerModel, PlayerRole, PlayerState
+from .model import ActionModel, GameStage, PlayerModel, PlayerState
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -176,16 +176,18 @@ class ActionMixin:
 
             self.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
 
-        This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name
+        This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name.
+        The bound function (__do_mod) must accept the action which triggered the call as an argument
 
         ``modifier_type`` specifices which actions should be searched for the registered method.
         E.g. a Medic wants to alter actions which target the target, whereas a Prostitute
         wants to alter actions which originate from the target. 
         """
 
-        # Make a new class method which calls func
-        def new_func(self, func=func):
-            func()
+        # Make a new class method which calls func.
+        # func default is to force early-binding
+        def new_func(self, action, func=func):
+            func(action)
 
         mod_func_name = self.get_action_method_name(MixinClass, modifier_type)
         new_func.__name__ = mod_func_name
@@ -340,7 +342,7 @@ class GameAction(ActionMixin):
                                     MixinClass, modifier_type
                                 ),
                             )
-                            f()
+                            f(action)
 
     @classmethod
     def get_priority(cls):

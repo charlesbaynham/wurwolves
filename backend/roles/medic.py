@@ -63,10 +63,10 @@ class AffectedByMedic(AffectedByProstitute, ActionMixin):
             self.__target_saved, __class__, MedicAction, ModifierType.TARGETTING_TARGET
         )
 
-    def __orig_saved(self):
+    def __orig_saved(self, action):
         self.originator_saved_by_medic = True
 
-    def __target_saved(self):
+    def __target_saved(self, action):
         self.target_saved_by_medic = True
 
 

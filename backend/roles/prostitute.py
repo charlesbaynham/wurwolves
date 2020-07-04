@@ -81,10 +81,10 @@ class AffectedByProstitute(ActionMixin):
             ModifierType.TARGETTING_TARGET,
         )
 
-    def __orig_sleeping(self):
+    def __orig_sleeping(self, *args):
         self.originator_sleeping_with_prostitute = True
 
-    def __target_sleeping(self):
+    def __target_sleeping(self, *args):
         self.target_sleeping_with_prostitute = True
 
 
