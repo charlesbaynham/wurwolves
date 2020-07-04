@@ -140,34 +140,37 @@ class GamePlayer:
         self.targetted_by: List[GameAction] = []
 
 
+class ModifierType(Enum):
+    TARGETTING_TARGET = "TARGETTING_TARGET"
+    ORIGINATING_FROM_TARGET = "ORIGINATING_FROM_TARGET"
+    TARGETTING_ORIGINATOR = "TARGETTING_ORIGINATOR"
+    ORIGINATING_FROM_ORIGINATOR = "ORIGINATING_FROM_ORIGINATOR"
+
+
 class ActionMixin:
     def __init__(self, *args, **kwargs):
         # End of the line for super() calls: discard all params and stop
         pass
 
-    class Search(Enum):
-        TARGETTING_TARGET = "TARGETTING_TARGET"
-        ORIGINATING_FROM_TARGET = "ORIGINATING_FROM_TARGET"
-        TARGETTING_ORIGINATOR = "TARGETTING_ORIGINATOR"
-        ORIGINATING_FROM_ORIGINATOR = "ORIGINATING_FROM_ORIGINATOR"
-
     @staticmethod
-    def get_action_method_name(MixinClass, search: Search):
-        return f"mod_{MixinClass.__name__}_{search.value}"
+    def get_action_method_name(MixinClass, modifier_type: ModifierType):
+        return f"mod_{MixinClass.__name__}_{modifier_type.value}"
 
-    def bind_as_modifier(self, func, MixinClass, ActionClass, search: Search):
+    def bind_as_modifier(
+        self, func, MixinClass, ActionClass, modifier_type: ModifierType
+    ):
         """
         Bind a function from this mixin to the self object using a name generated from the mixin's class
 
         All instances of ActionClass will now search for actions of MixinClass
         in the do_modifiers() stage. If they find any, they will execute the method func. 
-        ``search`` specifies where they search. 
+        ``modifier_type`` specifies where they search. 
 
         For example, the target of this action will have func called for all the actions
-        targetting them if func is available and ``search`` = TARGETTING_TARGET. 
+        targetting them if func is available and ``modifier_type`` = TARGETTING_TARGET. 
 
         The originator of this action will have func called for all the actions targetting
-        from them if func is available and ``search`` = TARGETTING_ORIGINATOR. 
+        from them if func is available and ``modifier_type`` = TARGETTING_ORIGINATOR. 
 
         Example usage:
 
@@ -175,7 +178,7 @@ class ActionMixin:
 
         This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name
 
-        ``search`` specifices which actions should be searched for the registered method.
+        ``modifier_type`` specifices which actions should be searched for the registered method.
         E.g. a Medic wants to alter actions which target the target, whereas a Prostitute
         wants to alter actions which originate from the target. 
         """
@@ -184,23 +187,17 @@ class ActionMixin:
         def new_func(self, func=func):
             func()
 
-        mod_func_name = self.get_action_method_name(MixinClass, search)
+        mod_func_name = self.get_action_method_name(MixinClass, modifier_type)
         new_func.__name__ = mod_func_name
 
         bound_func = new_func.__get__(self, self.__class__)
         setattr(self, mod_func_name, bound_func)
 
         # Register the MixinClass as a modifier of targets for this ActionClass
-        if search == ActionClass.Search.ORIGINATING_FROM_TARGET:
-            if ActionClass not in GameAction.mixins_affecting_originators:
-                GameAction.mixins_affecting_originators[ActionClass] = []
-            GameAction.mixins_affecting_originators[ActionClass].append(MixinClass)
-        elif search == ActionClass.Search.TARGETTING_TARGET:
-            if ActionClass not in GameAction.mixins_affecting_targets:
-                GameAction.mixins_affecting_targets[ActionClass] = []
-            GameAction.mixins_affecting_targets[ActionClass].append(MixinClass)
-        else:
-            raise NotImplementedError
+        mixin_dict = GameAction.mixins_registered[modifier_type]
+        if ActionClass not in mixin_dict:
+            mixin_dict[ActionClass] = []
+        mixin_dict[ActionClass].append(MixinClass)
 
 
 class RoundEndBehaviour(Enum):
@@ -210,9 +207,16 @@ class RoundEndBehaviour(Enum):
 
 
 class GameAction(ActionMixin):
-    # These are lists of mixins that affect child classes of this class, sorted by the child class
-    mixins_affecting_originators = {}
-    mixins_affecting_targets = {}
+    # This is a dict of mixins which affect child classes of this class. There is one entry for each
+    # type of interaction, i.e. each ModifierType. Each ModifierType has a dict of child class -> mixins
+    # which affect it.
+    # This dict gets populated by bind_as_modifier.
+    mixins_registered = {
+        ModifierType.ORIGINATING_FROM_ORIGINATOR: {},
+        ModifierType.ORIGINATING_FROM_TARGET: {},
+        ModifierType.TARGETTING_TARGET: {},
+        ModifierType.TARGETTING_ORIGINATOR: {},
+    }
 
     # Override to change the allowed states
     allowed_player_states = [PlayerState.ALIVE]
@@ -279,31 +283,62 @@ class GameAction(ActionMixin):
         For each action that either targets or originates from the target of this action, call the
         registered MixinClass actions.
         """
-        if self.target:
-            # "if I am listed as affecting actions which my target originates..."
-            if self.__class__ in GameAction.mixins_affecting_originators:
+
+        # This code kept for reference. This is what the resolution looks like for a single
+        # modifier type: ORIGINATING_FROM_TARGET. Note that it's the same for all modifier
+        # types, except for the "for action in self.target.originated_from" bit.
+        # This is the bit that the code breaks out so that the four modifier types can be
+        # done otherwise identically.
+
+        # # Get the dict of actions which alter actions originating from their target
+        # dict_of_affected_actions = GameAction.mixins_registered[
+        #     ModifierType.ORIGINATING_FROM_TARGET
+        # ]
+        # # "if I am listed as affecting actions which my target originates..."
+        # if self.__class__ in dict_of_affected_actions:
+        #     # "...loop over the classes of actions which I affect"
+        #     for MixinClass in dict_of_affected_actions[self.__class__]:
+        #         # "For each action that my target originated..."
+        #         for action in self.target.originated_from:
+        #             # "...if it is the affected action we're considering..."
+        #             if isinstance(action, MixinClass):
+        #                 # "...call the 'originator' method to change its behaviour."
+        #                 f = getattr(
+        #                     action,
+        #                     ActionMixin.get_action_method_name(
+        #                         MixinClass, ModifierType.ORIGINATING_FROM_TARGET
+        #                     ),
+        #                 )
+        #                 f()
+
+        # Make a map of "given an action, get the list of relevant actions for each ModifierType"
+        action_map = {
+            ModifierType.ORIGINATING_FROM_TARGET: lambda a: a.target.originated_from,
+            ModifierType.TARGETTING_TARGET: lambda a: a.target.targetted_by,
+            ModifierType.ORIGINATING_FROM_ORIGINATOR: lambda a: a.originator.originated_from,
+            ModifierType.TARGETTING_ORIGINATOR: lambda a: a.originator.targetted_by,
+        }
+
+        for modifier_type in list(ModifierType):
+            # Get the dict of actions of this type
+            dict_of_affected_actions = GameAction.mixins_registered[modifier_type]
+
+            # "if I am listed as affecting actions according to this ModifierType..."
+            if self.__class__ in dict_of_affected_actions:
                 # "...loop over the classes of actions which I affect"
-                for MixinClass in GameAction.mixins_affecting_originators[
-                    self.__class__
-                ]:
-                    # "For each action that my target originated..."
-                    for action in self.target.originated_from:
+                for MixinClass in dict_of_affected_actions[self.__class__]:
+                    # Get the list of relevant actions
+                    relevant_actions = action_map[modifier_type](self)
+                    # "For each action in the relevant list of actions, according to the ModifierType..."
+                    for action in relevant_actions:
                         # "...if it is the affected action we're considering..."
                         if isinstance(action, MixinClass):
-                            # "...call the 'originator' method to change its behaviour."
+                            # "...call the registered method to change its behaviour."
                             f = getattr(
                                 action,
-                                ActionMixin.get_action_method_name(MixinClass, True),
-                            )
-                            f()
-            # Do the same, but for actions which my target is targetted by
-            if self.__class__ in GameAction.mixins_affecting_targets:
-                for MixinClass in GameAction.mixins_affecting_targets[self.__class__]:
-                    for action in self.target.targetted_by:
-                        if isinstance(action, MixinClass):
-                            f = getattr(
-                                action,
-                                ActionMixin.get_action_method_name(MixinClass, False),
+                                ActionMixin.get_action_method_name(
+                                    MixinClass, modifier_type
+                                ),
                             )
                             f()
 
