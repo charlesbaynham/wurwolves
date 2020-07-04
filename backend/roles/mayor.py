@@ -4,13 +4,11 @@ The Mayor role
 import logging
 from typing import TYPE_CHECKING
 
-from fastapi import HTTPException
-
 from ..model import GameStage, PlayerRole, PlayerState
 from ..resolver import ActionMixin, GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .teams import Team
-from .utility_mixins import NoTargetRequired, TargetRequired
+from .utility_mixins import NoTargetRequired, TargetMustBeAlive
 from .villager import description as villager
 
 if TYPE_CHECKING:
@@ -100,14 +98,7 @@ class MayorMoveToVoteAction(GameAction, NoTargetRequired):
         game.send_chat_message("The mayor started the lynching session")
 
 
-class MayorVoteAction(GameAction, TargetRequired):
-    @classmethod
-    def immediate(cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs):
-        selected_player = game.get_player_model(selected_id)
-
-        if selected_player.state != PlayerState.ALIVE:
-            raise HTTPException(403, "You can't vote for dead players")
-
+class MayorVoteAction(GameAction, TargetMustBeAlive):
     def execute(self, game):
         msg = f"The mayor has executed {self.target.model.user.name}"
         logging.info(f"({game.game_id}) {msg}")

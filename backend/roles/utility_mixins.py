@@ -1,7 +1,9 @@
-from ..resolver import GameAction, ActionMixin
-from ..model import GameStage
-
 from typing import TYPE_CHECKING
+
+from fastapi import HTTPException
+
+from ..model import GameStage, PlayerState
+from ..resolver import ActionMixin, GameAction
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
@@ -39,3 +41,14 @@ class NoTargetRequired(ActionMixin):
         if action_model.selected_player_id:
             raise ValueError(f"{self.__class__} doesn't need a target")
         super().__init__(action_model, players)
+
+
+class TargetMustBeAlive(TargetRequired, ActionMixin):
+    @classmethod
+    def immediate(cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs):
+        selected_player = game.get_player_model(selected_id)
+
+        if selected_player.state != PlayerState.ALIVE:
+            raise HTTPException(403, "Your target must be alive")
+
+        super().immediate(game=game, selected_id=selected_id, **kwargs)

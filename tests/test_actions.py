@@ -1,12 +1,21 @@
 from unittest.mock import Mock, patch
-from uuid import uuid4 as uuid
 
 import pytest
 from fastapi import HTTPException
 
-from backend.database import session_scope
 from backend.game import WurwolvesGame
 from backend.model import GameStage, PlayerRole, PlayerState
+
+import random as rd
+
+rd.seed(123)
+
+
+def uuid():
+    import uuid
+
+    return uuid.UUID(int=rd.getrandbits(128))
+
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()
@@ -217,6 +226,30 @@ def test_actions_processed_voting_results(demo_game):
             demo_game.seer_voting_action(player.user_id, the_dick)
 
     assert demo_game.get_player_model(the_dick).state == PlayerState.LYNCHED
+
+
+def test_no_voting_dead_people(demo_game):
+    demo_game.start_game()
+    demo_game._set_stage(GameStage.VOTING)
+    assert demo_game.get_game_model().stage == GameStage.VOTING
+
+    players = demo_game.get_players_model()
+
+    the_dick = players[0].user_id
+    demo_game.set_player_state(demo_game.get_player_id(the_dick), PlayerState.WOLFED)
+
+    players = demo_game.get_players_model()
+
+    for player in players:
+        if player.role == PlayerRole.MEDIC:
+            with pytest.raises(HTTPException):
+                demo_game.medic_voting_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.WOLF:
+            with pytest.raises(HTTPException):
+                demo_game.wolf_voting_action(player.user_id, the_dick)
+        elif player.role == PlayerRole.SEER:
+            with pytest.raises(HTTPException):
+                demo_game.seer_voting_action(player.user_id, the_dick)
 
 
 def test_action_preventable(demo_game):

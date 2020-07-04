@@ -4,14 +4,12 @@ The Villager role
 import logging
 from typing import TYPE_CHECKING
 
-from fastapi import HTTPException
-
-from ..model import GameStage, PlayerRole, PlayerState
+from ..model import GameStage, PlayerRole
 from ..resolver import GameAction
 from .common import RoleDescription, RoleDetails, StageAction
 from .spectator import VoteStartNewGame
 from .teams import Team
-from .utility_mixins import NoTargetRequired, TargetRequired
+from .utility_mixins import NoTargetRequired, TargetMustBeAlive
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
@@ -67,15 +65,8 @@ def register(role_map):
         This just sends a message: the round completes when all players have moved to vote
         """
 
-    class VoteAction(CancelledByMayor, GameAction, TargetRequired):
-        @classmethod
-        def immediate(cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs):
-            selected_player = game.get_player_model(selected_id)
-
-            if selected_player.state != PlayerState.ALIVE:
-                raise HTTPException(403, "You can't vote for dead players")
-
-        def execute(self, game):
+    class VoteAction(CancelledByMayor, TargetMustBeAlive, GameAction):
+        def execute(self, game: "WurwolvesGame"):
             msg = f"{self.originator.model.user.name} voted for {self.target.model.user.name}"
             logging.info(f"({game.game_id}) {msg}")
             game.send_chat_message(msg)
