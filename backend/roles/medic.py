@@ -10,7 +10,6 @@ from fastapi import HTTPException
 from ..model import GameStage, PlayerRole
 from ..resolver import ActionMixin, GameAction, ModifierType
 from .common import RoleDescription, RoleDetails, StageAction
-from .prostitute import AffectedByProstitute
 from .teams import Team
 from .villager import description as villager
 
@@ -43,7 +42,7 @@ You are a medic! You get to save one person each night.
 )
 
 
-class AffectedByMedic(AffectedByProstitute, ActionMixin):
+class AffectedByMedic(ActionMixin):
     """
     Creates attributes `target_saved_by_medic` and `originator_saved_by_medic`
     """
