@@ -147,7 +147,12 @@ class Player(Base):
 
     previous_role = Column(Enum(PlayerRole), nullable=True)
 
-    actions = relationship("Action", lazy=True, foreign_keys="Action.player_id")
+    actions = relationship(
+        "Action",
+        lazy=True,
+        foreign_keys="Action.player_id",
+        cascade="all, delete-orphan",
+    )
 
 
 class Action(Base):
