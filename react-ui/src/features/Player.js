@@ -99,9 +99,11 @@ function Player(props) {
 
         // If status has changed, animate the change
         if (status !== oldStatusRef.current) {
-            oldStatusRef.current = status
             console.log(`Player ${name} rendered with new status ${status} (used to be ${oldStatusRef.current})`)
-            console.log("Need to change the status next")
+            oldStatusRef.current = status
+            setPlayerImage(
+                makePlayerImage(playerImageDOM, status, oldSelectedRef.current)
+            )
         }
     }, [status, selected])
 
