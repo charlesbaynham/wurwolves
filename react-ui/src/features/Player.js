@@ -90,6 +90,7 @@ function Player(props) {
     useEffect(() => {
         // Immediately update selected if it has changed
         if (selected !== oldSelectedRef.current) {
+            console.log(`Player ${name} rendered with new selected ${selected}, also status: ${oldStatusRef.current}`)
             oldSelectedRef.current = selected
             setPlayerImage(
                 makePlayerImage(playerImageDOM, oldStatusRef.current, selected)
@@ -98,7 +99,7 @@ function Player(props) {
 
         // If status has changed, animate the change
         if (status !== oldStatusRef.current) {
-            oldStatusRef.current = selected
+            oldStatusRef.current = status
             console.log(`Player ${name} rendered with new status ${status} (used to be ${oldStatusRef.current})`)
             console.log("Need to change the status next")
         }
