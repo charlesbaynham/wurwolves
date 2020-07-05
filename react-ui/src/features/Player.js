@@ -68,7 +68,7 @@ function Player(props) {
             <img src={IMAGE_LOOKUP[status].img}
                 className={`figure-img img-fluid w-100 ${selected ? "selected" : ""}`}
                 alt={IMAGE_LOOKUP[status].alt} />
-            {playerReady ? <img src='/images/tick.svg' className='tick' /> : null}
+            {playerReady ? <img src='/images/tick.svg' alt="Ready tick-mark" className='tick' /> : null}
             <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
         </figure>
     )

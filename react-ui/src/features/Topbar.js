@@ -21,7 +21,7 @@ function Topbar(props) {
 
   return (
     <Navbar expand="lg" bg="light" className="bg-secondary bg-night-black">
-      <img src="/images/logo.svg" id="logo" />
+      <img src="/images/logo.svg" alt="Wurwolves logo" id="logo" />
       <a className="navbar-brand" href="/">Wurwolves</a>
       <Form className="ml-auto" onSubmit={e => {
         e.preventDefault()
