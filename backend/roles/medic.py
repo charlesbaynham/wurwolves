@@ -48,6 +48,8 @@ class AffectedByMedic(ActionMixin):
     Creates attributes `target_saved_by_medic` and `originator_saved_by_medic`
     """
 
+    priority = 1
+
     def __init_subclass__(cls):
         super().__init_subclass__()
         cls.bind_as_modifier(

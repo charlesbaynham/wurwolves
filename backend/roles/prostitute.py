@@ -57,6 +57,8 @@ class AffectedByProstitute(ActionMixin):
     `target_sleeping_with_prostitute`
     """
 
+    priority = 2
+
     def __init_subclass__(cls):
         super().__init_subclass__()
         cls.bind_as_modifier(
