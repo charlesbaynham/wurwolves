@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import ScrollableFeed from 'react-scrollable-feed'
@@ -45,15 +45,24 @@ export function Chatbox(props) {
             null
     )
 
+    const [messages, setMessages] = useState(null)
+    // On changed messages, update the messages. Do this after the first render, so that the scrollable chat
+    // box starts at the bottom
+    useEffect(() => {
+        setMessages(
+            chat_messages.map((m, ind) => m.isStrong
+                ? <strong key={ind}><ChatEntry msg={m.msg} /></strong>
+                : <ChatEntry key={ind} msg={m.msg} />
+            )
+        )
+    }, [chat_messages, setMessages])
+
     return (
         <div className="col-md-5">
             <div className="card card-body d-flex flex-column chat-holder bg-night-black">
                 <h5 className="card-title">Events</h5>
                 <ScrollableFeed className="chat-box flex-grow-1">
-                    {chat_messages.map((m, ind) => m.isStrong
-                        ? <strong key={ind}><ChatEntry msg={m.msg} /></strong>
-                        : <ChatEntry key={ind} msg={m.msg} />
-                    )}
+                    {messages}
                 </ScrollableFeed>
                 {secretChat}
             </div>
