@@ -104,6 +104,27 @@
   }
 }
 
+
+ /* The animation code */
+ @keyframes spinToFlat {
+  0% {transform: scale(100%) rotateY(0);}
+  33% {opacity: 1; transform: scale(150%) rotateY(0);}
+  100% {opacity: 0; transform: scale(150%) rotateY(2000deg);}
+}
+@keyframes spinFromFlat {
+  0% {opacity: 0; transform: scale(150%) rotateY(2000deg);}
+  66% {opacity: 1; transform: scale(150%) rotateY(0);}
+  100% {opacity: 1; transform: scale(100%) rotateY(0);}
+}
+
+/* The element to apply the animation to */
+.player img {
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in;
+} 
+
+
 .chat-box p {
   margin: 0
 }

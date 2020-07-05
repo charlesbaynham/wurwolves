@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -46,6 +46,17 @@ const IMAGE_LOOKUP = {
     }
 }
 
+
+function makePlayerImage(ref, status, selected) {
+    return (
+        <img ref={ref}
+            src={IMAGE_LOOKUP[status].img}
+            className={`figure-img img-fluid w-100 ${selected ? "selected" : ""}`}
+            alt={IMAGE_LOOKUP[status].alt}
+        />
+    )
+}
+
 function Player(props) {
     const player_id = props.player_id
     const name = useSelector(selectPlayerName(player_id));
@@ -59,15 +70,49 @@ function Player(props) {
 
     const dispatch = useDispatch()
 
+    const playerImageDOM = useRef(null);
+
+    const [playerImage, setPlayerImage] = useState(
+        makePlayerImage(playerImageDOM, status, selected)
+    )
+
+    // Plan:
+    // Render image via state
+    // On change, trigger useEffect:
+    // * create new image
+    // * Set old image spinning
+    // * Half way through animation, substitute it for newImage. Ensure that same animation starts half-way through on newImage
+    // * At end of animation nothing to do: old image is gone and newImage is there
+
+    const oldStatusRef = useRef(status)
+    const oldSelectedRef = useRef(selected)
+
+    useEffect(() => {
+        // Immediately update selected if it has changed
+        if (selected !== oldSelectedRef.current) {
+            oldSelectedRef.current = selected
+            setPlayerImage(
+                makePlayerImage(playerImageDOM, oldStatusRef.current, selected)
+            )
+        }
+
+        // If status has changed, animate the change
+        if (status !== oldStatusRef.current) {
+            oldStatusRef.current = selected
+            console.log(`Player ${name} rendered with new status ${status} (used to be ${oldStatusRef.current})`)
+            console.log("Need to change the status next")
+        }
+    }, [status, selected])
+
     return (
         <figure className="col-4 col-sm-3 figure player" onClick={
             selected
                 ? () => dispatch(unselectAll(player_id))
                 : () => dispatch(selectPlayer(player_id))
         }>
-            <img src={IMAGE_LOOKUP[status].img}
-                className={`figure-img img-fluid w-100 ${selected ? "selected" : ""}`}
-                alt={IMAGE_LOOKUP[status].alt} />
+            <div>
+                {playerImage}
+            </div>
             {playerReady ? <img src='/images/tick.svg' alt="Ready tick-mark" className='tick' /> : null}
             <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
         </figure>
