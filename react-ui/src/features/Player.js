@@ -46,6 +46,9 @@ const IMAGE_LOOKUP = {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function makePlayerImage(ref, status, selected) {
     return (
@@ -101,9 +104,21 @@ function Player(props) {
         if (status !== oldStatusRef.current) {
             console.log(`Player ${name} rendered with new status ${status} (used to be ${oldStatusRef.current})`)
             oldStatusRef.current = status
-            setPlayerImage(
-                makePlayerImage(playerImageDOM, status, oldSelectedRef.current)
-            )
+
+            async function animate() {
+                playerImageDOM.current.classList.add("spinToFlat")
+
+                await sleep(500)
+
+                setPlayerImage(
+                    makePlayerImage(playerImageDOM, status, oldSelectedRef.current)
+                )
+                playerImageDOM.current.classList.remove("spinToFlat")
+                playerImageDOM.current.classList.add("spinFromFlat")
+                await sleep(500)
+                playerImageDOM.current.classList.remove("spinFromFlat")
+            }
+            animate()
         }
     }, [status, selected])
 

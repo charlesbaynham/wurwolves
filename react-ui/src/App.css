@@ -107,23 +107,26 @@
 
  /* The animation code */
  @keyframes spinToFlat {
-  0% {transform: scale(100%) rotateY(0);}
-  33% {opacity: 1; transform: scale(150%) rotateY(0);}
-  100% {opacity: 0; transform: scale(150%) rotateY(2000deg);}
+  from {opacity: 1; transform: rotateY(0);}
+  to {opacity: 0; transform: rotateY(2000deg);}
 }
 @keyframes spinFromFlat {
-  0% {opacity: 0; transform: scale(150%) rotateY(2000deg);}
-  66% {opacity: 1; transform: scale(150%) rotateY(0);}
-  100% {opacity: 1; transform: scale(100%) rotateY(0);}
+  from {opacity: 0; transform: rotateY(2000deg);}
+  to {opacity: 1; transform: rotateY(0);}
 }
-
-/* The element to apply the animation to */
-.player img {
-  animation-duration: 3s;
+.spinToFlat {
+  animation-name: spinToFlat;
+  animation-duration: 1s;
   animation-fill-mode: forwards;
   animation-timing-function: ease-in;
-} 
-
+}
+.spinFromFlat {
+  animation-name: spinFromFlat;
+  animation-duration: 1s;
+  animation-delay: -0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
 
 .chat-box p {
   margin: 0
