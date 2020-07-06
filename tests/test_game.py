@@ -131,6 +131,28 @@ def test_chat(demo_game, db_session):
     assert "Secret" in summary
     assert "Secret 2" not in summary
 
+def test_chat_order(demo_game, db_session):
+    # Clear current messages
+    demo_game.clear_chat_messages()
+
+    messages_text = [
+        "Message 1",
+        "Message 2",
+        "Message 3",
+        "Message 4",
+    ]
+
+    for txt in messages_text:
+        demo_game.send_chat_message(txt)
+
+    db_session.expire_all()
+
+    game = demo_game.get_game()
+    db_session.add(game)
+
+    for message, sent_text in zip(game.messages, messages_text):
+        assert message.text == sent_text
+
 
 def get_game(db_session, id) -> Game:
     return db_session.query(Game).filter(Game.id == hash_game_tag(id)).first()
