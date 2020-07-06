@@ -87,7 +87,7 @@ class Game(Base):
 
     players = relationship("Player", backref="game", lazy=True)
 
-    messages = relationship("Message", backref="game", lazy=True)
+    messages = relationship("Message", backref="game", lazy=True, order_by=lambda: Message.created)
 
     actions = relationship("Action", backref="game", lazy=True)
 
@@ -206,6 +206,7 @@ class Message(Base):
     __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, nullable=False)
+    created = Column(DateTime, default=func.now())
     text = Column(String)
     game_id = Column(Integer, ForeignKey("games.id"), nullable=False)
     is_strong = Column(Boolean, default=False)
