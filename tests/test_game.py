@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import uuid4 as uuid
 
 import pytest
@@ -130,6 +131,7 @@ def test_chat(demo_game, db_session):
     assert "Important" in summary
     assert "Secret" in summary
     assert "Secret 2" not in summary
+
 
 def test_chat_order(demo_game, db_session):
     # Clear current messages
@@ -279,6 +281,7 @@ def test_async_get_start_game(db_session, demo_game):
 
     asyncio.get_event_loop().run_until_complete(tester())
 
+
 def test_kick(db_session):
     game = WurwolvesGame(GAME_ID)
 
@@ -286,26 +289,84 @@ def test_kick(db_session):
     player_ids = [uuid() for _ in range(3)]
     for p in player_ids:
         game.join(p)
-    
+
     # Set one to have joined ages ago
     timeout_player_id = player_ids[0]
     timeout_player = game.get_player(timeout_player_id)
-    db_session.add(timeout_player_id)
+    db_session.add(timeout_player)
 
-    timeout_player
+    timeout_player.last_seen = datetime(1, 1, 1)
 
-        
-    player_id = demo_game.get_player_id(USER_ID)
+    db_session.commit()
+    db_session.expire_all()
 
-    p = demo_game.get_player_model(USER_ID)
-    assert p.previous_role is None
+    timeout_player = game.get_player(timeout_player_id)
+    db_session.add(timeout_player)
 
-    demo_game.kill_player(player_id, PlayerState.LYNCHED)
+    assert timeout_player.state == PlayerState.SPECTATING
+
+    # Keepalive one of the other players, which should kick the idler
+    game.player_keepalive(player_ids[1])
 
     db_session.expire_all()
 
-    p = demo_game.get_player_model(USER_ID)
-    assert p.previous_role is not None
+    assert not game.get_player(timeout_player_id)
+
+
+def test_kick_with_actions(db_session):
+    game = WurwolvesGame(GAME_ID)
+
+    # Add three players
+    player_ids = [uuid() for _ in range(3)]
+    roles = [
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.WOLF,
+    ]
+    for p in player_ids:
+        game.join(p)
+
+    game.start_game()
+
+    for p, r in zip(player_ids, roles):
+        game.set_player_role(game.get_player_id(p), r)
+
+    # Set one to have joined ages ago
+    timeout_player_id = player_ids[0]
+    wolf_id = player_ids[2]
+    timeout_player = game.get_player(timeout_player_id)
+    db_session.add(timeout_player)
+
+    timeout_player.last_seen = datetime(1, 1, 1)
+
+    db_session.commit()
+    db_session.expire_all()
+
+    timeout_player = game.get_player(timeout_player_id)
+    db_session.add(timeout_player)
+
+    assert timeout_player.state == PlayerState.ALIVE
+
+    # Keepalive one of the other players, which should not kick the idler since it's a game
+    game.player_keepalive(wolf_id)
+
+    db_session.expire_all()
+    assert game.get_player(timeout_player_id)
+
+    # Kill the idler with the wolf
+    game.wolf_night_action(wolf_id, timeout_player_id)
+
+    db_session.expire_all()
+
+    # Check game ended
+    assert game.get_game_model().stage == GameStage.ENDED
+
+    # Kick the idler
+    game.player_keepalive(wolf_id)
+
+    # Check they went
+    db_session.expire_all()
+    assert not game.get_player(timeout_player_id)
 
 
 # @pytest.mark.parametrize("num_prev_stages", [0, 1, 2, 3, 5, 10])

@@ -154,12 +154,12 @@ class Player(Base):
         foreign_keys="Action.player_id",
         cascade="all, delete-orphan",
     )
-    # selected_actions = relationship(
-    #     "Action",
-    #     lazy=True,
-    #     foreign_keys="Action.selected_player_id",
-    #     cascade="all, delete-orphan",
-    # )
+    selected_actions = relationship(
+        "Action",
+        lazy=True,
+        foreign_keys="Action.selected_player_id",
+        cascade="all, delete-orphan",
+    )
 
     def touch(self):
         self.last_seen = func.now()

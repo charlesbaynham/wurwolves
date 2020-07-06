@@ -394,6 +394,8 @@ class WurwolvesGame:
     def kick(self, player: Player):
         for a in player.actions:
             self._session.delete(a)
+        for a in player.selected_actions:
+            self._session.delete(a)
         self._session.delete(player)
 
     @db_scoped
