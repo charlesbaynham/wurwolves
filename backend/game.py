@@ -355,8 +355,8 @@ class WurwolvesGame:
 
     @db_scoped
     def player_keepalive(self, user_id: UUID):
-        u = self.get_user(user_id)
-        u.touch()
+        p = self.get_player(user_id)
+        p.touch()
         self._session.commit()
 
         players = self.get_players()
@@ -374,10 +374,10 @@ class WurwolvesGame:
             if (
                 (game.stage == GameStage.LOBBY or game.stage == GameStage.ENDED)
                 or p.state == PlayerState.SPECTATING
-            ) and p.user.last_seen < threshold:
+            ) and p.last_seen < threshold:
                 logging.info(
-                    f"Remove player {p.user.name} for inactivity (p.user.last_seen="
-                    f"{p.user.last_seen}, threshold={threshold}"
+                    f"Remove player {p.user.name} for inactivity (p.last_seen="
+                    f"{p.last_seen}, threshold={threshold}"
                 )
                 self.send_chat_message(f"{p.user.name} has left the game")
                 self.kick(p)

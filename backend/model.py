@@ -138,6 +138,7 @@ class Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True, nullable=False)
+    last_seen = Column(DateTime, default=func.now())
     game_id = Column(Integer, ForeignKey("games.id"))
     user_id = Column(UUIDType, ForeignKey("users.id"))
     votes = Column(Integer, default=0)
@@ -153,6 +154,15 @@ class Player(Base):
         foreign_keys="Action.player_id",
         cascade="all, delete-orphan",
     )
+    # selected_actions = relationship(
+    #     "Action",
+    #     lazy=True,
+    #     foreign_keys="Action.selected_player_id",
+    #     cascade="all, delete-orphan",
+    # )
+
+    def touch(self):
+        self.last_seen = func.now()
 
 
 class Action(Base):
@@ -181,12 +191,8 @@ class User(Base):
     id = Column(UUIDType, primary_key=True, nullable=False)
     name = Column(String)
     name_is_generated = Column(Boolean, default=True)
-    last_seen = Column(DateTime, default=func.now())
 
     player_roles = relationship("Player", backref="user", lazy=True)
-
-    def touch(self):
-        self.last_seen = func.now()
 
 
 # many-to-many relationship between players and messages

@@ -279,6 +279,34 @@ def test_async_get_start_game(db_session, demo_game):
 
     asyncio.get_event_loop().run_until_complete(tester())
 
+def test_kick(db_session):
+    game = WurwolvesGame(GAME_ID)
+
+    # Add three players
+    player_ids = [uuid() for _ in range(3)]
+    for p in player_ids:
+        game.join(p)
+    
+    # Set one to have joined ages ago
+    timeout_player_id = player_ids[0]
+    timeout_player = game.get_player(timeout_player_id)
+    db_session.add(timeout_player_id)
+
+    timeout_player
+
+        
+    player_id = demo_game.get_player_id(USER_ID)
+
+    p = demo_game.get_player_model(USER_ID)
+    assert p.previous_role is None
+
+    demo_game.kill_player(player_id, PlayerState.LYNCHED)
+
+    db_session.expire_all()
+
+    p = demo_game.get_player_model(USER_ID)
+    assert p.previous_role is not None
+
 
 # @pytest.mark.parametrize("num_prev_stages", [0, 1, 2, 3, 5, 10])
 # def test_num_previous_stages(demo_game, num_prev_stages):
