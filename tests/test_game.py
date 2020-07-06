@@ -154,6 +154,36 @@ def test_chat_order(demo_game, db_session):
         assert message.text == sent_text
 
 
+def test_chat_order_deletions(demo_game, db_session):
+    # Clear current messages
+    demo_game.clear_chat_messages()
+
+    demo_game.send_chat_message("To be deleted")
+
+    messages_text = [
+        "Message 1",
+        "Message 2",
+        "Message 3",
+        "Message 4",
+    ]
+
+    for txt in messages_text:
+        demo_game.send_chat_message(txt)
+
+    db_session.expire_all()
+    game = demo_game.get_game()
+    db_session.add(game)
+
+    db_session.delete(game.messages[0])
+    db_session.commit()
+    db_session.expire_all()
+
+    demo_game.send_chat_message("Final")
+
+    for message, sent_text in zip(game.messages, messages_text + ["Final"]):
+        assert message.text == sent_text
+
+
 def get_game(db_session, id) -> Game:
     return db_session.query(Game).filter(Game.id == hash_game_tag(id)).first()
 
