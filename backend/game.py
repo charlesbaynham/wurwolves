@@ -739,20 +739,21 @@ def trigger_update_event(game_id: int):
         update_events[game_id].set()
         del update_events[game_id]
 
+# Not currently used:
+# 
+# class SwitchStage(resolver.GameAction):
+#     """
+#     This action does nothing! It just records that the stage has been switched. 
+#     Unlike most role actions, this one has no originator and no target. It simple exists in the
+#     action log and does nothing when called, to serve as a log that the stage occured. 
 
-class SwitchStage(resolver.GameAction):
-    """
-    This action does nothing! It just records that the stage has been switched. 
-    Unlike most role actions, this one has no originator and no target. It simple exists in the
-    action log and does nothing when called, to serve as a log that the stage occured. 
+#     Later, I could expand the game to expect this action to exist before process_actions succeeds. 
+#     Then, I could submit this action on a timer to end the rounds automatically. Now, however, this
+#     does not happen: process_actions does not expect this action to be present, but won't complain if
+#     it is. 
 
-    Later, I could expand the game to expect this action to exist before process_actions succeeds. 
-    Then, I could submit this action on a timer to end the rounds automatically. Now, however, this
-    does not happen: process_actions does not expect this action to be present, but won't complain if
-    it is. 
-
-    Currently, this action is submitted by _set_stage() to serve as a marker. 
-    """
+#     Currently, this action is submitted by _set_stage() to serve as a marker. 
+#     """
 
 
 # Create API endpoints and methods in WurwolvesGame for all the role actions
