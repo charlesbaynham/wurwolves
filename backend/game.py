@@ -154,13 +154,8 @@ class WurwolvesGame:
 
         # Get the user from the user list, adding them if not already present
         user = self._session.query(User).filter(User.id == user_id).first()
-
         if not user:
-            user = User(
-                id=user_id, name=WurwolvesGame.generate_name(), name_is_generated=True,
-            )
-
-            print("Making new player {} = {}".format(user.id, user.name))
+            user = self.make_user(self._session, user_id)
 
         # Get the game, creating it if it doesn't exist
         game = self.get_game()
@@ -186,6 +181,23 @@ class WurwolvesGame:
         self._session.add(game)
         self._session.add(user)
         self._session.add(player)
+
+    @staticmethod
+    def make_user(session, user_id) -> User:
+        '''
+        Make a new user
+
+        Note that, since this is a static method, it has no access to self._session and 
+        so must be passed a session to use. 
+        '''
+        user = User(
+            id=user_id, name=WurwolvesGame.generate_name(), name_is_generated=True,
+        )
+        session.add(user)
+
+        logging.info("Making new user {} = {}".format(user.id, user.name))
+
+        return user
 
     @db_scoped
     def get_game(self) -> Game:
@@ -633,6 +645,9 @@ class WurwolvesGame:
         with database.session_scope() as s:
             u: User = s.query(User).filter(User.id == user_id).first()
 
+            if not u:
+                u = cls.make_user(s, user_id)
+
             old_name = u.name
 
             if old_name == name:
@@ -741,20 +756,21 @@ def trigger_update_event(game_id: int):
         update_events[game_id].set()
         del update_events[game_id]
 
+
 # Not currently used:
-# 
+#
 # class SwitchStage(resolver.GameAction):
 #     """
-#     This action does nothing! It just records that the stage has been switched. 
+#     This action does nothing! It just records that the stage has been switched.
 #     Unlike most role actions, this one has no originator and no target. It simple exists in the
-#     action log and does nothing when called, to serve as a log that the stage occured. 
+#     action log and does nothing when called, to serve as a log that the stage occured.
 
-#     Later, I could expand the game to expect this action to exist before process_actions succeeds. 
+#     Later, I could expand the game to expect this action to exist before process_actions succeeds.
 #     Then, I could submit this action on a timer to end the rounds automatically. Now, however, this
 #     does not happen: process_actions does not expect this action to be present, but won't complain if
-#     it is. 
+#     it is.
 
-#     Currently, this action is submitted by _set_stage() to serve as a marker. 
+#     Currently, this action is submitted by _set_stage() to serve as a marker.
 #     """
 
 
