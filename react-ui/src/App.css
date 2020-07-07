@@ -83,6 +83,7 @@
 
 .chat-holder {
   max-height: 10cm;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
