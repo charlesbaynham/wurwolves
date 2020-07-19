@@ -12,6 +12,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum,
+    Float,
     ForeignKey,
     Integer,
     String,
@@ -148,6 +149,8 @@ class Player(Base):
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
 
+    seed = Column(Float, default=0)
+
     previous_role = Column(Enum(PlayerRole), nullable=True)
 
     actions = relationship(
@@ -241,6 +244,8 @@ class PlayerModel(pydantic.BaseModel):
 
     role: PlayerRole
     state: PlayerState
+
+    seed: float = 0
 
     previous_role: Optional[PlayerRole]
 

@@ -26,7 +26,7 @@ class FrontendState(pydantic.BaseModel):
         role: str
         # Random float from 0-1.
         # Will be used by the frontend to decide which picture to display if multiple are available
-        seed: float = 0.6
+        seed: float
         # Show this player as having completed their actions this round
         ready: bool = False
 
@@ -65,7 +65,7 @@ class FrontendState(pydantic.BaseModel):
         button_submit_func: Union[None, str] = None
         button_submit_person: Union[None, bool] = None
 
-        seed: float = 0.6
+        seed: float
 
         @pydantic.validator("role")
         def role_valid(cls, v):
@@ -125,6 +125,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         title=role_details.display_name,
         text=action_desc.text[player.state],
         role=player.role,
+        seed=player.seed,
         button_visible=has_action,
         button_enabled=action_enabled,
         button_text=action_desc.button_text,
@@ -165,6 +166,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
                 name=p.user.name,
                 status=status,
                 role=PlayerRole.VILLAGER,
+                seed=p.seed,
                 selected=False,
                 ready=ready,
             )

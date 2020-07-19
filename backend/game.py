@@ -184,12 +184,12 @@ class WurwolvesGame:
 
     @staticmethod
     def make_user(session, user_id) -> User:
-        '''
+        """
         Make a new user
 
         Note that, since this is a static method, it has no access to self._session and 
         so must be passed a session to use. 
-        '''
+        """
         user = User(
             id=user_id, name=WurwolvesGame.generate_name(), name_is_generated=True,
         )
@@ -441,6 +441,7 @@ class WurwolvesGame:
         for player, role in zip(game.players, player_roles):
             player.role = role
             player.state = PlayerState.ALIVE
+            player.seed = random.random()
 
         self.clear_chat_messages()
         self.clear_actions()
