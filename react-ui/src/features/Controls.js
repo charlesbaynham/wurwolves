@@ -9,6 +9,7 @@ import {
 } from './selectors'
 
 import { unselectAll } from '../app/store'
+import { RolePicture } from './RolePicture'
 
 
 const DEFAULT_STATE = {
@@ -73,8 +74,9 @@ function Controls(props) {
                     </div>
                     : null}
             </div>
-            <div className="col-md pt-4 pt-md-0">
+            <div className="col-md-8 pt-4 pt-md-0">
                 <h5>{controlsState.title}</h5>
+                <RolePicture />
                 <ReactMarkdown source={controlsState.text} />
             </div>
         </div>

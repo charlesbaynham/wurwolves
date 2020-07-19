@@ -44,6 +44,7 @@ class FrontendState(pydantic.BaseModel):
     class RoleState(pydantic.BaseModel):
         title: str
         text: str
+        image_id: str = None
         button_visible: bool
         button_enabled: bool
         button_text: Union[None, str] = None
