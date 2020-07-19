@@ -160,12 +160,22 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             if has_action and not action_enabled:
                 ready = True
 
+        # Display real role if the game is ended or this player should be able to see it
+        displayed_role = PlayerRole.VILLAGER
+        if (
+            (p.role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
+            or (p.role == PlayerRole.MASON and player.role == PlayerRole.MASON)
+            or p.role == PlayerRole.MAYOR
+            or game.stage == GameStage.ENDED
+        ):
+            displayed_role = p.role
+
         player_states.append(
             FrontendState.UIPlayerState(
                 id=p.user_id,
                 name=p.user.name,
                 status=status,
-                role=PlayerRole.VILLAGER,
+                role=displayed_role,
                 seed=p.seed,
                 selected=False,
                 ready=ready,
