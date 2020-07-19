@@ -151,8 +151,10 @@ function Player(props) {
                 ? () => dispatch(unselectAll(player_id))
                 : () => dispatch(selectPlayer(player_id))
         }>
-            <div>
-                {playerImage}
+            <div className="playerWrapperOuter">
+                <div className="playerWrapperInner">
+                    {playerImage}
+                </div>
             </div>
             {playerReady ? <img src='/images/tick.svg' alt="Ready tick-mark" className='tick' /> : null}
             <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
