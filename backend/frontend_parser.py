@@ -1,4 +1,5 @@
 import logging
+import random
 from typing import List, Union
 from uuid import UUID
 
@@ -16,10 +17,17 @@ class FrontendState(pydantic.BaseModel):
 
     state_hash: int
 
-    class PlayerState(pydantic.BaseModel):
+    class UIPlayerState(pydantic.BaseModel):
         id: UUID
         name: str
+        # Player state. One of PlayerState
         status: str
+        # PlayerRole to display. Players will appear as villagers unless they should be revealed
+        role: str
+        # Random float from 0-1.
+        # Will be used by the frontend to decide which picture to display if multiple are available
+        seed: float = 0.6
+        # Show this player as having completed their actions this round
         ready: bool = False
 
         @pydantic.validator("status")
@@ -30,7 +38,12 @@ class FrontendState(pydantic.BaseModel):
                 assert v in ["MAYOR"]
             return v
 
-    players: List[PlayerState]
+        @pydantic.validator("role")
+        def role_valid(cls, v):
+            PlayerRole(v)
+            return v
+
+    players: List[UIPlayerState]
 
     class ChatMsg(pydantic.BaseModel):
         msg: str
@@ -44,13 +57,20 @@ class FrontendState(pydantic.BaseModel):
     class RoleState(pydantic.BaseModel):
         title: str
         text: str
-        image_id: str = None
+        role: str
         button_visible: bool
         button_enabled: bool
         button_text: Union[None, str] = None
         button_confirm_text: Union[None, str] = None
         button_submit_func: Union[None, str] = None
         button_submit_person: Union[None, bool] = None
+
+        seed: float = 0.6
+
+        @pydantic.validator("role")
+        def role_valid(cls, v):
+            PlayerRole(v)
+            return v
 
         @pydantic.validator("button_text", always=True)
         def text_present(cls, v, values):
@@ -104,6 +124,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     controls_state = FrontendState.RoleState(
         title=role_details.display_name,
         text=action_desc.text[player.state],
+        role=player.role,
         button_visible=has_action,
         button_enabled=action_enabled,
         button_text=action_desc.button_text,
@@ -139,10 +160,11 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
                 ready = True
 
         player_states.append(
-            FrontendState.PlayerState(
+            FrontendState.UIPlayerState(
                 id=p.user_id,
                 name=p.user.name,
                 status=status,
+                role=PlayerRole.VILLAGER,
                 selected=False,
                 ready=ready,
             )

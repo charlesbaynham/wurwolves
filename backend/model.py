@@ -87,7 +87,9 @@ class Game(Base):
 
     players = relationship("Player", backref="game", lazy=True)
 
-    messages = relationship("Message", backref="game", lazy=True, order_by=lambda: Message.created)
+    messages = relationship(
+        "Message", backref="game", lazy=True, order_by=lambda: Message.created
+    )
 
     actions = relationship("Action", backref="game", lazy=True)
 
@@ -98,7 +100,7 @@ class Game(Base):
         return "<Game id={}, players={}>".format(self.id, self.players)
 
 
-class PlayerRole(enum.Enum):
+class PlayerRole(str, enum.Enum):
     VILLAGER = "Villager"
     WOLF = "Wolf"
     SEER = "Seer"
