@@ -29,7 +29,7 @@ export function RolePicture(props) {
         const pic_url = getRoleURL(props.role, props.seed)
 
         return (
-            <img className="role_picture" src={pic_url} alt={`Picture of a ${props.role}`} />
+            <img className="role_picture" src={pic_url} alt={`Role ${props.role}`} />
         )
     } else {
         return null

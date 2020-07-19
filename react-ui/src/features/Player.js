@@ -57,16 +57,22 @@ function sleep(ms) {
 function makePlayerImage(ref, details) {
     // Until I've got a way of modifying images by status, only show the images if the player is alive
     var image_url;
-    if (details.status == 'ALIVE') {
+    if (details.status === 'ALIVE') {
         image_url = getRoleURL(details.role, details.seed)
     } else {
-        image_url = IMAGE_LOOKUP[details.status].img
+        if (!(details.status in IMAGE_LOOKUP)) {
+            console.log("Error: details are")
+            console.log(details)
+            image_url = IMAGE_LOOKUP['SPECTATING'].img
+        } else {
+            image_url = IMAGE_LOOKUP[details.status].img
+        }
     }
     return (
         <img ref={ref}
             src={image_url}
             className={`figure-img img-fluid w-100 ${details.selected ? "selected" : ""}`}
-            alt={`Picture of a ${details.role}`}
+            alt={`A ${details.role}`}
         />
     )
 }
@@ -114,13 +120,13 @@ function Player(props) {
         if (selected !== detailsRef.current.selected) {
             detailsRef.current.selected = selected
             setPlayerImage(
-                makePlayerImage(playerImageDOM, detailsRef)
+                makePlayerImage(playerImageDOM, detailsRef.current)
             )
         }
 
-        // If status has changed, animate the change
-        if (status !== detailsRef.current.status) {
-            detailsRef.current.status = status
+        // If anything else has changed, animate the change
+        if (status !== detailsRef.current.status || role !== detailsRef.current.role) {
+            detailsRef.current = details
 
             async function animate() {
                 playerImageDOM.current.classList.add("spinToFlat")
@@ -128,7 +134,7 @@ function Player(props) {
                 await sleep(500)
 
                 setPlayerImage(
-                    makePlayerImage(playerImageDOM, detailsRef)
+                    makePlayerImage(playerImageDOM, detailsRef.current)
                 )
                 playerImageDOM.current.classList.remove("spinToFlat")
                 playerImageDOM.current.classList.add("spinFromFlat")
