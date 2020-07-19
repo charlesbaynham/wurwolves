@@ -17,13 +17,16 @@ const num_pics = {
     Mason: 1,
 }
 
+export function getRoleURL(role, seed) {
+    const pic_num = Math.floor(seed * num_pics[role])
+    return `/images/characters/${role.toLowerCase()}${pic_num}.svg`
+}
+
 export function RolePicture(props) {
 
     if (num_pics[props.role] > 0) {
 
-        const pic_num = Math.floor(props.seed * num_pics[props.role])
-
-        const pic_url = `/images/characters/${props.role.toLowerCase()}${pic_num}.svg`
+        const pic_url = getRoleURL(props.role, props.seed)
 
         return (
             <img className="role_picture" src={pic_url} alt={`Picture of a ${props.role}`} />

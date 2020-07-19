@@ -3,11 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import {
     selectPlayerName,
+    selectPlayerRole,
+    selectPlayerSeed,
     selectPlayerStatus,
     selectSelectedPlayer,
     selectPlayerSelectable,
     selectPlayerReady
 } from './selectors'
+
+import { getRoleURL } from './RolePicture'
 
 import { selectPlayer, unselectAll } from '../app/store'
 
@@ -50,12 +54,19 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function makePlayerImage(ref, status, selected) {
+function makePlayerImage(ref, details) {
+    // Until I've got a way of modifying images by status, only show the images if the player is alive
+    var image_url;
+    if (details.status == 'ALIVE') {
+        image_url = getRoleURL(details.role, details.seed)
+    } else {
+        image_url = IMAGE_LOOKUP[details.status].img
+    }
     return (
         <img ref={ref}
-            src={IMAGE_LOOKUP[status].img}
-            className={`figure-img img-fluid w-100 ${selected ? "selected" : ""}`}
-            alt={IMAGE_LOOKUP[status].alt}
+            src={image_url}
+            className={`figure-img img-fluid w-100 ${details.selected ? "selected" : ""}`}
+            alt={`Picture of a ${details.role}`}
         />
     )
 }
@@ -63,6 +74,8 @@ function makePlayerImage(ref, status, selected) {
 function Player(props) {
     const player_id = props.player_id
     const name = useSelector(selectPlayerName(player_id));
+    const role = useSelector(selectPlayerRole(player_id));
+    const seed = useSelector(selectPlayerSeed(player_id));
     const status = useSelector(selectPlayerStatus(player_id));
     const playerReady = useSelector(selectPlayerReady(player_id));
 
@@ -75,8 +88,15 @@ function Player(props) {
 
     const playerImageDOM = useRef(null);
 
+    const details = {
+        role: role,
+        seed: seed,
+        status: status,
+        selected: selected
+    }
+
     const [playerImage, setPlayerImage] = useState(
-        makePlayerImage(playerImageDOM, status, selected)
+        makePlayerImage(playerImageDOM, details)
     )
 
     // Plan:
@@ -87,23 +107,20 @@ function Player(props) {
     // * Half way through animation, substitute it for newImage. Ensure that same animation starts half-way through on newImage
     // * At end of animation nothing to do: old image is gone and newImage is there
 
-    const oldStatusRef = useRef(status)
-    const oldSelectedRef = useRef(selected)
+    const detailsRef = useRef(details)
 
     useEffect(() => {
         // Immediately update selected if it has changed
-        if (selected !== oldSelectedRef.current) {
-            console.log(`Player ${name} rendered with new selected ${selected}, also status: ${oldStatusRef.current}`)
-            oldSelectedRef.current = selected
+        if (selected !== detailsRef.current.selected) {
+            detailsRef.current.selected = selected
             setPlayerImage(
-                makePlayerImage(playerImageDOM, oldStatusRef.current, selected)
+                makePlayerImage(playerImageDOM, detailsRef)
             )
         }
 
         // If status has changed, animate the change
-        if (status !== oldStatusRef.current) {
-            console.log(`Player ${name} rendered with new status ${status} (used to be ${oldStatusRef.current})`)
-            oldStatusRef.current = status
+        if (status !== detailsRef.current.status) {
+            detailsRef.current.status = status
 
             async function animate() {
                 playerImageDOM.current.classList.add("spinToFlat")
@@ -111,7 +128,7 @@ function Player(props) {
                 await sleep(500)
 
                 setPlayerImage(
-                    makePlayerImage(playerImageDOM, status, oldSelectedRef.current)
+                    makePlayerImage(playerImageDOM, detailsRef)
                 )
                 playerImageDOM.current.classList.remove("spinToFlat")
                 playerImageDOM.current.classList.add("spinFromFlat")
