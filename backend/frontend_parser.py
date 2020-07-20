@@ -157,10 +157,10 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
         # Display real role if the game is ended or this player should be able to see it
         displayed_role = PlayerRole.VILLAGER
         if (
-            (p.role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
+            (p.id == player.id)
+            or (p.role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
             or (p.role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)
             or (p.role == PlayerRole.MASON and player.role == PlayerRole.MASON)
-            or p.role == PlayerRole.MAYOR
             or game.stage == GameStage.ENDED
             or (
                 p.role == PlayerRole.MAYOR
