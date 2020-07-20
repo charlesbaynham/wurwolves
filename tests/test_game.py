@@ -319,7 +319,7 @@ def test_kick_with_actions(db_session):
     # Add three players
     player_ids = [uuid() for _ in range(3)]
     roles = [
-        PlayerRole.VILLAGER,
+        PlayerRole.MEDIC,
         PlayerRole.VILLAGER,
         PlayerRole.WOLF,
     ]
@@ -355,16 +355,31 @@ def test_kick_with_actions(db_session):
 
     # Kill the idler with the wolf
     game.wolf_night_action(wolf_id, timeout_player_id)
+    # Have the idler do something too
+    game.medic_night_action(timeout_player_id, wolf_id)
 
     db_session.expire_all()
 
     # Check game ended
     assert game.get_game_model().stage == GameStage.ENDED
 
-    # Kick the idler
+    # Keepalive someone else
     game.player_keepalive(wolf_id)
 
-    # Check they went
+    # Player should not yet be kicked
+    db_session.expire_all()
+    g = game.get_player(timeout_player_id)
+    assert g
+
+    # Put their timeout back into the past
+    timeout_player.last_seen = datetime(1, 1, 1)
+    db_session.commit()
+    db_session.expire_all()
+
+    # Keepalive someone else
+    game.player_keepalive(wolf_id)
+
+    # Check they went this time
     db_session.expire_all()
     assert not game.get_player(timeout_player_id)
 
