@@ -181,6 +181,9 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             )
         )
 
+    # Random sort
+    player_states.sort(lambda s: s.seed)
+
     state = FrontendState(
         state_hash=game.update_tag,
         players=player_states,
