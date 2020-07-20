@@ -149,7 +149,7 @@ class Player(Base):
     role = Column(Enum(PlayerRole), nullable=False)
     state = Column(Enum(PlayerState), nullable=False)
 
-    seed = Column(Float, default=0)
+    seed = Column(Float, default=lambda: random.random())
 
     previous_role = Column(Enum(PlayerRole), nullable=True)
 
