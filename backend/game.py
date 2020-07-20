@@ -368,6 +368,11 @@ class WurwolvesGame:
     @db_scoped
     def player_keepalive(self, user_id: UUID):
         p = self.get_player(user_id)
+        if not p:
+            raise HTTPException(
+                404, "You are not registered: refreshing now to join game"
+            )
+
         p.touch()
         self._session.commit()
 
