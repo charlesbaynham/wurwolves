@@ -139,13 +139,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
     player_states = []
     for p in game.players:
-        if (
-            p.role == PlayerRole.MAYOR
-            and g.num_previous_stages(GameStage.NIGHT, game.stage_id) > 0
-        ):
-            status = "MAYOR"
-        else:
-            status = p.state
+        status = p.state
 
         ready = False
         if game.stage in [
@@ -168,6 +162,10 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             or (p.role == PlayerRole.MASON and player.role == PlayerRole.MASON)
             or p.role == PlayerRole.MAYOR
             or game.stage == GameStage.ENDED
+            or (
+                p.role == PlayerRole.MAYOR
+                and g.num_previous_stages(GameStage.NIGHT, game.stage_id) > 0
+            )
         ):
             displayed_role = p.role
 
