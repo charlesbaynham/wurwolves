@@ -117,15 +117,15 @@ function Player(props) {
 
     useEffect(() => {
         // Immediately update selected if it has changed
-        if (selected !== detailsRef.current.selected) {
-            detailsRef.current.selected = selected
+        if (details.selected !== detailsRef.current.selected) {
+            detailsRef.current.selected = details.selected
             setPlayerImage(
                 makePlayerImage(playerImageDOM, detailsRef.current)
             )
         }
 
         // If anything else has changed, animate the change
-        if (status !== detailsRef.current.status || role !== detailsRef.current.role) {
+        if (details.status !== detailsRef.current.status || details.role !== detailsRef.current.role) {
             detailsRef.current = details
 
             async function animate() {
@@ -143,7 +143,7 @@ function Player(props) {
             }
             animate()
         }
-    }, [status, selected])
+    }, [details])
 
     return (
         <figure className="col-4 col-sm-3 figure player" onClick={
