@@ -379,7 +379,7 @@ def game_ended(game):
 
 def judge_night(game: "WurwolvesGame"):
     if game_ended(game):
-        game._set_stage(GameStage.ENDED)
+        game.end_game()
     else:
         game._set_stage(GameStage.DAY)
         game.send_chat_message("Day breaks...", is_strong=True)
@@ -409,7 +409,7 @@ def count_votes(game: "WurwolvesGame"):
     game.reset_votes()
 
     if game_ended(game):
-        game._set_stage(GameStage.ENDED)
+        game.end_game()
     elif not tied:
         game._set_stage(GameStage.NIGHT)
 

@@ -78,14 +78,14 @@ def win_action(game: "WurwolvesGame", team: Team):
         game.send_chat_message(
             f"The game is ended and the {team.value} have won!", is_strong=True
         )
-        if team == Team.WOLVES:
-            for player in game.get_players_model():
-                if (
-                    get_role_team(player.role) == Team.VILLAGERS
-                    and player.state == PlayerState.ALIVE
-                    and player.role != PlayerRole.ACOLYTE
-                ):
-                    game.kill_player(player.id, PlayerState.WOLFED)
+        # if team == Team.WOLVES:
+        #     for player in game.get_players_model():
+        #         if (
+        #             get_role_team(player.role) == Team.VILLAGERS
+        #             and player.state == PlayerState.ALIVE
+        #             and player.role != PlayerRole.ACOLYTE
+        #         ):
+        #             game.kill_player(player.id, PlayerState.WOLFED)
     else:
         players_in_team = [
             p.id for p in game.get_players_model() if get_role_team(p.role) == team

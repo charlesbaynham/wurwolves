@@ -426,6 +426,17 @@ class WurwolvesGame:
         )
 
     @db_scoped
+    def end_game(self):
+        # Give all the players another SPECTATOR_TIMEOUT before they are kicked for inactivity,
+        # so people have time to see what happened
+        for p in self.get_players():
+            p.touch()
+        self._session.commit()
+
+        # End the game
+        self._set_stage(GameStage.ENDED)
+
+    @db_scoped
     def start_game(self):
         game = self.get_game()
 
