@@ -37,7 +37,7 @@ for role in list(PlayerRole):
 # This cannot be satisfied for very small games (because all the guaranteed roles
 # must be handed out) or for very large games (because there aren't enough optional
 # roles to go around) but the algorithm will do its best
-PROB_VILLAGER = 0.13
+PROB_VILLAGER = 0.1
 
 
 def num_wolves(num_players: int):
