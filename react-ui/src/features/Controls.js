@@ -76,7 +76,7 @@ function Controls(props) {
             </div>
             <div className="col-md-8 pt-4 pt-md-0">
                 <h5>{controlsState.title}</h5>
-                <RolePicture role={controlsState.role} seed={controlsState.seed} />
+                <RolePicture role={controlsState.role} status="ALIVE" seed={controlsState.seed} />
                 <ReactMarkdown source={controlsState.text} />
             </div>
         </div>

@@ -15,59 +15,13 @@ import { getRoleURL } from './RolePicture'
 
 import { selectPlayer, unselectAll } from '../app/store'
 
-const IMAGE_LOOKUP = {
-    'ALIVE': {
-        'img': '/images/person.svg',
-        'alt': 'A normal villager?'
-    },
-    'LYNCHED': {
-        'img': '/images/person-lynched.svg',
-        'alt': 'A lynched player'
-    },
-    'NOMINATED': {
-        'img': '/images/person-nominated.svg',
-        'alt': 'A nominated player'
-    },
-    'WOLFED': {
-        'img': '/images/person-wolfed.svg',
-        'alt': 'A player killed by a wolf'
-    },
-    'SECONDED': {
-        'img': '/images/person-seconded.svg',
-        'alt': 'A seconded player'
-    },
-    'SHOT': {
-        'img': '/images/person-shot.svg',
-        'alt': 'A player who has been shot'
-    },
-    'SPECTATING': {
-        'img': '/images/person-spectating.svg',
-        'alt': 'A spectator'
-    },
-    'MAYOR': {
-        'img': '/images/person-mayor.svg',
-        'alt': 'The mayor'
-    }
-}
-
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function makePlayerImage(ref, details) {
-    // Until I've got a way of modifying images by status, only show the images if the player is alive
-    var image_url;
-    if (details.status === 'ALIVE') {
-        image_url = getRoleURL(details.role, details.seed)
-    } else {
-        if (!(details.status in IMAGE_LOOKUP)) {
-            console.log("Error: details are")
-            console.log(details)
-            image_url = IMAGE_LOOKUP['SPECTATING'].img
-        } else {
-            image_url = IMAGE_LOOKUP[details.status].img
-        }
-    }
+    var image_url = getRoleURL(details.role, details.status, details.seed)
+
     return (
         <img ref={ref}
             src={image_url}
