@@ -13,7 +13,7 @@ const num_pics = {
     Miller: 1,
     Acolyte: 1,
     Priest: 1,
-    Prostitute: 0,
+    Prostitute: 1,
     Mason: 1,
 }
 
@@ -22,8 +22,6 @@ export function getRoleURL(role, state, seed) {
 
     // We only have images for alive anythings, or dead villagers
     // Any other combo, show the alive picture
-    console.log(state)
-    console.log(role)
     if (role.toLowerCase() === "spectator") {
         return `/images/spectator.svg`
     }
