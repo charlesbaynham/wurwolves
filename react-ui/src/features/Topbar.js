@@ -15,7 +15,7 @@ function Topbar(props) {
 
   const [chosenName, setChosenName] = useState(null);
 
-  if (!name_is_generated && chosenName === null) {
+  if (!chosenName && name && !name_is_generated) {
     setChosenName(name)
   }
 
@@ -28,7 +28,7 @@ function Topbar(props) {
         document.activeElement.blur()
       }}>
         <Form.Control
-          placeholder="Your name..."
+          placeholder={name}
           onChange={e => setChosenName(e.target.value)}
           onBlur={() => requestNewName(chosenName)}
           value={chosenName ? chosenName : ""}
