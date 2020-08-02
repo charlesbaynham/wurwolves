@@ -222,4 +222,6 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
 
     logging.debug("Full UI state: %s", state)
 
+    db_session.close()
+
     return state

@@ -177,6 +177,9 @@ class WurwolvesGame:
             player.active = True
             self.send_chat_message(f"{player.user.name} rejoined the game", True)
 
+        # To avoid instant kicking:
+        player.touch()
+
         self._session.add(game)
         self._session.add(user)
         self._session.add(player)
