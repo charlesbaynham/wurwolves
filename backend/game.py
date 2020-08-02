@@ -461,8 +461,9 @@ class WurwolvesGame:
     @db_scoped
     def start_game(self):
         game = self.get_game()
+        players = self.get_players()
 
-        player_roles = roles.assign_roles(len(game.players))
+        player_roles = roles.assign_roles(len(players))
 
         logging.info(
             "Assigning roles for {} game: {}".format(self.game_id, player_roles)
@@ -471,7 +472,7 @@ class WurwolvesGame:
             raise HTTPException(status_code=400, detail="Not enough players")
 
         player: Player
-        for player, role in zip(game.players, player_roles):
+        for player, role in zip(players, player_roles):
             player.role = role
             player.state = PlayerState.ALIVE
             player.seed = random.random()
@@ -480,11 +481,11 @@ class WurwolvesGame:
         self.clear_actions()
         self.send_chat_message("A new game has started. Night falls in the village")
 
-        for player in game.players:
+        for player in players:
             desc = roles.get_role_description(player.role)
             if desc.reveal_others_text:
                 fellows = [
-                    p for p in game.players if p.role == player.role and p != player
+                    p for p in players if p.role == player.role and p != player
                 ]
                 if fellows:
                     self.send_chat_message(
@@ -601,7 +602,7 @@ class WurwolvesGame:
     @db_scoped
     def reset_votes(self):
         game = self.get_game()
-        for p in game.players:
+        for p in self.get_players(active_only=False):
             p.votes = 0
         game.stage_id += 1
         logging.info("Votes reset")

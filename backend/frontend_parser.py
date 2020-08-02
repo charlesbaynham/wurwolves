@@ -92,8 +92,9 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     """
 
-    game = g.get_game_model()
-    player = g.get_player_model(user_id)
+    game = g.get_game()
+    player = g.get_player(user_id)
+    players = g.get_players()
 
     if not game or not player:
         g.join(user_id)
@@ -107,7 +108,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     if not game or not player:
         return None
 
-    logging.debug("Game players: %s", game.players)
+    logging.debug("Game players: %s", players)
 
     role_details = get_role_description(player.role)
 
@@ -138,7 +139,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
     logging.debug("controls_state: {}".format(controls_state))
 
     player_states = []
-    for p in game.players:
+    for p in players:
         status = p.state
 
         ready = False
