@@ -163,11 +163,7 @@ class WurwolvesGame:
             game = self.create_game()
 
         # Add this user to the game as a spectator if they're not already in it
-        player = (
-            self._session.query(Player)
-            .filter(Player.game == game, Player.user == user)
-            .first()
-        )
+        player = self.get_player(user_id)
 
         if not player:
             player = Player(
@@ -177,6 +173,9 @@ class WurwolvesGame:
                 state=PlayerState.SPECTATING,
             )
             self.send_chat_message(f"{player.user.name} joined the game", True)
+        if not player.active:
+            player.active = True
+            self.send_chat_message(f"{player.user.name} rejoined the game", True)
 
         self._session.add(game)
         self._session.add(user)
@@ -222,16 +221,24 @@ class WurwolvesGame:
             raise KeyError(f"User {user_id} not found in this game")
 
     @db_scoped
-    def get_player(self, user_id: UUID) -> Player:
-        return (
-            self._session.query(Player)
-            .filter(Player.game_id == self.game_id, Player.user_id == user_id)
-            .first()
+    def get_player(self, user_id: UUID, active_only=True) -> Player:
+        q = self._session.query(Player).filter(
+            Player.game_id == self.game_id, Player.user_id == user_id
         )
 
+        if active_only:
+            q = q.filter(Player.active)
+
+        return q.first()
+
     @db_scoped
-    def get_player_by_id(self, player_id: int) -> Player:
-        return self._session.query(Player).filter(Player.id == player_id).first()
+    def get_player_by_id(self, player_id: int, active_only=True) -> Player:
+        q = self._session.query(Player).filter(Player.id == player_id)
+
+        if active_only:
+            q.filter(Player.active)
+
+        return q.first()
 
     @db_scoped
     def get_player_model(self, user_id: UUID) -> PlayerModel:
@@ -244,8 +251,11 @@ class WurwolvesGame:
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
-    def get_players(self, role: PlayerRole = None) -> List[Player]:
+    def get_players(self, role: PlayerRole = None, active_only=True) -> List[Player]:
         q = self._session.query(Player).filter(Player.game_id == self.game_id)
+
+        if active_only:
+            q = q.filter(Player.active)
 
         if role:
             q = q.filter(Player.role == role)
@@ -415,11 +425,8 @@ class WurwolvesGame:
 
     @db_scoped
     def kick(self, player: Player):
-        for a in player.actions:
-            self._session.delete(a)
-        for a in player.selected_actions:
-            self._session.delete(a)
-        self._session.delete(player)
+        player.active = False
+        self._session.add(player)
 
     @db_scoped
     def create_game(self):
