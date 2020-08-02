@@ -163,7 +163,7 @@ class WurwolvesGame:
             game = self.create_game()
 
         # Add this user to the game as a spectator if they're not already in it
-        player = self.get_player(user_id)
+        player = self.get_player(user_id, active_only=False)
 
         if not player:
             player = Player(
