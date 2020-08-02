@@ -240,7 +240,7 @@ class PlayerModel(pydantic.BaseModel):
     game_id: int
     user_id: UUID
     votes: int = 0
-    active: bool
+    active: bool = True
 
     user: "UserModel"
 
