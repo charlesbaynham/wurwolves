@@ -20,14 +20,8 @@ const num_pics = {
 export function getRoleURL(role, state, seed) {
     const pic_num = Math.floor(seed * num_pics[role])
 
-    // We only have images for alive anythings, or dead villagers
-    // Any other combo, show the alive picture
     if (role.toLowerCase() === "spectator") {
         return `/images/spectator.svg`
-    }
-
-    if (role.toLowerCase() !== "villager") {
-        state = "ALIVE"
     }
 
     const state_strs = {
