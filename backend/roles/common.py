@@ -1,4 +1,5 @@
 import logging
+from enum import Enum, auto
 from typing import Callable, Dict, NamedTuple, Optional, Type, Union
 
 import pydantic
@@ -40,7 +41,12 @@ class RoleDescription(pydantic.BaseModel):
     fallback_role: Optional[PlayerRole]
     fallback_role_description: Optional["RoleDescription"]
     stages: Dict[GameStage, StageAction]
-    secret_chat_enabled = False
+
+    class SecretChatType(Enum):
+        TEAM = auto()
+        ROLE = auto()
+
+    secret_chat_enabled: Optional[SecretChatType]
 
     # If present, announce to this role who else has this role.
     # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")

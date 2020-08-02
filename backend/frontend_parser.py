@@ -206,7 +206,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             for m in game.messages
             if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
         ],
-        showSecretChat=role_details.secret_chat_enabled,
+        showSecretChat=bool(role_details.secret_chat_enabled),
         stage=game.stage,
         controls_state=controls_state,
         myID=user_id,

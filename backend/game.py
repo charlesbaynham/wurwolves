@@ -320,10 +320,16 @@ class WurwolvesGame:
 
         if not role_description.secret_chat_enabled:
             raise HTTPException(f"Role {role} does not have secret chat")
-        players_on_team = [
-            p.id for p in self.get_players() if roles.get_role_team(p.role) == team
-        ]
-        self.send_chat_message(msg=f"{message}", player_list=players_on_team)
+        if role_description.secret_chat_enabled is role_description.SecretChatType.TEAM:
+            players_to_receive = [
+                p.id for p in self.get_players() if roles.get_role_team(p.role) == team
+            ]
+        elif (
+            role_description.secret_chat_enabled is role_description.SecretChatType.ROLE
+        ):
+            players_to_receive = [p.id for p in self.get_players() if p.role == role]
+
+        self.send_chat_message(msg=f"{message}", player_list=players_to_receive)
 
     @db_scoped
     def get_hash_now(self):

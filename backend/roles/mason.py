@@ -30,7 +30,7 @@ description = RoleDescription(
         GameStage.DAY: StageAction(text=general_desc),
     },
     team=Team.VILLAGERS,
-    secret_chat_enabled=True,
+    secret_chat_enabled=RoleDescription.SecretChatType.ROLE,
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
 )

@@ -35,7 +35,7 @@ You have access to secret chat: use it to chat with the other wolves (if there a
         ),
     },
     team=Team.WOLVES,
-    secret_chat_enabled=True,
+    secret_chat_enabled=RoleDescription.SecretChatType.TEAM,
     reveal_others_text="fellow wolves",
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
