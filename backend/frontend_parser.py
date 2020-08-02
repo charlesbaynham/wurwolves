@@ -175,6 +175,7 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
             or (real_role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
             or (real_role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)
             or (real_role == PlayerRole.MASON and player.role == PlayerRole.MASON)
+            or (real_role == PlayerRole.JESTER and p.state == PlayerState.LYNCHED)
             or game.stage == GameStage.ENDED
             or (
                 real_role == PlayerRole.MAYOR
