@@ -5,6 +5,7 @@ from uuid import UUID
 
 import pydantic
 
+from . import database
 from .game import WurwolvesGame
 from .model import GameStage, PlayerRole, PlayerState
 from .roles import get_action_func_name, get_role_description
@@ -87,10 +88,13 @@ class FrontendState(pydantic.BaseModel):
     myNameIsGenerated: bool
 
 
-def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
+def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     """
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     """
+    db_session = database.Session()
+
+    g = WurwolvesGame(game_tag, session=db_session)
 
     game = g.get_game()
     player = g.get_player(user_id)
