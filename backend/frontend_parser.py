@@ -155,23 +155,26 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
                 ready = True
 
         # Display real role if the game is ended or this player should be able to see it
+        real_role = p.role
+        if (p.previous_role and p.role == PlayerRole.SPECTATOR and p.state != PlayerState.SPECTATING):
+            real_role = p.previous_role
         displayed_role = PlayerRole.VILLAGER
-        if p.role == PlayerRole.SPECTATOR or p.role == PlayerRole.NARRATOR:
-            if p.state == PlayerState.SPECTATING:
-                displayed_role = PlayerRole.SPECTATOR
+
+        if real_role == PlayerRole.SPECTATOR or real_role == PlayerRole.NARRATOR:
+            displayed_role = PlayerRole.SPECTATOR
         elif (
             (p.id == player.id)
-            or (p.role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
-            or (p.role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
-            or (p.role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)
-            or (p.role == PlayerRole.MASON and player.role == PlayerRole.MASON)
+            or (real_role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
+            or (real_role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
+            or (real_role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)
+            or (real_role == PlayerRole.MASON and player.role == PlayerRole.MASON)
             or game.stage == GameStage.ENDED
             or (
-                p.role == PlayerRole.MAYOR
+                real_role == PlayerRole.MAYOR
                 and g.num_previous_stages(GameStage.NIGHT, game.stage_id) > 0
             )
         ):
-            displayed_role = p.role
+            displayed_role = real_role
 
         player_states.append(
             FrontendState.UIPlayerState(

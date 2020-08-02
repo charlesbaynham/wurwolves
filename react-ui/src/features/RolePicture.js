@@ -24,6 +24,9 @@ export function getRoleURL(role, state, seed) {
         return `/images/spectator.svg`
     }
 
+    console.log(role)
+    console.log(state)
+
     const state_strs = {
         "alive": "",
         "lynched": "knot",
