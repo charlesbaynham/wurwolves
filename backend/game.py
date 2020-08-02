@@ -442,6 +442,10 @@ class WurwolvesGame:
         # so people have time to see what happened
         for p in self.get_players():
             p.touch()
+
+        # Delete all remaining actions
+        for a in self.get_game().actions:
+            self._session.delete(a)
         self._session.commit()
 
         # End the game
