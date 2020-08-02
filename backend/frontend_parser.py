@@ -156,14 +156,21 @@ def parse_game_to_state(g: WurwolvesGame, user_id: UUID) -> FrontendState:
 
         # Display real role if the game is ended or this player should be able to see it
         real_role = p.role
-        if (p.previous_role and p.role == PlayerRole.SPECTATOR and p.state != PlayerState.SPECTATING):
+        if (
+            p.previous_role
+            and (p.role == PlayerRole.SPECTATOR or p.role == PlayerRole.NARRATOR)
+            and p.state != PlayerState.SPECTATING
+        ):
             real_role = p.previous_role
         displayed_role = PlayerRole.VILLAGER
 
+        # Only display as a spectator if the player is a spectator/narrator and had no
+        # previous role
         if real_role == PlayerRole.SPECTATOR or real_role == PlayerRole.NARRATOR:
             displayed_role = PlayerRole.SPECTATOR
         elif (
             (p.id == player.id)
+            or player.role == PlayerRole.NARRATOR
             or (real_role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
             or (real_role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
             or (real_role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)
