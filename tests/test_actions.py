@@ -1,12 +1,14 @@
-from unittest.mock import Mock, patch
+import random as rd
+from unittest.mock import Mock
+from unittest.mock import patch
 
 import pytest
 from fastapi import HTTPException
 
 from backend.game import WurwolvesGame
-from backend.model import GameStage, PlayerRole, PlayerState
-
-import random as rd
+from backend.model import GameStage
+from backend.model import PlayerRole
+from backend.model import PlayerState
 
 rd.seed(123)
 

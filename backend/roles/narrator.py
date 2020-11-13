@@ -4,9 +4,14 @@ The Narrator role
 import logging
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import ActionMixin, GameAction
-from .common import RoleDescription, RoleDetails, StageAction
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
+from ..resolver import ActionMixin
+from ..resolver import GameAction
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .spectator import description as spectator_description
 from .teams import Team
 from .utility_mixins import NoTargetRequired
@@ -15,13 +20,13 @@ if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
 general_description = """
-You are the narrator. You are not playing the game and cannot win, but you 
-are in charge of keeping the game on track. 
+You are the narrator. You are not playing the game and cannot win, but you
+are in charge of keeping the game on track.
 
 You control when the vote begins and you should announce the deaths that happen
-in the night (although they'll still get written in the chat). If you're feeling inventive, add a backstory. 
+in the night (although they'll still get written in the chat). If you're feeling inventive, add a backstory.
 
-Try to keep the game moving! It's up to you to ensure that the conversation doesn't get bogged down. 
+Try to keep the game moving! It's up to you to ensure that the conversation doesn't get bogged down.
 """
 
 description = RoleDescription(
@@ -31,7 +36,7 @@ description = RoleDescription(
             text=f"""
 {general_description}
 
-When you're ready to start the voting for the day, click the button. 
+When you're ready to start the voting for the day, click the button.
     """,
             button_text="Move to vote",
             select_person=False,
@@ -42,14 +47,14 @@ When you're ready to start the voting for the day, click the button.
 
 You don't have anything to do at night. Watch the chat log to see what people are up to.
 If someone isn't doing their action you can remind them, but be careful not to
-reveal their identity! When the day breaks, you can announce the results. 
+reveal their identity! When the day breaks, you can announce the results.
     """
         ),
         GameStage.VOTING: StageAction(
             text=f"""
 {general_description}
 
-The players should be voting! The game will automatically progress once they're finished. 
+The players should be voting! The game will automatically progress once they're finished.
     """,
         ),
         GameStage.LOBBY: StageAction(text=""),
@@ -100,7 +105,7 @@ def register(role_map):
         Move to vote
 
         The narrator is the only one who is allowed to mote to vote (unless a mayor is present),
-        so the round will complete as soon as their action is submitted. 
+        so the round will complete as soon as their action is submitted.
         """
 
         allowed_player_states = list(PlayerState)

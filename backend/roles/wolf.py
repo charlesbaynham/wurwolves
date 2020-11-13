@@ -1,14 +1,22 @@
 """
 The Wolf role
 """
-
-from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction, ModifierType, TeamBehaviour
-from .common import RoleDescription, RoleDetails, StageAction
-from .medic import AffectedByMedic, is_saved_by_medic
-from .prostitute import AffectedByProstitute, prostitute_sleeping_with
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
+from ..resolver import GameAction
+from ..resolver import ModifierType
+from ..resolver import TeamBehaviour
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
+from .medic import AffectedByMedic
+from .medic import is_saved_by_medic
+from .prostitute import AffectedByProstitute
+from .prostitute import prostitute_sleeping_with
 from .teams import Team
-from .utility_mixins import TargetRequired, TargetMustBeAlive
+from .utility_mixins import TargetMustBeAlive
+from .utility_mixins import TargetRequired
 from .villager import description as villager
 
 description = RoleDescription(
@@ -27,7 +35,7 @@ You have access to secret chat: use it to chat with the other wolves (if there a
             text="""
 You are a Wolf! You kill one person each night
 
-It's night now, so choose whom to kill! Click their icon then click the button to submit. 
+It's night now, so choose whom to kill! Click their icon then click the button to submit.
 
 You have access to secret chat: use it to chat with the other wolves (if there are any) and decide who to kill.
     """,
@@ -44,7 +52,7 @@ You have access to secret chat: use it to chat with the other wolves (if there a
 
 class AffectedByWolves(AffectedByMedic):
     """
-    Creates attributes `originator_attacked_by_wolf` and `target_attacked_by_wolf`. 
+    Creates attributes `originator_attacked_by_wolf` and `target_attacked_by_wolf`.
     These can be cancelled by medic action
     """
 

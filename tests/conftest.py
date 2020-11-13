@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 TESTING_DB_URL = "sqlite:///testing.db"
@@ -6,10 +7,10 @@ TESTING_DB_URL = "sqlite:///testing.db"
 
 @pytest.fixture(scope="session")
 def engine():
-    """ Return an engine to the database.
+    """Return an engine to the database.
 
     This fixture should not be used as the database is not cleaned between
-    invocations. Use db_session instead. 
+    invocations. Use db_session instead.
     """
     os.environ["DATABASE_URL"] = TESTING_DB_URL
 
@@ -24,7 +25,7 @@ def engine():
 def db_session(engine):
     """
     Get an SQLAlchemy database session to a clean database with the model schema
-    set up. 
+    set up.
     """
     from backend.model import Base
     from backend.database import Session

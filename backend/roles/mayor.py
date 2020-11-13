@@ -4,22 +4,28 @@ The Mayor role
 import logging
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import ActionMixin, GameAction
-from .common import RoleDescription, RoleDetails, StageAction
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
+from ..resolver import ActionMixin
+from ..resolver import GameAction
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .teams import Team
-from .utility_mixins import NoTargetRequired, TargetMustBeAlive
+from .utility_mixins import NoTargetRequired
+from .utility_mixins import TargetMustBeAlive
 from .villager import description as villager
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
 general_description = """
-You are the Mayor! 
+You are the Mayor!
 
-You are on the side of the villagers and everyone knows who you are. While you are alive, there will be 
-no voting for lynching: you will make the decision unilaterally. You are allowed to take advice if you want, 
-but you don't have to listen to it. 
+You are on the side of the villagers and everyone knows who you are. While you are alive, there will be
+no voting for lynching: you will make the decision unilaterally. You are allowed to take advice if you want,
+but you don't have to listen to it.
 """
 
 description = RoleDescription(
@@ -29,7 +35,7 @@ description = RoleDescription(
             text=f"""
 {general_description}
 
-When you're ready to decide who to lynch, click the button. 
+When you're ready to decide who to lynch, click the button.
     """,
             button_text="Move to vote",
             select_person=False,
@@ -45,7 +51,7 @@ It's night now so you have nothing to do. Let's hope your subjects are loyal!
             text=f"""
 {general_description}
 
-Select whoever you have decided needs to be lynched. 
+Select whoever you have decided needs to be lynched.
     """,
             button_text="Lynch",
         ),
@@ -88,7 +94,7 @@ class MayorMoveToVoteAction(GameAction, NoTargetRequired):
     Move to vote
 
     The narrator is the only one who is allowed to vote, so the round will
-    complete as soon as their action is submitted. 
+    complete as soon as their action is submitted.
     """
 
     allowed_player_states = list(PlayerState)

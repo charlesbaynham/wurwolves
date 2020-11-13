@@ -5,12 +5,18 @@ Once per game, the vigilante may kill one person in the night
 """
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction, RoundEndBehaviour
-from .common import RoleDescription, RoleDetails, StageAction
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
+from ..resolver import GameAction
+from ..resolver import RoundEndBehaviour
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .medic import AffectedByMedic
 from .teams import Team
-from .utility_mixins import OncePerGame, TargetMustBeAlive
+from .utility_mixins import OncePerGame
+from .utility_mixins import TargetMustBeAlive
 from .villager import description as villager
 
 if TYPE_CHECKING:
@@ -22,17 +28,17 @@ description = RoleDescription(
     stages={
         GameStage.NIGHT: StageAction(
             text="""
-You are a vigilante! Once per game, you can shoot someone in the night. 
+You are a vigilante! Once per game, you can shoot someone in the night.
 
-It's night time now, so if you want to act, select someone to shoot. 
+It's night time now, so if you want to act, select someone to shoot.
 
-You win if all the wolves are eliminated. 
+You win if all the wolves are eliminated.
 """,
             button_text="Select someone to shoot",
         ),
         GameStage.DAY: StageAction(
             text="""
-You are a vigilante! Once per game, you can shoot someone in the night. 
+You are a vigilante! Once per game, you can shoot someone in the night.
         """
         ),
     },
@@ -48,7 +54,9 @@ class VigilanteAction(OncePerGame, AffectedByMedic, TargetMustBeAlive, GameActio
 
     @classmethod
     def immediate(
-        cls, game: "WurwolvesGame" = None, **kwargs,
+        cls,
+        game: "WurwolvesGame" = None,
+        **kwargs,
     ):
         """Send the traditional message"""
         super().immediate(game=game, **kwargs)

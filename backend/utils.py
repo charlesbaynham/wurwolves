@@ -2,10 +2,10 @@ import hashlib
 
 
 def hash_str_to_int(text: str, N: int = 3):
-    """ Hash a string into an N-byte integer
+    """Hash a string into an N-byte integer
 
     This method is used e.g. to convert the four-word style game identifiers into
-    a database-friendly integer. 
+    a database-friendly integer.
     """
 
     hash_obj = hashlib.md5(text.encode())

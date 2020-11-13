@@ -9,27 +9,29 @@ import logging
 import os
 import random
 from functools import wraps
-from typing import Dict, List, Optional, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 from uuid import UUID
 
 import pydantic
 from fastapi import HTTPException
 
-from . import resolver, roles
-from .model import (
-    Action,
-    ActionModel,
-    Game,
-    GameModel,
-    GameStage,
-    Message,
-    Player,
-    PlayerModel,
-    PlayerRole,
-    PlayerState,
-    User,
-    hash_game_tag,
-)
+from . import resolver
+from . import roles
+from .model import Action
+from .model import ActionModel
+from .model import Game
+from .model import GameModel
+from .model import GameStage
+from .model import hash_game_tag
+from .model import Message
+from .model import Player
+from .model import PlayerModel
+from .model import PlayerRole
+from .model import PlayerState
+from .model import User
 
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
@@ -189,11 +191,13 @@ class WurwolvesGame:
         """
         Make a new user
 
-        Note that, since this is a static method, it has no access to self._session and 
-        so must be passed a session to use. 
+        Note that, since this is a static method, it has no access to self._session and
+        so must be passed a session to use.
         """
         user = User(
-            id=user_id, name=WurwolvesGame.generate_name(), name_is_generated=True,
+            id=user_id,
+            name=WurwolvesGame.generate_name(),
+            name_is_generated=True,
         )
         session.add(user)
 
@@ -273,9 +277,9 @@ class WurwolvesGame:
     def get_actions(
         self, stage_id=None, player_id: int = None, stage: GameStage = None
     ) -> List[Action]:
-        """ Get orm objects for Actions in this game. 
+        """Get orm objects for Actions in this game.
 
-        Filter by the passed parameters if any. 
+        Filter by the passed parameters if any.
         """
         q = self._session.query(Action).filter(Action.game_id == self.game_id)
 
@@ -294,8 +298,7 @@ class WurwolvesGame:
     def get_actions_model(
         self, stage_id=None, player_id: int = None, stage: GameStage = None
     ) -> List[ActionModel]:
-        """ Get models for any actions performed by the given user in the given stage. Default to the current stage. 
-        """
+        """Get models for any actions performed by the given user in the given stage. Default to the current stage."""
         return [
             ActionModel.from_orm(a)
             for a in self.get_actions(stage_id, player_id, stage)
@@ -304,10 +307,10 @@ class WurwolvesGame:
     @db_scoped
     def num_previous_stages(self, stage_type: GameStage, stage_id=None):
         """
-        Number of stages of the given type which have occured prior to this one, identified by stage_id. 
+        Number of stages of the given type which have occured prior to this one, identified by stage_id.
         If stage_id not given, return number of all stages of this type which have any actions stored.
 
-        This function uses the fact that stage_id is guaranteed to be monotonic, if not consecutive. 
+        This function uses the fact that stage_id is guaranteed to be monotonic, if not consecutive.
         """
 
         q = self._session.query(Action.stage_id).filter(
@@ -354,7 +357,7 @@ class WurwolvesGame:
         Gets the latest hash of this game
 
         If known_hash is provided and is the same as the current hash,
-        do not return immediately: wait for up to timeout seconds. 
+        do not return immediately: wait for up to timeout seconds.
 
         Note that this function is not @db_scoped, but it calls one that is:
         this is to prevent the database being locked while it waits
@@ -487,9 +490,7 @@ class WurwolvesGame:
         for player in players:
             desc = roles.get_role_description(player.role)
             if desc.reveal_others_text:
-                fellows = [
-                    p for p in players if p.role == player.role and p != player
-                ]
+                fellows = [p for p in players if p.role == player.role and p != player]
                 if fellows:
                     self.send_chat_message(
                         f"You are a {player.role.value}! Your {desc.reveal_others_text} are "
@@ -549,11 +550,15 @@ class WurwolvesGame:
             is_strong (bool, optional): Display with HTML <strong>? Defaults to
                                         False.
             user_list (List[UUID], optional): List of user IDs who can see the
-                                        message. All players if None. 
+                                        message. All players if None.
             player_list (List[int], optional): List of player IDs who can see the
                                         message. All players if None. Merged with user_list
         """
-        m = Message(text=msg, is_strong=is_strong, game_id=self.game_id,)
+        m = Message(
+            text=msg,
+            is_strong=is_strong,
+            game_id=self.game_id,
+        )
 
         players = []
 
@@ -592,7 +597,7 @@ class WurwolvesGame:
 
     @db_scoped
     def vote_player(self, player_id):
-        """ Record a vote for a player
+        """Record a vote for a player
 
         Called by the execute() stage of vote actions
         """
@@ -620,7 +625,7 @@ class WurwolvesGame:
         a stage (usually the night) have been completed. It will parse the
         current state of the game and all the submitted actions, decide what
         should happen, dispatch the appropriate chat messages and alter the game
-        state as required. 
+        state as required.
         """
         players = self.get_players()
 
@@ -676,7 +681,7 @@ class WurwolvesGame:
         """
         Set a users's name
 
-        Because this sets their name across all games, this method is a class method. 
+        Because this sets their name across all games, this method is a class method.
         """
         from . import database
 

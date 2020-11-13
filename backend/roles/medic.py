@@ -1,15 +1,21 @@
 """
 The Medic role
 
-The Medic can save one person every night. 
+The Medic can save one person every night.
 """
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 
-from ..model import GameStage, PlayerRole
-from ..resolver import ActionMixin, GameAction, GamePlayer, ModifierType
-from .common import RoleDescription, RoleDetails, StageAction
+from ..model import GameStage
+from ..model import PlayerRole
+from ..resolver import ActionMixin
+from ..resolver import GameAction
+from ..resolver import GamePlayer
+from ..resolver import ModifierType
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .teams import Team
 from .utility_mixins import TargetMustBeAlive
 from .villager import description as villager
@@ -23,17 +29,17 @@ description = RoleDescription(
     stages={
         GameStage.NIGHT: StageAction(
             text="""
-You are a medic! You get to save one person each night. 
+You are a medic! You get to save one person each night.
 
-It's night time now, so select one person to save then click the button to submit. 
+It's night time now, so select one person to save then click the button to submit.
 
-You win if all the wolves are eliminated. 
+You win if all the wolves are eliminated.
 """,
             button_text="Select someone to save",
         ),
         GameStage.DAY: StageAction(
             text="""
-You are a medic! You get to save one person each night. 
+You are a medic! You get to save one person each night.
         """
         ),
     },

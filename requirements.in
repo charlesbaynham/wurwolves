@@ -1,7 +1,7 @@
 ## Requirements list
 #
 # requirements.txt contains a frozen version of these,
-# generated using `pip-compile` from the `pip-tools` package. 
+# generated using `pip-compile` from the `pip-tools` package.
 
 python-dotenv
 

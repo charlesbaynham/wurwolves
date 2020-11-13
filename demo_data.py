@@ -1,7 +1,12 @@
 from uuid import uuid4 as uuid
 
 from backend.database import session_scope
-from backend.model import Game, Message, Player, PlayerRole, PlayerState, User
+from backend.model import Game
+from backend.model import Message
+from backend.model import Player
+from backend.model import PlayerRole
+from backend.model import PlayerState
+from backend.model import User
 
 
 def make_data():

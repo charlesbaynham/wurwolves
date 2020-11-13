@@ -1,7 +1,12 @@
 import os
 import random
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Path, Query
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import FastAPI
+from fastapi import HTTPException
+from fastapi import Path
+from fastapi import Query
 
 from . import frontend_parser
 from .game import WurwolvesGame

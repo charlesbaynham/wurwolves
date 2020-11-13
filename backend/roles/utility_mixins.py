@@ -2,8 +2,10 @@ from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 
-from ..model import GameStage, PlayerState
-from ..resolver import ActionMixin, GameAction
+from ..model import GameStage
+from ..model import PlayerState
+from ..resolver import ActionMixin
+from ..resolver import GameAction
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame

@@ -4,15 +4,13 @@ from uuid import uuid4 as uuid
 import pytest
 
 from backend.game import WurwolvesGame
-from backend.model import (
-    Game,
-    GameStage,
-    Player,
-    PlayerRole,
-    PlayerState,
-    User,
-    hash_game_tag,
-)
+from backend.model import Game
+from backend.model import GameStage
+from backend.model import hash_game_tag
+from backend.model import Player
+from backend.model import PlayerRole
+from backend.model import PlayerState
+from backend.model import User
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()

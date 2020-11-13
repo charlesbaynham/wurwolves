@@ -1,18 +1,17 @@
 import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+from unittest.mock import patch
 from uuid import uuid4 as uuid
 
 import pytest
 
-from backend.model import (
-    ActionModel,
-    GameModel,
-    GameStage,
-    PlayerModel,
-    PlayerRole,
-    PlayerState,
-    UserModel,
-)
+from backend.model import ActionModel
+from backend.model import GameModel
+from backend.model import GameStage
+from backend.model import PlayerModel
+from backend.model import PlayerRole
+from backend.model import PlayerState
+from backend.model import UserModel
 
 
 @pytest.fixture

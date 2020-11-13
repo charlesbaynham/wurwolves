@@ -35,11 +35,11 @@ function Home(props) {
                 <Row><Col>
                     <ReactMarkdown source={`
 Play werewolves online with an automated narrator. If you're not in the same room,
-you should probably start a video call. 
+you should probably start a video call.
 
 The game hasn't started yet: you'll need at least 5 players for the game to be playable,
-but it's more fun with 7 or more. Press the "Start a new game" button 
-and then share the link with your friends. 
+but it's more fun with 7 or more. Press the "Start a new game" button
+and then share the link with your friends.
                 `} />
                 </Col></Row>
                 <Row><Col>

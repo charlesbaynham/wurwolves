@@ -1,30 +1,37 @@
 import logging
 from functools import partial
-from typing import TYPE_CHECKING, Callable, Dict, Union
+from typing import Callable
+from typing import Dict
+from typing import TYPE_CHECKING
+from typing import Union
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import Path
 
-from ..model import Action, GameStage, PlayerRole
+from . import acolyte
+from . import jester
+from . import mason
+from . import mayor
+from . import medic
+from . import miller
+from . import narrator
+from . import priest
+from . import prostitute
+from . import seer
+from . import spectator
+from . import vigilante
+from . import villager
+from . import wolf
+from ..model import Action
+from ..model import GameStage
+from ..model import PlayerRole
 from ..resolver import TeamBehaviour
 from ..user_id import get_user_id
-from . import (
-    acolyte,
-    jester,
-    mason,
-    mayor,
-    medic,
-    miller,
-    narrator,
-    priest,
-    prostitute,
-    seer,
-    spectator,
-    vigilante,
-    villager,
-    wolf,
-)
-from .common import RoleDescription, RoleDetails
+from .common import RoleDescription
+from .common import RoleDetails
 
 if TYPE_CHECKING:
     from ..resolver import GameAction

@@ -1,8 +1,10 @@
-from uuid import uuid4 as get_uuid
-from uuid import UUID
-
-from fastapi import Cookie, Response, Request
 from threading import RLock
+from uuid import UUID
+from uuid import uuid4 as get_uuid
+
+from fastapi import Cookie
+from fastapi import Request
+from fastapi import Response
 
 no_cookie_clients = {}
 no_cookie_lock = RLock()

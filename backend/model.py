@@ -2,25 +2,26 @@ import datetime
 import enum
 import json
 import random
-from typing import List, Optional, Union
+from typing import List
+from typing import Optional
+from typing import Union
 from uuid import UUID
 
 import pydantic
 import sqlalchemy.sql.functions as func
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    String,
-    Table,
-)
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import VARCHAR, TypeDecorator
+from sqlalchemy.types import TypeDecorator
+from sqlalchemy.types import VARCHAR
 from sqlalchemy_utils import UUIDType
 
 from .utils import hash_str_to_int
@@ -133,9 +134,9 @@ DEAD_STATES = [PlayerState.WOLFED, PlayerState.SHOT, PlayerState.LYNCHED]
 
 class Player(Base):
     """
-    The role and current state of a player in a game. 
+    The role and current state of a player in a game.
 
-    Each User is a Player in each game that they are in. Each Game has a Player for each player in it. 
+    Each User is a Player in each game that they are in. Each Game has a Player for each player in it.
     """
 
     __tablename__ = "players"
@@ -212,7 +213,7 @@ association_table = Table(
 
 class Message(Base):
     """
-    A message in the chatlog of a game. Each Game can have many Messages. 
+    A message in the chatlog of a game. Each Game can have many Messages.
     """
 
     __tablename__ = "messages"
@@ -227,7 +228,7 @@ class Message(Base):
 
 
 def hash_game_tag(text: str):
-    """ Hash a game id into a 3-byte integer
+    """Hash a game id into a 3-byte integer
 
     A game ID will normally be something like "correct-horse-battery-staple",
     but can actually be any string
