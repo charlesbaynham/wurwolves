@@ -4,12 +4,12 @@ Resolve a game stage
 At the end of the night, collate all the Actions stored in the database and
 determine what happens.
 
-There are two objects involved in this: GameActions and GamePlayers. 
+There are two objects involved in this: GameActions and GamePlayers.
 
 GamePlayers are constructed from database players. They also have originated_from
-or targetted_by fields that contain GameActions which affect that player. 
+or targetted_by fields that contain GameActions which affect that player.
 
-A GameAction can be constructed from a database action. 
+A GameAction can be constructed from a database action.
 
 A GameAction may have:
 * An originator
@@ -20,15 +20,15 @@ It must have
 * A execute() method
 
 The execute() stage will do the action's work when it is called. This is the
-only method which can interact with the game / database. 
+only method which can interact with the game / database.
 
 The action can be modified by other actions by calling its modifier methods.
 These may change the result of the execute stage. The execute stage will always
 still be called, but can change its behaviour based on the modifiers that have /
-have not been called. 
+have not been called.
 
 An Action can discover what Actions are associated with a GamePlayer by looking
-at the list of originated_from or targetted_by GameActions on that GamePlayer. 
+at the list of originated_from or targetted_by GameActions on that GamePlayer.
 
 To resolve the night's actions, the following process will happen:
 
@@ -44,25 +44,25 @@ To resolve the night's actions, the following process will happen:
 
 3. All GameActions have their do_modifiers() methods called. These are called in
     priority order, starting with the actions with the highest priority. If a tie
-    occurs, resolve the one whose Action was submitted first. 
+    occurs, resolve the one whose Action was submitted first.
 
     This method inspects the originated_from and targetted_by lists of the
     relevant player and calls any modifiers that need to be called. This will
     result in modification of the behaviour of the actions, depending on what
-    other actions exist. 
+    other actions exist.
 
 4. All GameActions have their execute() methods called. These perform the
     actions that the GameActions are now configured to do, altering the database
-    and sending messages appropriately. 
+    and sending messages appropriately.
 
     It should not matter in which order this occurs since all Actions should now
     be in agreement about what will happen, but it will happen in the same order
-    as the modifier application step. 
+    as the modifier application step.
 
 Example
 -------
 
-A game with players: 
+A game with players:
 
 Alice : wolf
 Bob : villager
@@ -72,7 +72,7 @@ Elsa : seer
 
 Step 0
 
-* At night, Alice submits a "kill Charlie" Action. 
+* At night, Alice submits a "kill Charlie" Action.
 * Not all actions are submitted yet, so the night continues
 * Elsa submits a "check Alice" action
 * Not all actions are submitted yet, so the night continues
@@ -97,7 +97,7 @@ Step 3
 * do_modifiers() is called on each GameAction, in priority order:
 * "save Charlie" has high priority: it's called first
     * "save Charlie" looks up the "Charlie" GamePlayer by checking its "targets"
-        field. 
+        field.
     * It loops through "Charlie".targetted_by checking for any actions which
         have the "mod_saved_by_medic" method and calls them all
 * The "check Alice" GameAction is next:
@@ -122,12 +122,15 @@ Step 5
     stage
 
 """
-
 import logging
 from enum import Enum
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from .model import ActionModel, GameStage, PlayerModel, PlayerState
+from .model import ActionModel
+from .model import GameStage
+from .model import PlayerModel
+from .model import PlayerState
 
 if False:  # for typing
     from ..game import WurwolvesGame
@@ -164,27 +167,27 @@ class ActionMixin:
         Bind a function from this mixin to this class using a name generated from the mixin's class
 
         All instances of ActionClass will now search for actions of MixinClass
-        in the do_modifiers() stage. If they find any, they will execute the method func. 
-        ``modifier_type`` specifies where they search. 
+        in the do_modifiers() stage. If they find any, they will execute the method func.
+        ``modifier_type`` specifies where they search.
 
         For example, the target of this action will have func called for all the actions
-        targetting them if func is available and ``modifier_type`` = TARGETTING_TARGET. 
+        targetting them if func is available and ``modifier_type`` = TARGETTING_TARGET.
 
         The originator of this action will have func called for all the actions targetting
-        from them if func is available and ``modifier_type`` = TARGETTING_ORIGINATOR. 
+        from them if func is available and ``modifier_type`` = TARGETTING_ORIGINATOR.
 
         Example usage:
 
             AffectedByMedic.bind_as_modifier(self.__do_mod, AffectedByMedic, MedicAction, TARGETTING_ORIGINATOR)
 
         This can be used to bind dunder methods of a mixin to the parent GameAction with a predictable name.
-        It should probably be called when setting up the modified classes, e.g. in __init_subclass__ of the 
+        It should probably be called when setting up the modified classes, e.g. in __init_subclass__ of the
         action mixin. The bound function (__do_mod) must accept the action which triggered the call as an
         argument.
 
         ``modifier_type`` specifices which actions should be searched for the registered method.
         E.g. a Medic wants to alter actions which target the target, whereas a Prostitute
-        wants to alter actions which originate from the target. 
+        wants to alter actions which originate from the target.
         """
 
         mod_func_name = cls.get_action_method_name(MixinClass, modifier_type)
@@ -246,7 +249,7 @@ class GameAction(ActionMixin):
         Is the action enabled at this stage? Override this function if a role needs to prevent
         other actions from even being submitted.
 
-        For example, the Mayor prevents everyone from being able to vote. 
+        For example, the Mayor prevents everyone from being able to vote.
         """
         logging.debug("Default is_action_available used")
         return True
@@ -286,7 +289,7 @@ class GameAction(ActionMixin):
         Called immediately on submit
 
         If this method returns False, the storage of the action will be aborted. Note
-        that this must actually be "false", not just a falsy value. 
+        that this must actually be "false", not just a falsy value.
         """
         return True
 

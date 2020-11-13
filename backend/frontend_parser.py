@@ -1,14 +1,18 @@
 import logging
 import random
-from typing import List, Union
+from typing import List
+from typing import Union
 from uuid import UUID
 
 import pydantic
 
 from . import database
 from .game import WurwolvesGame
-from .model import GameStage, PlayerRole, PlayerState
-from .roles import get_action_func_name, get_role_description
+from .model import GameStage
+from .model import PlayerRole
+from .model import PlayerState
+from .roles import get_action_func_name
+from .roles import get_role_description
 
 
 class FrontendState(pydantic.BaseModel):

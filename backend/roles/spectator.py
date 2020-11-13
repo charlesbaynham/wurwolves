@@ -4,9 +4,14 @@ The Spectator role
 import logging
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole, PlayerState
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
 from ..resolver import RoundEndBehaviour
-from .common import GameAction, RoleDescription, RoleDetails, StageAction
+from .common import GameAction
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .teams import Team
 from .utility_mixins import NoTargetRequired
 
@@ -30,16 +35,16 @@ description = RoleDescription(
     stages={
         GameStage.LOBBY: StageAction(
             text="""
-Welcome to Wurwolves! 
+Welcome to Wurwolves!
 The game hasn't started yet: you'll need at least 5 players for the game to be playable,
-but it's more fun with 7 or more. Once everyone has joined, press the \"Start game\" button. 
+but it's more fun with 7 or more. Once everyone has joined, press the \"Start game\" button.
 
-To invite more people, just send them the link to this page. 
+To invite more people, just send them the link to this page.
 
 This website is designed for playing with people you already know:
 it handles the gameplay but you'll also need to communicate so you
 can argue and discuss what happens. If you're not in the same room,
-you should probably start a video call. 
+you should probably start a video call.
     """,
             button_text="Start game",
             select_person=False,
@@ -62,10 +67,10 @@ Click the button to play again. The game will start once all spectators have vot
 
 class VoteStartNewGame(GameAction, NoTargetRequired):
     """
-    Vote to start a new game. 
+    Vote to start a new game.
 
     When all eligable players have voted, the finalizer will be called which will advance the game. This
-    GameAction doesn't therefore have to do it. 
+    GameAction doesn't therefore have to do it.
     """
 
     allowed_player_states = list(PlayerState)
@@ -84,9 +89,9 @@ def register(role_map):
     # Define this here to avoid circular imports with narrator
     class BecomeNarratorAction(CancelledByNarrator, GameAction):
         """
-        Allow spectators to become the narrator if they want. 
+        Allow spectators to become the narrator if they want.
 
-        CancelledByNarrator so that only one person can narrate. 
+        CancelledByNarrator so that only one person can narrate.
         """
 
         allowed_player_states = list(PlayerState)

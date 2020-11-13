@@ -3,9 +3,12 @@ The Seer role
 """
 import logging
 
-from ..model import GameStage, PlayerRole
+from ..model import GameStage
+from ..model import PlayerRole
 from ..resolver import GameAction
-from .common import RoleDescription, RoleDetails, StageAction
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .miller import ConfusedByMiller
 from .teams import Team
 from .utility_mixins import TargetMustBeAlive
@@ -20,16 +23,16 @@ description = RoleDescription(
     stages={
         GameStage.DAY: StageAction(
             text="""
-You are a Seer! You get to check the identity of one person each night. 
+You are a Seer! You get to check the identity of one person each night.
 
-You win if all the wolves are eliminated. 
+You win if all the wolves are eliminated.
     """
         ),
         GameStage.NIGHT: StageAction(
             text="""
-You are a Seer! You get to check the identity of one person each night. 
+You are a Seer! You get to check the identity of one person each night.
 
-Choose whom to check: at the end of the night, you'll find out if they are a wolf. 
+Choose whom to check: at the end of the night, you'll find out if they are a wolf.
     """,
             button_text="Select someone to check",
         ),

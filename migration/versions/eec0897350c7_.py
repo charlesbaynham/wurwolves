@@ -1,14 +1,15 @@
 """empty message
 
 Revision ID: eec0897350c7
-Revises: 
+Revises:
 Create Date: 2020-06-07 19:23:42.709248
 
 """
-from alembic import op
 import sqlalchemy as sa
-import backend
 import sqlalchemy_utils
+from alembic import op
+
+import backend
 
 
 # revision identifiers, used by Alembic.
@@ -42,7 +43,10 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("event_id", sa.Integer(), nullable=True),
         sa.Column("user_id", sqlalchemy_utils.types.uuid.UUIDType(), nullable=True),
-        sa.ForeignKeyConstraint(["event_id"], ["game_events.id"],),
+        sa.ForeignKeyConstraint(
+            ["event_id"],
+            ["game_events.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###

@@ -7,7 +7,9 @@ from fastapi import HTTPException
 
 from backend.database import session_scope
 from backend.game import WurwolvesGame
-from backend.model import GameStage, PlayerRole, PlayerState
+from backend.model import GameStage
+from backend.model import PlayerRole
+from backend.model import PlayerState
 
 GAME_ID = "Horse battery staple"
 

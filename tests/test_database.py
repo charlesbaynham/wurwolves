@@ -1,6 +1,8 @@
 from uuid import uuid4 as uuid
 
-from backend.model import Game, User, GameStage
+from backend.model import Game
+from backend.model import GameStage
+from backend.model import User
 
 
 def test_fixtures(db_session):

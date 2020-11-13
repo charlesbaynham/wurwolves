@@ -1,5 +1,5 @@
-from .model import Base
 from .database import engine
+from .model import Base
 
 
 def reset_database():

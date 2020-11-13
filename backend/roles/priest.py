@@ -7,9 +7,15 @@ from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 
-from ..model import DEAD_STATES, GameStage, PlayerRole, PlayerState
-from ..resolver import GameAction, RoundEndBehaviour
-from .common import RoleDescription, RoleDetails, StageAction
+from ..model import DEAD_STATES
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
+from ..resolver import GameAction
+from ..resolver import RoundEndBehaviour
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .medic import AffectedByMedic
 from .teams import Team
 from .utility_mixins import OncePerGame
@@ -21,10 +27,10 @@ if TYPE_CHECKING:
 
 general_desc = """
 Oh holy priest, you receive the confessions of the flock in this village. Of course,
-the Seal of the Confessional is inviolable, but occasionally things slip your tounge. 
+the Seal of the Confessional is inviolable, but occasionally things slip your tounge.
 
-Once per game you may check a dead player to learn what their role was. 
-You win if all the wolves are eliminated. 
+Once per game you may check a dead player to learn what their role was.
+You win if all the wolves are eliminated.
 
 """
 
@@ -35,7 +41,7 @@ description = RoleDescription(
             text=f"""
 {general_desc}
 
-It's night now, so you can act if you want. 
+It's night now, so you can act if you want.
 """,
             button_text="Select someone to remember about",
         ),
@@ -53,7 +59,10 @@ class PriestCheckRole(OncePerGame, GameAction):
 
     @classmethod
     def immediate(
-        cls, game: "WurwolvesGame" = None, selected_id=None, **kwargs,
+        cls,
+        game: "WurwolvesGame" = None,
+        selected_id=None,
+        **kwargs,
     ):
         """Confirm that the selected player is dead"""
         super().immediate(game=game, selected_id=selected_id, **kwargs)

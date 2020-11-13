@@ -1,14 +1,15 @@
 from .distribution import assign_roles
-from .registration import (
-    get_action_func_name,
-    get_role_action,
-    get_role_description,
-    get_role_team,
-    do_startup_callback,
-    register_roles,
-    router,
-)
-from .teams import Team, team_has_won, win_action, win_ends_game
+from .registration import do_startup_callback
+from .registration import get_action_func_name
+from .registration import get_role_action
+from .registration import get_role_description
+from .registration import get_role_team
+from .registration import register_roles
+from .registration import router
+from .teams import Team
+from .teams import team_has_won
+from .teams import win_action
+from .teams import win_ends_game
 
 __all__ = [
     "assign_roles",

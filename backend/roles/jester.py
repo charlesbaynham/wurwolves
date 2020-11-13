@@ -3,12 +3,14 @@ The Jester role
 
 The jester wins by getting themselves lynched by the villagers
 """
-
 import logging
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole
-from .common import RoleDescription, RoleDetails, StageAction
+from ..model import GameStage
+from ..model import PlayerRole
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .teams import Team
 from .villager import description as villager
 
@@ -30,7 +32,7 @@ description = RoleDescription(
             text=f"""
 {general_text}
 
-You have nothing to do at night. Plot your jesting. 
+You have nothing to do at night. Plot your jesting.
     """
         ),
     },

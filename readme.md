@@ -15,7 +15,7 @@ And also the PostgreSQL addon:
 heroku addons:create heroku-postgresql:hobby-dev
 ```
 
-Alternatively, provision on your container platform of choice. The database is accessed and configured through the environmental variable `DATABASE_URL`. 
+Alternatively, provision on your container platform of choice. The database is accessed and configured through the environmental variable `DATABASE_URL`.
 
 Local use
 ---------
@@ -32,4 +32,4 @@ npm dev
 Outline
 -------
 
-The backend runs a FastAPI REST interface in python. The frontend is React.js served by its built-in server. 
+The backend runs a FastAPI REST interface in python. The frontend is React.js served by its built-in server.

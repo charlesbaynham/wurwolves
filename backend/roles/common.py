@@ -1,10 +1,18 @@
 import logging
-from enum import Enum, auto
-from typing import Callable, Dict, NamedTuple, Optional, Type, Union
+from enum import auto
+from enum import Enum
+from typing import Callable
+from typing import Dict
+from typing import NamedTuple
+from typing import Optional
+from typing import Type
+from typing import Union
 
 import pydantic
 
-from ..model import GameStage, PlayerRole, PlayerState
+from ..model import GameStage
+from ..model import PlayerRole
+from ..model import PlayerState
 from ..resolver import GameAction
 from .teams import Team
 
@@ -78,10 +86,10 @@ class RoleDescription(pydantic.BaseModel):
         return v
 
     def get_stage_action(self, stage: GameStage) -> StageAction:
-        """Get the StageAction for this stage, getting values from the role or fallback role as required. 
+        """Get the StageAction for this stage, getting values from the role or fallback role as required.
 
-        To do this, first get the main StageAction. If there isn't one, get the fallback StageAction. If 
-        there is one but there's no button text, get the button text from the fallback role if there is any. 
+        To do this, first get the main StageAction. If there isn't one, get the fallback StageAction. If
+        there is one but there's no button text, get the button text from the fallback role if there is any.
         """
         if stage in self.stages:
             stage_action = self.stages[stage].copy()
@@ -110,9 +118,9 @@ class RoleDetails(pydantic.BaseModel):
     """
     A RoleDetails tuple contains a complete description of what a role entails
     It can be used to figure out how a role should behave and will be stored in
-    registration.ROLE_MAP. 
+    registration.ROLE_MAP.
 
-    If role_description is a Callable, calling it without arguments should return 
+    If role_description is a Callable, calling it without arguments should return
     a RoleDescripton
     """
 

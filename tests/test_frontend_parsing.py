@@ -4,7 +4,8 @@ import pytest
 
 from backend.frontend_parser import parse_game_to_state
 from backend.game import WurwolvesGame
-from backend.model import GameStage, PlayerState
+from backend.model import GameStage
+from backend.model import PlayerState
 
 GAME_ID = "hot-potato"
 USER_ID = uuid()

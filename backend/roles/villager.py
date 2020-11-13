@@ -4,12 +4,16 @@ The Villager role
 import logging
 from typing import TYPE_CHECKING
 
-from ..model import GameStage, PlayerRole
+from ..model import GameStage
+from ..model import PlayerRole
 from ..resolver import GameAction
-from .common import RoleDescription, RoleDetails, StageAction
+from .common import RoleDescription
+from .common import RoleDetails
+from .common import StageAction
 from .spectator import VoteStartNewGame
 from .teams import Team
-from .utility_mixins import NoTargetRequired, TargetMustBeAlive
+from .utility_mixins import NoTargetRequired
+from .utility_mixins import TargetMustBeAlive
 
 if TYPE_CHECKING:
     from ..game import WurwolvesGame
@@ -21,7 +25,7 @@ description = RoleDescription(
             text="""
 You are a villager. You have no special powers. Try not to get eaten!
 
-You win if all the wolves are eliminated. 
+You win if all the wolves are eliminated.
     """,
             button_text="Move to vote",
             select_person=False,
@@ -37,11 +41,13 @@ You have nothing to do at night. Try to relax...
             text="""
 Vote for someone to lynch! Whoever gets the most votes will be killed.
 
-Click someone's icon to select them. 
+Click someone's icon to select them.
     """,
             button_text="Vote for someone to lynch...",
         ),
-        GameStage.LOBBY: StageAction(text="",),
+        GameStage.LOBBY: StageAction(
+            text="",
+        ),
         GameStage.ENDED: StageAction(
             text="The game has ended!",
             button_text="Vote to restart",
