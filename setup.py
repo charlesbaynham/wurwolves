@@ -1,3 +1,5 @@
+import re
+
 import setuptools
 
 
@@ -14,4 +16,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
+    install_requires=[
+        r
+        for r in open("requirements.in").read().splitlines()
+        if r and not re.match(r"\s*\#", r[0])
+    ],
 )
