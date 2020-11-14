@@ -92,11 +92,7 @@
 
 .navbar {
   justify-content: normal;
-  margin-top: -0.5rem;
-}
-
-.navbar > * {
-  margin-top: 0.5rem;
+  flex-wrap: nowrap;
 }
 
 .navbar-nav {
