@@ -732,7 +732,7 @@ class WurwolvesGame:
 
     @num_attempts_this_stage.setter
     @db_scoped
-    def set_num_attempts_this_stage(self, val):
+    def num_attempts_this_stage(self, val):
         self.get_game().num_attempts_this_stage = val
 
     @db_scoped

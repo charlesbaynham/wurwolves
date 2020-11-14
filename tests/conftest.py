@@ -1,6 +1,9 @@
+import logging
 import os
 
 import pytest
+
+logging.basicConfig(level=logging.DEBUG)
 
 TESTING_DB_URL = "sqlite:///testing.db"
 
