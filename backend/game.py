@@ -36,6 +36,10 @@ from .model import User
 
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
+# Time for get_hash to wait for until it returns. Clients will have their
+# queries held open for this time, unless an update occurs
+GET_HASH_TIMEOUT = 3
+
 NAMES_FILE = os.path.join(os.path.dirname(__file__), "names.txt")
 names = None
 
@@ -371,7 +375,7 @@ class WurwolvesGame:
         g = self.get_game()
         return g.update_tag if g else 0
 
-    async def get_hash(self, known_hash=None, timeout=15) -> int:
+    async def get_hash(self, known_hash=None, timeout=GET_HASH_TIMEOUT) -> int:
         """
         Gets the latest hash of this game
 

@@ -10,9 +10,8 @@
   color: white;
 }
 
-#logo {
+#logo,#help {
   width: 1cm;
-  margin-right: 0.5cm;
 }
 
 .player {
@@ -85,6 +84,30 @@
   #home-content-box {
       max-width: 720px;
   }
+}
+
+.help_text img {
+  width: 3cm;
+}
+
+.navbar {
+  justify-content: normal;
+  flex-wrap: nowrap;
+}
+
+.navbar-nav {
+  margin-bottom: 1rem;
+}
+
+.navbar-nav .nav-link {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.role-desc-image {
+  width: 3cm;
+  max-width: 100%;
+  float: right;
 }
 
 #home-title {
