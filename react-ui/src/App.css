@@ -87,6 +87,10 @@
   }
 }
 
+.help_text img {
+  width: 3cm;
+}
+
 #home-title {
   text-align: center;
   padding-bottom: 1em;

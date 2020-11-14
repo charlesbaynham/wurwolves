@@ -28,7 +28,7 @@ function HelpButton() {
             <Modal.Title>How to play</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ReactMarkdown source={help_text} />
+                <ReactMarkdown className="help_text" source={help_text} />
             </Modal.Body>
             <Modal.Footer>
             <Button variant="primary" onClick={handleClose}>
