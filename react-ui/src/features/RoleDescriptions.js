@@ -7,11 +7,10 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Nav from 'react-bootstrap/Nav'
 import Image from 'react-bootstrap/Image'
+import ReactMarkdown from 'react-markdown';
 
 
 function RoleDescriptions() {
-
-    console.log(roles);
 
     return (
         <Tab.Container defaultActiveKey={roles[0].name}>
@@ -35,7 +34,7 @@ function RoleDescriptions() {
                                 {value.image ?
                                     <Image src={value.image} alt={value.name} thumbnail className="role-desc-image" />
                                 : null}
-                                {value.description}
+                                <ReactMarkdown source={value.description}/>
                             </Tab.Pane>
                         )})
                     }

@@ -30,12 +30,31 @@ class RoleDescription {
   }
 
 export const roles = [
-    new RoleDescription("Narrator", null,
-    "The Narrator is not like most roles. They are not a part of the game, and will never be assigned at the start of the game. Once a player dies, they are given the option to become Narrator. If they choose to do so, they will have everyone's roles revealed to them and they gain the sole power to decide when the voting begins. They should use their position to move the game along and keep discussions from becoming too long."
-    ),
-    new RoleDescription("Villager", "/images/characters/villager0.svg",
-    "The salt of the earth. A humble villager who just wants to live their life in peace. You have no special powers, except for the power of democracy. "
-    )
+    new RoleDescription("Narrator", null, `
+The Narrator is not like most roles. They are not a part of the game, and will never be assigned at the start of the game. Once a player dies, they are given the option to become Narrator. If they choose to do so, they will have everyone's roles revealed to them and they gain the sole power to decide when the voting begins. They should use their position to move the game along and keep discussions from becoming too long.
+    `),
+    new RoleDescription("Villager", "/images/characters/villager9.svg",
+    `
+The salt of the earth. A humble villager who just wants to live their life in peace. You have no special powers, except for the power of democracy.
+    `),
+    new RoleDescription("Wolf", "/images/characters/wolf0.svg", `
+A terrifying werewolf. Every night, the wolves must kill one person. They should decide together who to kill: the first wolf to select someone chooses for the team.
+
+For 3-6 players there is 1 wolf, for 7-9 there are 2, for 10-15 players there are three and for more than 15 the wolves will be about 1/5 of the players.
+    `),
+    new RoleDescription("Medic", "/images/characters/medic0.svg", `
+The neighbourhood medic. Present in every game.
+
+The medic chooses one person to save each night. They can choose themselves, but they can't choose the same person twice in a row.
+    `),
+    new RoleDescription("Seer", "/images/characters/seer0.svg", `
+A reclusive mystic, blessed with the third eye. Present in every game.
+
+The seer checks the alignment of one person each night. They will find out if that person is a wolf, or not. The seer is the most powerful character on the villagers' side!
+    `),
+    new RoleDescription("Jester", "/images/characters/jester0.svg", `
+A thorn in the side of the villagers. The Jester is not trying to help: their objective is to get themselves lynched. Usually, they should act as much like a wolf as possible. The wolves know who the Jester is, but the Jester doesn't know who the wolves are.
+    `),
 ]
 
 export default null;
