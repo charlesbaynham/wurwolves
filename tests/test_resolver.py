@@ -64,6 +64,7 @@ def wolf_medic_game_model():
         stage_id=1,
         players=players,
         messages=[],
+        num_attempts_this_stage=0,
     )
     actions = [
         # Wolf kills player 1

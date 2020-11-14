@@ -408,19 +408,28 @@ def count_votes(game: "WurwolvesGame"):
     votes = [p.votes for p in players]
     voted_player, num_votes = max(zip(players, votes), key=lambda tup: tup[1])
 
-    if votes.count(num_votes) > 1:
-        tied = True
-        game.send_chat_message("The vote was a tie! Revote...", is_strong=True)
+    tied = votes.count(num_votes) > 1
+    end_vote = True
+
+    if tied:
+        if game.num_attempts_this_stage == 0:
+            game.send_chat_message("The vote was a tie! Revote...", is_strong=True)
+            game.reset_votes()
+            game.num_attempts_this_stage = 1
+            end_vote = False
+        else:
+            game.send_chat_message(
+                "The vote was a tie again! No one gets lynched.", is_strong=True
+            )
+
     else:
-        tied = False
         game.send_chat_message(f"{voted_player.user.name} got lynched", is_strong=True)
         game.kill_player(voted_player.id, PlayerState.LYNCHED)
-
-    game.reset_votes()
+        game.reset_votes()
 
     if game_ended(game):
         game.end_game()
-    elif not tied:
+    elif end_vote:
         game._set_stage(GameStage.NIGHT)
 
 

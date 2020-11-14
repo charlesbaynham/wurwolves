@@ -121,6 +121,46 @@ def test_dead_no_vote(five_player_game):
     game.seer_voting_action(roles_map["Seer"], roles_map["Wolf"])
 
 
+def test_vote_tie(five_player_game):
+    game, roles_map = five_player_game
+
+    # Kill the medic
+    player = game.get_player_model(roles_map["Medic"])
+    game.kill_player(player.id, PlayerState.LYNCHED)
+
+    game._set_stage(GameStage.VOTING)
+
+    # Vote a tie
+    game.villager_voting_action(roles_map["Villager 1"], roles_map["Seer"])
+    game.villager_voting_action(roles_map["Villager 2"], roles_map["Seer"])
+    game.wolf_voting_action(roles_map["Wolf"], roles_map["Villager 1"])
+    game.seer_voting_action(roles_map["Seer"], roles_map["Villager 1"])
+
+    # Check that no one died
+    for user_id in [
+        user_id for name, user_id in roles_map.items() if "Medic" not in name
+    ]:
+        assert game.get_player_model(user_id).state == PlayerState.ALIVE
+
+    # Check that we're still voting
+    assert game.get_game_model().stage == GameStage.VOTING
+
+    # Vote again
+    game.villager_voting_action(roles_map["Villager 1"], roles_map["Seer"])
+    game.villager_voting_action(roles_map["Villager 2"], roles_map["Seer"])
+    game.wolf_voting_action(roles_map["Wolf"], roles_map["Villager 1"])
+    game.seer_voting_action(roles_map["Seer"], roles_map["Villager 1"])
+
+    # Check that no one died
+    for user_id in [
+        user_id for name, user_id in roles_map.items() if "Medic" not in name
+    ]:
+        assert game.get_player_model(user_id).state == PlayerState.ALIVE
+
+    # Check that we're no longer voting
+    assert game.get_game_model().stage == GameStage.NIGHT
+
+
 def test_dead_no_move(five_player_game):
     game, roles_map = five_player_game
 

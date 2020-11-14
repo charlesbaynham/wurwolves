@@ -684,6 +684,7 @@ class WurwolvesGame:
         g = self.get_game()
         g.stage = stage
         g.stage_id = Game.stage_id + 1
+        g.num_attempts_this_stage = 0
 
     @db_scoped
     def get_user(self, user_id: UUID):
@@ -723,6 +724,16 @@ class WurwolvesGame:
             # Bump all games in which this user plays
             for player_role in u.player_roles:
                 WurwolvesGame.from_id(player_role.game_id, session=s).touch()
+
+    @property
+    @db_scoped
+    def num_attempts_this_stage(self):
+        return self.get_game().num_attempts_this_stage
+
+    @num_attempts_this_stage.setter
+    @db_scoped
+    def num_attempts_this_stage(self, val):
+        self.get_game().num_attempts_this_stage = val
 
     @db_scoped
     def is_role_present(
