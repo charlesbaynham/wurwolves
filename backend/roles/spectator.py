@@ -41,11 +41,6 @@ but it's more fun with 7 or more. Once everyone has joined, press the \"Start ga
 
 To invite more people, just send them the link to this page.
 
-This website is designed for playing with people you already know:
-it handles the gameplay but you'll also need to communicate so you
-can argue and discuss what happens. If you're not in the same room,
-you should probably start a video call.
-
 To learn how to play, click the question mark at the top right of the screen.
     """,
             button_text="Start game",
