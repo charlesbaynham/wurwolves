@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
+import HelpButton from './HelpButton'
 import {
   Link
 } from 'react-router-dom'
@@ -27,7 +28,7 @@ function Topbar(props) {
       <Link to="/"><img src="/images/logo.svg" alt="Wurwolves logo" id="logo" /></Link>
       <Link className="navbar-brand" to="/">Wurwolves</Link>
       <div className="d-flex ml-auto">
-        <a className="navbar-help" href="/"><img src="/images/help.svg" alt="Help icon" id="help" /></a>
+        <HelpButton/>
         <Form onSubmit={e => {
           e.preventDefault()
           document.activeElement.blur()
