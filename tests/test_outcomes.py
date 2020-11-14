@@ -409,6 +409,42 @@ def test_masons_announced(mock_roles, db_session):
     "backend.roles.assign_roles",
     return_value=[
         PlayerRole.WOLF,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_wolves_announced(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+    villager_1_id = uuid()
+
+    game.join(wolf_id)
+    game.join(villager_1_id)
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    def get_message_json(game, player_id):
+        from json import dumps
+
+        visible_messages = game.get_messages(player_id)
+        return dumps([v.dict() for v in visible_messages])
+
+    assert "There is only one wolf in the game" in get_message_json(game, villager_1_id)
+    assert "There is only one wolf in the game" in get_message_json(game, wolf_id)
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
         PlayerRole.SEER,
         PlayerRole.MILLER,
         PlayerRole.VILLAGER,

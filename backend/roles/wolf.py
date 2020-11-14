@@ -50,6 +50,20 @@ You have access to secret chat: use it to chat with the other wolves (if there a
 )
 
 
+def announce_wolves(game: "WurwolvesGame"):
+    num_wolves = len(game.get_players(role=PlayerRole.WOLF))
+
+    if num_wolves == 1:
+        msg = f"There is only one wolf in the game"
+    else:
+        msg = f"There are {num_wolves} wolves in the game"
+
+    game.send_chat_message(
+        msg,
+        is_strong=False,
+    )
+
+
 class AffectedByWolves(AffectedByMedic):
     """
     Creates attributes `originator_attacked_by_wolf` and `target_attacked_by_wolf`.
@@ -127,7 +141,9 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.WOLF: RoleDetails(
-                role_description=description, actions={GameStage.NIGHT: WolfAction}
+                role_description=description,
+                actions={GameStage.NIGHT: WolfAction},
+                startup_callback=announce_wolves,
             )
         }
     )
