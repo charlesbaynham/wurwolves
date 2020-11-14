@@ -3,7 +3,7 @@ Werewolves is a social game for groups of 5 players or more. You need to be able
 
 You live in a small village, tragically afflicted with an ancient curse: some of your members are Werewolves. Each night the Werewolves will kill someone. Fortunately you are not defenseless: each day the villager vote to lynch someone. Unfortunately, you don't know who the werewolves are, so they get to vote too. The game is won by the villagers if they eliminate all the wolves. It's won by the wolves if they can kill enough of the villagers that the wolves are 50% of the village's population.
 
-There are several special characters to help (or hinder) the villagers. These are assigned randomly each night, and may or may not be present in the game. Your character is displayed at the bottom of the page, with a description of your special powers. Don't forget to check the Events box to learn any secret information that you're entitled to know. If you have a team mate (for example, the wolves know who each other are) then a chat box will appear under the Events box for you to chat in secret.
+There are several special characters to help (or hinder) the villagers. These are assigned randomly each night, and may or may not be present in the game. Your character is displayed at the bottom of the page, with a description of your special powers.
 
 The game has three stages:
 
@@ -13,7 +13,12 @@ The game has three stages:
 
 **Voting** - Vote who to lynch. Select your vote and click the blue button. Votes will be announced in public after the results are decided.
 
-To learn about all the roles, click the Roles tab above.
+**Tips:**
+
+* Don't forget to check the Events box to learn any secret information that you're entitled to know.
+* If you have a team mate (for example, a fellow wolf) then a chat box will appear under the Events box for you to chat privately.
+* Your picture might look different to you than to other people! They will see you as a normal villager unless they have secret information.
+* To learn about all the roles, click the Roles tab above.
 `
 
 class RoleDescription {
