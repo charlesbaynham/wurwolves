@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Tabs from 'react-bootstrap/Tabs'
+import Tab from 'react-bootstrap/Tab'
 import ReactMarkdown from 'react-markdown';
 import {help_text} from '../prose'
 
@@ -25,10 +27,20 @@ function HelpButton() {
 
         <Modal show={show} onHide={handleClose} size="lg">
             <Modal.Header closeButton>
-            <Modal.Title>How to play</Modal.Title>
+                <Modal.Title>How to play</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ReactMarkdown className="help_text" source={help_text} />
+                <Tabs id="help-tabs" defaultActiveKey="intro" className="flex-row">
+                    <Tab eventKey="intro" title="Game" className="px-1">
+                        <ReactMarkdown className="help_text" source={help_text} />
+                    </Tab>
+                    <Tab eventKey="profile" title="Profile">
+                        Hello
+                    </Tab>
+                    <Tab eventKey="contact" title="Contact">
+                        World
+                    </Tab>
+                </Tabs>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="primary" onClick={handleClose}>

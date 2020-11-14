@@ -91,6 +91,11 @@
   width: 3cm;
 }
 
+.navbar-nav .nav-link {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 #home-title {
   text-align: center;
   padding-bottom: 1em;
