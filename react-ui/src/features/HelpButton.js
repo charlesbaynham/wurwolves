@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-
-import {
-  Link
-} from 'react-router-dom'
+import ReactMarkdown from 'react-markdown';
+import {help_text} from '../prose'
 
 
 function HelpButton() {
@@ -29,7 +27,9 @@ function HelpButton() {
             <Modal.Header closeButton>
             <Modal.Title>How to play</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+            <Modal.Body>
+                <ReactMarkdown source={help_text} />
+            </Modal.Body>
             <Modal.Footer>
             <Button variant="primary" onClick={handleClose}>
                 Close
@@ -40,12 +40,5 @@ function HelpButton() {
     )
 }
 
-function requestNewName(name) {
-  var url = new URL(`/api/set_name`, document.baseURI)
-  const params = { name: name }
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-
-  fetch(url, { method: 'post', params: params })
-}
 
 export default HelpButton;
