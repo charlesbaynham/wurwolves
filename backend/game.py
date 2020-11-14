@@ -760,9 +760,12 @@ class WurwolvesGame:
             and action_class.is_action_available(self, stage, stage_id, player.id)
         )
 
-        #  ..and hasn't yet acted
         if not has_action:
             action_enabled = False
+        # ...that doesn't require them to be active or it does, and they are
+        elif action_class.active_players_only and not player.active:
+            action_enabled = False
+        #  ..and they hasn't yet acted
         elif (
             action_class.round_end_behaviour
             == resolver.RoundEndBehaviour.MULTIPLE_OPTIONAL

@@ -239,6 +239,13 @@ class GameAction(ActionMixin):
     # Override to change how this action does / doesn't hold up the round end
     round_end_behaviour = RoundEndBehaviour.ONCE_REQUIRED
 
+    # Is this action only available to active players? I.e. ones who have been
+    # seen recently. For example, we want the game to wait until the seer has
+    # selected someone even if they've logged off for a bit, but we don't want
+    # the game to wait for inactive spectators to return when we're voting to
+    # start a new game
+    active_players_only = False
+
     # The priority of this action determine which actions execute first. Higher numbers
     # are higher priority
     priority = 0
