@@ -403,34 +403,30 @@ class WurwolvesGame:
 
         threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
 
-        # Clear out any old players if it's the lobby or ended stage, or if the player is
-        # a pure spectator (i.e. not a dead player)
-        someone_kicked = False
+        # Mark any players who haven't been seen in a while as inactive. This
+        # will only have an effect if the game is in particular states
+        someone_changed = False
 
         # Start a nested session so that process_actions can check the database
         self._session.begin_nested()
         for p in players:
-            if (
-                (game.stage == GameStage.LOBBY or game.stage == GameStage.ENDED)
-                or p.state == PlayerState.SPECTATING
-            ) and p.last_seen < threshold:
+            if p.last_seen < threshold:
                 logging.info(
-                    f"Remove player {p.user.name} for inactivity (p.last_seen="
+                    f"Marking player {p.user.name} as inactive (p.last_seen="
                     f"{p.last_seen}, threshold={threshold}"
                 )
-                self.send_chat_message(f"{p.user.name} has left the game")
-                self.kick(p)
-                someone_kicked = True
+                self.mark_inactive(p)
+                someone_changed = True
 
         self._session.commit()
 
-        if someone_kicked:
+        if someone_changed:
             self.touch()
             # Reevaluate processed actions
             self.process_actions(game.stage, game.stage_id)
 
     @db_scoped
-    def kick(self, player: Player):
+    def mark_inactive(self, player: Player):
         player.active = False
         self._session.add(player)
 
