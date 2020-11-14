@@ -40,6 +40,8 @@ you should probably start a video call.
 The game hasn't started yet: you'll need at least 3 players for the game to be playable,
 but it's more fun with 6 or more. Press the "Start a new game" button
 and then share the link with your friends.
+
+To learn how to play, select the question mark at the top right of the screen.
                 `} />
                 </Col></Row>
                 <Row><Col>
