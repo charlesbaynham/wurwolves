@@ -481,6 +481,13 @@ class WurwolvesGame:
 
     @db_scoped
     def start_game(self):
+        # Wipe all existing roles
+        for p in self.get_players(filter_by_activity=False):
+            p.role = PlayerRole.SPECTATOR
+            p.previous_role = PlayerRole.SPECTATOR
+            p.status = PlayerState.SPECTATING
+
+        # Assign new ones to the active players
         players = self.get_players()
 
         player_roles = roles.assign_roles(len(players))
