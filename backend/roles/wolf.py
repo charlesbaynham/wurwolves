@@ -141,7 +141,9 @@ def register(role_map):
     role_map.update(
         {
             PlayerRole.WOLF: RoleDetails(
-                role_description=description, actions={GameStage.NIGHT: WolfAction}
+                role_description=description,
+                actions={GameStage.NIGHT: WolfAction},
+                startup_callback=announce_wolves,
             )
         }
     )
