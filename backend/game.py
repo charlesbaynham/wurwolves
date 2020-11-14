@@ -17,6 +17,7 @@ from uuid import UUID
 
 import pydantic
 from fastapi import HTTPException
+from sqlalchemy import or_
 
 from . import resolver
 from . import roles
@@ -165,7 +166,7 @@ class WurwolvesGame:
             game = self.create_game()
 
         # Add this user to the game as a spectator if they're not already in it
-        player = self.get_player(user_id, active_only=False)
+        player = self.get_player(user_id, filter_by_activity=False)
 
         if not player:
             player = Player(
@@ -228,22 +229,32 @@ class WurwolvesGame:
             raise KeyError(f"User {user_id} not found in this game")
 
     @db_scoped
-    def get_player(self, user_id: UUID, active_only=True) -> Player:
+    def get_player(self, user_id: UUID, filter_by_activity=True) -> Player:
+        """
+        Get a Player database model for this Game based on the User's UUID. If
+        `filter_by_activity`, only return players who should be displayed in this
+        stage of the game.
+        """
         q = self._session.query(Player).filter(
             Player.game_id == self.game_id, Player.user_id == user_id
         )
 
-        if active_only:
-            q = q.filter(Player.active)
+        if filter_by_activity:
+            q = _filter_by_activity(q)
 
         return q.first()
 
     @db_scoped
-    def get_player_by_id(self, player_id: int, active_only=True) -> Player:
+    def get_player_by_id(self, player_id: int, filter_by_activity=True) -> Player:
+        """
+        Get a Player database model based on the Player's ID. If
+        `filter_by_activity`, only return Players who should be displayed in this
+        stage of the game.
+        """
         q = self._session.query(Player).filter(Player.id == player_id)
 
-        if active_only:
-            q.filter(Player.active)
+        if filter_by_activity:
+            q = _filter_by_activity(q)
 
         return q.first()
 
@@ -258,11 +269,19 @@ class WurwolvesGame:
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
-    def get_players(self, role: PlayerRole = None, active_only=True) -> List[Player]:
+    def get_players(
+        self, role: PlayerRole = None, filter_by_activity=True
+    ) -> List[Player]:
+        """
+        Get all Players in this Game
+
+        If `filter_by_activity`, only return Players who should be displayed in
+        this stage of the game.
+        """
         q = self._session.query(Player).filter(Player.game_id == self.game_id)
 
-        if active_only:
-            q = q.filter(Player.active)
+        if filter_by_activity:
+            q = _filter_by_activity(q)
 
         if role:
             q = q.filter(Player.role == role)
@@ -403,34 +422,30 @@ class WurwolvesGame:
 
         threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
 
-        # Clear out any old players if it's the lobby or ended stage, or if the player is
-        # a pure spectator (i.e. not a dead player)
-        someone_kicked = False
+        # Mark any players who haven't been seen in a while as inactive. This
+        # will only have an effect if the game is in particular states
+        someone_changed = False
 
         # Start a nested session so that process_actions can check the database
         self._session.begin_nested()
         for p in players:
-            if (
-                (game.stage == GameStage.LOBBY or game.stage == GameStage.ENDED)
-                or p.state == PlayerState.SPECTATING
-            ) and p.last_seen < threshold:
+            if p.last_seen < threshold:
                 logging.info(
-                    f"Remove player {p.user.name} for inactivity (p.last_seen="
+                    f"Marking player {p.user.name} as inactive (p.last_seen="
                     f"{p.last_seen}, threshold={threshold}"
                 )
-                self.send_chat_message(f"{p.user.name} has left the game")
-                self.kick(p)
-                someone_kicked = True
+                self.mark_inactive(p)
+                someone_changed = True
 
         self._session.commit()
 
-        if someone_kicked:
+        if someone_changed:
             self.touch()
             # Reevaluate processed actions
             self.process_actions(game.stage, game.stage_id)
 
     @db_scoped
-    def kick(self, player: Player):
+    def mark_inactive(self, player: Player):
         player.active = False
         self._session.add(player)
 
@@ -466,7 +481,13 @@ class WurwolvesGame:
 
     @db_scoped
     def start_game(self):
-        game = self.get_game()
+        # Wipe all existing roles
+        for p in self.get_players(filter_by_activity=False):
+            p.role = PlayerRole.SPECTATOR
+            p.previous_role = PlayerRole.SPECTATOR
+            p.status = PlayerState.SPECTATING
+
+        # Assign new ones to the active players
         players = self.get_players()
 
         player_roles = roles.assign_roles(len(players))
@@ -610,7 +631,7 @@ class WurwolvesGame:
     @db_scoped
     def reset_votes(self):
         game = self.get_game()
-        for p in self.get_players(active_only=False):
+        for p in self.get_players(filter_by_activity=False):
             p.votes = 0
         game.stage_id += 1
         logging.info("Votes reset")
@@ -746,9 +767,12 @@ class WurwolvesGame:
             and action_class.is_action_available(self, stage, stage_id, player.id)
         )
 
-        #  ..and hasn't yet acted
         if not has_action:
             action_enabled = False
+        # ...that doesn't require them to be active or it does, and they are
+        elif action_class.active_players_only and not player.active:
+            action_enabled = False
+        #  ..and they hasn't yet acted
         elif (
             action_class.round_end_behaviour
             == resolver.RoundEndBehaviour.MULTIPLE_OPTIONAL
@@ -798,6 +822,19 @@ def trigger_update_event(game_id: int):
     if game_id in update_events:
         update_events[game_id].set()
         del update_events[game_id]
+
+
+def _filter_by_activity(q):
+    """
+    Show all players who are active, and all players who have/had a non-spectator role,
+    """
+    return q.filter(
+        or_(
+            Player.active,
+            Player.role != PlayerRole.SPECTATOR,
+            Player.previous_role != PlayerRole.SPECTATOR,
+        )
+    )
 
 
 # Not currently used:

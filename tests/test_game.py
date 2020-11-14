@@ -314,11 +314,12 @@ def test_kick(db_session):
 def test_kick_with_actions(db_session):
     game = WurwolvesGame(GAME_ID)
 
-    # Add three players
-    player_ids = [uuid() for _ in range(3)]
+    # Add four players
+    player_ids = [uuid() for _ in range(4)]
     roles = [
         PlayerRole.MEDIC,
         PlayerRole.VILLAGER,
+        PlayerRole.SPECTATOR,
         PlayerRole.WOLF,
     ]
     for p in player_ids:
@@ -329,9 +330,12 @@ def test_kick_with_actions(db_session):
     for p, r in zip(player_ids, roles):
         game.set_player_role(game.get_player_id(p), r)
 
-    # Set one to have joined ages ago
     timeout_player_id = player_ids[0]
-    wolf_id = player_ids[2]
+    villager_id = player_ids[1]
+    spectator_id = player_ids[2]
+    wolf_id = player_ids[3]
+
+    # Set one to have joined ages ago
     timeout_player = game.get_player(timeout_player_id)
     db_session.add(timeout_player)
 
@@ -377,8 +381,21 @@ def test_kick_with_actions(db_session):
     # Keepalive someone else
     game.player_keepalive(wolf_id)
 
-    # Check they went this time
+    # They still should be visible, but marked as inactive now
     db_session.expire_all()
+    assert game.get_player(timeout_player_id)
+    assert not game.get_player_model(timeout_player_id).active
+
+    # Vote to start a new game with the other players
+    game.wolf_ended_action(wolf_id)
+    game.villager_ended_action(villager_id)
+    game.spectator_ended_action(spectator_id)
+
+    # Check a new game started
+    db_session.expire_all()
+    assert game.get_game_model().stage == GameStage.NIGHT
+
+    # Check the idler was kicked
     assert not game.get_player(timeout_player_id)
 
 
