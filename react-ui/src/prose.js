@@ -29,7 +29,7 @@ class RoleDescription {
     }
   }
 
-export const roles = [
+export const guaranteed_roles = [
     new RoleDescription("Narrator", null, `
 The Narrator is not like most roles. They are not a part of the game, and will never be assigned at the start of the game. Once a player dies, they are given the option to become Narrator. If they choose to do so, they will have everyone's roles revealed to them and they gain the sole power to decide when the voting begins. They should use their position to move the game along and keep discussions from becoming too long.
     `),
@@ -52,6 +52,9 @@ A reclusive mystic, blessed with the third eye. Present in every game.
 
 The seer checks the alignment of one person each night. They will find out if that person is a wolf, or not. The seer is the most powerful character on the villagers' side!
     `),
+]
+
+export const random_roles = [
     new RoleDescription("Jester", "/images/characters/jester0.svg", `
 A thorn in the side of the villagers. The Jester is not trying to help: their objective is to get themselves lynched. Usually, they should act as much like a wolf as possible. The wolves know who the Jester is, but the Jester doesn't know who the wolves are.
     `),

@@ -6,9 +6,8 @@ import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
 
 import ReactMarkdown from 'react-markdown';
-import {help_text} from '../prose'
+import {help_text,guaranteed_roles, random_roles} from '../prose'
 import RoleDescriptions  from './RoleDescriptions'
-
 
 function HelpButton() {
 
@@ -36,8 +35,11 @@ function HelpButton() {
                     <Tab eventKey="intro" title="Game" className="px-1">
                         <ReactMarkdown className="help_text" source={help_text} />
                     </Tab>
-                    <Tab eventKey="roles" title="Roles">
-                        <RoleDescriptions/>
+                    <Tab eventKey="guaranteed-roles" title="Roles - guaranteed">
+                        <RoleDescriptions roles={guaranteed_roles}/>
+                    </Tab>
+                    <Tab eventKey="random-roles" title="Roles - random">
+                        <RoleDescriptions roles={random_roles}/>
                     </Tab>
                 </Tabs>
             </Modal.Body>
