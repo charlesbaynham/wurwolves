@@ -87,6 +87,9 @@ class Game(Base):
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
 
+    # Used when a stage has to be repeated, e.g. because a vote tied
+    num_attempts_this_stage = Column(Integer, default=0)
+
     players = relationship("Player", backref="game", lazy=True)
 
     messages = relationship(
@@ -277,6 +280,8 @@ class GameModel(pydantic.BaseModel):
 
     stage: GameStage
     stage_id: int
+
+    num_attempts_this_stage: int
 
     players: List[PlayerModel]
     messages: List[MessageModel]
