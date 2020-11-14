@@ -73,6 +73,7 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
     GameAction doesn't therefore have to do it.
     """
 
+    active_players_only = True
     allowed_player_states = list(PlayerState)
 
     @classmethod
