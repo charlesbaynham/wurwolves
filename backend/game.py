@@ -17,6 +17,7 @@ from uuid import UUID
 
 import pydantic
 from fastapi import HTTPException
+from sqlalchemy import or_
 
 from . import resolver
 from . import roles
@@ -165,7 +166,7 @@ class WurwolvesGame:
             game = self.create_game()
 
         # Add this user to the game as a spectator if they're not already in it
-        player = self.get_player(user_id, active_only=False)
+        player = self.get_player(user_id, filter_by_activity=False)
 
         if not player:
             player = Player(
@@ -228,22 +229,32 @@ class WurwolvesGame:
             raise KeyError(f"User {user_id} not found in this game")
 
     @db_scoped
-    def get_player(self, user_id: UUID, active_only=True) -> Player:
+    def get_player(self, user_id: UUID, filter_by_activity=True) -> Player:
+        """
+        Get a Player database model for this Game based on the User's UUID. If
+        `filter_by_activity`, only return players who should be displayed in this
+        stage of the game.
+        """
         q = self._session.query(Player).filter(
             Player.game_id == self.game_id, Player.user_id == user_id
         )
 
-        if active_only:
-            q = q.filter(Player.active)
+        if filter_by_activity:
+            q = _filter_by_activity(q)
 
         return q.first()
 
     @db_scoped
-    def get_player_by_id(self, player_id: int, active_only=True) -> Player:
+    def get_player_by_id(self, player_id: int, filter_by_activity=True) -> Player:
+        """
+        Get a Player database model based on the Player's ID. If
+        `filter_by_activity`, only return Players who should be displayed in this
+        stage of the game.
+        """
         q = self._session.query(Player).filter(Player.id == player_id)
 
-        if active_only:
-            q.filter(Player.active)
+        if filter_by_activity:
+            q = _filter_by_activity(q)
 
         return q.first()
 
@@ -258,11 +269,19 @@ class WurwolvesGame:
         return PlayerModel.from_orm(p) if p else None
 
     @db_scoped
-    def get_players(self, role: PlayerRole = None, active_only=True) -> List[Player]:
+    def get_players(
+        self, role: PlayerRole = None, filter_by_activity=True
+    ) -> List[Player]:
+        """
+        Get all Players in this Game
+
+        If `filter_by_activity`, only return Players who should be displayed in
+        this stage of the game.
+        """
         q = self._session.query(Player).filter(Player.game_id == self.game_id)
 
-        if active_only:
-            q = q.filter(Player.active)
+        if filter_by_activity:
+            q = _filter_by_activity(q)
 
         if role:
             q = q.filter(Player.role == role)
@@ -462,7 +481,6 @@ class WurwolvesGame:
 
     @db_scoped
     def start_game(self):
-        game = self.get_game()
         players = self.get_players()
 
         player_roles = roles.assign_roles(len(players))
@@ -606,7 +624,7 @@ class WurwolvesGame:
     @db_scoped
     def reset_votes(self):
         game = self.get_game()
-        for p in self.get_players(active_only=False):
+        for p in self.get_players(filter_by_activity=False):
             p.votes = 0
         game.stage_id += 1
         logging.info("Votes reset")
@@ -794,6 +812,19 @@ def trigger_update_event(game_id: int):
     if game_id in update_events:
         update_events[game_id].set()
         del update_events[game_id]
+
+
+def _filter_by_activity(q):
+    """
+    Show all players who are active, and all players who have/had a non-spectator role,
+    """
+    return q.filter(
+        or_(
+            Player.active,
+            Player.role != PlayerRole.SPECTATOR,
+            Player.previous_role != PlayerRole.SPECTATOR,
+        )
+    )
 
 
 # Not currently used:
