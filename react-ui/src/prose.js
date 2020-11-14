@@ -93,7 +93,7 @@ The Masons do not have special powers, but they know each other's identity (they
     new RoleDescription("Miller", "/images/characters/miller0.svg", `
 Lives alone, never meets people and likes it that way.
 
-The Miller is on the side of the villagers: unfortunately they don't recognize him. If the villager checks the alignment of the Miller, they will seem like a wolf even though they're not.
+The Miller is on the side of the villagers: unfortunately they don't recognize him. If the Seer checks the alignment of the Miller, they will seem like a wolf even though they're not.
     `),
 ]
 
