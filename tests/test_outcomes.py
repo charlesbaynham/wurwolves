@@ -280,18 +280,21 @@ def test_vigilante_shoot_twice(five_player_game):
     assert game.get_player_model(roles_map["Villager 2"]).state == PlayerState.ALIVE
 
 
+@pytest.mark.parametrize(
+    "role,search", [("jester", "a jester"), ("acolyte", "an acolyte")]
+)
 @patch(
     "backend.roles.assign_roles",
     return_value=[
         PlayerRole.WOLF,
         PlayerRole.JESTER,
-        PlayerRole.VILLAGER,
+        PlayerRole.ACOLYTE,
         PlayerRole.VILLAGER,
         PlayerRole.VILLAGER,
         PlayerRole.VILLAGER,
     ],
 )
-def test_jester_announced(mock_roles, db_session):
+def test_announced_to_wolves(mock_roles, db_session, role, search):
     game = WurwolvesGame("test_game")
 
     wolf_id = uuid()
@@ -311,7 +314,7 @@ def test_jester_announced(mock_roles, db_session):
 
     summary = dumps([v.dict() for v in visible_messages])
 
-    assert "There's a jester in the game" in summary
+    assert f"There's {search} in the game" in summary
 
 
 @patch(

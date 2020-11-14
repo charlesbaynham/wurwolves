@@ -45,14 +45,13 @@ def announce_to_wolves(game: "WurwolvesGame"):
 
     if acolytes:
         if len(acolytes) == 1:
-            msg = (
-                "There's an acolyte in the game: it's {}".format(acolytes[0].user.name),
+            msg = "There's an acolyte in the game: it's {}".format(
+                acolytes[0].user.name
             )
+
         else:
-            msg = (
-                "There are acolytes in the game: they are {}".format(
-                    " & ".join(a.user.name for a in acolytes)
-                ),
+            msg = "There are acolytes in the game: they are {}".format(
+                " & ".join(a.user.name for a in acolytes)
             )
 
         game.send_chat_message(
