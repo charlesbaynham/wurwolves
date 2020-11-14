@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
+import {
+  Link
+} from 'react-router-dom'
 
 import {
   selectMyName,
@@ -21,19 +24,22 @@ function Topbar(props) {
 
   return (
     <Navbar expand="lg" bg="light" className="bg-secondary bg-night-black">
-      <a href="/"><img src="/images/logo.svg" alt="Wurwolves logo" id="logo" /></a>
-      <a className="navbar-brand" href="/">Wurwolves</a>
-      <Form className="ml-auto" onSubmit={e => {
-        e.preventDefault()
-        document.activeElement.blur()
-      }}>
-        <Form.Control
-          placeholder={name}
-          onChange={e => setChosenName(e.target.value)}
-          onBlur={() => requestNewName(chosenName)}
-          value={chosenName ? chosenName : ""}
-        />
-      </Form>
+      <Link to="/"><img src="/images/logo.svg" alt="Wurwolves logo" id="logo" /></Link>
+      <Link className="navbar-brand" to="/">Wurwolves</Link>
+      <div className="d-flex ml-auto">
+        <a className="navbar-help" href="/"><img src="/images/help.svg" alt="Help icon" id="help" /></a>
+        <Form onSubmit={e => {
+          e.preventDefault()
+          document.activeElement.blur()
+        }}>
+          <Form.Control
+            placeholder={name}
+            onChange={e => setChosenName(e.target.value)}
+            onBlur={() => requestNewName(chosenName)}
+            value={chosenName ? chosenName : ""}
+          />
+        </Form>
+      </div>
     </Navbar>
   )
 }

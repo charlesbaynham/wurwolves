@@ -23,6 +23,7 @@ class GameUpdater extends Component {
         super()
 
         this.timeoutID = null
+        this.cancelled = false
         this.checkAndReschedule = this.checkAndReschedule.bind(this)
     }
 
@@ -40,26 +41,34 @@ class GameUpdater extends Component {
     }
 
     checkAndReschedule() {
+        console.log(`checkAndReschedule with this.timeoutID = ${this.timeoutID}`)
+
         const errorCheckRate = 1000
         const successCheckRate = 500
 
         const successHandler = r => {
-            this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
+            if (!this.cancelled) {
+                this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
+                console.log(`Remounted updater for ${this.props.game_tag} with id ${this.timeoutID} after success`)
 
-            if (!r.ok) {
-                console.log("Fetch state failed with error " + r.status)
-                window.location.reload(false);
-            }
-
-            return r.json().then(new_hash => {
-                if (new_hash !== this.props.state_hash) {
-                    this.updateState()
+                if (!r.ok) {
+                    console.log("Fetch state failed with error " + r.status)
+                    window.location.reload(false);
                 }
-            })
+
+                return r.json().then(new_hash => {
+                    if (new_hash !== this.props.state_hash) {
+                        this.updateState()
+                    }
+                })
+            }
         }
 
         const failureHandler = r => {
-            this.timeoutID = setTimeout(this.checkAndReschedule, errorCheckRate)
+            if (!this.cancelled) {
+                this.timeoutID = setTimeout(this.checkAndReschedule, errorCheckRate)
+                console.log(`Remounted updater for ${this.props.game_tag} with id ${this.timeoutID} after failure`)
+            }
         }
 
         var url = new URL(`/api/${this.props.game_tag}/state_hash`, document.baseURI),
@@ -70,7 +79,9 @@ class GameUpdater extends Component {
     }
 
     stopPolling() {
-        clearInterval(this.intervalId)
+        console.log(`Unmounting updater for ${this.props.game_tag} with id ${this.timeoutID}`)
+        clearTimeout(this.timeoutID)
+        this.cancelled = true
     }
 
 
