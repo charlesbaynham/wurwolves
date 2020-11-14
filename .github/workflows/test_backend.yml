@@ -31,10 +31,10 @@ jobs:
     - name: Lint with pre-commit
       run: |
         pre-commit run --all
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-pre-commit
-        PRE_COMMIT_HOME: cache-pre-commit
+      # uses: actions/cache@v2
+      # env:
+      #   cache-name: cache-pre-commit
+      #   PRE_COMMIT_HOME: cache-pre-commit
     - name: Test with pytest
       run: |
         pytest
