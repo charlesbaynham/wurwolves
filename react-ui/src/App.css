@@ -12,7 +12,6 @@
 
 #logo,#help {
   width: 1cm;
-  margin-right: 0.5cm;
 }
 
 .player {
@@ -89,6 +88,15 @@
 
 .help_text img {
   width: 3cm;
+}
+
+.navbar {
+  justify-content: normal;
+  margin-top: -0.5rem;
+}
+
+.navbar > * {
+  margin-top: 0.5rem;
 }
 
 .navbar-nav {

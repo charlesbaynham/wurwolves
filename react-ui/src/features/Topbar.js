@@ -25,11 +25,10 @@ function Topbar(props) {
 
   return (
     <Navbar expand="lg" bg="light" className="bg-secondary bg-night-black">
-      <Link to="/"><img src="/images/logo.svg" alt="Wurwolves logo" id="logo" /></Link>
-      <Link className="navbar-brand" to="/">Wurwolves</Link>
+      <Link to="/" className="px-2"><img src="/images/logo.svg" alt="Wurwolves logo" id="logo" /></Link>
+      <Link className="navbar-brand px-2" to="/">Wurwolves</Link>
       <div className="d-flex ml-auto">
-        <HelpButton/>
-        <Form onSubmit={e => {
+        <Form className="px-2" onSubmit={e => {
           e.preventDefault()
           document.activeElement.blur()
         }}>
@@ -40,6 +39,7 @@ function Topbar(props) {
             value={chosenName ? chosenName : ""}
           />
         </Form>
+        <HelpButton className="px-2"/>
       </div>
     </Navbar>
   )
