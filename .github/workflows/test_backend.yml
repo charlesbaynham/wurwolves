@@ -45,4 +45,5 @@ jobs:
         PRE_COMMIT_HOME: cache-pre-commit
     - name: Test with pytest
       run: |
+        cp .env.example .env
         pytest
