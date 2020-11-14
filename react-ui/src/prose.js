@@ -58,7 +58,7 @@ export const random_roles = [
 A thorn in the side of the villagers. The Jester is not trying to help: their objective is to get themselves lynched. Usually, they should act as much like a wolf as possible. The wolves know who the Jester is, but the Jester doesn't know who the wolves are.
     `),
     new RoleDescription("Vigilante", "/images/characters/vigilante0.svg", `
-The Vigilante knows what's best for this village - who needs physic power when you've got a gun?
+The Vigilante knows what's best for this village - who needs psychic powers when you've got a gun?
 
 Has a single bullet which they can use once per game to shoot someone during the night. Everyone will hear when this happens, but they won't know who shot. One the side of the villagers.
     `),
