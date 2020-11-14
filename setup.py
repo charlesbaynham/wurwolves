@@ -21,4 +21,11 @@ setuptools.setup(
         for r in open("requirements.in").read().splitlines()
         if r and not re.match(r"\s*\#", r[0])
     ],
+    extras_require={
+        "dev": [
+            r
+            for r in open("requirementsDev.in").read().splitlines()
+            if r and not re.match(r"\s*\#", r[0])
+        ],
+    },
 )
