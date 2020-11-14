@@ -13,6 +13,10 @@ USER_ID = uuid()
 
 @pytest.fixture
 def demo_game(db_session) -> WurwolvesGame:
+    import random
+
+    random.seed(123)
+
     g = WurwolvesGame(GAME_ID)
 
     # You need at least three players for start_game() to work

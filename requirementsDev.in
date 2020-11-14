@@ -1,0 +1,8 @@
+## Requirements list for development
+#
+# Install these using `pip install -e .[dev]` instead of `pip install -e .`
+
+pytest
+pre-commit
+pip-tools
+black

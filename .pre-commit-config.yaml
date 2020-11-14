@@ -1,7 +1,4 @@
 
-# Ignore any sample data: this should be processed as-is
-exclude: '^.*.dat$'
-
 repos:
   # Several generic fixes
   - repo: https://github.com/pre-commit/pre-commit-hooks
