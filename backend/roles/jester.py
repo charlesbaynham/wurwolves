@@ -3,7 +3,6 @@ The Jester role
 
 The jester wins by getting themselves lynched by the villagers
 """
-import logging
 from typing import TYPE_CHECKING
 
 from ..model import GameStage
