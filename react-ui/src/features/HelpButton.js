@@ -4,8 +4,10 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
+
 import ReactMarkdown from 'react-markdown';
 import {help_text} from '../prose'
+import RoleDescriptions  from './RoleDescriptions'
 
 
 function HelpButton() {
@@ -34,11 +36,8 @@ function HelpButton() {
                     <Tab eventKey="intro" title="Game" className="px-1">
                         <ReactMarkdown className="help_text" source={help_text} />
                     </Tab>
-                    <Tab eventKey="profile" title="Profile">
-                        Hello
-                    </Tab>
-                    <Tab eventKey="contact" title="Contact">
-                        World
+                    <Tab eventKey="roles" title="Roles">
+                        <RoleDescriptions/>
                     </Tab>
                 </Tabs>
             </Modal.Body>

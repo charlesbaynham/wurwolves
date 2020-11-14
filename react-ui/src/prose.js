@@ -13,7 +13,7 @@ The game has three stages:
 
 **Voting** - Vote who to lynch. Select your vote and click the blue button. Votes will be announced in public after the results are decided.
 
-To learn about all the roles, click below:
+To learn about all the roles, click the Roles tab above.
 `
 
 class RoleDescription {
@@ -27,6 +27,9 @@ class RoleDescription {
 export const roles = [
     new RoleDescription("Narrator", null,
     "The Narrator is not like most roles. They are not a part of the game, and will never be assigned at the start of the game. Once a player dies, they are given the option to become Narrator. If they choose to do so, they will have everyone's roles revealed to them and they gain the sole power to decide when the voting begins. They should use their position to move the game along and keep discussions from becoming too long."
+    ),
+    new RoleDescription("Villager", "/images/characters/villager0.svg",
+    "The salt of the earth. A humble villager who just wants to live their life in peace. You have no special powers, except for the power of democracy. "
     )
 ]
 

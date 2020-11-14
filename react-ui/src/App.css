@@ -91,9 +91,19 @@
   width: 3cm;
 }
 
+.navbar-nav {
+  margin-bottom: 1rem;
+}
+
 .navbar-nav .nav-link {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.role-desc-image {
+  width: 3cm;
+  max-width: 100%;
+  float: right;
 }
 
 #home-title {
