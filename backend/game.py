@@ -40,7 +40,7 @@ SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 # queries held open for this time, unless an update occurs
 GET_HASH_TIMEOUT = 3
 
-MAX_NAME_LENGTH = 50
+MAX_NAME_LENGTH = 25
 
 NAMES_FILE = os.path.join(os.path.dirname(__file__), "names.txt")
 names = None

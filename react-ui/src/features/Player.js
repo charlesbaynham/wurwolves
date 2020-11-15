@@ -111,7 +111,7 @@ function Player(props) {
                 </div>
             </div>
             {playerReady ? <img src='/images/tick.svg' alt="Ready tick-mark" className='tick' /> : null}
-            <figcaption className="figure-caption text-center">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
+            <figcaption className="figure-caption text-center text-break">{name} {(status === "spectating") ? "(spectating)" : ""}</figcaption>
         </figure>
     )
 }
