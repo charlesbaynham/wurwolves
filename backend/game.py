@@ -40,6 +40,8 @@ SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 # queries held open for this time, unless an update occurs
 GET_HASH_TIMEOUT = 3
 
+MAX_NAME_LENGTH = 50
+
 NAMES_FILE = os.path.join(os.path.dirname(__file__), "names.txt")
 names = None
 
@@ -133,21 +135,6 @@ class WurwolvesGame:
                     self._session = None
 
         return f
-
-    @db_scoped
-    def set_player(self, user_id: UUID, name: str):
-        """
-        Update a player's name
-
-        Args:
-
-        user_id (UUID): User ID
-        name (str): New display name of the player
-        """
-        u = self._session.query(User).filter(User.id == user_id).first()
-        u.name = name
-        u.name_is_generated = False
-        self._session.add(u)
 
     @db_scoped
     def join(self, user_id: UUID):
@@ -715,6 +702,11 @@ class WurwolvesGame:
         Set a users's name
 
         Because this sets their name across all games, this method is a class method.
+
+        Args:
+
+        user_id (UUID): User ID
+        name (str): New display name of the player
         """
         from . import database
 
@@ -728,6 +720,9 @@ class WurwolvesGame:
 
             if old_name == name:
                 return
+
+            if len(name) > MAX_NAME_LENGTH:
+                name = name[:MAX_NAME_LENGTH]
 
             u.name = name
             u.name_is_generated = False

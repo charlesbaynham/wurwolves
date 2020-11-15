@@ -47,7 +47,7 @@ def test_name_player(db_session):
     u = db_session.query(User).filter(User.id == USER_ID).first()
     assert u.name_is_generated
 
-    g.set_player(USER_ID, "Charles")
+    g.set_user_name(USER_ID, "Charles")
     db_session.expire_all()
 
     u = db_session.query(User).filter(User.id == USER_ID).first()
