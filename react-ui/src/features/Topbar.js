@@ -19,7 +19,7 @@ function Topbar(props) {
 
   const [chosenName, setChosenName] = useState(null);
 
-  if (!chosenName && name && !name_is_generated) {
+  if (chosenName === null && name && !name_is_generated) {
     setChosenName(name)
   }
 
@@ -35,11 +35,17 @@ function Topbar(props) {
           <Form.Control
             placeholder={name}
             onChange={e => setChosenName(e.target.value)}
-            onBlur={() => requestNewName(chosenName)}
+            onBlur={() => {
+              if (chosenName) {
+                requestNewName(chosenName);
+              } else {
+                setChosenName(name);
+              }
+            }}
             value={chosenName ? chosenName : ""}
           />
         </Form>
-        <HelpButton className="px-2"/>
+        <HelpButton className="px-2" />
       </div>
     </Navbar>
   )
