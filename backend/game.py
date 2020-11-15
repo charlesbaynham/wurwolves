@@ -602,9 +602,16 @@ class WurwolvesGame:
     def kill_player(self, player_id, new_state: PlayerState):
         p = self.get_player_by_id(player_id)
 
-        p.previous_role = p.role
-        p.role = PlayerRole.SPECTATOR
         p.state = new_state
+
+        # Change the player to a spectator, but remember what role they used to
+        # have for displaying to the other players. If they get killed twice
+        # (e.g. by the wolves and the vigilante) then don't do this twice. For
+        # their state, they'll end up with the final kill: not ideal, but the
+        # actual result is announced in the text still.
+        if p.role != PlayerRole.SPECTATOR:
+            p.previous_role = p.role
+            p.role = PlayerRole.SPECTATOR
 
         self._session.add(p)
 
