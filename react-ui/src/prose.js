@@ -60,7 +60,7 @@ A thorn in the side of the villagers. The Jester is not trying to help: their ob
     new RoleDescription("Vigilante", "/images/characters/vigilante0.svg", `
 The Vigilante knows what's best for this village - who needs psychic powers when you've got a gun?
 
-Has a single bullet which they can use once per game to shoot someone during the night. Everyone will hear when this happens, but they won't know who shot. One the side of the villagers.
+Has a single bullet which they can use once per game to shoot someone during the night. Everyone will hear when this happens, but they won't know who shot. On the side of the villagers.
     `),
     new RoleDescription("Mayor", "/images/characters/mayor0.svg", `
 The Mayor is in charge here, and everyone knows it.
