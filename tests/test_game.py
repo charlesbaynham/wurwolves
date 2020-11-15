@@ -96,6 +96,7 @@ def test_keepalive(demo_game, db_session):
 
 def test_kill(demo_game, db_session):
     player_id = demo_game.get_player_id(USER_ID)
+    demo_game.set_player_role(player_id, PlayerRole.VILLAGER)
 
     p = demo_game.get_player_model(USER_ID)
     assert p.previous_role is None
@@ -397,6 +398,83 @@ def test_kick_with_actions(db_session):
 
     # Check the idler was kicked
     assert not game.get_player(timeout_player_id)
+
+
+def test_not_kicked_during_game(db_session):
+    game = WurwolvesGame(GAME_ID)
+
+    # Add four players
+    player_ids = [uuid() for _ in range(4)]
+    roles = [
+        PlayerRole.MEDIC,
+        PlayerRole.VILLAGER,
+        PlayerRole.SPECTATOR,
+        PlayerRole.WOLF,
+    ]
+    for p in player_ids:
+        game.join(p)
+
+    game.start_game()
+
+    for p, r in zip(player_ids, roles):
+        game.set_player_role(game.get_player_id(p), r)
+
+    timeout_player_id = player_ids[0]
+    villager_id = player_ids[1]
+    spectator_id = player_ids[2]
+    wolf_id = player_ids[3]
+
+    # Kill the medic with the wolf
+    game.wolf_night_action(wolf_id, timeout_player_id)
+    # Have the idler do something too
+    game.medic_night_action(timeout_player_id, wolf_id)
+
+    # Set medic to have joined ages ago
+    timeout_player = game.get_player(timeout_player_id)
+    db_session.add(timeout_player)
+    timeout_player.last_seen = datetime(1, 1, 1)
+    db_session.commit()
+    db_session.expire_all()
+
+    # Keepalive one of the other players, which should not kick the idler since it's a game
+    game.player_keepalive(wolf_id)
+
+    db_session.expire_all()
+    assert game.get_player(timeout_player_id)
+
+
+def test_killed_twice(db_session):
+    game = WurwolvesGame(GAME_ID)
+
+    # Add four players
+    player_ids = [uuid() for _ in range(4)]
+    roles = [
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VIGILANTE,
+        PlayerRole.WOLF,
+    ]
+    for p in player_ids:
+        game.join(p)
+
+    game.start_game()
+
+    for p, r in zip(player_ids, roles):
+        game.set_player_role(game.get_player_id(p), r)
+
+    villager1_id = player_ids[0]
+    villager2_id = player_ids[1]
+    vigilante_id = player_ids[2]
+    wolf_id = player_ids[3]
+
+    # Kill a villager with the vigilante
+    game.vigilante_night_action(vigilante_id, villager1_id)
+    # ...and the wolf
+    game.wolf_night_action(wolf_id, villager1_id)
+
+    # Check that the player retains their role
+    db_session.expire_all()
+    assert game.get_player_model(villager1_id).previous_role != PlayerRole.SPECTATOR
 
 
 # @pytest.mark.parametrize("num_prev_stages", [0, 1, 2, 3, 5, 10])
