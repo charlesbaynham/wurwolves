@@ -1,3 +1,11 @@
+body, a {
+  color: #212529;
+}
+
+.text-muted, .text-muted a {
+  color: #6c757d !important;
+}
+
 .NIGHT .bg-night-black {
   background: black !important;
 }
@@ -196,6 +204,11 @@ html {
   height: 30px;
   /* Set the fixed height of the footer here */
   line-height: 30px;
+}
+
+#buymeabeer {
+  font-style: italic;
+  font-size: 0.8rem;
 }
 
 #bike {
