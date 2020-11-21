@@ -19,6 +19,18 @@ const options = {
   // },
 };
 
+// static serving middleware options
+const static_1_year_cache_options = {
+  cacheControl: true,
+  immutable: true,
+  maxAge: "1y",
+};
+
+const static_dirs = [
+  "static",
+  "images"
+]
+
 // create the proxy (without context)
 const apiProxy = createProxyMiddleware(options);
 
@@ -38,13 +50,21 @@ if (!isDev && cluster.isMaster) {
 } else {
   const app = express();
 
-  // Priority serve any static files.
-  app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
-
-  // redirect all calls to "/api", "/docs" or the API spec to the FastAPI backend
+  // Redirect all calls to "/api", "/docs" or the API spec to the FastAPI backend
   app.use('/api', apiProxy);
   app.use('/docs', apiProxy);
   app.use('/openapi.json', apiProxy);
+
+  // Serve static files with a 1-year cache
+  for (const static_dir of static_dirs) {
+    app.use("/" + static_dir,
+      express.static(path.resolve(__dirname, '../react-ui/build/' + static_dir), static_1_year_cache_options)
+    );
+  }
+
+  // Serve remaining static files (which might change) with "no-cache" which does
+  // cache them, but checks the cache validity each time
+  app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
   // All remaining requests return the React app, so it can handle routing.
   app.get('*', function (request, response) {
