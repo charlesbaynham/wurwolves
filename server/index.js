@@ -41,15 +41,17 @@ if (!isDev && cluster.isMaster) {
   // Priority serve any static files.
   app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
-  // mount `apiProxy` in web server
+  // redirect all calls to "/api", "/docs" or the API spec to the FastAPI backend
   app.use('/api', apiProxy);
+  app.use('/docs', apiProxy);
+  app.use('/openapi.json', apiProxy);
 
   // All remaining requests return the React app, so it can handle routing.
-  app.get('*', function(request, response) {
+  app.get('*', function (request, response) {
     response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
   });
 
   app.listen(PORT, function () {
-    console.error(`Node ${isDev ? 'dev server' : 'cluster worker '+process.pid}: listening on port ${PORT}`);
+    console.error(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: listening on port ${PORT}`);
   });
 }
