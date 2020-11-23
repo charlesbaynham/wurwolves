@@ -80,9 +80,7 @@ class Game(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     created = Column(DateTime, default=func.now())
 
-    update_tag = Column(
-        Integer(), default=random_counter_value, onupdate=random_counter_value
-    )
+    update_tag = Column(Integer(), default=random_counter_value)
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
