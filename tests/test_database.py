@@ -36,8 +36,7 @@ def test_update(db_session):
     g.stage = GameStage.NIGHT
     db_session.commit()
 
-    assert g.update_tag != counter
-    counter = g.update_tag
+    assert g.update_tag == counter
 
     g.touch()
     db_session.commit()
