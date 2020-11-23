@@ -12,8 +12,8 @@
    width="1196.6168"
    height="1942.7288"
    viewBox="0 0 1196.6168 1942.7288"
-   sodipodi:docname="prostitute claw.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+   sodipodi:docname="prostitute0claw.svg"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06">
   <metadata
      id="metadata201">
     <rdf:RDF>
@@ -42,17 +42,18 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1080"
-     inkscape:window-height="1826"
+     inkscape:window-width="1280"
+     inkscape:window-height="702"
      id="namedview197"
      showgrid="false"
      inkscape:zoom="0.41721854"
-     inkscape:cx="412.49873"
+     inkscape:cx="1.4431714"
      inkscape:cy="834.4356"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
+     inkscape:window-x="0"
+     inkscape:window-y="592"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g203" />
+     inkscape:current-layer="g203"
+     inkscape:pagecheckerboard="true" />
   <g
      transform="translate(-116.48935,-201.00582)"
      inkscape:groupmode="layer"
@@ -576,5 +577,35 @@
          id="path2352"
          transform="translate(779.13126,194.39126)" />
     </g>
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 329.17355,842.92488 c -4.43567,-1.95555 -11.71603,-3.55553 -16.17857,-3.55553 -4.46254,0 -8.11371,-1.01151 -8.11371,-2.24781 0,-1.23629 7.15647,-8.51665 15.90326,-16.17857 8.7468,-7.66192 23.31633,-20.60195 32.37675,-28.75563 9.06041,-8.15367 18.67356,-15.52314 21.36254,-16.37659 5.16475,-1.63923 11.84951,2.31769 11.84951,7.01409 0,1.53405 -8.47272,16.23234 -18.82826,32.66287 -20.49954,32.52541 -22.91402,34.25186 -38.37152,27.43717 z"
+       id="path127"
+       inkscape:connector-curvature="0"
+       transform="translate(116.48935,201.00582)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 473.0482,815.2487 c -6.02723,-2.41542 -5.9677,-2.52639 22.10786,-41.21149 l 4.79712,-6.60992 4.80888,7.59509 c 3.22897,5.09981 4.84811,11.86751 4.92832,20.59943 0.0997,10.85588 -0.81536,13.76196 -5.53893,17.59022 -6.11953,4.95963 -21.32501,5.9553 -31.10325,2.03667 z"
+       id="path129"
+       inkscape:connector-curvature="0"
+       transform="translate(116.48935,201.00582)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 779.82588,813.28563 c -2.66966,-1.69197 -2.59059,-3.26318 0.46116,-9.16463 7.31719,-14.14988 58.17214,-55.7634 63.85502,-52.25119 1.26032,0.77892 3.44094,5.68497 4.84583,10.90232 6.4347,23.89665 -9.89424,42.99946 -42.68888,49.94065 -15.07822,3.1914 -22.10166,3.34338 -26.47313,0.57285 z"
+       id="path131"
+       inkscape:connector-curvature="0"
+       transform="translate(116.48935,201.00582)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 914.93468,810.70669 c -0.78099,-1.26366 2.54629,-10.16188 7.39395,-19.77381 8.71553,-17.28111 8.78183,-17.63225 5.93846,-31.45047 -3.41572,-16.59968 -0.86816,-22.06585 9.11612,-19.55995 6.14249,1.54166 29.02187,17.14401 29.02187,19.79115 0,0.78543 -5.79824,9.0525 -12.88498,18.37126 -7.08674,9.31877 -14.59685,20.31786 -16.68913,24.44244 -2.09228,4.12458 -5.55011,8.16922 -7.68406,8.9881 -5.73201,2.19957 -12.59434,1.80909 -14.21223,-0.80872 z"
+       id="path133"
+       inkscape:connector-curvature="0"
+       transform="translate(116.48935,201.00582)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 887.90905,792.31874 c -4.96995,-2.13223 -3.40245,-7.30827 4.13356,-13.6494 7.40502,-6.23092 23.36443,-12.66841 25.67599,-10.35684 2.10805,2.10804 -1.28204,11.85883 -6.1023,17.55186 -4.3994,5.19597 -18.00593,8.90039 -23.70725,6.45438 z"
+       id="path135"
+       inkscape:connector-curvature="0"
+       transform="translate(116.48935,201.00582)" />
   </g>
 </svg>

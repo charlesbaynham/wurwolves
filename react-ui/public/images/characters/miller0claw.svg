@@ -7,8 +7,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   sodipodi:docname="miller claw.svg"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="miller0claw.svg"
    viewBox="0 0 1148.4501 1817.8556"
    height="1817.8556"
    width="1148.4501"
@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -31,15 +31,15 @@
   <sodipodi:namedview
      inkscape:current-layer="g582"
      inkscape:window-maximized="1"
-     inkscape:window-y="-11"
-     inkscape:window-x="-11"
+     inkscape:window-y="592"
+     inkscape:window-x="0"
      inkscape:cy="1007.3229"
-     inkscape:cx="440.98129"
+     inkscape:cx="150.32112"
      inkscape:zoom="0.59003612"
      showgrid="false"
      id="namedview576"
-     inkscape:window-height="1826"
-     inkscape:window-width="1080"
+     inkscape:window-height="695"
+     inkscape:window-width="1280"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0"
      guidetolerance="10"
@@ -203,5 +203,29 @@
          id="path2352"
          transform="translate(779.13126,194.39126)" />
     </g>
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 672.3634,674.10841 c -16.5704,-7.52597 -13.96772,-25.6819 8.52883,-59.49593 11.57992,-17.4055 24.42669,-30.67312 36.51282,-37.70894 10.00581,-5.8248 30.55096,-12.55373 42.90718,-14.05293 l 9.85836,-1.19613 -5.43078,8.82614 c -2.98693,4.85438 -6.66053,9.20311 -8.16355,9.66385 -21.9017,6.71378 -38.49104,23.81001 -40.32243,41.55449 -0.73835,7.15392 -0.13528,11.0298 2.76525,17.77228 l 3.70953,8.62305 -8.16992,14.5719 -8.16992,14.5719 -13.55849,0.004 c -9.58491,0.003 -15.58313,-0.91556 -20.46688,-3.13367 z"
+       id="path96"
+       inkscape:connector-curvature="0"
+       transform="translate(198.30791,232.40287)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 737.74278,671.19653 c 0,-0.45298 1.0933,-2.93781 2.42956,-5.52185 1.64731,-3.18555 4.7174,-5.3837 9.5353,-6.82718 3.99003,-1.19544 10.62493,-5.42073 15.13172,-9.6363 10.22452,-9.56385 15.43986,-23.86674 16.32248,-44.76386 0.60575,-14.34207 0.64794,-14.45994 10.10749,-28.2439 l 9.4992,-13.84172 9.58631,0.72572 c 12.24402,0.92692 46.41828,7.42052 48.31796,9.1811 0.7952,0.73696 -1.71305,5.99157 -5.57388,11.6769 -3.86084,5.68532 -11.08577,18.99053 -16.05542,29.56711 -8.75071,18.62358 -9.35006,19.4206 -19.00088,25.26739 -13.74022,8.32428 -32.53101,17.59858 -45.69909,22.55503 -12.96531,4.88013 -34.60075,11.04644 -34.60075,9.86156 z"
+       id="path98"
+       inkscape:connector-curvature="0"
+       transform="translate(198.30791,232.40287)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 734.99565,616.20681 c 1.51392,-14.17962 4.87561,-22.07089 11.78427,-27.66253 3.41044,-2.7603 6.63003,-4.58948 7.15466,-4.06485 1.10869,1.10869 -12.80966,31.48994 -17.06599,37.25199 -2.80154,3.79261 -2.85187,3.64415 -1.87294,-5.52461 z"
+       id="path100"
+       inkscape:connector-curvature="0"
+       transform="translate(198.30791,232.40287)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 751.28049,645.15793 c 0.9863,-1.84293 3.23743,-4.12366 5.0025,-5.0683 1.76507,-0.94464 4.47523,-5.52914 6.02258,-10.18778 3.09508,-9.3184 6.78929,-13.54855 4.9658,-5.68621 -0.61264,2.64151 -3.03536,9.18806 -5.38382,14.54791 -3.4914,7.96836 -5.01113,9.74516 -8.33514,9.74516 -3.52431,0 -3.8266,-0.44583 -2.27192,-3.35078 z"
+       id="path102"
+       inkscape:connector-curvature="0"
+       transform="translate(198.30791,232.40287)" />
   </g>
 </svg>
