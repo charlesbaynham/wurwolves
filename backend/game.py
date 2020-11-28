@@ -38,7 +38,7 @@ SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 # Time for get_hash to wait for until it returns. Clients will have their
 # queries held open for this time, unless an update occurs
-GET_HASH_TIMEOUT = 3
+GET_HASH_TIMEOUT = 30
 
 MAX_NAME_LENGTH = 25
 
