@@ -56,9 +56,10 @@ function requestNewName(name) {
   fetch(
     make_api_url(
       null,
-      "set_name"
+      "set_name",
+      { name: name }
     ),
-    { method: 'post', params: { name: name } }
+    { method: 'post' }
   )
 }
 

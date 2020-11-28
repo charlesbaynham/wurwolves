@@ -121,7 +121,7 @@ def test_multiple_players(five_drivers):
     my_driver = five_drivers[-1]
     my_name = "The first one"
 
-    # set_name(my_driver, my_name)
+    set_name(my_driver, my_name)
 
     time.sleep(1)
 
