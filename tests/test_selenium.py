@@ -121,7 +121,7 @@ def test_multiple_players(five_drivers):
     my_driver = five_drivers[-1]
     my_name = "The first one"
 
-    set_name(my_driver, my_name)
+    # set_name(my_driver, my_name)
 
     time.sleep(1)
 
@@ -141,3 +141,9 @@ def test_multiple_players(five_drivers):
 
     assert len(players) == 5
     assert any(my_name in p.text for p in players)
+
+
+def test_api_state_hash(five_drivers):
+    for d in five_drivers:
+        d.get(f"{TEST_URL}/api/{TEST_GAME}/state_hash")
+        print(d.page_source)

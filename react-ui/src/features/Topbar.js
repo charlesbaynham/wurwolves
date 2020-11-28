@@ -6,6 +6,7 @@ import HelpButton from './HelpButton'
 import {
   Link
 } from 'react-router-dom'
+import { make_api_url } from '../utils'
 
 import {
   selectMyName,
@@ -52,11 +53,13 @@ function Topbar(props) {
 }
 
 function requestNewName(name) {
-  var url = new URL(`/api/set_name`, document.baseURI)
-  const params = { name: name }
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-
-  fetch(url, { method: 'post', params: params })
+  fetch(
+    make_api_url(
+      null,
+      "set_name"
+    ),
+    { method: 'post', params: { name: name } }
+  )
 }
 
 export default Topbar;

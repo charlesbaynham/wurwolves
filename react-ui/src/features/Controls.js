@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import {
     selectControls, selectSelectedPlayer
 } from './selectors'
+import { make_api_url } from '../utils'
 
 import { unselectAll } from '../app/store'
 import { RolePicture } from './RolePicture'
@@ -38,11 +39,14 @@ function Controls(props) {
         // update state
         setIsSending(true)
 
-        var url = new URL(`/api/${props.game_tag}/${controlsState.button_submit_func}`, document.baseURI),
-            params = { selected_id: selected_player }
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-
-        const r = await fetch(url, { method: 'post' })
+        const r = await fetch(
+            make_api_url(
+                props.game_tag,
+                controlsState.button_submit_func,
+                { selected_id: selected_player }
+            ),
+            { method: 'post' }
+        )
 
         setIsSending(false)
 
