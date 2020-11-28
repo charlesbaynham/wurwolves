@@ -9,7 +9,7 @@
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { replaceState } from '../app/store'
-
+import { make_api_url } from '../utils'
 import {
     selectAllPlayers,
     selectMyID,
@@ -75,11 +75,9 @@ class GameUpdater extends Component {
             }
         }
 
-        var url = new URL(`/api/${this.props.game_tag}/state_hash`, document.baseURI),
-            params = { known_hash: this.props.state_hash }
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-
-        fetch(url).then(successHandler, failureHandler)
+        fetch(
+            make_api_url(this.props.game_tag, "state_hash", { known_hash: this.props.state_hash })
+        ).then(successHandler, failureHandler)
     }
 
     stopPolling() {
@@ -90,9 +88,7 @@ class GameUpdater extends Component {
 
 
     updateState() {
-        const url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
-
-        fetch(url)
+        fetch(make_api_url(this.props.game_tag, "state"))
             .then(r => {
                 if (!r.ok) {
                     throw Error("Fetch state failed with error " + r.status)
@@ -108,7 +104,7 @@ class GameUpdater extends Component {
     }
 
     joinGame() {
-        fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
+        fetch(make_api_url(this.props.game_tag, "join"), { method: 'post' })
     }
 
     render() {

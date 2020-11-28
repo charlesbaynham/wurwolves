@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import ScrollableFeed from 'react-scrollable-feed'
+import { make_api_url } from '../utils'
 
 import {
     selectMessages, selectShowSecretChat
@@ -21,11 +22,10 @@ export function Chatbox(props) {
     const [chatMessage, setChatMessage] = useState("");
 
     const sendChatMessage = (msg) => {
-        var url = new URL(`/api/${props.game_tag}/chat`, document.baseURI)
-        const params = { message: msg }
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-
-        fetch(url, { method: 'post', params: params })
+        fetch(
+            make_api_url(props.game_tag, "chat"),
+            { method: 'post', params: { message: msg } }
+        )
     }
 
     const secretChat = (
