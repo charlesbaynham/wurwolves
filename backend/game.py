@@ -143,8 +143,7 @@ class WurwolvesGame:
         Args:
             user_ID (str): ID of the user
         """
-
-        logging.info("User %s joining now", user_id)
+        logging.info("User %s joining now" % user_id)
 
         # Get the user from the user list, adding them if not already present
         user = self._session.query(User).filter(User.id == user_id).first()

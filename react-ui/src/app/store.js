@@ -41,8 +41,11 @@ const reducer = combineReducers({
 })
 
 
-
-export default createStore(
+// Expose the store on window.store for debugging
+let store = createStore(
   reducer,
   composeWithDevTools()
 );
+window.store = store;
+
+export default store;
