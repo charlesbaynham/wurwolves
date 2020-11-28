@@ -1,5 +1,6 @@
 import re
 import time
+from multiprocessing import Pool
 
 import geckodriver_autoinstaller
 import pytest
@@ -16,10 +17,15 @@ TEST_GAME = "james-doesnt-understand-prostitute"
 
 
 @pytest.fixture(scope="session")
-def session_driver():
+def test_server():
+    # Later, this should launch and close a test server
+    pass
+
+
+@pytest.fixture(scope="session")
+def session_driver(test_server):
     driver = webdriver.Firefox()
     driver.implicitly_wait(5)
-    driver.get(TEST_URL)
     yield driver
     driver.close()
 
@@ -27,7 +33,40 @@ def session_driver():
 @pytest.fixture
 def driver(session_driver):
     reset_database()
-    return session_driver
+    session_driver.get(TEST_URL)
+    yield session_driver
+    session_driver.get("about:blank")
+
+
+def make_drv(*args):
+    driver = webdriver.Firefox()
+    driver.implicitly_wait(5)
+    return driver
+
+
+@pytest.fixture(scope="session")
+def five_drivers_raw(test_server):
+    import concurrent.futures
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        drivers = list(executor.map(make_drv, range(5)))
+
+    yield drivers
+
+    for d in drivers:
+        d.close()
+
+
+@pytest.fixture
+def five_drivers(five_drivers_raw):
+    reset_database()
+    for d in five_drivers_raw:
+        d.get(f"{TEST_URL}/{TEST_GAME}")
+
+    yield five_drivers_raw
+
+    for d in five_drivers_raw:
+        d.get("about:blank")
 
 
 def test_homepage(driver):
@@ -60,3 +99,9 @@ def test_set_name(driver):
 
     assert len(players) == 1
     assert players[0].text == TEST_NAME
+
+
+def test_multiple_players(five_drivers):
+    players = five_drivers[-1].find_elements_by_xpath("//*[@id='playerGrid']//figure")
+
+    assert len(players) == 5
