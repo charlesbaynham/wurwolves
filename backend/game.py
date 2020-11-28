@@ -148,6 +148,7 @@ class WurwolvesGame:
         # Get the user from the user list, adding them if not already present
         user = self._session.query(User).filter(User.id == user_id).first()
         if not user:
+            logging.info("User %s not in DB" % user_id)
             user = self.make_user(self._session, user_id)
 
         # Get the game, creating it if it doesn't exist
@@ -170,12 +171,15 @@ class WurwolvesGame:
             player.active = True
             self.send_chat_message(f"{player.user.name} rejoined the game", True)
 
-        # To avoid instant kicking:
-        player.touch()
-
+        self._session.add(player)
         self._session.add(game)
         self._session.add(user)
-        self._session.add(player)
+
+        # Start a nested session, so player keepalive doesn't make a new hash
+        self._session.begin_nested()
+        # To avoid instant kicking:
+        player.touch()
+        self._session.commit()
 
     @staticmethod
     def make_user(session, user_id) -> User:
@@ -359,7 +363,9 @@ class WurwolvesGame:
     @db_scoped
     def get_hash_now(self):
         g = self.get_game()
-        return g.update_tag if g else 0
+        _hash = g.update_tag if g else 0
+        logging.info(f"Current hash {_hash}, game {g.id}")
+        return _hash
 
     async def get_hash(self, known_hash=None, timeout=GET_HASH_TIMEOUT) -> int:
         """
@@ -380,7 +386,7 @@ class WurwolvesGame:
         # Otherwise, lookup / make an event and subscribe to it
         if self.game_id not in update_events:
             update_events[self.game_id] = asyncio.Event()
-            logging.info("Made new event for %s", self.game_id)
+            logging.info("Made new event for game %s", self.game_id)
         else:
             logging.info("Subscribing to event for %s", self.game_id)
 
@@ -404,6 +410,8 @@ class WurwolvesGame:
                 404, "You are not registered: refreshing now to join game"
             )
 
+        logging.info("Keepalive player %s", user_id)
+
         p.touch()
         self._session.commit()
 
@@ -422,7 +430,7 @@ class WurwolvesGame:
             if p.last_seen < threshold:
                 logging.info(
                     f"Marking player {p.user.name} as inactive (p.last_seen="
-                    f"{p.last_seen}, threshold={threshold}"
+                    f"{p.last_seen}, threshold={threshold})"
                 )
                 self.mark_inactive(p)
                 someone_changed = True
@@ -441,6 +449,7 @@ class WurwolvesGame:
 
     @db_scoped
     def create_game(self):
+        logging.info("Making new game %s", self.game_id)
         game = Game(id=self.game_id)
 
         self._session.add(game)

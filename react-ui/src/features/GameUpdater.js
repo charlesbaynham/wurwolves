@@ -48,12 +48,16 @@ class GameUpdater extends Component {
 
         const successHandler = r => {
             if (!this.cancelled) {
-                this.timeoutID = setTimeout(this.checkAndReschedule, successCheckRate)
+                this.timeoutID = setTimeout(this.checkAndReschedule, (r.ok ? successCheckRate : errorCheckRate))
                 console.log(`Remounted updater for ${this.props.game_tag} with id ${this.timeoutID} after success`)
 
                 if (!r.ok) {
-                    console.log("Fetch state failed with error " + r.status)
-                    window.location.reload(false);
+                    console.log("Fetch state failed with error " + r.status);
+                    setTimeout(
+                        () => { window.location.reload(false); },
+                        errorCheckRate
+                    );
+                    return;
                 }
 
                 return r.json().then(new_hash => {
