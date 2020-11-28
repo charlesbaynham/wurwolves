@@ -6,3 +6,5 @@ pytest
 pre-commit
 pip-tools
 black
+selenium
+geckodriver-autoinstaller
