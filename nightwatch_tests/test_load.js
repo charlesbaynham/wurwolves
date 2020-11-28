@@ -1,8 +1,10 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-var test = 123;
-var proc;
+async function resetDB() {
+    const { stdout, stderr } = await exec("npm run resetdb");
+    console.log(stdout);
+}
 
 module.exports = {
 
@@ -19,37 +21,26 @@ module.exports = {
         //     .assert.containsText('.mainline-results', 'Nightwatch.js')
         //     .end();
 
-        console.log(`during Test = ${test}`);
-        test += 1;
+        console.log("a test");
     },
 
     'Globals test': () => {
-        console.log(`during Test = ${test}`);
-        test += 1;
+        console.log("Another test");
     },
 
     beforeEach: async (_) => {
-        // const { stdout, stderr } = await exec("ls -la");
-        // console.log(stdout);
-        console.log(`beforeEach test = ${test}`);
-        test += 1;
+        console.log(`beforeEach test`);
     },
 
     after: (_) => {
-        console.log(`after Test = ${test}`);
-        test += 1;
-        proc.kill();
+        console.log(`after test`);
     },
 
     afterEach: (_) => {
-        console.log(`afterEach Test = ${test}`);
-        test += 1;
+        console.log(`afterEach test`);
     },
 
     before: (_) => {
-        console.log(`first before Test = ${test}`);
-        test += 1;
-
-        proc = require('child_process').spawn('npm run dev');
+        console.log(`before test`);
     }
 };
