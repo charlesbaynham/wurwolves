@@ -109,7 +109,6 @@ def test_set_name(driver):
     my_name = "My name"
 
     set_name(driver, my_name)
-    time.sleep(0.5)
 
     players = driver.find_elements_by_xpath("//*[@id='playerGrid']//figure")
 
@@ -125,22 +124,17 @@ def test_multiple_players(five_drivers):
 
     time.sleep(1)
 
-    players = my_driver.find_elements_by_xpath("//*[@id='playerGrid']//figure")
+    for driver in five_drivers:
+        players = my_driver.find_elements_by_xpath("//*[@id='playerGrid']//figure")
+
+        assert len(players) == 5
+        assert any(my_name in p.text for p in players)
 
     store = get_store(my_driver)
     players_store = store["backend"]["players"]
+
     print(f"Store: {store}")
     print(f"Players: {players_store}")
-    print(f"Player IDs: {sorted([p['id'] for p in players_store])}")
-
-    driver_IDs = []
-    for driver in five_drivers:
-        driver_IDs.append(get_store(driver)["backend"]["myID"])
-
-    print(f"Driver IDs: {sorted(driver_IDs)}")
-
-    assert len(players) == 5
-    assert any(my_name in p.text for p in players)
 
 
 def test_api_state_hash(five_drivers):
