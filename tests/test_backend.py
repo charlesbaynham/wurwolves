@@ -36,9 +36,11 @@ def test_keepalive_no_change_hash(api_client, db_session):
     g = WurwolvesGame(GAME_ID)
 
     api_client.post("/api/{}/join".format(GAME_ID))
-    api_client.query("/api/{}/state_hash".format(GAME_ID))
+    api_client.get("/api/{}/state_hash".format(GAME_ID))
 
-    game_hash = g.get_hash_now()
-    api_client.query("/api/{}/state_hash".format(GAME_ID))
+    first_game_hash = g.get_hash_now()
+    api_client.get("/api/{}/state_hash".format(GAME_ID))
 
-    assert game_hash == g.get_hash_now()
+    second_game_hash = g.get_hash_now()
+
+    assert first_game_hash == second_game_hash
