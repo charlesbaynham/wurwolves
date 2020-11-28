@@ -16,6 +16,9 @@ import {
     selectStateHash
 } from './selectors'
 
+// This ID is used until the client is assigned a proper UUID
+const temporary_id = Math.random();
+
 
 class GameUpdater extends Component {
 
@@ -76,7 +79,10 @@ class GameUpdater extends Component {
         }
 
         var url = new URL(`/api/${this.props.game_tag}/state_hash`, document.baseURI),
-            params = { known_hash: this.props.state_hash }
+            params = {
+                known_hash: this.props.state_hash,
+                temporary_id: temporary_id
+            }
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         fetch(url).then(successHandler, failureHandler)
@@ -90,7 +96,11 @@ class GameUpdater extends Component {
 
 
     updateState() {
-        const url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI)
+        var url = new URL(`/api/${this.props.game_tag}/state`, document.baseURI),
+            params = {
+                temporary_id: temporary_id
+            }
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         fetch(url)
             .then(r => {
@@ -108,7 +118,13 @@ class GameUpdater extends Component {
     }
 
     joinGame() {
-        fetch(`/api/${this.props.game_tag}/join`, { method: 'post' })
+        var url = new URL(`/api/${this.props.game_tag}/join`, document.baseURI),
+            params = {
+                temporary_id: temporary_id
+            }
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+
+        fetch(url, { method: 'post' })
     }
 
     render() {
