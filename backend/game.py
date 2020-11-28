@@ -172,12 +172,15 @@ class WurwolvesGame:
             player.active = True
             self.send_chat_message(f"{player.user.name} rejoined the game", True)
 
-        # To avoid instant kicking:
-        player.touch()
-
+        self._session.add(player)
         self._session.add(game)
         self._session.add(user)
-        self._session.add(player)
+
+        # Start a nested session, so player keepalive doesn't make a new hash
+        self._session.begin_nested()
+        # To avoid instant kicking:
+        player.touch()
+        self._session.commit()
 
     @staticmethod
     def make_user(session, user_id) -> User:
@@ -408,6 +411,8 @@ class WurwolvesGame:
                 404, "You are not registered: refreshing now to join game"
             )
 
+        logging.info("Keepalive player %s", user_id)
+
         p.touch()
         self._session.commit()
 
@@ -426,7 +431,7 @@ class WurwolvesGame:
             if p.last_seen < threshold:
                 logging.info(
                     f"Marking player {p.user.name} as inactive (p.last_seen="
-                    f"{p.last_seen}, threshold={threshold}"
+                    f"{p.last_seen}, threshold={threshold})"
                 )
                 self.mark_inactive(p)
                 someone_changed = True
