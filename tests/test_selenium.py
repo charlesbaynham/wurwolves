@@ -43,7 +43,7 @@ def driver(session_driver):
     yield session_driver
 
     session_driver.get("about:blank")
-    d.delete_all_cookies()
+    session_driver.delete_all_cookies()
 
 
 @pytest.fixture(scope="session")

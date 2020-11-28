@@ -1,3 +1,4 @@
+import logging
 from threading import RLock
 from uuid import UUID
 from uuid import uuid4 as get_uuid
@@ -20,14 +21,24 @@ async def get_user_id(
 
     if session_UUID is None:
         parsed_uuid = assign_new_ID(response, ip)
+        logging.info("Blank client, IP %s, assigned UUID %s", ip, parsed_uuid)
     else:
         if ip in no_cookie_clients:
+            logging.info(
+                "IP %s responded with UUID %s. Deleting from dict", ip, session_UUID
+            )
             del no_cookie_clients[ip]
 
         try:
             parsed_uuid = UUID(session_UUID)
         except ValueError:
             parsed_uuid = assign_new_ID(response, ip)
+            logging.error(
+                "Error parsing UUID %s from IP %s. Reassiging as %s",
+                session_UUID,
+                ip,
+                parsed_uuid,
+            )
 
     return parsed_uuid
 
