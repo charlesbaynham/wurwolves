@@ -36,5 +36,9 @@
     "wurwolves"
   ],
   "license": "None",
-  "devDependencies": {}
+  "devDependencies": {
+    "chromedriver": "^87.0.0",
+    "geckodriver": "^1.21.0",
+    "nightwatch": "^1.5.1"
+  }
 }

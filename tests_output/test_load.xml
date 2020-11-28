@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="1"
+            failures="0"
+            tests="0">
+
+  <testsuite name="test_load"
+    errors="1" failures="0" hostname="" id="" package="test_load" skipped="1"
+    tests="0" time="0.000" timestamp="">
+
+
+
+    <system-err>
+        Error: An error occurred while retrieving a new session: &#34;Process unexpectedly closed with status 0&#34;
+       at endReadableNT (_stream_readable.js:1224:12)
+       at processTicksAndRejections (internal/process/task_queues.js:84:21)
+    </system-err>
+
+
+
+    <error message="An error occurred while retrieving a new session: &#34;Process unexpectedly closed with status 0&#34;"><![CDATA[
+      Error: An error occurred while retrieving a new session: &#34;Process unexpectedly closed with status 0&#34;
+    at WebdriverProtocol.handleSessionCreateError (/Users/charles/wurwolves/node_modules/nightwatch/lib/transport/transport.js:103:15)
+    at HttpRequest.&lt;anonymous&gt; (/Users/charles/wurwolves/node_modules/nightwatch/lib/transport/transport.js:159:32)
+    at HttpRequest.emit (events.js:315:20)
+    at HttpResponse.&lt;anonymous&gt; (/Users/charles/wurwolves/node_modules/nightwatch/lib/http/request.js:142:19)
+    at HttpResponse.emit (events.js:315:20)
+    at IncomingMessage.&lt;anonymous&gt; (/Users/charles/wurwolves/node_modules/nightwatch/lib/http/response.js:60:14)
+    at IncomingMessage.emit (events.js:327:22)
+    at endReadableNT (_stream_readable.js:1224:12)
+    at processTicksAndRejections (internal/process/task_queues.js:84:21)
+      ]]></error>
+
+
+
+    <testcase
+      name="Demo test Ecosia.org" classname="test_load">
+      <skipped />
+    </testcase>
+
+
+  </testsuite>
+</testsuites>
