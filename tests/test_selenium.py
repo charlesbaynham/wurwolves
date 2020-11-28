@@ -15,6 +15,9 @@ geckodriver_autoinstaller.install()
 TEST_URL = "localhost:3000"
 TEST_GAME = "james-doesnt-understand-prostitute"
 
+# Mark this whole module as requiring selenium
+pytestmark = pytest.mark.selenium
+
 
 @pytest.fixture(scope="session")
 def test_server():
