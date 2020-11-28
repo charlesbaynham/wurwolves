@@ -1,3 +1,4 @@
+const { assert } = require('console');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
@@ -6,41 +7,40 @@ async function resetDB() {
     console.log(stdout);
 }
 
+const TEST_URL = "http://localhost:3000";
+const TEST_GAME = "james-doesnt-understand-prostitute"
+
 module.exports = {
-
-
-    'Demo test Ecosia.org': function (browser) {
-        // browser
-        //     .url('https://www.ecosia.org/')
-        //     .waitForElementVisible('body')
-        //     .assert.titleContains('Ecosia')
-        //     .assert.visible('input[type=search]')
-        //     .setValue('input[type=search]', 'nightwatch')
-        //     .assert.visible('button[type=submit]')
-        //     .click('button[type=submit]')
-        //     .assert.containsText('.mainline-results', 'Nightwatch.js')
-        //     .end();
-
-        console.log("a test");
+    'Basic launch': function (browser) {
+        browser
+            .url(TEST_URL)
+            .waitForElementVisible('body')
+            .assert.titleContains('Wurwolves')
     },
 
-    'Globals test': () => {
-        console.log("Another test");
+    'Start game': async (browser) => {
+        await resetDB();
+
+        await browser.url(TEST_URL)
+        await browser.waitForElementVisible('#home-content-box button')
+        await browser.click('#home-content-box button')
+        const url = (await browser.url()).value
+
+        const regex = /(\w+-\w+-\w+-\w+)/g;
+        const found = url.match(regex);
+
+        assert(found)
+        console.log(`Game name: ${found}`);
+
     },
 
-    beforeEach: async (_) => {
-        console.log(`beforeEach test`);
-    },
+    'Set name': async (browser) => {
 
-    after: (_) => {
-        console.log(`after test`);
-    },
+        const SAMPLE_NAME = "My name";
 
-    afterEach: (_) => {
-        console.log(`afterEach test`);
+        await browser.url(`${TEST_URL}/${TEST_GAME}`)
+        await browser.setValue('nav input', SAMPLE_NAME)
+        await browser.click('body')
+        await browser.assert.containsText('#playerGrid figcaption', SAMPLE_NAME)
     },
-
-    before: (_) => {
-        console.log(`before test`);
-    }
 };

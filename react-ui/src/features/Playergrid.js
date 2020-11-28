@@ -11,7 +11,7 @@ export function PlayerGrid() {
     const players = useSelector(selectAllPlayers);
 
     return (
-        <div className="col-md container">
+        <div className="col-md container" id="playerGrid">
             <div className="row flex-wrap">
                 {players.map(p => <Player key={p.id} player_id={p.id} />)}
             </div>

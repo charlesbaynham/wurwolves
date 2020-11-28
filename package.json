@@ -14,7 +14,8 @@
     "upgrade": "alembic upgrade head",
     "resetdb": "python -m backend.reset_db",
     "test": "pytest && cd react-ui && npm test",
-    "nightwatch": "npm run build && concurrently --kill-others --success first \"npm run start\" \"node_modules/.bin/nightwatch\""
+    "nightwatch": "npm run build && concurrently --kill-others --success first \"npm run start\" \"npm run nwtests\"",
+    "nwtests": "node_modules/.bin/nightwatch"
   },
   "cacheDirectories": [
     "node_modules",
