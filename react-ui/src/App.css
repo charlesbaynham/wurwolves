@@ -68,12 +68,6 @@ body, a {
   background: #AAA;
 }
 
-.role_picture {
-  width: 20%;
-  float: left;
-  margin: 0 1em;
-}
-
 #main {
   display: flex;
   flex-direction: column;
