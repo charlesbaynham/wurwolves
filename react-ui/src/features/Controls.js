@@ -12,6 +12,8 @@ import { make_api_url } from '../utils'
 import { unselectAll } from '../app/store'
 import { RolePicture } from './RolePicture'
 
+import styles from './Controls.module.css'
+
 
 const DEFAULT_STATE = {
     title: "",
@@ -27,6 +29,7 @@ function Controls(props) {
 
     const [isSending, setIsSending] = useState(false)
     const [isError, setIsError] = useState(false);
+    const [errorText, setErrorText] = useState("");
 
     if (typeof (controlsState) == "undefined") {
         controlsState = DEFAULT_STATE
@@ -55,13 +58,19 @@ function Controls(props) {
         } else {
             const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-            // Log the error to the console
-            r.json().then(r => console.log(r))
+            r.json().then(async r => {
+                // Log the error to the console
+                console.log(r)
 
-            // Add then remove the "error" class from the button
-            setIsError(true);
-            await wait(1000);
-            setIsError(false);
+                setErrorText(r.detail)
+
+                // Add then remove the "error" class from the button
+                setIsError(true);
+                await wait(1000);
+                setIsError(false);
+            })
+
+
         }
     }
 
@@ -75,6 +84,9 @@ function Controls(props) {
                             className={isError ? "error" : ""}>
                             <em>{controlsState.button_text}</em>
                         </Button>
+                        <div className={styles.errorMessage}>
+                            {isError ? errorText : ""}
+                        </div>
                     </div>
                     : null}
             </div>

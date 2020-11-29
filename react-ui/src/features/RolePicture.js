@@ -1,5 +1,7 @@
 import React from 'react';
 
+import styles from './RolePicture.module.css'
+
 const num_pics = {
     Villager: 11,
     Wolf: 7,
@@ -45,7 +47,7 @@ export function RolePicture(props) {
         const pic_url = getRoleURL(props.role, props.status, props.seed)
 
         return (
-            <img className="role_picture" src={pic_url} alt={`Role ${props.role}`} />
+            <img className={styles.role_picture} src={pic_url} alt={`Role ${props.role}`} />
         )
     } else {
         return null

@@ -4,6 +4,9 @@ The Spectator role
 import logging
 from typing import TYPE_CHECKING
 
+from fastapi import HTTPException
+
+from .. import roles
 from ..model import GameStage
 from ..model import PlayerRole
 from ..model import PlayerState
@@ -76,9 +79,14 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
     @classmethod
     def immediate(cls, game=None, user_id=None, **kwargs):
         super().immediate(game=game, user_id=user_id, **kwargs)
+
+        # Try to assign roles here, just to see if it works. The actual result
+        # is ignored, it's just used for checking we have enough players
+        if not roles.assign_roles(len(game.get_players())):
+            raise HTTPException(status_code=400, detail="Not enough players")
+
         msg = f"{game.get_user_name(user_id)} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
-        # game.send_chat_message(msg)
 
 
 def register(role_map):

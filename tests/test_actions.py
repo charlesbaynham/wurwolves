@@ -1,6 +1,7 @@
 import random as rd
 from unittest.mock import Mock
 from unittest.mock import patch
+from uuid import UUID
 
 import pytest
 from fastapi import HTTPException
@@ -10,17 +11,17 @@ from backend.model import GameStage
 from backend.model import PlayerRole
 from backend.model import PlayerState
 
-rd.seed(123)
+
+def setup_module(module):
+    rd.seed(123)
 
 
 def uuid():
-    import uuid
-
-    return uuid.UUID(int=rd.getrandbits(128))
+    return UUID(int=rd.getrandbits(128))
 
 
 GAME_ID = "hot-potato"
-USER_ID = uuid()
+USER_ID = UUID("610e4ad5-09c4-7055-dff4-948fe6b4f832")
 
 
 @pytest.fixture
