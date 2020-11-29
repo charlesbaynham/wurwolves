@@ -25,6 +25,7 @@ class GameUpdater extends Component {
         this.timeoutID = null
         this.cancelled = false
         this.checkAndReschedule = this.checkAndReschedule.bind(this)
+        this.joinGame = this.joinGame.bind(this)
     }
 
     componentDidMount() {
@@ -41,7 +42,7 @@ class GameUpdater extends Component {
     }
 
     checkAndReschedule() {
-        console.log(`checkAndReschedule with this.timeoutID = ${this.timeoutID}`)
+        // console.log(`checkAndReschedule with this.timeoutID = ${this.timeoutID}`)
 
         const errorCheckRate = 1000
         const successCheckRate = 500
@@ -49,17 +50,21 @@ class GameUpdater extends Component {
         const successHandler = r => {
             if (!this.cancelled) {
                 this.timeoutID = setTimeout(this.checkAndReschedule, (r.ok ? successCheckRate : errorCheckRate))
-                console.log(`Remounted updater for ${this.props.game_tag} with id ${this.timeoutID} after success`)
 
                 if (!r.ok) {
                     console.log("Fetch state failed with error " + r.status);
-                    setTimeout(
-                        () => { window.location.reload(false); },
-                        errorCheckRate
-                    );
+                    if (r.status == 404) {
+                        // 404 means that the game doesn't exist: create it
+                        setTimeout(this.joinGame, errorCheckRate);
+                    } else {
+                        // Unknown error: log it to console
+                        console.log(`Unknown error on state fetch:`);
+                        console.log(r);
+                    }
                     return;
                 }
 
+                // Otherwise, process the json and update the state if required
                 return r.json().then(new_hash => {
                     if (new_hash !== this.props.state_hash) {
                         this.updateState()
@@ -71,7 +76,7 @@ class GameUpdater extends Component {
         const failureHandler = r => {
             if (!this.cancelled) {
                 this.timeoutID = setTimeout(this.checkAndReschedule, errorCheckRate)
-                console.log(`Remounted updater for ${this.props.game_tag} with id ${this.timeoutID} after failure`)
+                console.log(`Remounted updater after error for ${this.props.game_tag} with id ${this.timeoutID} after failure`)
             }
         }
 
@@ -104,6 +109,7 @@ class GameUpdater extends Component {
     }
 
     joinGame() {
+        console.log("Joining game " + this.props.game_tag);
         fetch(make_api_url(this.props.game_tag, "join"), { method: 'post' })
     }
 
