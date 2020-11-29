@@ -53,7 +53,7 @@ class GameUpdater extends Component {
 
                 if (!r.ok) {
                     console.log("Fetch state failed with error " + r.status);
-                    if (r.status == 404) {
+                    if (r.status === 404) {
                         // 404 means that the game doesn't exist: create it
                         setTimeout(this.joinGame, errorCheckRate);
                     } else {
