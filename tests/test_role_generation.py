@@ -7,8 +7,9 @@ from backend.roles import assign_roles
 from backend.roles.distribution import DUAL_ROLES
 
 
-# For determinism
-random.seed(123)
+def setup_module(module):
+    # For determinism
+    random.seed(123)
 
 
 def test_basics():
