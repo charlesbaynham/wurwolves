@@ -23,8 +23,8 @@ export function Chatbox(props) {
 
     const sendChatMessage = (msg) => {
         fetch(
-            make_api_url(props.game_tag, "chat"),
-            { method: 'post', params: { message: msg } }
+            make_api_url(props.game_tag, "chat", { message: msg }),
+            { method: 'post' }
         )
     }
 
