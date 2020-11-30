@@ -169,7 +169,6 @@ class WurwolvesGame:
             self.send_chat_message(f"{player.user.name} joined the game", True)
         if not player.active:
             player.active = True
-            self.send_chat_message(f"{player.user.name} rejoined the game", True)
 
         self._session.add(player)
         self._session.add(game)
