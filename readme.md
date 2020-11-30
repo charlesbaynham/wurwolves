@@ -1,7 +1,7 @@
 Wurwolves
 =========
 
-A simple web app to play Werewolves (AKA Mafia) online. Live now at [wurwolves.com](https://www.wurwolves.com). 
+A simple web app to play Werewolves (AKA Mafia) online. Live now at [wurwolves.com](https://www.wurwolves.com).
 
 This repository is ready to be deployed to a Heroku dyno. You'll need to manually add both the python and nodejs buildpacks like so:
 
