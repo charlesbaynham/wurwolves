@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-aiofiles==0.6.0           # via fastapi
+aiofiles==0.5.0           # via fastapi
 alembic==1.4.3            # via -r requirements.in
 aniso8601==7.0.0          # via graphene
 async-exit-stack==1.0.1   # via fastapi
