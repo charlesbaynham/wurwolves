@@ -426,7 +426,7 @@ class WurwolvesGame:
         # Start a nested session so that process_actions can check the database
         self._session.begin_nested()
         for p in players:
-            if p.last_seen < threshold:
+            if p.active and p.last_seen < threshold:
                 logging.info(
                     f"Marking player {p.user.name} as inactive (p.last_seen="
                     f"{p.last_seen}, threshold={threshold})"
