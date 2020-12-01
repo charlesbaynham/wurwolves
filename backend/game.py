@@ -38,7 +38,7 @@ SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 # Time for get_hash to wait for until it returns. Clients will have their
 # queries held open for this time, unless an update occurs
-GET_HASH_TIMEOUT = 30
+GET_HASH_TIMEOUT = 25
 
 MAX_NAME_LENGTH = 25
 
@@ -426,12 +426,18 @@ class WurwolvesGame:
         # Start a nested session so that process_actions can check the database
         self._session.begin_nested()
         for p in players:
-            if p.last_seen < threshold:
+            if p.active and p.last_seen <= threshold:
                 logging.info(
                     f"Marking player {p.user.name} as inactive (p.last_seen="
                     f"{p.last_seen}, threshold={threshold})"
                 )
-                self.mark_inactive(p)
+                p.active = False
+                self._session.add(p)
+                someone_changed = True
+            elif not p.active and p.last_seen > threshold:
+                logging.info(f"Marking player {p.user.name} as active")
+                p.active = True
+                self._session.add(p)
                 someone_changed = True
 
         self._session.commit()
@@ -440,11 +446,6 @@ class WurwolvesGame:
             self.touch()
             # Reevaluate processed actions
             self.process_actions(game.stage, game.stage_id)
-
-    @db_scoped
-    def mark_inactive(self, player: Player):
-        player.active = False
-        self._session.add(player)
 
     @db_scoped
     def create_game(self):
