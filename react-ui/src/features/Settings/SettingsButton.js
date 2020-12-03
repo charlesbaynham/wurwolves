@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -6,12 +6,13 @@ import Alert from 'react-bootstrap/Alert';
 
 import ReactMarkdown from 'react-markdown';
 
+import { make_api_url } from '../../utils'
 import { settings_text } from '../../prose'
 
 import styles from './SettingsButton.module.css'
 import icon from './icon.svg'
 
-function SettingsButton({className}) {
+function SettingsButton({className, gameTag}) {
 
     const [show, setShow] = useState(false);
 
@@ -63,7 +64,10 @@ function SettingsButton({className}) {
                 :
                     <Alert variant="danger">
                         {endTimeoutComplete ?
-                            <Button variant="danger" block onClick={handleClose}>
+                            <Button variant="danger" block onClick={() => {
+                                endGame(gameTag);
+                                handleClose();
+                            }}>
                                 Confirm end game
                             </Button>
                         :
@@ -84,5 +88,8 @@ function SettingsButton({className}) {
     )
 }
 
+function endGame(game_tag) {
+    fetch(make_api_url(game_tag, "end_game"), { method: 'post' })
+}
 
 export default SettingsButton;
