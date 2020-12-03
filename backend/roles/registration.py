@@ -2,6 +2,7 @@ import logging
 from functools import partial
 from typing import Callable
 from typing import Dict
+from typing import Optional
 from typing import TYPE_CHECKING
 from typing import Union
 from uuid import UUID
@@ -175,7 +176,6 @@ def register_role(WurwolvesGame, role: PlayerRole):
             # otherwise it will be evaluated once this function runs.
             # See https://docs.python-guide.org/writing/gotchas/#late-binding-closures
         ):
-
             game = self.get_game()
 
             # Save the stage ID now in case the immediate actions change it
@@ -278,10 +278,13 @@ def register_role(WurwolvesGame, role: PlayerRole):
 
             def api_func(
                 func_name,  #  For early binding
-                selected_id: UUID,
                 game_tag: str = Path(..., title="The four-word ID of the game"),
+                selected_id: Optional[Union[UUID, str]] = None,
                 user_id=Depends(get_user_id),
             ):
+                if not selected_id or selected_id.lower() == "null":
+                    raise HTTPException(400, "You must select a target")
+
                 g = WurwolvesGame(game_tag)
                 f = getattr(WurwolvesGame, func_name)
                 f(g, user_id, selected_id)
