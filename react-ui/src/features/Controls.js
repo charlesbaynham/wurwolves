@@ -60,15 +60,16 @@ function Controls(props) {
 
             r.json().then(async r => {
                 // Log the error to the console
-                console.log(r)
+                console.log(r);
 
-                setErrorText(r.detail)
+                setErrorText(Array.isArray(r.detail) ? r.detail[0].msg : r.detail);
 
                 // Add then remove the "error" class from the button
                 setIsError(true);
                 await wait(1000);
                 setIsError(false);
             })
+
 
 
         }
