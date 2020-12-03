@@ -11,6 +11,7 @@ from ..model import GameStage
 from ..model import PlayerRole
 from ..model import PlayerState
 from ..resolver import RoundEndBehaviour
+from ..resolver import TeamBehaviour
 from .common import GameAction
 from .common import RoleDescription
 from .common import RoleDetails
@@ -40,7 +41,8 @@ description = RoleDescription(
             text="""
 Welcome to Wurwolves!
 The game hasn't started yet: you'll need at least 5 players for the game to be playable,
-but it's more fun with 7 or more. Once everyone has joined, press the \"Start game\" button.
+but it's more fun with 7 or more. Once everyone has joined, someone should press the
+\"Start game\" button.
 
 To invite more people, just send them the link to this page.
 
@@ -56,8 +58,8 @@ To learn how to play, click the question mark at the top right of the screen.
             text="""
 The game has ended!
 
-Click the button to play again. The game will start once all spectators have voted to start. """,
-            button_text="Vote to restart",
+Click the button to go back to the lobby to play another game.""",
+            button_text="Back to lobby",
             select_person=False,
         ),
     },
@@ -73,7 +75,10 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
     GameAction doesn't therefore have to do it.
     """
 
-    active_players_only = True
+    # Start the same if anyone presses the start button
+    team_action = TeamBehaviour.DUPLICATED_PER_ROLE
+
+    # Allow everyone to do this (not just alive people by default)
     allowed_player_states = list(PlayerState)
 
     @classmethod
@@ -87,6 +92,27 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
 
         msg = f"{game.get_user_name(user_id)} wants to start a new game"
         logging.info(f"({game.game_id}) {msg}")
+
+
+class BackToLobby(GameAction, NoTargetRequired):
+    """
+    Move the game back to the lobby
+
+    Whoever does this, the action is performed immediately
+    """
+
+    # Allow everyone to do this (not just alive people by default)
+    allowed_player_states = list(PlayerState)
+
+    @classmethod
+    def immediate(cls, game=None, user_id=None, **kwargs):
+        super().immediate(game=game, user_id=user_id, **kwargs)
+
+        # Change game state back to lobby
+        game._set_stage(GameStage.LOBBY)
+
+        # Abort this round: it's done already
+        return False
 
 
 def register(role_map):
@@ -120,7 +146,7 @@ def register(role_map):
                 role_description=description,
                 actions={
                     GameStage.LOBBY: VoteStartNewGame,
-                    GameStage.ENDED: VoteStartNewGame,
+                    GameStage.ENDED: BackToLobby,
                     GameStage.DAY: BecomeNarratorAction,
                     GameStage.NIGHT: BecomeNarratorAction,
                     GameStage.VOTING: BecomeNarratorAction,
