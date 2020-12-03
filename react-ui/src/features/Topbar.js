@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
-import HelpButton from './HelpButton'
+
 import {
   Link
 } from 'react-router-dom'
+
 import { make_api_url } from '../utils'
+
+import HelpButton from './HelpButton'
+import SettingsButton from './Settings/SettingsButton'
 
 import {
   selectMyName,
@@ -28,8 +32,8 @@ function Topbar(props) {
     <Navbar expand="lg" bg="light" className="bg-secondary bg-night-black">
       <Link to="/" className="px-2"><img src="/images/logo.svg" alt="Wurwolves logo" id="logo" /></Link>
       <Link className="navbar-brand px-2 d-none d-sm-block" to="/">Wurwolves</Link>
-      <div className="d-flex ml-auto">
-        <Form className="px-2" onSubmit={e => {
+      <div className="d-flex ml-auto align-items-center">
+        <Form className="pl-2" onSubmit={e => {
           e.preventDefault()
           document.activeElement.blur()
         }}>
@@ -46,7 +50,8 @@ function Topbar(props) {
             value={chosenName ? chosenName : ""}
           />
         </Form>
-        <HelpButton className="px-2" />
+        <HelpButton className="pl-2" />
+        <SettingsButton className="pl-2" />
       </div>
     </Navbar>
   )

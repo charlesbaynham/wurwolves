@@ -9,7 +9,9 @@ import ReactMarkdown from 'react-markdown';
 import {help_text,guaranteed_roles, random_roles} from '../prose'
 import RoleDescriptions  from './RoleDescriptions'
 
-function HelpButton() {
+import styles from './HelpButton.module.css'
+
+function HelpButton({className}) {
 
     const [show, setShow] = useState(false);
 
@@ -18,7 +20,7 @@ function HelpButton() {
 
     return (
         <>
-        <a className="navbar-help"
+        <a className={`navbar-help ${className}`}
             href="/" onClick={ (event) => {
                 event.preventDefault()
                 handleShow()
@@ -31,9 +33,9 @@ function HelpButton() {
                 <Modal.Title>How to play</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Tabs id="help-tabs" defaultActiveKey="intro" className="flex-row">
+                <Tabs defaultActiveKey="intro" className="flex-row">
                     <Tab eventKey="intro" title="Game" className="px-1">
-                        <ReactMarkdown className="help_text" source={help_text} />
+                        <ReactMarkdown className={styles.prose} source={help_text} />
                     </Tab>
                     <Tab eventKey="guaranteed-roles" title="Roles - guaranteed">
                         <RoleDescriptions roles={guaranteed_roles}/>

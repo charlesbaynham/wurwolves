@@ -21,6 +21,8 @@ The game has three stages:
 * To learn about all the roles, click the Roles tab above.
 `
 
+export const settings_text = 'Use these utilities to manage the game if something needs fixing.'
+
 class RoleDescription {
     constructor(name, image, description) {
       this.name = name;
