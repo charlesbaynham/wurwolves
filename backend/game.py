@@ -33,6 +33,7 @@ from .model import PlayerModel
 from .model import PlayerRole
 from .model import PlayerState
 from .model import User
+from .model import UserModel
 
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
@@ -698,6 +699,11 @@ class WurwolvesGame:
         if not u:
             raise HTTPException(404, f"User {user_id} does not exist")
         return u
+
+    @db_scoped
+    def get_user_model(self, user_id: UUID):
+        u = self.get_user(user_id)
+        return UserModel.from_orm(u)
 
     @db_scoped
     def get_user_name(self, user_id: UUID):

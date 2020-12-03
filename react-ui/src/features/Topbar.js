@@ -51,7 +51,9 @@ function Topbar(props) {
           />
         </Form>
         <HelpButton className="pl-2" />
-        <SettingsButton className="pl-2" gameTag={props.game_tag} />
+        {props.game_tag ?
+          <SettingsButton className="pl-2" gameTag={props.game_tag} />
+        : null}
       </div>
     </Navbar>
   )

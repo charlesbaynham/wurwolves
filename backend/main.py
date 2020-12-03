@@ -71,6 +71,17 @@ async def join(
     WurwolvesGame(game_tag).join(user_id)
 
 
+@router.post("/{game_tag}/end_game")
+async def end_game(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+    user_id=Depends(get_user_id),
+):
+    g = WurwolvesGame(game_tag)
+    user_name = g.get_user_model(user_id).name
+    g.send_chat_message(f"The game was ended early by {user_name}", is_strong=True)
+    g.end_game()
+
+
 @router.post("/set_name")
 async def set_name(
     name: str = Query(
