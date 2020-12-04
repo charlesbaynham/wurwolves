@@ -480,14 +480,29 @@ class WurwolvesGame:
         self._set_stage(GameStage.ENDED)
 
     @db_scoped
-    def start_game(self):
+    def move_to_lobby(self):
+        # Delete all remaining actions
+        for a in self.get_game().actions:
+            self._session.delete(a)
+        self._session.commit()
+
+        self._wipe_all_roles()
+
+        self._set_stage(GameStage.LOBBY)
+
+    @db_scoped
+    def _wipe_all_roles(self):
         # Wipe all existing roles
         for p in self.get_players(filter_by_activity=False):
             p.role = PlayerRole.SPECTATOR
             p.previous_role = PlayerRole.SPECTATOR
             p.status = PlayerState.SPECTATING
 
-        # Assign new ones to the active players
+    @db_scoped
+    def start_game(self):
+        self._wipe_all_roles()
+
+        # Assign new roles to the active players
         players = self.get_players()
 
         player_roles = roles.assign_roles(len(players))

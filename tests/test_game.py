@@ -387,16 +387,15 @@ def test_kick_with_actions(db_session):
     assert game.get_player(timeout_player_id)
     assert not game.get_player_model(timeout_player_id).active
 
-    # Vote to start a new game with the other players
+    # Vote to start a new game
     game.wolf_ended_action(wolf_id)
-    game.villager_ended_action(villager_id)
-    game.spectator_ended_action(spectator_id)
 
     # Check a new game started
     db_session.expire_all()
-    assert game.get_game_model().stage == GameStage.NIGHT
+    assert game.get_game_model().stage == GameStage.LOBBY
 
-    # Check the idler was kicked
+    # Check the idler was kicked after the next keepalive
+    game.player_keepalive(wolf_id)
     assert not game.get_player(timeout_player_id)
 
 

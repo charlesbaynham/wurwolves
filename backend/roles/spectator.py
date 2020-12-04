@@ -109,9 +109,9 @@ class BackToLobby(GameAction, NoTargetRequired):
         super().immediate(game=game, user_id=user_id, **kwargs)
 
         # Change game state back to lobby
-        game._set_stage(GameStage.LOBBY)
+        game.move_to_lobby()
 
-        # Abort this round: it's done already
+        # Abort this round of actions: it's done already
         return False
 
 
