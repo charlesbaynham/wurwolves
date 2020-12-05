@@ -80,7 +80,7 @@ function Controls(props) {
             <div className="col-md">
                 {controlsState.button_visible ?
                     <div>
-                        <Button onClick={doButtonAction} variant={controlsState.button_enabled ? "primary" : "success"}
+                        <Button id="actionButton" onClick={doButtonAction} variant={controlsState.button_enabled ? "primary" : "success"}
                             size="lg" block disabled={!controlsState.button_enabled || isSending}
                             className={isError ? "error" : ""}>
                             <em>{controlsState.button_text}</em>
