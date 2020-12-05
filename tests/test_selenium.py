@@ -146,6 +146,7 @@ def test_api_state_hash(five_drivers):
         d.get(f"{TEST_URL}/api/{TEST_GAME}/state_hash")
         print(d.page_source)
 
+
 def test_game_starts_ok(five_drivers):
     for d in five_drivers:
         d.get(f"{TEST_URL}/{TEST_GAME}")
@@ -157,27 +158,27 @@ def test_game_starts_ok(five_drivers):
 
     chat = five_drivers[0].find_element_by_css_selector(".chat-box")
     assert "new game has started" in chat.text
-    
+
     medic_driver = None
     for d in five_drivers:
         try:
             button = d.find_element_by_id("actionButton")
             if "someone to save" in button.text:
                 medic_driver = d
-                break    
+                break
         except selenium.common.exceptions.NoSuchElementException:
             pass
 
     assert medic_driver, "No medic found"
 
-    assert button.get_property('disabled') is False
+    assert button.get_property("disabled") is False
 
     button.click()
     time.sleep(1)
-    assert button.get_property('disabled') is False
+    assert button.get_property("disabled") is False
 
-    medic_driver.find_element_by_css_selector('.playerWrapperOuter').click()
+    medic_driver.find_element_by_css_selector(".playerWrapperOuter").click()
     time.sleep(0.5)
     button.click()
     time.sleep(2)
-    assert button.get_property('disabled') is True
+    assert button.get_property("disabled") is True

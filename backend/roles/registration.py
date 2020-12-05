@@ -282,7 +282,9 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 selected_id: Optional[Union[UUID, str]] = None,
                 user_id=Depends(get_user_id),
             ):
-                if not selected_id or (isinstance(selected_id, str) and selected_id.lower() == "null"):
+                if not selected_id or (
+                    isinstance(selected_id, str) and selected_id.lower() == "null"
+                ):
                     raise HTTPException(400, "You must select a target")
 
                 g = WurwolvesGame(game_tag)
