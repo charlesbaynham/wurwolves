@@ -88,10 +88,6 @@ body, a {
   }
 }
 
-.help_text img {
-  width: 3cm;
-}
-
 .navbar {
   justify-content: normal;
   flex-wrap: nowrap;

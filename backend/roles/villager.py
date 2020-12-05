@@ -10,6 +10,7 @@ from ..resolver import GameAction
 from .common import RoleDescription
 from .common import RoleDetails
 from .common import StageAction
+from .spectator import BackToLobby
 from .spectator import VoteStartNewGame
 from .teams import Team
 from .utility_mixins import NoTargetRequired
@@ -85,7 +86,7 @@ def register(role_map):
                 actions={
                     GameStage.DAY: MoveToVoteAction,
                     GameStage.VOTING: VoteAction,
-                    GameStage.ENDED: VoteStartNewGame,
+                    GameStage.ENDED: BackToLobby,
                 },
             )
         }
