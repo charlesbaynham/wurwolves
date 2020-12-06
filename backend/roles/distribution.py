@@ -20,7 +20,7 @@ RANDOMISED_ROLES = {
     PlayerRole.PRIEST: 10,
     PlayerRole.PROSTITUTE: 10,
     PlayerRole.MASON: 7,
-    PlayerRole.EXORCIST: 10,
+    PlayerRole.EXORCIST: 1000,
 }
 
 DUAL_ROLES = [PlayerRole.MASON]
