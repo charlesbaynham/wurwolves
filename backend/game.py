@@ -161,6 +161,7 @@ class WurwolvesGame:
         # Add this user to the game as a spectator if they're not already in it
         player = self.get_player(user_id, filter_by_activity=False)
 
+        touch_game = False
         if not player:
             player = Player(
                 game=game,
@@ -168,19 +169,22 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
-            game.touch()
+            touch_game = True
         if not player.active:
             player.active = True
-
-        self._session.add(player)
-        self._session.add(game)
-        self._session.add(user)
 
         # Start a nested session, so player keepalive doesn't make a new hash
         self._session.begin_nested()
         # To avoid instant kicking:
         player.touch()
         self._session.commit()
+
+        self._session.add(player)
+        self._session.add(game)
+        self._session.add(user)
+
+        if touch_game:
+            game.touch()
 
     @staticmethod
     def make_user(session, user_id) -> User:
