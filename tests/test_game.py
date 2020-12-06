@@ -19,6 +19,7 @@ PLAYER_NAME = "Charles"
 
 def test_add_player(db_session):
     g = WurwolvesGame(GAME_ID)
+
     g.join(USER_ID)
 
     assert len(db_session.query(Game).all()) == 1
@@ -26,17 +27,23 @@ def test_add_player(db_session):
     db_game = db_session.query(Game).first()
     assert len(db_session.query(Player).filter(Player.game == db_game).all()) == 1
 
+    game_hash = g.get_game_model().update_tag
+
     g.join(uuid())
 
     assert len(db_session.query(Game).all()) == 1
     assert len(db_session.query(User).all()) == 2
     assert len(db_session.query(Player).filter(Player.game == db_game).all()) == 2
+    assert game_hash != g.get_game_model().update_tag
+
+    game_hash = g.get_game_model().update_tag
 
     g.join(USER_ID)
 
     assert len(db_session.query(Game).all()) == 1
     assert len(db_session.query(User).all()) == 2
     assert len(db_session.query(Player).filter(Player.game == db_game).all()) == 2
+    assert game_hash == g.get_game_model().update_tag
 
 
 def test_name_player(db_session):
@@ -299,6 +306,9 @@ def test_kick(db_session):
     db_session.commit()
     db_session.expire_all()
 
+    # Get the game tag
+    tag = game.get_game_model().update_tag
+
     timeout_player = game.get_player(timeout_player_id)
     db_session.add(timeout_player)
 
@@ -310,6 +320,17 @@ def test_kick(db_session):
     db_session.expire_all()
 
     assert not game.get_player(timeout_player_id)
+
+    # Also check the tag changed
+    assert tag != game.get_game_model().update_tag
+
+    tag = game.get_game_model().update_tag
+
+    # Bring the idler back
+    game.player_keepalive(timeout_player_id)
+
+    assert game.get_player(timeout_player_id)
+    assert tag != game.get_game_model().update_tag
 
 
 def test_kick_with_actions(db_session):

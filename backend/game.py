@@ -409,7 +409,7 @@ class WurwolvesGame:
 
     @db_scoped
     def player_keepalive(self, user_id: UUID):
-        p = self.get_player(user_id)
+        p = self.get_player(user_id, filter_by_activity=False)
         if not p:
             raise HTTPException(
                 404, "You are not registered: refreshing now to join game"
@@ -420,7 +420,7 @@ class WurwolvesGame:
         p.touch()
         self._session.commit()
 
-        players = self.get_players()
+        players = self.get_players(filter_by_activity=False)
         game = self.get_game()
 
         threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
