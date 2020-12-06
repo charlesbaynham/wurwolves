@@ -167,6 +167,7 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
+            game.touch()
         if not player.active:
             player.active = True
 
