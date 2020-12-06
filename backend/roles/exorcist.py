@@ -5,6 +5,7 @@ Once per game, the exorcist may attempt to drive out one person in the night. If
 they are a wolf, they are killed. If they are not, the exorcist is killed.
 """
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from ..model import GameStage
 from ..model import PlayerRole
@@ -61,6 +62,16 @@ class ExorcistAction(OncePerGame, TargetMustBeAlive, GameAction):
 
     round_end_behaviour = RoundEndBehaviour.ONCE_OPTIONAL
 
+    @classmethod
+    def immediate(
+        cls,
+        game: "WurwolvesGame" = None,
+        user_id: UUID = None,
+        **kwargs,
+    ):
+        super().immediate(game=game, **kwargs)
+        game.send_chat_message("You chose...", is_strong=True, user_list=[user_id])
+
     def execute(self, game):
         from .registration import get_role_team
 
@@ -68,14 +79,14 @@ class ExorcistAction(OncePerGame, TargetMustBeAlive, GameAction):
 
         if get_role_team(self.target.model.role) == Team.WOLVES:
             game.send_chat_message(
-                f"You chose... wisely!",
+                f"...wisely!",
                 is_strong=True,
                 player_list=[self.originator.model.id],
             )
             game.kill_player(self.target.model.id, PlayerState.WOLFED)
         else:
             game.send_chat_message(
-                f"You chose... poorly!",
+                f"...poorly!",
                 is_strong=True,
                 player_list=[self.originator.model.id],
             )
