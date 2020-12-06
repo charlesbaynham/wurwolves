@@ -156,6 +156,7 @@ class WurwolvesGame:
         game = self.get_game()
         if not game:
             game = self.create_game()
+            self.send_chat_message(f"New game created by {user.name}")
 
         # Add this user to the game as a spectator if they're not already in it
         player = self.get_player(user_id, filter_by_activity=False)
