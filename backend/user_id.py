@@ -19,14 +19,18 @@ async def get_user_id(
         0,
         title="A temporary ID used to identify clients before a cookie is set. Ignored if a cookie already exists",
     ),
-    session_UUID: str = Cookie(None, title="A UUID generated for each user session"),
     request: Request,
 ):
     if not temporary_id:
         temporary_id = request.client.host
 
+    try:
+        session_UUID = request.session["UUID"]
+    except KeyError:
+        session_UUID = None
+
     if session_UUID is None:
-        parsed_uuid = assign_new_ID(response, temporary_id)
+        parsed_uuid = assign_new_ID(request, temporary_id)
         logging.info(
             "Blank client, tempID %s, assigned UUID %s", temporary_id, parsed_uuid
         )
@@ -42,7 +46,7 @@ async def get_user_id(
         try:
             parsed_uuid = UUID(session_UUID)
         except ValueError:
-            parsed_uuid = assign_new_ID(response, temporary_id)
+            parsed_uuid = assign_new_ID(request, temporary_id)
             logging.error(
                 "Error parsing UUID %s from tempID %s. Reassiging as %s",
                 session_UUID,
@@ -53,7 +57,7 @@ async def get_user_id(
     return parsed_uuid
 
 
-def assign_new_ID(response, temp_id) -> UUID:
+def assign_new_ID(request: Request, temp_id) -> UUID:
     # If there isn't yet a session cookie, we have to be careful: there
     # might be concurrent requests from this cookieless session and they all
     # need to receive the same cookie otherwise things get duplicated. To
@@ -69,6 +73,6 @@ def assign_new_ID(response, temp_id) -> UUID:
             session_UUID = get_uuid()
             no_cookie_clients[temp_id] = session_UUID
 
-    response.set_cookie(key="session_UUID", value=session_UUID)
+    request.session["UUID"] = str(session_UUID)
 
     return session_UUID
