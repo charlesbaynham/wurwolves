@@ -28,7 +28,9 @@ app = FastAPI()
 router = APIRouter()
 
 app.add_middleware(
-    SessionMiddleware, secret_key="james will never understand the prostitute"
+    SessionMiddleware,
+    secret_key="james will never understand the prostitute",
+    max_age=60 * 60 * 24 * 365 * 10,
 )
 
 
