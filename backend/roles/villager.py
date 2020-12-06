@@ -51,7 +51,7 @@ Click someone's icon to select them.
         ),
         GameStage.ENDED: StageAction(
             text="The game has ended!",
-            button_text="Vote to restart",
+            button_text="Back to lobby",
             select_person=False,
         ),
     },
