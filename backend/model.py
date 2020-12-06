@@ -118,6 +118,7 @@ class PlayerRole(str, enum.Enum):
     PRIEST = "Priest"
     PROSTITUTE = "Prostitute"
     MASON = "Mason"
+    EXORCIST = "Exorcist"
 
 
 class PlayerState(str, enum.Enum):

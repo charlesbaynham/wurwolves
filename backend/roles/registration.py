@@ -13,6 +13,7 @@ from fastapi import HTTPException
 from fastapi import Path
 
 from . import acolyte
+from . import exorcist
 from . import jester
 from . import mason
 from . import mayor
@@ -59,6 +60,7 @@ acolyte.register(ROLE_MAP)
 priest.register(ROLE_MAP)
 prostitute.register(ROLE_MAP)
 mason.register(ROLE_MAP)
+exorcist.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:

@@ -348,13 +348,17 @@ def test_announced_to_wolves(mock_roles, db_session, role, search):
 
     game.start_game()
 
-    visible_messages = game.get_messages(wolf_id)
+    summary = get_summary_of_chat(game, wolf_id)
+
+    assert f"There's {search} in the game" in summary
+
+
+def get_summary_of_chat(game, player_id):
+    visible_messages = game.get_messages(player_id)
 
     from json import dumps
 
-    summary = dumps([v.dict() for v in visible_messages])
-
-    assert f"There's {search} in the game" in summary
+    return dumps([v.dict() for v in visible_messages])
 
 
 @patch(
@@ -798,3 +802,59 @@ def test_seer_saved_no_fail(mock_roles, db_session):
     summary = dumps([v.dict() for v in visible_messages])
 
     assert re.search(r"they are a wolf", summary)
+
+
+def test_exorcist_suceed(five_player_game):
+    game, roles_map = five_player_game
+
+    game._set_stage(GameStage.NIGHT)
+
+    exorcist_id = uuid()
+    game.join(exorcist_id)
+    with session_scope() as s:
+        u = game.get_player(exorcist_id)
+        u.role = PlayerRole.EXORCIST
+        u.state = PlayerState.ALIVE
+        game.set_user_name(exorcist_id, "The exorcist")
+        s.add(u)
+
+    # Exorcist the wolf
+    game.exorcist_night_action(exorcist_id, roles_map["Wolf"])
+
+    # Others
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_game_model().stage == GameStage.ENDED
+    assert game.get_player_model(roles_map["Wolf"]).state == PlayerState.WOLFED
+    assert game.get_player_model(exorcist_id).state == PlayerState.ALIVE
+    assert re.search(r"You chose.+wisely", get_summary_of_chat(game, exorcist_id))
+
+
+def test_exorcist_fail(five_player_game):
+    game, roles_map = five_player_game
+
+    game._set_stage(GameStage.NIGHT)
+
+    exorcist_id = uuid()
+    game.join(exorcist_id)
+    with session_scope() as s:
+        u = game.get_player(exorcist_id)
+        u.role = PlayerRole.EXORCIST
+        u.state = PlayerState.ALIVE
+        game.set_user_name(exorcist_id, "The exorcist")
+        s.add(u)
+
+    # Exorcist the medic
+    game.exorcist_night_action(exorcist_id, roles_map["Medic"])
+
+    # Others
+    game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
+    game.medic_night_action(roles_map["Medic"], roles_map["Medic"])
+    game.seer_night_action(roles_map["Seer"], roles_map["Medic"])
+
+    assert game.get_game_model().stage == GameStage.DAY
+    assert game.get_player_model(roles_map["Wolf"]).state == PlayerState.ALIVE
+    assert game.get_player_model(exorcist_id).state == PlayerState.WOLFED
+    assert re.search(r"You chose.+poorly", get_summary_of_chat(game, exorcist_id))
