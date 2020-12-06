@@ -167,7 +167,6 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
-            self.send_chat_message(f"{player.user.name} joined the game", True)
         if not player.active:
             player.active = True
 
