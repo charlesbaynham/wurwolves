@@ -392,7 +392,7 @@ def judge_night(game: "WurwolvesGame"):
         game.end_game()
     else:
         game._set_stage(GameStage.DAY)
-        game.send_chat_message("Day breaks...", is_strong=True)
+        game.send_chat_message("Day breaks...", is_strong=False)
 
 
 def switch_to_vote(game: "WurwolvesGame"):
