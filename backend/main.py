@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+from typing import Optional
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -8,6 +9,9 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import Path
 from fastapi import Query
+from fastapi import Request
+from fastapi import Response
+from starlette.middleware.sessions import SessionMiddleware
 
 from . import frontend_parser
 from .game import WurwolvesGame
@@ -22,6 +26,12 @@ words = None
 
 app = FastAPI()
 router = APIRouter()
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="james will never understand the prostitute",
+    max_age=60 * 60 * 24 * 365 * 10,
+)
 
 
 @router.get("/{game_tag}/state")

@@ -60,7 +60,7 @@ The players should be voting! The game will automatically progress once they're 
         GameStage.LOBBY: StageAction(text=""),
         GameStage.ENDED: StageAction(
             text="The game has ended!",
-            button_text="Vote to restart",
+            button_text="Back to lobby",
             select_person=False,
         ),
     },

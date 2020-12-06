@@ -92,9 +92,9 @@ def test_start_game(driver):
 
     print(f"url = {driver.current_url}")
 
-    game_name = re.search(r"(\w+-\w+-\w+-\w+)", driver.current_url)[1]
+    game_name = re.search(r"(\w+-\w+-\w+-\w+)", driver.current_url)
     assert game_name
-    print(f"game_name = {game_name}")
+    print(f"game_name = {game_name[1]}")
 
 
 def set_name(driver, name):
@@ -152,7 +152,8 @@ def test_game_starts_ok(five_drivers):
         d.get(f"{TEST_URL}/{TEST_GAME}")
         button = d.find_element_by_id("actionButton")
         assert "Start game" in button.text
-        button.click()
+
+    button.click()
 
     time.sleep(2)
 

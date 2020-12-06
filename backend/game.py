@@ -156,10 +156,12 @@ class WurwolvesGame:
         game = self.get_game()
         if not game:
             game = self.create_game()
+            self.send_chat_message(f"New game created by {user.name}")
 
         # Add this user to the game as a spectator if they're not already in it
         player = self.get_player(user_id, filter_by_activity=False)
 
+        touch_game = False
         if not player:
             player = Player(
                 game=game,
@@ -167,19 +169,22 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
-            self.send_chat_message(f"{player.user.name} joined the game", True)
+            touch_game = True
         if not player.active:
             player.active = True
-
-        self._session.add(player)
-        self._session.add(game)
-        self._session.add(user)
 
         # Start a nested session, so player keepalive doesn't make a new hash
         self._session.begin_nested()
         # To avoid instant kicking:
         player.touch()
         self._session.commit()
+
+        self._session.add(player)
+        self._session.add(game)
+        self._session.add(user)
+
+        if touch_game:
+            game.touch()
 
     @staticmethod
     def make_user(session, user_id) -> User:
@@ -404,7 +409,7 @@ class WurwolvesGame:
 
     @db_scoped
     def player_keepalive(self, user_id: UUID):
-        p = self.get_player(user_id)
+        p = self.get_player(user_id, filter_by_activity=False)
         if not p:
             raise HTTPException(
                 404, "You are not registered: refreshing now to join game"
@@ -415,7 +420,7 @@ class WurwolvesGame:
         p.touch()
         self._session.commit()
 
-        players = self.get_players()
+        players = self.get_players(filter_by_activity=False)
         game = self.get_game()
 
         threshold = datetime.datetime.utcnow() - SPECTATOR_TIMEOUT
