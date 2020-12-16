@@ -13,7 +13,8 @@
     "migrate": "alembic revision --autogenerate",
     "upgrade": "alembic upgrade head",
     "resetdb": "python -m backend.reset_db",
-    "test": "pytest && cd react-ui && npm test"
+    "test": "pytest && cd react-ui && npm test",
+    "clean": "git clean -xdf --exclude venv --exclude node_modules --exclude .env"
   },
   "cacheDirectories": [
     "node_modules",
