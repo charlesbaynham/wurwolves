@@ -263,6 +263,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                         selected_player_id=selected_player_id,
                         stage=stage,
                         stage_id=stage_id,
+                        role=p.role,
                     )
                     self._session.add(action)
 
