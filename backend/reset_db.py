@@ -1,3 +1,5 @@
+import sys
+
 from alembic.autogenerate.api import compare_metadata
 from alembic.migration import MigrationContext
 
@@ -6,6 +8,11 @@ from .model import Base
 
 
 def reset_database_if_needed():
+    if len(sys.argv) > 1 and sys.argv[1] == "-f":
+        print("Forcing database reset")
+        reset_database()
+        return
+
     # Check if the current database's tables match the expected ones
     target_metadata = Base.metadata
     mc = MigrationContext.configure(engine.connect())
