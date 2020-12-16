@@ -184,6 +184,8 @@ class Action(Base):
     selected_player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
     stage = Column(Enum(GameStage), nullable=False)
 
+    random_field = Column(Integer)
+
     player = relationship("Player", lazy=True, foreign_keys=player_id)
     selected_player = relationship("Player", lazy=True, foreign_keys=selected_player_id)
 
