@@ -554,28 +554,35 @@ class WurwolvesGame:
         self._set_stage(GameStage.NIGHT)
 
     @db_scoped
-    def get_messages(self, user_id: UUID) -> List[ChatMessage]:
+    def get_messages(self, user_id: UUID, include_expired=False) -> List[ChatMessage]:
         """ Get chat messages visible to the given user """
+        query = (
+            self._session.query(Message)
+            #  All messages, including public
+            .join(Message.visible_to, isouter=True)
+            # For this game
+            .filter(Message.game_id == self.game_id)
+        ).filter(
+            or_(
+                # Where it's public
+                Message.visible_to == None,
+                # Or this player can see it
+                Player.user_id == user_id,
+            )
+        )
 
-        game = self.get_game()
+        if not include_expired:
+            query = query.filter(Message.expired == False)
 
-        out = []
+        messages = query.all()
 
-        player = self.get_player(user_id)
-
-        m: Message
-        for m in game.messages:
-            if m.visible_to and player not in m.visible_to:
-                continue
-
-            out.append(ChatMessage(text=m.text, is_strong=m.is_strong))
-
-        return out
+        # Format as ChatMessages
+        return [ChatMessage(text=m.text, is_strong=m.is_strong) for m in messages]
 
     @db_scoped
     def clear_chat_messages(self):
         for m in self.get_game().messages:
-            self._session.delete(m)
+            m.expired = True
 
     @db_scoped
     def clear_actions(self):

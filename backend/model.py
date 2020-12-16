@@ -241,6 +241,8 @@ class Message(Base):
 
     visible_to = relationship("Player", secondary=association_table)
 
+    expired = Column(Boolean, default=False)
+
 
 def hash_game_tag(text: str):
     """Hash a game id into a 3-byte integer
@@ -277,6 +279,7 @@ class MessageModel(pydantic.BaseModel):
     text: str
     game_id: int
     is_strong: bool
+    expired: bool
 
     visible_to: List[PlayerModel]
 
