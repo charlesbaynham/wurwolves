@@ -187,6 +187,7 @@ class Action(Base):
     stage_id = Column(Integer, index=True, nullable=False)
     selected_player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
     stage = Column(Enum(GameStage), nullable=False)
+    expired = Column(Boolean, default=False)
 
     # These fields aren't actually needed or used by the code, since we can
     # determine a player's role by checking the player relationship. However,

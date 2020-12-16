@@ -293,7 +293,11 @@ class WurwolvesGame:
 
     @db_scoped
     def get_actions(
-        self, stage_id=None, player_id: int = None, stage: GameStage = None
+        self,
+        stage_id=None,
+        player_id: int = None,
+        stage: GameStage = None,
+        include_expired=False,
     ) -> List[Action]:
         """Get orm objects for Actions in this game.
 
@@ -309,6 +313,9 @@ class WurwolvesGame:
 
         if stage:
             q = q.filter(Action.stage == stage)
+
+        if not include_expired:
+            q = q.filter(Action.expired == False)
 
         return q.all()
 
@@ -587,7 +594,7 @@ class WurwolvesGame:
     @db_scoped
     def clear_actions(self):
         for a in self.get_game().actions:
-            self._session.delete(a)
+            a.expired = True
 
     @db_scoped
     def send_chat_message(self, msg, is_strong=False, user_list=[], player_list=[]):
