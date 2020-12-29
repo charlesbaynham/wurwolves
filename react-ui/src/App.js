@@ -22,7 +22,7 @@ import {
 import ReactGA from 'react-ga'
 
 
-ReactGA.initialize('G-KBLPLFZY4Y');
+ReactGA.initialize('UA-186218553-1');
 ReactGA.pageview(window.location.pathname + window.location);
 
 
