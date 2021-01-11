@@ -242,6 +242,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
         myNameIsGenerated=player.user.name_is_generated,
     )
 
+    logging.info(f"Point 10: {time.time()}")
+
     logging.debug("Full UI state: %s", state)
 
     db_session.close()
