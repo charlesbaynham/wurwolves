@@ -389,24 +389,18 @@ def test_masons_announced(mock_roles, db_session):
 
     game.start_game()
 
-    def get_message_json(game, player_id):
-        from json import dumps
-
-        visible_messages = game.get_messages(player_id)
-        return dumps([v.dict() for v in visible_messages])
-
     mason_1_name = game.get_user_name(mason_1_id)
     mason_2_name = game.get_user_name(mason_2_id)
 
-    assert f"Your fellow masons are {mason_2_name}" in get_message_json(
+    assert f"Your fellow masons are {mason_2_name}" in get_summary_of_chat(
         game, mason_1_id
     )
-    assert f"Your fellow masons are {mason_1_name}" in get_message_json(
+    assert f"Your fellow masons are {mason_1_name}" in get_summary_of_chat(
         game, mason_2_id
     )
 
-    assert "Your fellow masons are" not in get_message_json(game, wolf_id)
-    assert "Your fellow masons are" not in get_message_json(game, villager_id)
+    assert "Your fellow masons are" not in get_summary_of_chat(game, wolf_id)
+    assert "Your fellow masons are" not in get_summary_of_chat(game, villager_id)
 
 
 @patch(
@@ -435,14 +429,10 @@ def test_wolves_announced(mock_roles, db_session):
 
     game.start_game()
 
-    def get_message_json(game, player_id):
-        from json import dumps
-
-        visible_messages = game.get_messages(player_id)
-        return dumps([v.dict() for v in visible_messages])
-
-    assert "There is only one wolf in the game" in get_message_json(game, villager_1_id)
-    assert "There is only one wolf in the game" in get_message_json(game, wolf_id)
+    assert "There is only one wolf in the game" in get_summary_of_chat(
+        game, villager_1_id
+    )
+    assert "There is only one wolf in the game" in get_summary_of_chat(game, wolf_id)
 
 
 @patch(
@@ -475,11 +465,7 @@ def test_miller_works(mock_roles, db_session):
     game.seer_night_action(seer_id, miller_id)
     game.wolf_night_action(wolf_id, villager_id)
 
-    visible_messages = game.get_messages(seer_id)
-
-    from json import dumps
-
-    summary = dumps([v.dict() for v in visible_messages])
+    summary = get_summary_of_chat(game, seer_id)
 
     assert "they are a wolf!" in summary
 
@@ -523,11 +509,7 @@ def test_priest_works(mock_roles, db_session):
     game.priest_night_action(priest_id, villager1_id)
     game.wolf_night_action(wolf_id, villager2_id)
 
-    visible_messages = game.get_messages(priest_id)
-
-    from json import dumps
-
-    summary = dumps([v.dict() for v in visible_messages])
+    summary = get_summary_of_chat(game, priest_id)
 
     assert re.search(r"You remember that .+ was a Villager", summary)
 
@@ -605,11 +587,7 @@ def test_prostitute_prevents_seer(mock_roles, db_session):
 
     assert game.get_player_model(villager_id).state == PlayerState.WOLFED
 
-    visible_messages = game.get_messages(seer_id)
-
-    from json import dumps
-
-    summary = dumps([v.dict() for v in visible_messages])
+    summary = get_summary_of_chat(game, seer_id)
 
     assert re.search(r"you couldn't concentrate", summary)
 
@@ -795,11 +773,7 @@ def test_seer_saved_no_fail(mock_roles, db_session):
 
     assert game.get_player_model(seer_id).state == PlayerState.ALIVE
 
-    visible_messages = game.get_messages(seer_id)
-
-    from json import dumps
-
-    summary = dumps([v.dict() for v in visible_messages])
+    summary = get_summary_of_chat(game, seer_id)
 
     assert re.search(r"they are a wolf", summary)
 
