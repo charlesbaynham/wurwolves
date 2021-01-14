@@ -103,26 +103,29 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
 
     g = WurwolvesGame(game_tag, session=db_session)
 
-    game = g.get_game()
-    player = g.get_player(user_id)
-    players = g.get_players()
+    game = g.get_game_model()
+
+    if not game:
+        g.join(user_id)
+        game = g.get_game_model()
+
+    players = game.players
 
     logging.info(f"Point 2: {time.time()}")
 
-    if not game or not player:
+    try:
+        player = [p for p in players if p.user_id == user_id][0]
+    except IndexError:
         g.join(user_id)
         game = g.get_game_model()
-        player = g.get_player_model(user_id)
+
+        player = [p for p in players if p.user_id == user_id][0]
 
     logging.info(f"Point 3: {time.time()}")
 
     logging.debug("Game: %s", game)
     logging.debug("Player: %s", player)
     logging.debug("User id: %s", user_id)
-
-    if not game or not player:
-        return None
-
     logging.debug("Game players: %s", players)
 
     role_details = get_role_description(player.role)
