@@ -28,6 +28,8 @@ def backend_server():
     """
 
     import subprocess as sp
+    import os
+    import signal
 
     with cd(NPM_ROOT_DIR):
         logging.info("Launching backend...")
@@ -36,15 +38,22 @@ def backend_server():
             ["npm", "run", "backend"],
             stdout=sp.PIPE,
             stderr=sp.STDOUT,
+            preexec_fn=os.setsid,
         )
 
         wait_until_server_up(TEST_API_URL, 5)
 
-    yield dev_process
+    try:
+        yield dev_process
+    finally:
+        os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
-    dev_process.terminate()
+        try:
+            dev_process.wait(timeout=3)
+        except TimeoutError:
+            os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
 
-    print(dev_process.stdout)
+        print(dev_process.stdout)
 
 
 @pytest.fixture(scope="session")
@@ -54,6 +63,8 @@ def full_server(backend_server):
     """
 
     import subprocess as sp
+    import os
+    import signal
 
     with cd(NPM_ROOT_DIR):
         logging.info("Building site...")
@@ -66,15 +77,23 @@ def full_server(backend_server):
             ["npm", "run", "frontend"],
             stdout=sp.PIPE,
             stderr=sp.STDOUT,
+            preexec_fn=os.setsid,
         )
 
         wait_until_server_up(TEST_FRONTEND_URL, 5)
 
-    yield dev_process
+    try:
+        yield dev_process
+    finally:
+        os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
-    dev_process.terminate()
+        try:
+            dev_process.wait(timeout=3)
+        except TimeoutError:
+            os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
+            dev_process.wait(timeout=3)
 
-    print(dev_process.stdout)
+        print(dev_process.stdout)
 
 
 def wait_until_server_up(test_url, timeout):
@@ -93,7 +112,7 @@ def wait_until_server_up(test_url, timeout):
             if r.ok:
                 logging.info("Server up and running")
                 return
-        except ConnectionError:
+        except (ConnectionError, requests.exceptions.RequestException):
             pass
 
     raise TimeoutError(f"Server did not start in {timeout} seconds")
