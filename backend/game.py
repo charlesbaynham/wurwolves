@@ -323,7 +323,11 @@ class WurwolvesGame:
     def get_actions_model(
         self, stage_id=None, player_id: int = None, stage: GameStage = None
     ) -> List[ActionModel]:
-        """Get models for any actions performed by the given user in the given stage. Default to the current stage."""
+        """Get models for Actions in this game.
+
+        Filter by the passed parameters if any.
+
+        Default to the current stage."""
         return [
             ActionModel.from_orm(a)
             for a in self.get_actions(stage_id, player_id, stage)
@@ -569,13 +573,15 @@ class WurwolvesGame:
             .join(Message.visible_to, isouter=True)
             # For this game
             .filter(Message.game_id == self.game_id)
-        ).filter(
-            or_(
-                # Where it's public
-                Message.visible_to == None,
-                # Or this player can see it
-                Player.user_id == user_id,
+            .filter(
+                or_(
+                    # Where it's public
+                    Message.visible_to == None,
+                    # Or this player can see it
+                    Player.user_id == user_id,
+                )
             )
+            .order_by(Message.time_created.asc())
         )
 
         if not include_expired:
