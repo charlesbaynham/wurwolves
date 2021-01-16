@@ -48,7 +48,7 @@ def backend_server():
 
 
 @pytest.fixture(scope="session")
-def test_server(backend_server):
+def full_server(backend_server):
     """
     Launch and finally close a test server for the backend and frontend
     """
@@ -100,9 +100,9 @@ def wait_until_server_up(test_url, timeout):
 
 
 @pytest.fixture()
-def clean_server(test_server):
+def clean_server(full_server):
     """
-    Launch a server if needed, and clean the database
+    Launch a full server if needed, and clean the database
     """
     import backend.database
     from backend.model import Base
@@ -115,7 +115,7 @@ def clean_server(test_server):
     Base.metadata.drop_all()
     Base.metadata.create_all()
 
-    return test_server
+    return full_server
 
 
 @pytest.fixture(scope="session")

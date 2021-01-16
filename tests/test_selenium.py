@@ -33,7 +33,7 @@ pytestmark = pytest.mark.selenium
 
 
 @pytest.fixture(scope="session")
-def session_driver(test_server):
+def session_driver(full_server):
     driver = webdriver.Firefox()
     driver.implicitly_wait(5)
     yield driver
@@ -51,7 +51,7 @@ def driver(session_driver):
 
 
 @pytest.fixture(scope="session")
-def five_drivers_raw(test_server):
+def five_drivers_raw(full_server):
     import concurrent.futures
 
     def make_drv(*args):
