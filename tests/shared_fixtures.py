@@ -148,7 +148,8 @@ def engine():
     This fixture should not be used as the database is not cleaned between
     invocations. Use db_session instead.
     """
-    os.environ["DATABASE_URL"] = TESTING_DB_URL
+    if "IGNORE_TESTING_DB" not in os.environ:
+        os.environ["DATABASE_URL"] = TESTING_DB_URL
 
     import backend.database
 
