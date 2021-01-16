@@ -1,7 +1,10 @@
+import logging
+
 from fastapi.testclient import TestClient
 
 from backend.game import WurwolvesGame
 from backend.main import app
+
 
 GAME_ID = "hot-potato"
 
@@ -26,7 +29,7 @@ def test_join(api_client, db_session):
 
 def test_state_speed(api_client_factory):
     import random
-    from timeit import timeit
+    import time
 
     g = WurwolvesGame(GAME_ID)
 
@@ -43,12 +46,20 @@ def test_state_speed(api_client_factory):
         )
 
     # Render states
-    def f():
-        for c in clients:
-            response = c.get("/api/{}/state".format(GAME_ID))
-            assert response.ok
+    start = time.time()
+    for i_repeat in range(num_repeats):
+        for i_client, c in enumerate(clients):
+            logging.info("Repeat %s, client %s", i_repeat, i_client)
+            try:
+                response = c.get("/api/{}/state".format(GAME_ID))
+                assert response.ok
+            except Exception as e:
+                logging.error("Failed at repeat %s, client %s", i_repeat, i_client)
+                raise e
 
-    total_time = timeit(f, number=num_repeats)
+        time.sleep(0.5)
+
+    total_time = time.time() - start
 
     time_per_render = total_time / (num_players * num_repeats)
 
