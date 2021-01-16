@@ -814,7 +814,10 @@ class WurwolvesGame:
         """Does this player have an action this turn? And have they already performed it?"""
 
         if isinstance(player, int):
-            player = self.get_player_by_id(player)
+            player_lookup = self.get_player_by_id(player)
+            if player_lookup is None:
+                raise ValueError("Player id {} not found in database", player)
+            player = player_lookup
 
         action_class = roles.get_role_action(player.role, stage)
 
