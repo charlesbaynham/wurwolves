@@ -24,6 +24,39 @@ def test_join(api_client, db_session):
     assert len(g.get_game_model().players) == 1
 
 
+def test_state_speed(api_client_factory):
+    import random
+    from timeit import timeit
+
+    g = WurwolvesGame(GAME_ID)
+
+    num_players = 10
+    num_repeats = 10
+
+    clients = [api_client_factory() for _ in range(num_players)]
+
+    # Join game
+    for c in clients:
+        rand_id = random.random()
+        response = c.post(
+            "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
+        )
+
+    # Render states
+    def f():
+        for c in clients:
+            response = c.get("/api/{}/state".format(GAME_ID))
+            assert response.ok
+
+    total_time = timeit(f, number=num_repeats)
+
+    time_per_render = total_time / (num_players * num_repeats)
+
+    print(time_per_render)
+
+    raise RuntimeError
+
+
 def test_join_no_change_hash(api_client, db_session):
     g = WurwolvesGame(GAME_ID)
     api_client.post("/api/{}/join".format(GAME_ID))

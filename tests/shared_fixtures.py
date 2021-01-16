@@ -10,6 +10,8 @@ TEST_API_URL = "http://localhost:8000/api/hello"
 TEST_FRONTEND_URL = "http://localhost:3000/"
 NPM_ROOT_DIR = Path(__file__, "../../").resolve()
 
+LOG_FILE = "test_server_backend.log"
+
 
 @contextmanager
 def cd(directory):
@@ -46,14 +48,16 @@ def backend_server():
     try:
         yield dev_process
     finally:
-        os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
-
         try:
-            dev_process.wait(timeout=3)
-        except TimeoutError:
-            os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
+            os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
-        print(dev_process.stdout)
+            try:
+                dev_process.wait(timeout=3)
+            except TimeoutError:
+                os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
+
+        except ProcessLookupError:
+            pass
 
 
 @pytest.fixture(scope="session")
@@ -175,11 +179,19 @@ def db_session(engine):
 
 
 @pytest.fixture
-def api_client(db_session):
+def api_client(api_client_factory):
     """
     Get a FastAPI TestClient pointing at the app with a clean database session
+    """
+    return api_client_factory()
+
+
+@pytest.fixture
+def api_client_factory(db_session):
+    """
+    Get a factory for FastAPI TestClients pointing at the app with a clean database session
     """
     from fastapi.testclient import TestClient
     from backend.main import app
 
-    return TestClient(app)
+    return lambda: TestClient(app)
