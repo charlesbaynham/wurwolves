@@ -107,6 +107,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
 
     if not game:
         g.join(user_id)
+        g.touch()
+        db_session.commit()
         game = g.get_game_model()
 
     players = game.players
@@ -117,6 +119,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
         player = [p for p in players if p.user_id == user_id][0]
     except IndexError:
         g.join(user_id)
+        g.touch()
+        db_session.commit()
         game = g.get_game_model()
 
         player = [p for p in players if p.user_id == user_id][0]

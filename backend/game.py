@@ -816,7 +816,7 @@ class WurwolvesGame:
         if isinstance(player, int):
             player_lookup = self.get_player_by_id(player)
             if player_lookup is None:
-                raise ValueError("Player id {} not found in database", player)
+                raise ValueError("Player id {} not found in database".format(player))
             player = player_lookup
 
         action_class = roles.get_role_action(player.role, stage)
