@@ -1,6 +1,8 @@
 import logging
+import os
 import re
 import time
+from contextlib import contextmanager
 from multiprocessing import Pool
 
 import geckodriver_autoinstaller
@@ -14,6 +16,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from backend.reset_db import reset_database
 
 
+@contextmanager
+def cd(directory):
+    owd = os.getcwd()
+    try:
+        os.chdir(directory)
+        yield directory
+    finally:
+        os.chdir(owd)
+
+
 def setup_module(module):
     logging.getLogger().setLevel(logging.WARNING)
     try:
@@ -24,6 +36,9 @@ def setup_module(module):
 
 TEST_URL = "localhost:3000"
 TEST_GAME = "james-doesnt-understand-prostitute"
+from pathlib import Path
+
+NPM_ROOT_DIR = Path(__file__, "../../").resolve()
 
 # Mark this whole module as requiring selenium
 pytestmark = pytest.mark.selenium
@@ -31,8 +46,32 @@ pytestmark = pytest.mark.selenium
 
 @pytest.fixture(scope="session")
 def test_server():
-    # Later, this should launch and close a test server
-    pass
+    """
+    Launch and finally close a test server
+    """
+
+    import subprocess as sp
+
+    with cd(NPM_ROOT_DIR):
+        logging.info("Building site...")
+
+        sp.run(["npm", "run", "build"], stdout=sp.PIPE)
+
+        logging.info("Launching server...")
+
+        dev_process = sp.Popen(
+            ["npm", "run", "start"],
+            stdout=sp.PIPE,
+        )
+
+    yield None
+
+    dev_process.terminate()
+
+
+# def test_nothing(test_server):
+#     time.sleep(20)
+#     raise RuntimeError
 
 
 @pytest.fixture(scope="session")
