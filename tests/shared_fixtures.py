@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 
 TESTING_DB_URL = "sqlite:///testing.db"
+TEST_API_URL = "http://localhost:8000/api/hello"
+TEST_FRONTEND_URL = "http://localhost:3000/"
 NPM_ROOT_DIR = Path(__file__, "../../").resolve()
 
 
@@ -20,9 +22,35 @@ def cd(directory):
 
 
 @pytest.fixture(scope="session")
-def test_server():
+def backend_server():
     """
-    Launch and finally close a test server
+    Launch and finally close a test server, just for the backend
+    """
+
+    import subprocess as sp
+
+    with cd(NPM_ROOT_DIR):
+        logging.info("Launching backend...")
+
+        dev_process = sp.Popen(
+            ["npm", "run", "backend"],
+            stdout=sp.PIPE,
+            stderr=sp.STDOUT,
+        )
+
+        wait_until_server_up(TEST_API_URL, 5)
+
+    yield dev_process
+
+    dev_process.terminate()
+
+    print(dev_process.stdout)
+
+
+@pytest.fixture(scope="session")
+def test_server(backend_server):
+    """
+    Launch and finally close a test server for the backend and frontend
     """
 
     import subprocess as sp
@@ -32,16 +60,43 @@ def test_server():
 
         sp.run(["npm", "run", "build"], stdout=sp.PIPE)
 
-        logging.info("Launching server...")
+        logging.info("Launching frontend server...")
 
         dev_process = sp.Popen(
-            ["npm", "run", "start"],
+            ["npm", "run", "frontend"],
             stdout=sp.PIPE,
+            stderr=sp.STDOUT,
         )
 
-    yield None
+        wait_until_server_up(TEST_FRONTEND_URL, 5)
+
+    yield dev_process
 
     dev_process.terminate()
+
+    print(dev_process.stdout)
+
+
+def wait_until_server_up(test_url, timeout):
+    import requests
+    import time
+
+    interval = 0.5
+    max_tries = int(timeout / interval)
+
+    for i in range(0, max_tries):
+        time.sleep(interval)
+
+        logging.info("Connection attempt %s", i)
+        try:
+            r = requests.get(test_url)
+            if r.ok:
+                logging.info("Server up and running")
+                return
+        except ConnectionError:
+            pass
+
+    raise TimeoutError(f"Server did not start in {timeout} seconds")
 
 
 @pytest.fixture()
