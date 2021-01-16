@@ -54,7 +54,7 @@ def test_state_speed(api_client_factory):
 
     print(time_per_render)
 
-    raise RuntimeError
+    assert time_per_render < 0.1
 
 
 def test_join_no_change_hash(api_client, db_session):
