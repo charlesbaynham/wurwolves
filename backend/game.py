@@ -498,15 +498,15 @@ class WurwolvesGame:
 
     @db_scoped
     def end_game(self):
+        game = self.get_game()
+
         # Give all the players another SPECTATOR_TIMEOUT before they are kicked for inactivity,
         # so people have time to see what happened
         for p in self.get_players():
             p.touch()
 
         # Delete all remaining actions
-        for a in self.get_game().actions:
-            self._session.delete(a)
-        self._session.commit()
+        del game.actions[:]
 
         # End the game
         self._set_stage(GameStage.ENDED)
@@ -514,9 +514,8 @@ class WurwolvesGame:
     @db_scoped
     def move_to_lobby(self):
         # Delete all remaining actions
-        for a in self.get_game().actions:
-            self._session.delete(a)
-        self._session.commit()
+        game = self.get_game()
+        del game.actions[:]
 
         self._wipe_all_roles()
 
@@ -684,7 +683,6 @@ class WurwolvesGame:
         """
         p = self.get_player_by_id(player_id)
         p.votes = Player.votes + 1
-        self._session.commit()
 
         logging.info(f"Player {p.user.name} has {p.votes} votes")
 
