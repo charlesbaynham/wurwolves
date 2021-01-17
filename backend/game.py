@@ -106,14 +106,18 @@ class WurwolvesGame:
             try:
                 self._session_users += 1
                 out = func(self, *args, **kwargs)
+
                 # If this commit will alter the database, set the modified flag
-                if not self._session_modified and (
-                    self._session.dirty or self._session.new
-                ):
+                if self._session.dirty or self._session.new or self._session.deleted:
                     self._session_modified = True
+                    logging.debug("Marking changes as present")
+
+                logging.debug("Committing to database")
                 self._session.commit()
+
                 return out
             except Exception as e:
+                logging.exception("Exception encountered! Rolling back DB")
                 self._session.rollback()
                 raise e
             finally:
@@ -126,6 +130,9 @@ class WurwolvesGame:
                     g.touch()
                     self._session.add(g)
                     self._session.commit()
+
+                    logging.debug("Touching game and committing")
+
                     trigger_update_event(self.game_id)
 
                 self._session_users -= 1
@@ -163,12 +170,19 @@ class WurwolvesGame:
 
         touch_game = False
         if not player:
+            self._session.begin_nested()
             player = Player(
                 game=game,
                 user=user,
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
+
+            logging.info(
+                "Adding user %s to game %s with ID %s", user_id, self.game_id, player.id
+            )
+            self._session.commit()
+
             touch_game = True
         if not player.active:
             player.active = True
@@ -186,6 +200,8 @@ class WurwolvesGame:
         if touch_game:
             game.touch()
 
+        logging.debug("User %s join complete" % user_id)
+
     @staticmethod
     def make_user(session, user_id) -> User:
         """
@@ -194,14 +210,18 @@ class WurwolvesGame:
         Note that, since this is a static method, it has no access to self._session and
         so must be passed a session to use.
         """
+        logging.debug("make_user start")
+
         user = User(
             id=user_id,
             name=WurwolvesGame.generate_name(),
             name_is_generated=True,
         )
         session.add(user)
+        session.commit()
 
         logging.info("Making new user {} = {}".format(user.id, user.name))
+        logging.debug("make_user end")
 
         return user
 
