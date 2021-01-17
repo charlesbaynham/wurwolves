@@ -37,16 +37,16 @@ def test_state_speed(api_client_factory, caplog):
     g = WurwolvesGame(GAME_ID)
 
     num_players = 10
-    num_repeats = 10
+    num_repeats = 1
 
     clients = [api_client_factory() for _ in range(num_players)]
     rand_ids = [random.random() for _ in clients]
 
     # Join game
-    # for c, rand_id in zip(clients, rand_ids):
-    #     response = c.post(
-    #         "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
-    #     )
+    for c, rand_id in zip(clients, rand_ids):
+        response = c.post(
+            "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
+        )
 
     # Render states
     start = time.time()
@@ -68,7 +68,7 @@ def test_state_speed(api_client_factory, caplog):
 
     time_per_render = total_time / (num_players * num_repeats)
 
-    print(time_per_render)
+    logging.warning(f"time_per_render = {time_per_render:.3f}s")
 
     assert time_per_render < 0.1
 
