@@ -263,11 +263,15 @@ def register_role(WurwolvesGame, role: PlayerRole):
                     p.actions.append(action)
 
                     # Manually expire the Game here, since it contains a
-                    # .actions collection which will now be out of data. Why SQLAlchemy doesn't do this is beyond me: see
+                    # .actions collection which will now be out of data. Why
+                    # SQLAlchemy doesn't do this is beyond me: see
                     # https://docs.sqlalchemy.org/en/13/orm/session_basics.html#deleting-objects-referenced-from-collections-and-scalar-relationships
                     # and
                     # https://stackoverflow.com/questions/48702706/why-does-sqlalchemy-not-update-relations-after-object-deletion
-                    self._session.expire(game)
+                    # Actually I suppose it's reasonable: the model specifies
+                    # the many-to-one relationship between actions and players,
+                    # but doesn't mention games anywhere.
+                    self._session.expire(game, attribute_names=["actions"])
 
             # If all the actions are complete, process them
             # Note that game.stage / game.stage_id may have been changed by the immediate actions,

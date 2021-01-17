@@ -159,7 +159,7 @@ class WurwolvesGame:
         logging.info("User %s joining now" % user_id)
 
         # Get the user from the user list, adding them if not already present
-        user = self._session.query(User).filter(User.id == user_id).first()
+        user = self._session.query(User).get(user_id)
         if not user:
             logging.info("User %s not in DB" % user_id)
             user = self.make_user(self._session, user_id)
@@ -175,7 +175,6 @@ class WurwolvesGame:
 
         touch_game = False
         if not player:
-            self._session.begin_nested()
             player = Player(
                 game=game,
                 user=user,
@@ -186,21 +185,16 @@ class WurwolvesGame:
             logging.info(
                 "Adding user %s to game %s with ID %s", user_id, self.game_id, player.id
             )
-            self._session.commit()
+
+            game.players.append(player)
+            user.player_roles.append(player)
 
             touch_game = True
         if not player.active:
             player.active = True
 
-        # Start a nested session, so player keepalive doesn't make a new hash
-        self._session.begin_nested()
         # To avoid instant kicking:
         player.touch()
-        self._session.commit()
-
-        self._session.add(player)
-        self._session.add(game)
-        self._session.add(user)
 
         if touch_game:
             game.touch()
@@ -223,7 +217,6 @@ class WurwolvesGame:
             name_is_generated=True,
         )
         session.add(user)
-        session.commit()
 
         logging.info("Making new user {} = {}".format(user.id, user.name))
         logging.debug("make_user end")
@@ -454,7 +447,6 @@ class WurwolvesGame:
         logging.info("Keepalive player %s", user_id)
 
         p.touch()
-        self._session.commit()
 
         players = self.get_players(filter_by_activity=False)
         game = self.get_game()
@@ -465,8 +457,6 @@ class WurwolvesGame:
         # will only have an effect if the game is in particular states
         someone_changed = False
 
-        # Start a nested session so that process_actions can check the database
-        self._session.begin_nested()
         for p in players:
             if p.active and p.last_seen <= threshold:
                 logging.info(
@@ -474,15 +464,11 @@ class WurwolvesGame:
                     f"{p.last_seen}, threshold={threshold})"
                 )
                 p.active = False
-                self._session.add(p)
                 someone_changed = True
             elif not p.active and p.last_seen > threshold:
                 logging.info(f"Marking player {p.user.name} as active")
                 p.active = True
-                self._session.add(p)
                 someone_changed = True
-
-        self._session.commit()
 
         if someone_changed:
             self.touch()
@@ -657,7 +643,8 @@ class WurwolvesGame:
         for player in players:
             m.visible_to.append(player)
 
-        self._session.add(m)
+        g = self.get_game()
+        g.messages.append(m)
 
     @db_scoped
     def kill_player(self, player_id, new_state: PlayerState):
@@ -674,19 +661,15 @@ class WurwolvesGame:
             p.previous_role = p.role
             p.role = PlayerRole.SPECTATOR
 
-        self._session.add(p)
-
     @db_scoped
     def set_player_state(self, player_id, state: PlayerState):
         p = self.get_player_by_id(player_id)
         p.state = state
-        self._session.add(p)
 
     @db_scoped
     def set_player_role(self, player_id, role: PlayerRole):
         p = self.get_player_by_id(player_id)
         p.role = role
-        self._session.add(p)
 
     @db_scoped
     def vote_player(self, player_id):
