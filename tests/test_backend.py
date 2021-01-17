@@ -122,7 +122,10 @@ def test_single_render(api_client_factory, caplog):
     assert total_time < 0.1
 
 
-def test_join_no_change_hash(api_client, db_session):
+def test_rejoin_no_change_hash(api_client, db_session):
+    """
+    Rejoining a game you're already in shouldn't update everyone's state
+    """
     g = WurwolvesGame(GAME_ID)
     api_client.post("/api/{}/join".format(GAME_ID))
     game_hash = g.get_hash_now()

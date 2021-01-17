@@ -130,7 +130,6 @@ class WurwolvesGame:
                     logging.debug("Touching game")
                     g = self.get_game()
                     g.touch()
-                    self._session.add(g)
 
                 self._session_users -= 1
 
@@ -198,6 +197,12 @@ class WurwolvesGame:
 
         if touch_game:
             game.touch()
+        else:
+            # Just this once (OK, it happens in the keepalive code too) commit
+            # early to stop the game state from updating. This will expire all
+            # ORM objects and force inefficient reloads, but it doesn't matter
+            # here because there's nothing else to do anyway.
+            self._session.commit()
 
         logging.debug("User %s join complete" % user_id)
 
