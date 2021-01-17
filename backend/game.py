@@ -112,35 +112,40 @@ class WurwolvesGame:
                     self._session_modified = True
                     logging.debug("Marking changes as present")
 
-                logging.debug("Committing to database")
-                self._session.commit()
-
                 return out
             except Exception as e:
                 logging.exception("Exception encountered! Rolling back DB")
                 self._session.rollback()
                 raise e
             finally:
-                # If we're about to close the session, check if the game should be marked as updated
                 if self._session_users == 1 and self._session_modified:
-                    # If any of the functions altered the game state,
-                    # fire the corresponding updates events if they are present in the global dict
-                    # And mark the game as altered in the database
+                    # If any of the functions altered the game state, fire
+                    # the corresponding updates events if they are present
+                    # in the global dict And mark the game as altered in the
+                    # database.
+                    #
+                    # Check this before we reduce session_users to 0, else
+                    # calling get_game will reopen a new session before the
+                    # old one is closed.
+                    logging.debug("Touching game")
                     g = self.get_game()
                     g.touch()
                     self._session.add(g)
-                    self._session.commit()
-
-                    logging.debug("Touching game and committing")
-
-                    trigger_update_event(self.game_id)
 
                 self._session_users -= 1
 
-                # Close the session if we made it and no longer need it
-                if self._session_users == 0 and not self._session_is_external:
-                    self._session.close()
-                    self._session = None
+                if self._session_users == 0:
+                    logging.debug("Committing session")
+                    self._session.commit()
+
+                    if self._session_modified:
+                        logging.debug("...and triggering updates")
+                        trigger_update_event(self.game_id)
+
+                    # Close the session if we made it and no longer need it
+                    if not self._session_is_external:
+                        self._session.close()
+                        self._session = None
 
         return f
 
@@ -227,7 +232,7 @@ class WurwolvesGame:
 
     @db_scoped
     def get_game(self) -> Game:
-        return self._session.query(Game).filter(Game.id == self.game_id).first()
+        return self._session.query(Game).get(self.game_id)
 
     @db_scoped
     def get_game_model(self) -> GameModel:
