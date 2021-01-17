@@ -189,6 +189,7 @@ class WurwolvesGame:
 
             game.players.append(player)
             user.player_roles.append(player)
+            game.touch()
 
         if not player.active:
             player.active = True
