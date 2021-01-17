@@ -1,4 +1,6 @@
 import logging
+import random
+import time
 
 from fastapi.testclient import TestClient
 
@@ -31,9 +33,6 @@ def test_state_speed(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
     caplog.set_level(logging.INFO, logger="sqlalchemy.engine")
 
-    import random
-    import time
-
     g = WurwolvesGame(GAME_ID)
 
     num_players = 10
@@ -43,13 +42,15 @@ def test_state_speed(api_client_factory, caplog):
     rand_ids = [random.random() for _ in clients]
 
     # Join game
+    start_joins = time.time()
     for c, rand_id in zip(clients, rand_ids):
         response = c.post(
             "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
         )
+    end_joins = time.time()
 
     # Render states
-    start = time.time()
+    start_renders = time.time()
     for i_repeat in range(num_repeats):
         for i_client, (c, rand_id) in enumerate(zip(clients, rand_ids)):
             logging.info("Repeat %s, client %s", i_repeat, i_client)
@@ -62,15 +63,55 @@ def test_state_speed(api_client_factory, caplog):
                 logging.error("Failed at repeat %s, client %s", i_repeat, i_client)
                 raise e
 
-        time.sleep(0.5)
+    end_renders = time.time()
+
+    time_per_join = (end_joins - start_joins) / (num_players * num_repeats)
+    time_per_render = (end_renders - start_renders) / (num_players * num_repeats)
+
+    logging.warning(f"time_per_join = {time_per_join:.3f}s")
+    logging.warning(f"time_per_render = {time_per_render:.3f}s")
+
+    assert time_per_join < 0.1
+    assert time_per_render < 0.1
+
+
+def test_single_render(api_client_factory, caplog):
+    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO, logger="sqlalchemy.engine")
+
+    g = WurwolvesGame(GAME_ID)
+
+    num_players = 10
+
+    clients = [api_client_factory() for _ in range(num_players)]
+    rand_ids = [random.random() for _ in clients]
+
+    # Join game
+    for c, rand_id in zip(clients, rand_ids):
+        response = c.post(
+            "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
+        )
+
+    # Render states
+    start = time.time()
+
+    rand_id = rand_ids[0]
+    c = clients[0]
+
+    try:
+        response = c.get(
+            "/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id}
+        )
+        assert response.ok
+    except Exception as e:
+        logging.error("Failed at repeat %s, client %s", i_repeat, i_client)
+        raise e
 
     total_time = time.time() - start
 
-    time_per_render = total_time / (num_players * num_repeats)
+    logging.warning(f"total_time = {total_time:.3f}s")
 
-    logging.warning(f"time_per_render = {time_per_render:.3f}s")
-
-    assert time_per_render < 0.1
+    assert total_time < 0.1
 
 
 def test_join_no_change_hash(api_client, db_session):
