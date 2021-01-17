@@ -82,6 +82,11 @@ class WurwolvesGame:
         g.game_id = game_id
         return g
 
+    def _check_for_dirty_session(self):
+        if self._session.dirty or self._session.new or self._session.deleted:
+            self._session_modified = True
+            logging.debug("Marking changes as present")
+
     def db_scoped(func):
         """
         Start a session and store it in self._session
@@ -108,9 +113,7 @@ class WurwolvesGame:
                 out = func(self, *args, **kwargs)
 
                 # If this commit will alter the database, set the modified flag
-                if self._session.dirty or self._session.new or self._session.deleted:
-                    self._session_modified = True
-                    logging.debug("Marking changes as present")
+                self._check_for_dirty_session()
 
                 return out
             except Exception as e:
@@ -172,7 +175,6 @@ class WurwolvesGame:
         # Add this user to the game as a spectator if they're not already in it
         player = self.get_player(user_id, filter_by_activity=False)
 
-        touch_game = False
         if not player:
             player = Player(
                 game=game,
@@ -188,21 +190,11 @@ class WurwolvesGame:
             game.players.append(player)
             user.player_roles.append(player)
 
-            touch_game = True
         if not player.active:
             player.active = True
 
         # To avoid instant kicking:
-        player.touch()
-
-        if touch_game:
-            game.touch()
-        else:
-            # Just this once (OK, it happens in the keepalive code too) commit
-            # early to stop the game state from updating. This will expire all
-            # ORM objects and force inefficient reloads, but it doesn't matter
-            # here because there's nothing else to do anyway.
-            self._session.commit()
+        self.player_keepalive(user_id)
 
         logging.debug("User %s join complete" % user_id)
 
@@ -451,7 +443,12 @@ class WurwolvesGame:
 
         logging.info("Keepalive player %s", user_id)
 
+        # If the game has been modified, mark this
+        self._check_for_dirty_session()
+
+        # Touch the player then immediately flush, to prevent game state being marked as changed
         p.touch()
+        self._session.flush()
 
         players = self.get_players(filter_by_activity=False)
         game = self.get_game()
