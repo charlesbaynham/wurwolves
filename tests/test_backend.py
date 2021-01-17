@@ -31,11 +31,8 @@ def test_join(api_client, db_session):
 
 def test_state_speed(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
-    caplog.set_level(logging.INFO, logger="sqlalchemy.engine")
 
-    g = WurwolvesGame(GAME_ID)
-
-    num_players = 10
+    num_players = 5
     num_repeats = 1
 
     clients = [api_client_factory() for _ in range(num_players)]
@@ -48,6 +45,9 @@ def test_state_speed(api_client_factory, caplog):
             "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
         )
     end_joins = time.time()
+
+    join_logs = caplog.records
+    caplog.clear()
 
     # Render states
     start_renders = time.time()
@@ -65,11 +65,26 @@ def test_state_speed(api_client_factory, caplog):
 
     end_renders = time.time()
 
-    time_per_join = (end_joins - start_joins) / (num_players * num_repeats)
-    time_per_render = (end_renders - start_renders) / (num_players * num_repeats)
+    render_logs = caplog.records
 
-    logging.warning(f"time_per_join = {time_per_join:.3f}s")
-    logging.warning(f"time_per_render = {time_per_render:.3f}s")
+    def get_database_times(logs):
+        return [l.args[0] for l in logs if "Query complete" in l.msg]
+
+    num_joins = num_players
+    num_renders = num_players * num_repeats
+
+    join_database_times = get_database_times(join_logs)
+    render_database_times = get_database_times(render_logs)
+
+    time_per_join = (end_joins - start_joins) / num_joins
+    time_per_render = (end_renders - start_renders) / num_renders
+
+    logging.warning(
+        f"time_per_join = {time_per_join:.3f}s of which {sum(join_database_times) / num_joins:.3f}s in {len(join_database_times)/num_joins} DB calls"
+    )
+    logging.warning(
+        f"time_per_render = {time_per_render:.3f}s of which {sum(render_database_times) / num_renders:.3f}s in {len(render_database_times)/num_renders} DB calls"
+    )
 
     assert time_per_join < 0.1
     assert time_per_render < 0.1
@@ -77,7 +92,6 @@ def test_state_speed(api_client_factory, caplog):
 
 def test_single_render(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
-    caplog.set_level(logging.INFO, logger="sqlalchemy.engine")
 
     g = WurwolvesGame(GAME_ID)
 
