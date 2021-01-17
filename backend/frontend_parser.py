@@ -98,7 +98,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     """
 
-    logging.debug(f"Point 1: {time.time()}")
+    logging.debug(f"Starting parse_game_to_state at: {time.time()}")
 
     g = WurwolvesGame(game_tag)
 
@@ -113,6 +113,9 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     players = game.players
 
     logging.debug(f"Point 2: {time.time()}")
+
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        logging.debug("Players: %s", [p.user.name for p in players])
 
     try:
         player = [p for p in players if p.user_id == user_id][0]
