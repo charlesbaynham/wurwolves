@@ -112,14 +112,8 @@ def test_single_render(api_client_factory, caplog):
     rand_id = rand_ids[0]
     c = clients[0]
 
-    try:
-        response = c.get(
-            "/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id}
-        )
-        assert response.ok
-    except Exception as e:
-        logging.error("Failed at repeat %s, client %s", i_repeat, i_client)
-        raise e
+    response = c.get("/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id})
+    assert response.ok
 
     total_time = time.time() - start
 
