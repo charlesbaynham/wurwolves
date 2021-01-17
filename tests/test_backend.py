@@ -27,7 +27,10 @@ def test_join(api_client, db_session):
     assert len(g.get_game_model().players) == 1
 
 
-def test_state_speed(api_client_factory):
+def test_state_speed(api_client_factory, caplog):
+    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO, logger="sqlalchemy.engine")
+
     import random
     import time
 
@@ -37,21 +40,23 @@ def test_state_speed(api_client_factory):
     num_repeats = 10
 
     clients = [api_client_factory() for _ in range(num_players)]
+    rand_ids = [random.random() for _ in clients]
 
     # Join game
-    for c in clients:
-        rand_id = random.random()
-        response = c.post(
-            "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
-        )
+    # for c, rand_id in zip(clients, rand_ids):
+    #     response = c.post(
+    #         "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
+    #     )
 
     # Render states
     start = time.time()
     for i_repeat in range(num_repeats):
-        for i_client, c in enumerate(clients):
+        for i_client, (c, rand_id) in enumerate(zip(clients, rand_ids)):
             logging.info("Repeat %s, client %s", i_repeat, i_client)
             try:
-                response = c.get("/api/{}/state".format(GAME_ID))
+                response = c.get(
+                    "/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id}
+                )
                 assert response.ok
             except Exception as e:
                 logging.error("Failed at repeat %s, client %s", i_repeat, i_client)
