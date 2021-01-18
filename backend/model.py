@@ -173,7 +173,7 @@ class Player(Base):
     )
 
     def touch(self):
-        self.last_seen = func.now()
+        self.last_seen = datetime.datetime.now()
 
 
 class Action(Base):

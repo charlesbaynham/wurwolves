@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import time
 from multiprocessing import Pool
@@ -24,19 +25,15 @@ def setup_module(module):
 
 TEST_URL = "localhost:3000"
 TEST_GAME = "james-doesnt-understand-prostitute"
+from pathlib import Path
+
 
 # Mark this whole module as requiring selenium
 pytestmark = pytest.mark.selenium
 
 
 @pytest.fixture(scope="session")
-def test_server():
-    # Later, this should launch and close a test server
-    pass
-
-
-@pytest.fixture(scope="session")
-def session_driver(test_server):
+def session_driver(full_server):
     driver = webdriver.Firefox()
     driver.implicitly_wait(5)
     yield driver
@@ -54,7 +51,7 @@ def driver(session_driver):
 
 
 @pytest.fixture(scope="session")
-def five_drivers_raw(test_server):
+def five_drivers_raw(full_server):
     import concurrent.futures
 
     def make_drv(*args):
