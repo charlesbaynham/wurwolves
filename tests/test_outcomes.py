@@ -161,6 +161,29 @@ def test_vote_tie(five_player_game):
     assert game.get_game_model().stage == GameStage.NIGHT
 
 
+def test_vote_works(five_player_game):
+    game, roles_map = five_player_game
+
+    game._set_stage(GameStage.VOTING)
+
+    # Vote off the villager
+    game.medic_voting_action(roles_map["Medic"], roles_map["Villager 1"])
+    game.villager_voting_action(roles_map["Villager 1"], roles_map["Seer"])
+    game.villager_voting_action(roles_map["Villager 2"], roles_map["Seer"])
+    game.wolf_voting_action(roles_map["Wolf"], roles_map["Villager 1"])
+    game.seer_voting_action(roles_map["Seer"], roles_map["Villager 1"])
+
+    # Check that the villager died
+    for name, user_id in roles_map.items():
+        if "Villager 1" in name:
+            assert game.get_player_model(user_id).state == PlayerState.LYNCHED
+        else:
+            assert game.get_player_model(user_id).state == PlayerState.ALIVE
+
+    # Check that we're no longer voting
+    assert game.get_game_model().stage == GameStage.NIGHT
+
+
 def test_dead_no_move(five_player_game):
     game, roles_map = five_player_game
 
