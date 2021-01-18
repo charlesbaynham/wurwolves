@@ -25,11 +25,11 @@ export const settings_text = 'Use these utilities to manage the game if somethin
 
 class RoleDescription {
     constructor(name, image, description) {
-        this.name = name;
-        this.image = image;
-        this.description = description.trim();
+      this.name = name;
+      this.image = image;
+      this.description = description.trim();
     }
-}
+  }
 
 export const guaranteed_roles = [
     new RoleDescription("Villager", "/images/characters/villager9.svg", `
@@ -96,11 +96,6 @@ The Masons do not have special powers, but they know each other's identity (they
 Lives alone, never meets people and likes it that way.
 
 The Miller is on the side of the villagers: unfortunately they don't recognize him. If the Seer checks the alignment of the Miller, they will seem like a wolf even though they're not.
-    `),
-    new RoleDescription("Exorcist", "/images/characters/exorcist0.svg", `
-The Exorcist has dabbled in the occult from a young age. Now, with the village beset by werewolves, it's finally their chance to use their knowledge.
-
-The Exorcist is on the side of the villagers and, once per game, can perform a dark ritual to use the werewolves' powers against them: killing their target in the night. Unfortunately, if the exorcist accidentally performs the ritual on a non-wolf target, the Exorcist is instead rent by the powers they summoned from the deep.
     `),
 ]
 

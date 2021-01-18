@@ -12,28 +12,19 @@ USER_ID = uuid()
 
 
 @pytest.fixture
-def demo_game(demo_game_maker) -> WurwolvesGame:
-    return demo_game_maker(3)
+def demo_game(db_session) -> WurwolvesGame:
+    import random
 
+    random.seed(123)
 
-@pytest.fixture
-def demo_game_maker(db_session):
-    def func(num_players):
-        import random
+    g = WurwolvesGame(GAME_ID)
 
-        random.seed(123)
+    # You need at least three players for start_game() to work
+    g.join(USER_ID)
+    g.join(uuid())
+    g.join(uuid())
 
-        g = WurwolvesGame(GAME_ID)
-
-        # You need at least three players for start_game() to work
-        g.join(USER_ID)
-
-        for _ in range(num_players - 1):
-            g.join(uuid())
-
-        return g
-
-    return func
+    return g
 
 
 def test_parse(db_session, demo_game):
@@ -101,25 +92,3 @@ def test_no_vote_dead(demo_game):
 
     assert not dead_state.controls_state.button_visible
     assert alive_state.controls_state.button_visible
-
-
-def test_parse_speed(demo_game_maker):
-
-    num_players = 10
-    num_repeats = 10
-
-    demo_game = demo_game_maker(num_players)
-
-    users = [p.user_id for p in demo_game.get_game_model().players]
-
-    import timeit
-
-    def f():
-        for u in users:
-            state = parse_game_to_state(GAME_ID, u)
-
-    out = timeit.timeit(f, number=num_repeats)
-
-    time_per_render = out / (num_players * num_repeats)
-
-    assert time_per_render < 0.2

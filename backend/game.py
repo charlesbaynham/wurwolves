@@ -39,7 +39,7 @@ SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 # Time for get_hash to wait for until it returns. Clients will have their
 # queries held open for this time, unless an update occurs
-GET_HASH_TIMEOUT = 20
+GET_HASH_TIMEOUT = 25
 
 MAX_NAME_LENGTH = 25
 
@@ -82,11 +82,6 @@ class WurwolvesGame:
         g.game_id = game_id
         return g
 
-    def _check_for_dirty_session(self):
-        if self._session.dirty or self._session.new or self._session.deleted:
-            self._session_modified = True
-            logging.debug("Marking changes as present")
-
     def db_scoped(func):
         """
         Start a session and store it in self._session
@@ -111,43 +106,34 @@ class WurwolvesGame:
             try:
                 self._session_users += 1
                 out = func(self, *args, **kwargs)
-
                 # If this commit will alter the database, set the modified flag
-                self._check_for_dirty_session()
-
+                if not self._session_modified and (
+                    self._session.dirty or self._session.new
+                ):
+                    self._session_modified = True
+                self._session.commit()
                 return out
             except Exception as e:
-                logging.exception("Exception encountered! Rolling back DB")
                 self._session.rollback()
                 raise e
             finally:
+                # If we're about to close the session, check if the game should be marked as updated
                 if self._session_users == 1 and self._session_modified:
-                    # If any of the functions altered the game state, fire
-                    # the corresponding updates events if they are present
-                    # in the global dict And mark the game as altered in the
-                    # database.
-                    #
-                    # Check this before we reduce session_users to 0, else
-                    # calling get_game will reopen a new session before the
-                    # old one is closed.
-                    logging.debug("Touching game")
+                    # If any of the functions altered the game state,
+                    # fire the corresponding updates events if they are present in the global dict
+                    # And mark the game as altered in the database
                     g = self.get_game()
                     g.touch()
+                    self._session.add(g)
+                    self._session.commit()
+                    trigger_update_event(self.game_id)
 
                 self._session_users -= 1
 
-                if self._session_users == 0:
-                    logging.debug("Committing session")
-                    self._session.commit()
-
-                    if self._session_modified:
-                        logging.debug("...and triggering updates")
-                        trigger_update_event(self.game_id)
-
-                    # Close the session if we made it and no longer need it
-                    if not self._session_is_external:
-                        self._session.close()
-                        self._session = None
+                # Close the session if we made it and no longer need it
+                if self._session_users == 0 and not self._session_is_external:
+                    self._session.close()
+                    self._session = None
 
         return f
 
@@ -161,7 +147,7 @@ class WurwolvesGame:
         logging.info("User %s joining now" % user_id)
 
         # Get the user from the user list, adding them if not already present
-        user = self._session.query(User).get(user_id)
+        user = self._session.query(User).filter(User.id == user_id).first()
         if not user:
             logging.info("User %s not in DB" % user_id)
             user = self.make_user(self._session, user_id)
@@ -175,6 +161,7 @@ class WurwolvesGame:
         # Add this user to the game as a spectator if they're not already in it
         player = self.get_player(user_id, filter_by_activity=False)
 
+        touch_game = False
         if not player:
             player = Player(
                 game=game,
@@ -182,22 +169,22 @@ class WurwolvesGame:
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
-
-            logging.info(
-                "Adding user %s to game %s with ID %s", user_id, self.game_id, player.id
-            )
-
-            game.players.append(player)
-            user.player_roles.append(player)
-            game.touch()
-
+            touch_game = True
         if not player.active:
             player.active = True
 
+        # Start a nested session, so player keepalive doesn't make a new hash
+        self._session.begin_nested()
         # To avoid instant kicking:
-        self.player_keepalive(user_id)
+        player.touch()
+        self._session.commit()
 
-        logging.debug("User %s join complete" % user_id)
+        self._session.add(player)
+        self._session.add(game)
+        self._session.add(user)
+
+        if touch_game:
+            game.touch()
 
     @staticmethod
     def make_user(session, user_id) -> User:
@@ -207,8 +194,6 @@ class WurwolvesGame:
         Note that, since this is a static method, it has no access to self._session and
         so must be passed a session to use.
         """
-        logging.debug("make_user start")
-
         user = User(
             id=user_id,
             name=WurwolvesGame.generate_name(),
@@ -217,13 +202,12 @@ class WurwolvesGame:
         session.add(user)
 
         logging.info("Making new user {} = {}".format(user.id, user.name))
-        logging.debug("make_user end")
 
         return user
 
     @db_scoped
     def get_game(self) -> Game:
-        return self._session.query(Game).get(self.game_id)
+        return self._session.query(Game).filter(Game.id == self.game_id).first()
 
     @db_scoped
     def get_game_model(self) -> GameModel:
@@ -260,19 +244,18 @@ class WurwolvesGame:
         return q.first()
 
     @db_scoped
-    def get_player_by_id(self, player_id: int, filter_by_activity=False) -> Player:
+    def get_player_by_id(self, player_id: int, filter_by_activity=True) -> Player:
         """
         Get a Player database model based on the Player's ID. If
         `filter_by_activity`, only return Players who should be displayed in this
         stage of the game.
         """
+        q = self._session.query(Player).filter(Player.id == player_id)
 
         if filter_by_activity:
-            q = self._session.query(Player).filter(Player.id == player_id)
             q = _filter_by_activity(q)
-            return q.first()
-        else:
-            return self._session.query(Player).get(player_id)
+
+        return q.first()
 
     @db_scoped
     def get_player_model(self, user_id: UUID) -> PlayerModel:
@@ -310,11 +293,7 @@ class WurwolvesGame:
 
     @db_scoped
     def get_actions(
-        self,
-        stage_id=None,
-        player_id: int = None,
-        stage: GameStage = None,
-        include_expired=False,
+        self, stage_id=None, player_id: int = None, stage: GameStage = None
     ) -> List[Action]:
         """Get orm objects for Actions in this game.
 
@@ -331,20 +310,13 @@ class WurwolvesGame:
         if stage:
             q = q.filter(Action.stage == stage)
 
-        if not include_expired:
-            q = q.filter(Action.expired == False)
-
         return q.all()
 
     @db_scoped
     def get_actions_model(
         self, stage_id=None, player_id: int = None, stage: GameStage = None
     ) -> List[ActionModel]:
-        """Get models for Actions in this game.
-
-        Filter by the passed parameters if any.
-
-        Default to the current stage."""
+        """Get models for any actions performed by the given user in the given stage. Default to the current stage."""
         return [
             ActionModel.from_orm(a)
             for a in self.get_actions(stage_id, player_id, stage)
@@ -445,12 +417,8 @@ class WurwolvesGame:
 
         logging.info("Keepalive player %s", user_id)
 
-        # If the game has been modified, mark this
-        self._check_for_dirty_session()
-
-        # Touch the player then immediately flush, to prevent game state being marked as changed
         p.touch()
-        self._session.flush()
+        self._session.commit()
 
         players = self.get_players(filter_by_activity=False)
         game = self.get_game()
@@ -461,6 +429,8 @@ class WurwolvesGame:
         # will only have an effect if the game is in particular states
         someone_changed = False
 
+        # Start a nested session so that process_actions can check the database
+        self._session.begin_nested()
         for p in players:
             if p.active and p.last_seen <= threshold:
                 logging.info(
@@ -468,11 +438,15 @@ class WurwolvesGame:
                     f"{p.last_seen}, threshold={threshold})"
                 )
                 p.active = False
+                self._session.add(p)
                 someone_changed = True
             elif not p.active and p.last_seen > threshold:
                 logging.info(f"Marking player {p.user.name} as active")
                 p.active = True
+                self._session.add(p)
                 someone_changed = True
+
+        self._session.commit()
 
         if someone_changed:
             self.touch()
@@ -497,15 +471,15 @@ class WurwolvesGame:
 
     @db_scoped
     def end_game(self):
-        game = self.get_game()
-
         # Give all the players another SPECTATOR_TIMEOUT before they are kicked for inactivity,
         # so people have time to see what happened
         for p in self.get_players():
             p.touch()
 
         # Delete all remaining actions
-        del game.actions[:]
+        for a in self.get_game().actions:
+            self._session.delete(a)
+        self._session.commit()
 
         # End the game
         self._set_stage(GameStage.ENDED)
@@ -513,8 +487,9 @@ class WurwolvesGame:
     @db_scoped
     def move_to_lobby(self):
         # Delete all remaining actions
-        game = self.get_game()
-        del game.actions[:]
+        for a in self.get_game().actions:
+            self._session.delete(a)
+        self._session.commit()
 
         self._wipe_all_roles()
 
@@ -579,42 +554,33 @@ class WurwolvesGame:
         self._set_stage(GameStage.NIGHT)
 
     @db_scoped
-    def get_messages(self, user_id: UUID, include_expired=False) -> List[ChatMessage]:
+    def get_messages(self, user_id: UUID) -> List[ChatMessage]:
         """ Get chat messages visible to the given user """
-        query = (
-            self._session.query(Message)
-            #  All messages, including public
-            .join(Message.visible_to, isouter=True)
-            # For this game
-            .filter(Message.game_id == self.game_id)
-            .filter(
-                or_(
-                    # Where it's public
-                    Message.visible_to == None,
-                    # Or this player can see it
-                    Player.user_id == user_id,
-                )
-            )
-            .order_by(Message.time_created.asc())
-        )
 
-        if not include_expired:
-            query = query.filter(Message.expired == False)
+        game = self.get_game()
 
-        messages = query.all()
+        out = []
 
-        # Format as ChatMessages
-        return [ChatMessage(text=m.text, is_strong=m.is_strong) for m in messages]
+        player = self.get_player(user_id)
+
+        m: Message
+        for m in game.messages:
+            if m.visible_to and player not in m.visible_to:
+                continue
+
+            out.append(ChatMessage(text=m.text, is_strong=m.is_strong))
+
+        return out
 
     @db_scoped
     def clear_chat_messages(self):
         for m in self.get_game().messages:
-            m.expired = True
+            self._session.delete(m)
 
     @db_scoped
     def clear_actions(self):
         for a in self.get_game().actions:
-            a.expired = True
+            self._session.delete(a)
 
     @db_scoped
     def send_chat_message(self, msg, is_strong=False, user_list=[], player_list=[]):
@@ -646,8 +612,7 @@ class WurwolvesGame:
         for player in players:
             m.visible_to.append(player)
 
-        g = self.get_game()
-        g.messages.append(m)
+        self._session.add(m)
 
     @db_scoped
     def kill_player(self, player_id, new_state: PlayerState):
@@ -664,15 +629,19 @@ class WurwolvesGame:
             p.previous_role = p.role
             p.role = PlayerRole.SPECTATOR
 
+        self._session.add(p)
+
     @db_scoped
     def set_player_state(self, player_id, state: PlayerState):
         p = self.get_player_by_id(player_id)
         p.state = state
+        self._session.add(p)
 
     @db_scoped
     def set_player_role(self, player_id, role: PlayerRole):
         p = self.get_player_by_id(player_id)
         p.role = role
+        self._session.add(p)
 
     @db_scoped
     def vote_player(self, player_id):
@@ -682,6 +651,7 @@ class WurwolvesGame:
         """
         p = self.get_player_by_id(player_id)
         p.votes = Player.votes + 1
+        self._session.commit()
 
         logging.info(f"Player {p.user.name} has {p.votes} votes")
 
@@ -830,10 +800,7 @@ class WurwolvesGame:
         """Does this player have an action this turn? And have they already performed it?"""
 
         if isinstance(player, int):
-            player_lookup = self.get_player_by_id(player)
-            if player_lookup is None:
-                raise ValueError("Player id {} not found in database".format(player))
-            player = player_lookup
+            player = self.get_player_by_id(player)
 
         action_class = roles.get_role_action(player.role, stage)
 

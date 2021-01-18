@@ -1,4 +1,3 @@
-import logging
 import random as rd
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -81,9 +80,7 @@ def test_medic_forbidden_wolf(demo_game):
 
 
 @patch("backend.resolver.process_actions")
-def test_actions_processed_with_spectator(resolver_mock, demo_game, caplog):
-    caplog.set_level(logging.DEBUG)
-
+def test_actions_processed_with_spectator(resolver_mock, demo_game):
     demo_game.start_game()
 
     demo_game.join(uuid())
