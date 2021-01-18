@@ -260,18 +260,19 @@ class WurwolvesGame:
         return q.first()
 
     @db_scoped
-    def get_player_by_id(self, player_id: int, filter_by_activity=True) -> Player:
+    def get_player_by_id(self, player_id: int, filter_by_activity=False) -> Player:
         """
         Get a Player database model based on the Player's ID. If
         `filter_by_activity`, only return Players who should be displayed in this
         stage of the game.
         """
-        q = self._session.query(Player).filter(Player.id == player_id)
 
         if filter_by_activity:
+            q = self._session.query(Player).filter(Player.id == player_id)
             q = _filter_by_activity(q)
-
-        return q.first()
+            return q.first()
+        else:
+            return self._session.query(Player).get(player_id)
 
     @db_scoped
     def get_player_model(self, user_id: UUID) -> PlayerModel:
