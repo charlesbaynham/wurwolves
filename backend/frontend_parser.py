@@ -103,12 +103,17 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     g = WurwolvesGame(game_tag)
 
     game = g.get_game_model()
+    # 1x game SELECT
+    # 1x players SELECT
+    # n_playersx user SELECTs (there are n_players players in this game)
+    # 1x messages (with n_msg messages)
+    # n_msg x more player selects
 
     if not game:
         g.join(user_id)
         game = g.get_game_model()
 
-    actions = g.get_actions_model()
+    actions = g.get_actions_model()  # 1x query with no actions
 
     players = game.players
 
@@ -144,6 +149,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     has_action, action_enabled = g.player_has_action(
         player.id, game.stage, game.stage_id
     )
+    # 1x select players
+    # 1x select actions
 
     logging.debug(f"Point 6: {time.time()}")
 
@@ -184,6 +191,9 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
             has_action, action_enabled = g.player_has_action(
                 p.id, game.stage, game.stage_id
             )
+            # per loop:
+            # 1x select players
+            # 1x select actions
             if has_action and not action_enabled:
                 ready = True
 

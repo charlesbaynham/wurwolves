@@ -29,6 +29,10 @@ def test_join(api_client, db_session):
     assert len(g.get_game_model().players) == 1
 
 
+def _get_database_times(logs):
+    return [l.args[0] for l in logs if "Query complete" in l.msg]
+
+
 def test_state_speed(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
 
@@ -67,14 +71,11 @@ def test_state_speed(api_client_factory, caplog):
 
     render_logs = caplog.records
 
-    def get_database_times(logs):
-        return [l.args[0] for l in logs if "Query complete" in l.msg]
-
     num_joins = num_players
     num_renders = num_players * num_repeats
 
-    join_database_times = get_database_times(join_logs)
-    render_database_times = get_database_times(render_logs)
+    join_database_times = _get_database_times(join_logs)
+    render_database_times = _get_database_times(render_logs)
 
     time_per_join = (end_joins - start_joins) / num_joins
     time_per_render = (end_renders - start_renders) / num_renders
@@ -97,8 +98,6 @@ def test_state_speed(api_client_factory, caplog):
 def test_single_render(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
 
-    g = WurwolvesGame(GAME_ID)
-
     num_players = 10
 
     clients = [api_client_factory() for _ in range(num_players)]
@@ -110,18 +109,39 @@ def test_single_render(api_client_factory, caplog):
             "/api/{}/join".format(GAME_ID), params={"temporary_id": rand_id}
         )
 
-    # Render states
-    start = time.time()
+    # Send a few messages
+    messages = [
+        "Hello world!",
+        "This is going to be fun",
+        "Guys, how does the prostitute work?",
+    ]
+    g = WurwolvesGame(GAME_ID)
+    for m in messages:
+        g.send_chat_message(m)
 
+    # Render states
     rand_id = rand_ids[0]
     c = clients[0]
 
-    response = c.get("/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id})
-    assert response.ok
+    caplog.clear()
 
+    start = time.time()
+    response = c.get("/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id})
     total_time = time.time() - start
 
+    render_logs = caplog.records
+
+    render_database_times = _get_database_times(render_logs)
+
+    assert response.ok
+
     logging.warning(f"total_time = {total_time:.3f}s")
+
+    logging.warning(
+        f"total_time = {total_time:.3f}s of which "
+        f"{sum(render_database_times):.3f}s in "
+        f"{len(render_database_times)} DB calls"
+    )
 
     assert total_time < 0.1
 
