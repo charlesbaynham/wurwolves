@@ -278,7 +278,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
             # so we use the saved versions here which have not changed.
             self.process_actions(stage, stage_id)
 
-            self.get_game().touch()
+            self.touch()
 
         # Make one for the API router that does / does not require a selected_id
         if role_description.get_stage_action(stage).select_person:

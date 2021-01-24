@@ -190,7 +190,7 @@ class WurwolvesGame:
 
             game.players.append(player)
             user.player_roles.append(player)
-            game.touch()
+            self.touch()
 
         if not player.active:
             player.active = True
@@ -445,6 +445,7 @@ class WurwolvesGame:
 
     @db_scoped
     def touch(self):
+        self._session_modified = True
         self.get_game().touch()
 
     @db_scoped
