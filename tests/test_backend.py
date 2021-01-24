@@ -30,11 +30,13 @@ def test_join(api_client, db_session):
 
 
 def _get_database_times(logs):
-    return [l.args[0] for l in logs if "Query complete" in l.msg]
+    times = [l.args[0] for l in logs if "Query complete" in l.msg]
+    assert len(times) > 0
+    return times
 
 
 def test_state_speed(api_client_factory, caplog):
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.DEBUG, logger="sqltimings")
 
     num_players = 10
     num_repeats = 1
@@ -97,6 +99,7 @@ def test_state_speed(api_client_factory, caplog):
 
 def test_single_render(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.DEBUG, logger="sqltimings")
 
     num_players = 10
 
