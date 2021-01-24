@@ -102,16 +102,18 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
 
     g = WurwolvesGame(game_tag)
 
-    game = g.get_game_model()
+    game = g.get_game(eager=True)
     # 1x game SELECT
     # 1x players SELECT
     # n_playersx user SELECTs (there are n_players players in this game)
     # 1x messages (with n_msg messages)
     # n_msg x more player selects
+    #
+    # Reduced to 1x select
 
     if not game:
         g.join(user_id)
-        game = g.get_game_model()
+        game = g.get_game()
 
     players = game.players
 
@@ -125,7 +127,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     except IndexError:
         g.join(user_id)
 
-        game = g.get_game_model()
+        game = g.get_game()
         players = game.players
         player = [p for p in players if p.user_id == user_id][0]
 
@@ -144,9 +146,7 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
 
     logging.debug(f"Point 5: {time.time()}")
 
-    has_action, action_enabled = g.player_has_action(
-        player.id, game.stage, game.stage_id
-    )
+    has_action, action_enabled = g.player_has_action(player, game.stage, game.stage_id)
     # 1x select players
     # 1x select actions
 
