@@ -36,7 +36,7 @@ def _get_database_times(logs):
 def test_state_speed(api_client_factory, caplog):
     caplog.set_level(logging.DEBUG)
 
-    num_players = 5
+    num_players = 10
     num_repeats = 1
 
     clients = [api_client_factory() for _ in range(num_players)]
