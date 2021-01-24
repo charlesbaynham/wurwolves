@@ -13,7 +13,6 @@ from fastapi import Request
 from fastapi import Response
 from starlette.middleware.sessions import SessionMiddleware
 
-from . import frontend_parser
 from .game import WurwolvesGame
 from .roles import router as roles_router
 from .user_id import get_user_id

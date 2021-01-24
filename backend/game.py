@@ -24,9 +24,9 @@ from sqlalchemy.orm import joinedload
 
 from . import resolver
 from . import roles
-from .frontend_parser import FrontendState
 from .model import Action
 from .model import ActionModel
+from .model import FrontendState
 from .model import Game
 from .model import GameModel
 from .model import GameStage
