@@ -18,6 +18,7 @@ from uuid import UUID
 import pydantic
 from fastapi import HTTPException
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload
 
 from . import resolver
 from . import roles
@@ -222,12 +223,23 @@ class WurwolvesGame:
         return user
 
     @db_scoped
-    def get_game(self) -> Game:
-        return self._session.query(Game).get(self.game_id)
+    def get_game(self, eager=False) -> Game:
+        if eager:
+            return (
+                self._session.query(Game)
+                .options(joinedload(Game.players).joinedload(Player.user))
+                .options(joinedload(Game.players).joinedload(Player.actions))
+                .options(joinedload(Game.messages).joinedload(Message.visible_to))
+                .options(joinedload(Game.actions).joinedload(Action.player))
+                .options(joinedload(Game.actions).joinedload(Action.selected_player))
+                .get(self.game_id)
+            )
+        else:
+            return self._session.query(Game).get(self.game_id)
 
     @db_scoped
     def get_game_model(self) -> GameModel:
-        g = self.get_game()
+        g = self.get_game(eager=True)
         return GameModel.from_orm(g) if g else None
 
     @db_scoped
