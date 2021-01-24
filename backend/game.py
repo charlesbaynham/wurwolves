@@ -921,21 +921,12 @@ class WurwolvesGame:
         logging.debug(f"Starting parse_game_to_state at: {time.time()}")
 
         game = self.get_game(eager=True)
-        # 1x game SELECT
-        # 1x players SELECT
-        # n_playersx user SELECTs (there are n_players players in this game)
-        # 1x messages (with n_msg messages)
-        # n_msg x more player selects
-        #
-        # Reduced to 1x select
 
         if not game:
             self.join(user_id)
             game = self.get_game()
 
         players = game.players
-
-        logging.debug(f"Point 2: {time.time()}")
 
         if logging.getLogger().isEnabledFor(logging.DEBUG):
             logging.debug("Players: %s", [p.user.name for p in players])
@@ -949,8 +940,6 @@ class WurwolvesGame:
             players = game.players
             player = [p for p in players if p.user_id == user_id][0]
 
-        logging.debug(f"Point 3: {time.time()}")
-
         logging.debug("Game: %s", game)
         logging.debug("Player: %s", player)
         logging.debug("User id: %s", user_id)
@@ -958,19 +947,11 @@ class WurwolvesGame:
 
         role_details = get_role_description(player.role)
 
-        logging.debug(f"Point 4: {time.time()}")
-
         action_desc = role_details.get_stage_action(game.stage)
-
-        logging.debug(f"Point 5: {time.time()}")
 
         has_action, action_enabled = self.player_has_action(
             player, game.stage, game.stage_id
         )
-        # 1x select players
-        # 1x select actions
-
-        logging.debug(f"Point 6: {time.time()}")
 
         logging.debug(
             f"Player {player.user.name} is a {player.role.value}, has_action={has_action}, action_enabled={action_enabled}"
@@ -988,15 +969,13 @@ class WurwolvesGame:
             button_submit_func=get_action_func_name(player.role, game.stage),
         )
 
-        logging.debug(f"Point 7: {time.time()}")
-
         logging.debug("role_details.stages: {}".format(role_details.stages))
         logging.debug("action_desc: {}".format(action_desc))
         logging.debug("controls_state: {}".format(controls_state))
 
         player_states = []
         for p in players:
-            logging.debug(f"Point 8: {time.time()}")
+
             status = p.state
 
             ready = False
@@ -1009,9 +988,6 @@ class WurwolvesGame:
                 has_action, action_enabled = self.player_has_action(
                     p, game.stage, game.stage_id
                 )
-                # per loop:
-                # 1x select players
-                # 1x select actions
                 if has_action and not action_enabled:
                     ready = True
 
@@ -1060,15 +1036,14 @@ class WurwolvesGame:
         # Random sort
         player_states.sort(key=lambda s: s.seed)
 
-        logging.debug(f"Point 9: {time.time()}")
-
         state = FrontendState(
             state_hash=game.update_tag,
             players=player_states,
             chat=[
                 FrontendState.ChatMsg(msg=m.text, isStrong=m.is_strong)
                 for m in game.messages
-                if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
+                if not m.expired
+                and ((not m.visible_to) or any(player.id == v.id for v in m.visible_to))
             ],
             showSecretChat=bool(role_details.secret_chat_enabled),
             stage=game.stage,
@@ -1077,8 +1052,6 @@ class WurwolvesGame:
             myName=player.user.name,
             myNameIsGenerated=player.user.name_is_generated,
         )
-
-        logging.debug(f"Point 10: {time.time()}")
 
         logging.debug("Full UI state: %s", state)
 
