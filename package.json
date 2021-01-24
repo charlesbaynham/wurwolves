@@ -6,7 +6,7 @@
   "scripts": {
     "start": "concurrently \"node server\" \"npm run resetdb && uvicorn backend.main:app --host 0.0.0.0\"",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
-    "frontend": "node server",
+    "frontend": "cd react-ui && npm start",
     "backend": "(npm run resetdb || true) && uvicorn backend.main:app --reload --reload-dir backend",
     "build": "cd react-ui && npm run build",
     "install": "pip install -e . && cd react-ui/ && npm install",
