@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 from uuid import uuid4 as uuid
 
 import pytest
@@ -60,6 +61,41 @@ def test_name_player(db_session):
     u = db_session.query(User).filter(User.id == USER_ID).first()
     assert not u.name_is_generated
     assert u.name == "Charles"
+
+
+@patch("backend.game.trigger_update_event")
+def test_name_changes_state(update_mock, db_session):
+    """
+    Join two players to a game and confirm that
+       a) the second one joining changes the game hash and
+       b) the second one changing their name changes the game hash
+    """
+    g = WurwolvesGame(GAME_ID)
+    g.join(USER_ID)
+
+    update_mock.assert_called()
+    update_mock.reset_mock()
+
+    game_hash_1 = g.get_game().update_tag
+
+    new_user_id = uuid()
+    g.join(new_user_id)
+
+    update_mock.assert_called()
+    update_mock.reset_mock()
+
+    game_hash_2 = g.get_game().update_tag
+
+    WurwolvesGame.set_user_name(new_user_id, "Stinky Smelly")
+
+    update_mock.assert_called()
+    update_mock.reset_mock()
+
+    game_hash_3 = g.get_game().update_tag
+
+    assert game_hash_1 != game_hash_2
+    assert game_hash_1 != game_hash_3
+    assert game_hash_2 != game_hash_3
 
 
 def test_start_game(db_session):
