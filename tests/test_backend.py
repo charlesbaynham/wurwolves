@@ -80,10 +80,14 @@ def test_state_speed(api_client_factory, caplog):
     time_per_render = (end_renders - start_renders) / num_renders
 
     logging.warning(
-        f"time_per_join = {time_per_join:.3f}s of which {sum(join_database_times) / num_joins:.3f}s in {len(join_database_times)/num_joins} DB calls"
+        f"time_per_join = {time_per_join:.3f}s of which "
+        f"{sum(join_database_times) / num_joins:.3f}s in "
+        f"{len(join_database_times)/num_joins} DB calls"
     )
     logging.warning(
-        f"time_per_render = {time_per_render:.3f}s of which {sum(render_database_times) / num_renders:.3f}s in {len(render_database_times)/num_renders} DB calls"
+        f"time_per_render = {time_per_render:.3f}s of which "
+        f"{sum(render_database_times) / num_renders:.3f}s in "
+        f"{len(render_database_times)/num_renders} DB calls"
     )
 
     assert time_per_join < 0.1
