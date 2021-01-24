@@ -36,12 +36,12 @@ def five_player_game(db_session) -> WurwolvesGame:
     g.start_game()
 
     # Override the roles
-    with session_scope() as s:
-        for id, role, name in zip(user_ids, roles, names):
-            u = g.get_player(id)
-            s.add(u)
-            u.role = role
-            g.set_user_name(id, name)
+    for id, role, name in zip(user_ids, roles, names):
+        u = g.get_player(id)
+        u.role = role
+        g.set_user_name(id, name)
+
+    g._session.commit()
 
     roles_map = {name: user_id for name, user_id in zip(names, user_ids)}
 
@@ -211,12 +211,11 @@ def test_no_wolves_double_kill(five_player_game):
     # Add another wolf
     new_wolf = uuid()
     game.join(new_wolf)
-    with session_scope() as s:
-        u = game.get_player(new_wolf)
-        u.role = PlayerRole.WOLF
-        u.state = PlayerState.ALIVE
-        game.set_user_name(new_wolf, "Wolf 2")
-        s.add(u)
+
+    u = game.get_player(new_wolf)
+    u.role = PlayerRole.WOLF
+    u.state = PlayerState.ALIVE
+    game.set_user_name(new_wolf, "Wolf 2")
 
     game._set_stage(GameStage.NIGHT)
 
@@ -240,12 +239,12 @@ def test_no_move_to_vote_with_narrator(five_player_game):
     # Add a narrator
     narrator_id = uuid()
     game.join(narrator_id)
-    with session_scope() as s:
-        u = game.get_player(narrator_id)
-        u.role = PlayerRole.NARRATOR
-        u.state = PlayerState.SPECTATING
-        game.set_user_name(narrator_id, "The narrator")
-        s.add(u)
+
+    u = game.get_player(narrator_id)
+    u.role = PlayerRole.NARRATOR
+    u.state = PlayerState.SPECTATING
+    game.set_user_name(narrator_id, "The narrator")
+    game._session.commit()
 
     # Try to move to vote as a villager
     with pytest.raises(HTTPException):
@@ -263,12 +262,12 @@ def test_vigilante_shoot(five_player_game):
     # Add a narrator
     vig_id = uuid()
     game.join(vig_id)
-    with session_scope() as s:
-        u = game.get_player(vig_id)
-        u.role = PlayerRole.VIGILANTE
-        u.state = PlayerState.ALIVE
-        game.set_user_name(vig_id, "The vigilante")
-        s.add(u)
+
+    u = game.get_player(vig_id)
+    u.role = PlayerRole.VIGILANTE
+    u.state = PlayerState.ALIVE
+    game.set_user_name(vig_id, "The vigilante")
+    game._session.commit()
 
     # Shoot the first villager
     game.vigilante_night_action(vig_id, roles_map["Villager 1"])
@@ -289,12 +288,12 @@ def test_vigilante_no_shoot(five_player_game):
     # Add a narrator
     vig_id = uuid()
     game.join(vig_id)
-    with session_scope() as s:
-        u = game.get_player(vig_id)
-        u.role = PlayerRole.VIGILANTE
-        u.state = PlayerState.ALIVE
-        game.set_user_name(vig_id, "The vigilante")
-        s.add(u)
+
+    u = game.get_player(vig_id)
+    u.role = PlayerRole.VIGILANTE
+    u.state = PlayerState.ALIVE
+    game.set_user_name(vig_id, "The vigilante")
+    game._session.commit()
 
     # Other actions
     game.wolf_night_action(roles_map["Wolf"], roles_map["Medic"])
@@ -312,12 +311,12 @@ def test_vigilante_shoot_twice(five_player_game):
     # Add a narrator
     vig_id = uuid()
     game.join(vig_id)
-    with session_scope() as s:
-        u = game.get_player(vig_id)
-        u.role = PlayerRole.VIGILANTE
-        u.state = PlayerState.ALIVE
-        game.set_user_name(vig_id, "The vigilante")
-        s.add(u)
+
+    u = game.get_player(vig_id)
+    u.role = PlayerRole.VIGILANTE
+    u.state = PlayerState.ALIVE
+    game.set_user_name(vig_id, "The vigilante")
+    game._session.commit()
 
     # Shoot the first villager
     game.vigilante_night_action(vig_id, roles_map["Villager 1"])
@@ -808,12 +807,12 @@ def test_exorcist_suceed(five_player_game):
 
     exorcist_id = uuid()
     game.join(exorcist_id)
-    with session_scope() as s:
-        u = game.get_player(exorcist_id)
-        u.role = PlayerRole.EXORCIST
-        u.state = PlayerState.ALIVE
-        game.set_user_name(exorcist_id, "The exorcist")
-        s.add(u)
+
+    u = game.get_player(exorcist_id)
+    u.role = PlayerRole.EXORCIST
+    u.state = PlayerState.ALIVE
+    game.set_user_name(exorcist_id, "The exorcist")
+    game._session.commit()
 
     # Exorcist the wolf
     game.exorcist_night_action(exorcist_id, roles_map["Wolf"])
@@ -836,12 +835,12 @@ def test_exorcist_fail(five_player_game):
 
     exorcist_id = uuid()
     game.join(exorcist_id)
-    with session_scope() as s:
-        u = game.get_player(exorcist_id)
-        u.role = PlayerRole.EXORCIST
-        u.state = PlayerState.ALIVE
-        game.set_user_name(exorcist_id, "The exorcist")
-        s.add(u)
+
+    u = game.get_player(exorcist_id)
+    u.role = PlayerRole.EXORCIST
+    u.state = PlayerState.ALIVE
+    game.set_user_name(exorcist_id, "The exorcist")
+    game._session.commit()
 
     # Exorcist the medic
     game.exorcist_night_action(exorcist_id, roles_map["Medic"])

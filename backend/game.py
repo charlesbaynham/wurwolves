@@ -8,7 +8,9 @@ import datetime
 import logging
 import os
 import random
+import time
 from functools import wraps
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -18,11 +20,13 @@ from uuid import UUID
 import pydantic
 from fastapi import HTTPException
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload
 
 from . import resolver
 from . import roles
 from .model import Action
 from .model import ActionModel
+from .model import FrontendState
 from .model import Game
 from .model import GameModel
 from .model import GameStage
@@ -34,6 +38,8 @@ from .model import PlayerRole
 from .model import PlayerState
 from .model import User
 from .model import UserModel
+from .roles import get_action_func_name
+from .roles import get_role_description
 
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
@@ -87,7 +93,7 @@ class WurwolvesGame:
             self._session_modified = True
             logging.debug("Marking changes as present")
 
-    def db_scoped(func):
+    def db_scoped(func: Callable):
         """
         Start a session and store it in self._session
 
@@ -143,11 +149,6 @@ class WurwolvesGame:
                     if self._session_modified:
                         logging.debug("...and triggering updates")
                         trigger_update_event(self.game_id)
-
-                    # Close the session if we made it and no longer need it
-                    if not self._session_is_external:
-                        self._session.close()
-                        self._session = None
 
         return f
 
@@ -222,12 +223,23 @@ class WurwolvesGame:
         return user
 
     @db_scoped
-    def get_game(self) -> Game:
-        return self._session.query(Game).get(self.game_id)
+    def get_game(self, eager=False) -> Game:
+        if eager:
+            return (
+                self._session.query(Game)
+                .options(joinedload(Game.players).joinedload(Player.user))
+                .options(joinedload(Game.players).joinedload(Player.actions))
+                .options(joinedload(Game.messages).joinedload(Message.visible_to))
+                .options(joinedload(Game.actions).joinedload(Action.player))
+                .options(joinedload(Game.actions).joinedload(Action.selected_player))
+                .get(self.game_id)
+            )
+        else:
+            return self._session.query(Game).get(self.game_id)
 
     @db_scoped
     def get_game_model(self) -> GameModel:
-        g = self.get_game()
+        g = self.get_game(eager=True)
         return GameModel.from_orm(g) if g else None
 
     @db_scoped
@@ -775,7 +787,7 @@ class WurwolvesGame:
         from . import database
 
         with database.session_scope() as s:
-            u: User = s.query(User).filter(User.id == user_id).first()
+            u: User = s.query(User).get(user_id)
 
             if not u:
                 u = cls.make_user(s, user_id)
@@ -898,6 +910,178 @@ class WurwolvesGame:
         name = " ".join([random.choice(names), random.choice(names)]).title()
 
         return name
+
+    @db_scoped
+    def parse_game_to_state(self, user_id: UUID) -> FrontendState:
+        """
+        Parse this game into a FrontendState for viewing by the user user_id
+        """
+
+        logging.debug(f"Starting parse_game_to_state at: {time.time()}")
+
+        game = self.get_game(eager=True)
+        # 1x game SELECT
+        # 1x players SELECT
+        # n_playersx user SELECTs (there are n_players players in this game)
+        # 1x messages (with n_msg messages)
+        # n_msg x more player selects
+        #
+        # Reduced to 1x select
+
+        if not game:
+            self.join(user_id)
+            game = self.get_game()
+
+        players = game.players
+
+        logging.debug(f"Point 2: {time.time()}")
+
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            logging.debug("Players: %s", [p.user.name for p in players])
+
+        try:
+            player = [p for p in players if p.user_id == user_id][0]
+        except IndexError:
+            self.join(user_id)
+
+            game = self.get_game()
+            players = game.players
+            player = [p for p in players if p.user_id == user_id][0]
+
+        logging.debug(f"Point 3: {time.time()}")
+
+        logging.debug("Game: %s", game)
+        logging.debug("Player: %s", player)
+        logging.debug("User id: %s", user_id)
+        logging.debug("Game players: %s", players)
+
+        role_details = get_role_description(player.role)
+
+        logging.debug(f"Point 4: {time.time()}")
+
+        action_desc = role_details.get_stage_action(game.stage)
+
+        logging.debug(f"Point 5: {time.time()}")
+
+        has_action, action_enabled = self.player_has_action(
+            player, game.stage, game.stage_id
+        )
+        # 1x select players
+        # 1x select actions
+
+        logging.debug(f"Point 6: {time.time()}")
+
+        logging.debug(
+            f"Player {player.user.name} is a {player.role.value}, has_action={has_action}, action_enabled={action_enabled}"
+        )
+
+        controls_state = FrontendState.RoleState(
+            title=role_details.display_name,
+            text=action_desc.text[player.state],
+            role=player.role,
+            seed=player.seed,
+            button_visible=has_action,
+            button_enabled=action_enabled,
+            button_text=action_desc.button_text,
+            button_submit_person=action_desc.button_text and action_desc.select_person,
+            button_submit_func=get_action_func_name(player.role, game.stage),
+        )
+
+        logging.debug(f"Point 7: {time.time()}")
+
+        logging.debug("role_details.stages: {}".format(role_details.stages))
+        logging.debug("action_desc: {}".format(action_desc))
+        logging.debug("controls_state: {}".format(controls_state))
+
+        player_states = []
+        for p in players:
+            logging.debug(f"Point 8: {time.time()}")
+            status = p.state
+
+            ready = False
+            if game.stage in [
+                GameStage.LOBBY,
+                GameStage.ENDED,
+                GameStage.VOTING,
+                GameStage.DAY,
+            ]:
+                has_action, action_enabled = self.player_has_action(
+                    p, game.stage, game.stage_id
+                )
+                # per loop:
+                # 1x select players
+                # 1x select actions
+                if has_action and not action_enabled:
+                    ready = True
+
+            # Display real role if the game is ended or this player should be able to see it
+            real_role = p.role
+            if (
+                p.previous_role
+                and (p.role == PlayerRole.SPECTATOR or p.role == PlayerRole.NARRATOR)
+                and p.state != PlayerState.SPECTATING
+            ):
+                real_role = p.previous_role
+            displayed_role = PlayerRole.VILLAGER
+
+            # Only display as a spectator if the player is a spectator/narrator and had no
+            # previous role
+            if real_role == PlayerRole.SPECTATOR or real_role == PlayerRole.NARRATOR:
+                displayed_role = PlayerRole.SPECTATOR
+            elif (
+                (p.id == player.id)
+                or player.role == PlayerRole.NARRATOR
+                or (real_role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
+                or (real_role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
+                or (real_role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)
+                or (real_role == PlayerRole.MASON and player.role == PlayerRole.MASON)
+                or (real_role == PlayerRole.JESTER and p.state == PlayerState.LYNCHED)
+                or game.stage == GameStage.ENDED
+                or (
+                    real_role == PlayerRole.MAYOR
+                    and self.num_previous_stages(GameStage.NIGHT, game.stage_id) > 0
+                )
+            ):
+                displayed_role = real_role
+
+            player_states.append(
+                FrontendState.UIPlayerState(
+                    id=p.user_id,
+                    name=p.user.name,
+                    status=status,
+                    role=displayed_role,
+                    seed=p.seed,
+                    selected=False,
+                    ready=ready,
+                )
+            )
+
+        # Random sort
+        player_states.sort(key=lambda s: s.seed)
+
+        logging.debug(f"Point 9: {time.time()}")
+
+        state = FrontendState(
+            state_hash=game.update_tag,
+            players=player_states,
+            chat=[
+                FrontendState.ChatMsg(msg=m.text, isStrong=m.is_strong)
+                for m in game.messages
+                if (not m.visible_to) or any(player.id == v.id for v in m.visible_to)
+            ],
+            showSecretChat=bool(role_details.secret_chat_enabled),
+            stage=game.stage,
+            controls_state=controls_state,
+            myID=user_id,
+            myName=player.user.name,
+            myNameIsGenerated=player.user.name_is_generated,
+        )
+
+        logging.debug(f"Point 10: {time.time()}")
+
+        logging.debug("Full UI state: %s", state)
+
+        return state
 
 
 def trigger_update_event(game_id: int):
