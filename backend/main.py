@@ -39,7 +39,7 @@ def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
-    state = frontend_parser.parse_game_to_state(game_tag, user_id)
+    state = WurwolvesGame(game_tag).parse_game_to_state(user_id)
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
     return state
