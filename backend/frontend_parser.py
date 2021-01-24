@@ -1,5 +1,6 @@
 import logging
 import random
+import time
 from typing import List
 from typing import Union
 from uuid import UUID
@@ -96,35 +97,55 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     """
     Gets the requested Game and parses it into a FrontendState for viewing by the user user_id
     """
-    db_session = database.Session()
 
-    g = WurwolvesGame(game_tag, session=db_session)
+    logging.debug(f"Starting parse_game_to_state at: {time.time()}")
 
-    game = g.get_game()
-    player = g.get_player(user_id)
-    players = g.get_players()
+    g = WurwolvesGame(game_tag)
 
-    if not game or not player:
+    game = g.get_game_model()
+
+    if not game:
         g.join(user_id)
         game = g.get_game_model()
-        player = g.get_player_model(user_id)
+
+    actions = g.get_actions_model()
+
+    players = game.players
+
+    logging.debug(f"Point 2: {time.time()}")
+
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        logging.debug("Players: %s", [p.user.name for p in players])
+
+    try:
+        player = [p for p in players if p.user_id == user_id][0]
+    except IndexError:
+        g.join(user_id)
+
+        game = g.get_game_model()
+        players = game.players
+        player = [p for p in players if p.user_id == user_id][0]
+
+    logging.debug(f"Point 3: {time.time()}")
 
     logging.debug("Game: %s", game)
     logging.debug("Player: %s", player)
     logging.debug("User id: %s", user_id)
-
-    if not game or not player:
-        return None
-
     logging.debug("Game players: %s", players)
 
     role_details = get_role_description(player.role)
 
+    logging.debug(f"Point 4: {time.time()}")
+
     action_desc = role_details.get_stage_action(game.stage)
+
+    logging.debug(f"Point 5: {time.time()}")
 
     has_action, action_enabled = g.player_has_action(
         player.id, game.stage, game.stage_id
     )
+
+    logging.debug(f"Point 6: {time.time()}")
 
     logging.debug(
         f"Player {player.user.name} is a {player.role.value}, has_action={has_action}, action_enabled={action_enabled}"
@@ -142,12 +163,15 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
         button_submit_func=get_action_func_name(player.role, game.stage),
     )
 
+    logging.debug(f"Point 7: {time.time()}")
+
     logging.debug("role_details.stages: {}".format(role_details.stages))
     logging.debug("action_desc: {}".format(action_desc))
     logging.debug("controls_state: {}".format(controls_state))
 
     player_states = []
     for p in players:
+        logging.debug(f"Point 8: {time.time()}")
         status = p.state
 
         ready = False
@@ -208,6 +232,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
     # Random sort
     player_states.sort(key=lambda s: s.seed)
 
+    logging.debug(f"Point 9: {time.time()}")
+
     state = FrontendState(
         state_hash=game.update_tag,
         players=player_states,
@@ -224,8 +250,8 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
         myNameIsGenerated=player.user.name_is_generated,
     )
 
-    logging.debug("Full UI state: %s", state)
+    logging.debug(f"Point 10: {time.time()}")
 
-    db_session.close()
+    logging.debug("Full UI state: %s", state)
 
     return state

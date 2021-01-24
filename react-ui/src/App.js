@@ -19,6 +19,12 @@ import {
   selectStage
 } from './features/selectors'
 
+import ReactGA from 'react-ga'
+
+
+ReactGA.initialize('UA-186218553-1');
+ReactGA.pageview(window.location.pathname + window.location);
+
 
 function App() {
   const game_stage = useSelector(selectStage)

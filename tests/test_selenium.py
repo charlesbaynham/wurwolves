@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import time
 from multiprocessing import Pool
@@ -7,6 +8,9 @@ import geckodriver_autoinstaller
 import pytest
 import selenium
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from backend.reset_db import reset_database
 
@@ -21,19 +25,15 @@ def setup_module(module):
 
 TEST_URL = "localhost:3000"
 TEST_GAME = "james-doesnt-understand-prostitute"
+from pathlib import Path
+
 
 # Mark this whole module as requiring selenium
 pytestmark = pytest.mark.selenium
 
 
 @pytest.fixture(scope="session")
-def test_server():
-    # Later, this should launch and close a test server
-    pass
-
-
-@pytest.fixture(scope="session")
-def session_driver(test_server):
+def session_driver(full_server):
     driver = webdriver.Firefox()
     driver.implicitly_wait(5)
     yield driver
@@ -51,7 +51,7 @@ def driver(session_driver):
 
 
 @pytest.fixture(scope="session")
-def five_drivers_raw(test_server):
+def five_drivers_raw(full_server):
     import concurrent.futures
 
     def make_drv(*args):
@@ -114,10 +114,17 @@ def test_set_name(driver):
 
     set_name(driver, my_name)
 
-    players = driver.find_elements_by_xpath("//*[@id='playerGrid']//figure")
+    time.sleep(0.5)
 
+    xpath_players = "//*[@id='playerGrid']//figure"
+
+    wait = WebDriverWait(driver, 3)
+    players = wait.until(
+        EC.text_to_be_present_in_element((By.XPATH, xpath_players), my_name)
+    )
+
+    players = driver.find_elements_by_xpath(xpath_players)
     assert len(players) == 1
-    assert players[0].text == my_name
 
 
 def test_multiple_players(five_drivers):

@@ -78,7 +78,7 @@ class Game(Base):
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    created = Column(DateTime, default=func.now())
+    time_created = Column(DateTime, server_default=func.now())
 
     update_tag = Column(Integer(), default=random_counter_value)
 
@@ -91,7 +91,7 @@ class Game(Base):
     players = relationship("Player", backref="game", lazy=True)
 
     messages = relationship(
-        "Message", backref="game", lazy=True, order_by=lambda: Message.created
+        "Message", backref="game", lazy=True, order_by=lambda: Message.time_created
     )
 
     actions = relationship("Action", backref="game", lazy=True)
@@ -118,6 +118,7 @@ class PlayerRole(str, enum.Enum):
     PRIEST = "Priest"
     PROSTITUTE = "Prostitute"
     MASON = "Mason"
+    EXORCIST = "Exorcist"
 
 
 class PlayerState(str, enum.Enum):
@@ -143,6 +144,8 @@ class Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True, nullable=False)
+    time_created = Column(DateTime, server_default=func.now())
+
     last_seen = Column(DateTime, default=func.now())
     game_id = Column(Integer, ForeignKey("games.id"))
     user_id = Column(UUIDType, ForeignKey("users.id"))
@@ -170,18 +173,28 @@ class Player(Base):
     )
 
     def touch(self):
-        self.last_seen = func.now()
+        self.last_seen = datetime.datetime.now()
 
 
 class Action(Base):
     __tablename__ = "actions"
 
     id = Column(Integer, primary_key=True, nullable=False)
+    time_created = Column(DateTime, server_default=func.now())
+
     game_id = Column(Integer, ForeignKey("games.id"))
     player_id = Column(Integer, ForeignKey("players.id"))
     stage_id = Column(Integer, index=True, nullable=False)
     selected_player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
     stage = Column(Enum(GameStage), nullable=False)
+    expired = Column(Boolean, default=False)
+
+    # These fields aren't actually needed or used by the code, since we can
+    # determine a player's role by checking the player relationship. However,
+    # without these, I can't reproduce games from archived actions.
+    role = Column(Enum(PlayerRole), nullable=False)
+
+    random_field = Column(Integer)
 
     player = relationship("Player", lazy=True, foreign_keys=player_id)
     selected_player = relationship("Player", lazy=True, foreign_keys=selected_player_id)
@@ -197,6 +210,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUIDType, primary_key=True, nullable=False)
+    time_created = Column(DateTime, server_default=func.now())
     name = Column(String)
     name_is_generated = Column(Boolean, default=True)
 
@@ -220,12 +234,15 @@ class Message(Base):
     __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    created = Column(DateTime, default=func.now())
+    time_created = Column(DateTime, server_default=func.now())
+
     text = Column(String)
     game_id = Column(Integer, ForeignKey("games.id"), nullable=False)
     is_strong = Column(Boolean, default=False)
 
     visible_to = relationship("Player", secondary=association_table)
+
+    expired = Column(Boolean, default=False)
 
 
 def hash_game_tag(text: str):
@@ -263,6 +280,7 @@ class MessageModel(pydantic.BaseModel):
     text: str
     game_id: int
     is_strong: bool
+    expired: bool
 
     visible_to: List[PlayerModel]
 
@@ -273,7 +291,6 @@ class MessageModel(pydantic.BaseModel):
 
 class GameModel(pydantic.BaseModel):
     id: int
-    created: datetime.datetime
     update_tag: int
 
     stage: GameStage
