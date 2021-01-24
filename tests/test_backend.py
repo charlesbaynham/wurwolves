@@ -91,8 +91,8 @@ def test_state_speed(api_client_factory, caplog):
         f"{len(render_database_times)/num_renders} DB calls"
     )
 
-    assert time_per_join < 0.001
-    assert time_per_render < 0.001
+    assert time_per_join < 0.1
+    assert time_per_render < 0.1
 
 
 def test_single_render(api_client_factory, caplog):
@@ -143,7 +143,7 @@ def test_single_render(api_client_factory, caplog):
         f"{len(render_database_times)} DB calls"
     )
 
-    assert total_time < 0.001
+    assert total_time < 0.1
 
 
 def test_rejoin_no_change_hash(api_client, db_session):
