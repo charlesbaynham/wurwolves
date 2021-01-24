@@ -681,7 +681,7 @@ class WurwolvesGame:
         Called by the execute() stage of vote actions
         """
         p = self.get_player_by_id(player_id)
-        p.votes = Player.votes + 1
+        p.votes += 1
 
         logging.info(f"Player {p.user.name} has {p.votes} votes")
 

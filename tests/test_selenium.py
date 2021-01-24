@@ -1,3 +1,4 @@
+import concurrent.futures
 import logging
 import os
 import re
@@ -50,15 +51,25 @@ def driver(session_driver):
     session_driver.delete_all_cookies()
 
 
+def make_drv(*args):
+    driver = webdriver.Firefox()
+    driver.implicitly_wait(5)
+    return driver
+
+
+def make_N_drivers(n, url=None):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=n) as executor:
+        drivers = list(executor.map(make_drv, range(n)))
+
+    if url:
+        for d in drivers:
+            d.get(url)
+
+    return drivers
+
+
 @pytest.fixture(scope="session")
 def five_drivers_raw(full_server):
-    import concurrent.futures
-
-    def make_drv(*args):
-        driver = webdriver.Firefox()
-        driver.implicitly_wait(5)
-        return driver
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         drivers = list(executor.map(make_drv, range(5)))
 
