@@ -8,3 +8,4 @@ pip-tools
 black
 selenium
 geckodriver-autoinstaller
+requests

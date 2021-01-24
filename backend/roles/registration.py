@@ -13,6 +13,7 @@ from fastapi import HTTPException
 from fastapi import Path
 
 from . import acolyte
+from . import exorcist
 from . import jester
 from . import mason
 from . import mayor
@@ -59,6 +60,7 @@ acolyte.register(ROLE_MAP)
 priest.register(ROLE_MAP)
 prostitute.register(ROLE_MAP)
 mason.register(ROLE_MAP)
+exorcist.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:
@@ -243,12 +245,7 @@ def register_role(WurwolvesGame, role: PlayerRole):
                 immediate_return = True
 
             # Save the action, unless aborted by immediate.
-            # Do this as a subtransaction so that the "all actions finished"
-            # query has access to this action, but touch the game so an update
-            # is triggered
             if immediate_return is not False:
-                self._session.begin_nested()
-
                 if action_class.team_action == TeamBehaviour.DUPLICATED_PER_ROLE:
                     submit_players = self.get_players(role=player.role)
                 else:
@@ -261,10 +258,20 @@ def register_role(WurwolvesGame, role: PlayerRole):
                         selected_player_id=selected_player_id,
                         stage=stage,
                         stage_id=stage_id,
+                        role=p.role,
                     )
-                    self._session.add(action)
+                    p.actions.append(action)
 
-                self._session.commit()
+                    # Manually expire the Game here, since it contains a
+                    # .actions collection which will now be out of data. Why
+                    # SQLAlchemy doesn't do this is beyond me: see
+                    # https://docs.sqlalchemy.org/en/13/orm/session_basics.html#deleting-objects-referenced-from-collections-and-scalar-relationships
+                    # and
+                    # https://stackoverflow.com/questions/48702706/why-does-sqlalchemy-not-update-relations-after-object-deletion
+                    # Actually I suppose it's reasonable: the model specifies
+                    # the many-to-one relationship between actions and players,
+                    # but doesn't mention games anywhere.
+                    self._session.expire(game, attribute_names=["actions"])
 
             # If all the actions are complete, process them
             # Note that game.stage / game.stage_id may have been changed by the immediate actions,

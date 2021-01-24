@@ -116,11 +116,17 @@ def test_kill(demo_game, db_session):
     assert p.previous_role is not None
 
 
-def test_chat(demo_game, db_session):
+def test_chat(demo_game_factory, db_session):
+
+    demo_game = demo_game_factory()
+    demo_game2 = demo_game_factory()
+
     other_user = uuid()
     demo_game.join(other_user)
+    demo_game2.join(other_user)
 
     demo_game.send_chat_message("Hello world!")
+    demo_game2.send_chat_message("This one is in a different game")
     demo_game.send_chat_message("Important", is_strong=True)
     demo_game.send_chat_message("Secret", user_list=[USER_ID])
     demo_game.send_chat_message("Secret 2", user_list=[other_user])
@@ -137,6 +143,7 @@ def test_chat(demo_game, db_session):
     assert "Important" in summary
     assert "Secret" in summary
     assert "Secret 2" not in summary
+    assert "This one is in a different game" not in summary
 
 
 def test_chat_order(demo_game, db_session):
@@ -158,7 +165,9 @@ def test_chat_order(demo_game, db_session):
     game = demo_game.get_game()
     db_session.add(game)
 
-    for message, sent_text in zip(game.messages, messages_text):
+    messages = demo_game.get_messages(USER_ID)
+
+    for message, sent_text in zip(messages, messages_text):
         assert message.text == sent_text
 
 
@@ -182,13 +191,15 @@ def test_chat_order_deletions(demo_game, db_session):
     game = demo_game.get_game()
     db_session.add(game)
 
-    db_session.delete(game.messages[0])
+    game.messages[1].expired = True
     db_session.commit()
     db_session.expire_all()
 
     demo_game.send_chat_message("Final")
 
-    for message, sent_text in zip(game.messages, messages_text + ["Final"]):
+    messages = demo_game.get_messages(USER_ID)
+
+    for message, sent_text in zip(messages, messages_text + ["Final"]):
         assert message.text == sent_text
 
 
@@ -205,15 +216,24 @@ def get_player(db_session, game_id, user_id) -> Game:
 
 
 @pytest.fixture
-def demo_game(db_session) -> WurwolvesGame:
-    g = WurwolvesGame(GAME_ID)
+def demo_game(demo_game_factory) -> WurwolvesGame:
+    return demo_game_factory()
 
-    # You need at least three players for start_game() to work
-    g.join(USER_ID)
-    g.join(uuid())
-    g.join(uuid())
 
-    return g
+@pytest.fixture
+def demo_game_factory(db_session):
+    def factory():
+        random_id = str(uuid())
+        g = WurwolvesGame(random_id)
+
+        # You need at least three players for start_game() to work
+        g.join(USER_ID)
+        g.join(uuid())
+        g.join(uuid())
+
+        return g
+
+    return factory
 
 
 def test_async_get_hash_msg(db_session, demo_game):
