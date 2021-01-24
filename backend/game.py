@@ -145,11 +145,6 @@ class WurwolvesGame:
                         logging.debug("...and triggering updates")
                         trigger_update_event(self.game_id)
 
-                    # Close the session if we made it and no longer need it
-                    if not self._session_is_external:
-                        self._session.close()
-                        self._session = None
-
         return f
 
     @db_scoped

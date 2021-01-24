@@ -146,7 +146,7 @@ def test_chat(demo_game_factory, db_session):
     assert "This one is in a different game" not in summary
 
 
-def test_chat_order(demo_game, db_session):
+def test_chat_order(demo_game):
     # Clear current messages
     demo_game.clear_chat_messages()
 
@@ -160,10 +160,7 @@ def test_chat_order(demo_game, db_session):
     for txt in messages_text:
         demo_game.send_chat_message(txt)
 
-    db_session.expire_all()
-
-    game = demo_game.get_game()
-    db_session.add(game)
+    demo_game._session.expire_all()
 
     messages = demo_game.get_messages(USER_ID)
 
@@ -171,7 +168,7 @@ def test_chat_order(demo_game, db_session):
         assert message.text == sent_text
 
 
-def test_chat_order_deletions(demo_game, db_session):
+def test_chat_order_deletions(demo_game):
     # Clear current messages
     demo_game.clear_chat_messages()
 
@@ -187,6 +184,7 @@ def test_chat_order_deletions(demo_game, db_session):
     for txt in messages_text:
         demo_game.send_chat_message(txt)
 
+    db_session = demo_game._session
     db_session.expire_all()
     game = demo_game.get_game()
     db_session.add(game)
@@ -316,6 +314,8 @@ def test_kick(db_session):
     for p in player_ids:
         game.join(p)
 
+    db_session = game._session
+
     # Set one to have joined ages ago
     timeout_player_id = player_ids[0]
     timeout_player = game.get_player(timeout_player_id)
@@ -366,6 +366,8 @@ def test_kick_with_actions(db_session):
     ]
     for p in player_ids:
         game.join(p)
+
+    db_session = game._session
 
     game.start_game()
 
@@ -453,6 +455,8 @@ def test_not_kicked_during_game(db_session):
     ]
     for p in player_ids:
         game.join(p)
+
+    db_session = game._session
 
     game.start_game()
 

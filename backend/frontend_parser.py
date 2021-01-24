@@ -113,8 +113,6 @@ def parse_game_to_state(game_tag: str, user_id: UUID) -> FrontendState:
         g.join(user_id)
         game = g.get_game_model()
 
-    actions = g.get_actions_model()  # 1x query with no actions
-
     players = game.players
 
     logging.debug(f"Point 2: {time.time()}")
