@@ -3,6 +3,9 @@ import os
 import random
 from typing import Optional
 
+import psutil
+from dotenv import find_dotenv
+from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import FastAPI
@@ -17,7 +20,17 @@ from .game import WurwolvesGame
 from .roles import router as roles_router
 from .user_id import get_user_id
 
-logging.getLogger().setLevel(logging.INFO)
+
+logger = logging.getLogger("main")
+
+# Set the root logger level to LOG_LEVEL if specified
+load_dotenv(find_dotenv())
+if "LOG_LEVEL" in os.environ:
+    logging.getLogger().setLevel(os.environ.get("LOG_LEVEL"))
+    logger.info("Setting log level to %s", os.environ.get("LOG_LEVEL"))
+else:
+    logging.getLogger().setLevel(logging.INFO)
+    logger.info("Setting log level to INFO by default")
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), "words.txt")
 
@@ -33,11 +46,19 @@ app.add_middleware(
 )
 
 
+def get_mem_usage():
+    return psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2
+
+
 @router.get("/{game_tag}/state")
-def get_state(
+async def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Starting get_state for UUID %s", user_id)
+        logger.debug("get_state memory usage = %.0f MB", get_mem_usage())
+
     state = WurwolvesGame(game_tag).parse_game_to_state(user_id)
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
@@ -50,6 +71,8 @@ def send_chat(
     user_id=Depends(get_user_id),
     message: str = Query(..., description="Chat message for secret chat"),
 ):
+    logger.debug("Starting send_chat for UUID %s", user_id)
+
     WurwolvesGame(game_tag).send_secret_message(user_id, message)
 
 
@@ -67,6 +90,10 @@ async def get_state_hash(
 
     Basically a hash: this string is guaranteed to change if the state changes
     """
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Starting get_state_hash for UUID %s", user_id)
+        logger.debug("get_state_hash memory usage = %.0f MB", get_mem_usage())
+
     game = WurwolvesGame(game_tag)
     game.player_keepalive(user_id)
     return await game.get_hash(known_hash=known_hash)
@@ -77,6 +104,8 @@ async def join(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    logger.debug("Starting join for UUID %s", user_id)
+
     WurwolvesGame(game_tag).join(user_id)
 
 
@@ -85,6 +114,8 @@ async def end_game(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    logger.debug("Starting end_game for UUID %s", user_id)
+
     g = WurwolvesGame(game_tag)
     user_name = g.get_user_model(user_id).name
     g.send_chat_message(f"The game was ended early by {user_name}", is_strong=True)
@@ -98,16 +129,22 @@ async def set_name(
     ),
     user_id=Depends(get_user_id),
 ):
+    logger.debug("Starting set_name for UUID %s", user_id)
+
     WurwolvesGame.set_user_name(user_id, name)
 
 
 @router.get("/my_id")
-async def get_id(*, user_ID=Depends(get_user_id)):
-    return user_ID
+async def get_id(*, user_id=Depends(get_user_id)):
+    logger.debug("Starting get_id for UUID %s", user_id)
+
+    return user_id
 
 
 @router.get("/get_game")
 async def get_game():
+    logger.debug("Starting get_game")
+
     global words
     if not words:
         with open(WORDS_FILE, newline="") as f:
