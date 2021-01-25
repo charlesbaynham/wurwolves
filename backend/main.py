@@ -3,6 +3,7 @@ import os
 import random
 from typing import Optional
 
+import psutil
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import FastAPI
@@ -33,11 +34,16 @@ app.add_middleware(
 )
 
 
+def get_mem_usage():
+    return psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2
+
+
 @router.get("/{game_tag}/state")
 def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    logging.info("get_state memory usage = %.0f MB", get_mem_usage())
     state = WurwolvesGame(game_tag).parse_game_to_state(user_id)
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
@@ -67,6 +73,8 @@ async def get_state_hash(
 
     Basically a hash: this string is guaranteed to change if the state changes
     """
+    logging.info("get_state_hash memory usage = %.0f MB", get_mem_usage())
+
     game = WurwolvesGame(game_tag)
     game.player_keepalive(user_id)
     return await game.get_hash(known_hash=known_hash)
