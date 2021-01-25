@@ -14,6 +14,7 @@ from fastapi import Path
 
 from . import acolyte
 from . import exorcist
+from . import fool
 from . import jester
 from . import mason
 from . import mayor
@@ -61,6 +62,7 @@ priest.register(ROLE_MAP)
 prostitute.register(ROLE_MAP)
 mason.register(ROLE_MAP)
 exorcist.register(ROLE_MAP)
+fool.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:
