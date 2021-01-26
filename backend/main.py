@@ -75,6 +75,12 @@ async def get_state_hash(
     """
     logging.info("get_state_hash memory usage = %.0f MB", get_mem_usage())
 
+    from pympler import muppy, summary
+
+    all_objects = muppy.get_objects()
+    sum1 = summary.summarize(all_objects)
+    summary.print_(sum1)
+
     game = WurwolvesGame(game_tag)
     game.player_keepalive(user_id)
     return await game.get_hash(known_hash=known_hash)

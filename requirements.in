@@ -12,3 +12,5 @@ sqlalchemy_utils
 psutil
 
 fastapi[all]
+
+pympler
