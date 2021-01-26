@@ -39,7 +39,7 @@ def get_mem_usage():
 
 
 @router.get("/{game_tag}/state")
-def get_state(
+async def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
@@ -74,12 +74,6 @@ async def get_state_hash(
     Basically a hash: this string is guaranteed to change if the state changes
     """
     logging.info("get_state_hash memory usage = %.0f MB", get_mem_usage())
-
-    from pympler import muppy, summary
-
-    all_objects = muppy.get_objects()
-    sum1 = summary.summarize(all_objects)
-    summary.print_(sum1)
 
     game = WurwolvesGame(game_tag)
     game.player_keepalive(user_id)
