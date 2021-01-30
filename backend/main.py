@@ -25,8 +25,13 @@ from .user_id import get_user_id
 load_dotenv(find_dotenv())
 if "LOG_LEVEL" in os.environ:
     logging.getLogger().setLevel(os.environ.get("LOG_LEVEL"))
+    logging.info("Setting log level to %s", os.environ.get("LOG_LEVEL"))
 else:
     logging.getLogger().setLevel(logging.INFO)
+    logging.info("Setting log level to INFO by default")
+    from pprint import pprint
+
+    pprint(dict(os.environ))
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), "words.txt")
 

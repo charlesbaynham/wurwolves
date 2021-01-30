@@ -4,7 +4,7 @@
   "private": true,
   "description": "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server",
   "scripts": {
-    "start": "concurrently \"npm run frontend\" \"npm run resetdb && uvicorn backend.main:app --host 0.0.0.0\"",
+    "start": "DEBUG_DATABASE=true LOG_LEVEL=DEBUG concurrently \"npm run frontend\" \"npm run resetdb && uvicorn backend.main:app --host 0.0.0.0\"",
     "dev": "concurrently \"cd react-ui && npm start\" \"npm run backend\"",
     "frontend": "node server",
     "backend": "(npm run resetdb || true) && uvicorn backend.main:app --reload --reload-dir backend",
