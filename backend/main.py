@@ -4,6 +4,8 @@ import random
 from typing import Optional
 
 import psutil
+from dotenv import find_dotenv
+from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import FastAPI
@@ -18,7 +20,13 @@ from .game import WurwolvesGame
 from .roles import router as roles_router
 from .user_id import get_user_id
 
-logging.getLogger().setLevel(logging.DEBUG)
+
+# Set the logger level to LOG_LEVEL if specified
+load_dotenv(find_dotenv())
+if "LOG_LEVEL" in os.environ:
+    logging.getLogger().setLevel(os.environ.get("LOG_LEVEL"))
+else:
+    logging.getLogger().setLevel(logging.INFO)
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), "words.txt")
 
