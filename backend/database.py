@@ -18,7 +18,7 @@ Session = None
 
 
 logger = logging.getLogger("sqltimings")
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.DEBUG)
 
 # if the sqltimings logger is enabled for debug, add hooks to the database engine
 @event.listens_for(Engine, "before_cursor_execute")
