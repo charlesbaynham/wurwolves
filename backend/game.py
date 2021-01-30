@@ -922,7 +922,7 @@ class WurwolvesGame:
 
         if logger.isEnabledFor(logging.DEBUG):
             t_start = time.time()
-            logger.debug(f"Starting parse_game_to_state at: {t_start}")
+            logger.debug(f"Starting parse_game_to_state")
 
         game = self.get_game(eager=True)
 
@@ -1062,7 +1062,7 @@ class WurwolvesGame:
 
             t_end = time.time()
             logger.debug(
-                f"Ending parse_game_to_state at: {t_end}, duration = {t_end - t_start :.3f}s"
+                f"Ending parse_game_to_state, duration = {t_end - t_start :.3f}s"
             )
 
         return state
