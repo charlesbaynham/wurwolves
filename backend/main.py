@@ -29,9 +29,6 @@ if "LOG_LEVEL" in os.environ:
 else:
     logging.getLogger().setLevel(logging.INFO)
     logging.info("Setting log level to INFO by default")
-    from pprint import pprint
-
-    pprint(dict(os.environ))
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), "words.txt")
 
