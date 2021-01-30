@@ -54,6 +54,8 @@ names = None
 
 update_events: Dict[int, asyncio.Event] = {}
 
+logger = logging.getLogger("game")
+
 
 class ChatMessage(pydantic.BaseModel):
     text: str
@@ -91,7 +93,7 @@ class WurwolvesGame:
     def _check_for_dirty_session(self):
         if self._session.dirty or self._session.new or self._session.deleted:
             self._session_modified = True
-            logging.debug("Marking changes as present")
+            logger.debug("Marking changes as present")
 
     def db_scoped(func: Callable):
         """
@@ -136,18 +138,18 @@ class WurwolvesGame:
                     # Check this before we reduce session_users to 0, else
                     # calling get_game will reopen a new session before the
                     # old one is closed.
-                    logging.debug("Touching game")
+                    logger.debug("Touching game")
                     g = self.get_game()
                     g.touch()
 
                 self._session_users -= 1
 
                 if self._session_users == 0:
-                    logging.debug("Committing session")
+                    logger.debug("Committing session")
                     self._session.commit()
 
                     if self._session_modified:
-                        logging.debug("...and triggering updates")
+                        logger.debug("...and triggering updates")
                         trigger_update_event(self.game_id)
 
         return f
@@ -159,12 +161,12 @@ class WurwolvesGame:
         Args:
             user_ID (str): ID of the user
         """
-        logging.info("User %s joining now" % user_id)
+        logger.info("User %s joining now" % user_id)
 
         # Get the user from the user list, adding them if not already present
         user = self._session.query(User).get(user_id)
         if not user:
-            logging.info("User %s not in DB" % user_id)
+            logger.info("User %s not in DB" % user_id)
             user = self.make_user(self._session, user_id)
 
         # Get the game, creating it if it doesn't exist
@@ -184,7 +186,7 @@ class WurwolvesGame:
                 state=PlayerState.SPECTATING,
             )
 
-            logging.info(
+            logger.info(
                 "Adding user %s to game %s with ID %s", user_id, self.game_id, player.id
             )
 
@@ -198,7 +200,7 @@ class WurwolvesGame:
         # To avoid instant kicking:
         self.player_keepalive(user_id)
 
-        logging.debug("User %s join complete" % user_id)
+        logger.debug("User %s join complete" % user_id)
 
     @staticmethod
     def make_user(session, user_id) -> User:
@@ -208,7 +210,7 @@ class WurwolvesGame:
         Note that, since this is a static method, it has no access to self._session and
         so must be passed a session to use.
         """
-        logging.debug("make_user start")
+        logger.debug("make_user start")
 
         user = User(
             id=user_id,
@@ -217,8 +219,8 @@ class WurwolvesGame:
         )
         session.add(user)
 
-        logging.info("Making new user {} = {}".format(user.id, user.name))
-        logging.debug("make_user end")
+        logger.info("Making new user {} = {}".format(user.id, user.name))
+        logger.debug("make_user end")
 
         return user
 
@@ -409,7 +411,7 @@ class WurwolvesGame:
     def get_hash_now(self):
         g = self.get_game()
         _hash = g.update_tag if g else 0
-        logging.info(f"Current hash {_hash}, game {g.id}")
+        logger.info(f"Current hash {_hash}, game {g.id}")
         return _hash
 
     async def get_hash(self, known_hash=None, timeout=GET_HASH_TIMEOUT) -> int:
@@ -431,14 +433,14 @@ class WurwolvesGame:
         # Otherwise, lookup / make an event and subscribe to it
         if self.game_id not in update_events:
             update_events[self.game_id] = asyncio.Event()
-            logging.info("Made new event for game %s", self.game_id)
+            logger.info("Made new event for game %s", self.game_id)
         else:
-            logging.info("Subscribing to event for %s", self.game_id)
+            logger.info("Subscribing to event for %s", self.game_id)
 
         try:
             event = update_events[self.game_id]
             await asyncio.wait_for(event.wait(), timeout=timeout)
-            logging.info(f"Event received for game {self.game_id}")
+            logger.info(f"Event received for game {self.game_id}")
             return self.get_hash_now()
         except asyncio.TimeoutError:
             return current_hash
@@ -456,7 +458,7 @@ class WurwolvesGame:
                 404, "You are not registered: refreshing now to join game"
             )
 
-        logging.info("Keepalive player %s", user_id)
+        logger.info("Keepalive player %s", user_id)
 
         # If the game has been modified, mark this
         self._check_for_dirty_session()
@@ -476,14 +478,14 @@ class WurwolvesGame:
 
         for p in players:
             if p.active and p.last_seen <= threshold:
-                logging.info(
+                logger.info(
                     f"Marking player {p.user.name} as inactive (p.last_seen="
                     f"{p.last_seen}, threshold={threshold})"
                 )
                 p.active = False
                 someone_changed = True
             elif not p.active and p.last_seen > threshold:
-                logging.info(f"Marking player {p.user.name} as active")
+                logger.info(f"Marking player {p.user.name} as active")
                 p.active = True
                 someone_changed = True
 
@@ -494,7 +496,7 @@ class WurwolvesGame:
 
     @db_scoped
     def create_game(self):
-        logging.info("Making new game %s", self.game_id)
+        logger.info("Making new game %s", self.game_id)
         game = Game(id=self.game_id)
 
         self._session.add(game)
@@ -550,7 +552,7 @@ class WurwolvesGame:
 
         player_roles = roles.assign_roles(len(players))
 
-        logging.info(
+        logger.info(
             "Assigning roles for {} game: {}".format(self.game_id, player_roles)
         )
         if not player_roles:
@@ -696,7 +698,7 @@ class WurwolvesGame:
         p = self.get_player_by_id(player_id)
         p.votes += 1
 
-        logging.info(f"Player {p.user.name} has {p.votes} votes")
+        logger.info(f"Player {p.user.name} has {p.votes} votes")
 
     @db_scoped
     def reset_votes(self):
@@ -704,7 +706,7 @@ class WurwolvesGame:
         for p in self.get_players(filter_by_activity=False):
             p.votes = 0
         game.stage_id += 1
-        logging.info("Votes reset")
+        logger.info("Votes reset")
 
     @db_scoped
     def process_actions(self, stage: GameStage, stage_id: int):
@@ -737,12 +739,12 @@ class WurwolvesGame:
 
             has_action, action_enabled = self.player_has_action(player, stage, stage_id)
             if has_action and action_enabled:
-                logging.info("Stage not complete: %s has not acted", player.user.name)
+                logger.info("Stage not complete: %s has not acted", player.user.name)
                 ready = False
                 break
 
         if ready:
-            logging.info(f"All the actions are in for game {self.game_id}: processing")
+            logger.info(f"All the actions are in for game {self.game_id}: processing")
             resolver.process_actions(self, stage, stage_id)
 
     @db_scoped
@@ -854,7 +856,7 @@ class WurwolvesGame:
         if not action_class:
             return False, False
 
-        logging.debug(
+        logger.debug(
             f"player.state = {player.state}, action_class.allowed_player_states = {action_class.allowed_player_states}"
         )
 
@@ -918,7 +920,9 @@ class WurwolvesGame:
         Parse this game into a FrontendState for viewing by the user user_id
         """
 
-        logging.debug(f"Starting parse_game_to_state at: {time.time()}")
+        if logger.isEnabledFor(logging.DEBUG):
+            t_start = time.time()
+            logger.debug(f"Starting parse_game_to_state at: {t_start}")
 
         game = self.get_game(eager=True)
 
@@ -928,8 +932,8 @@ class WurwolvesGame:
 
         players = game.players
 
-        if logging.getLogger().isEnabledFor(logging.DEBUG):
-            logging.debug("Players: %s", [p.user.name for p in players])
+        if logging.getLogger().isEnabledFor(logger.DEBUG):
+            logger.debug("Players: %s", [p.user.name for p in players])
 
         try:
             player = [p for p in players if p.user_id == user_id][0]
@@ -940,10 +944,10 @@ class WurwolvesGame:
             players = game.players
             player = [p for p in players if p.user_id == user_id][0]
 
-        logging.debug("Game: %s", game)
-        logging.debug("Player: %s", player)
-        logging.debug("User id: %s", user_id)
-        logging.debug("Game players: %s", players)
+        logger.debug("Game: %s", game)
+        logger.debug("Player: %s", player)
+        logger.debug("User id: %s", user_id)
+        logger.debug("Game players: %s", players)
 
         role_details = get_role_description(player.role)
 
@@ -953,7 +957,7 @@ class WurwolvesGame:
             player, game.stage, game.stage_id
         )
 
-        logging.debug(
+        logger.debug(
             f"Player {player.user.name} is a {player.role.value}, has_action={has_action}, action_enabled={action_enabled}"
         )
 
@@ -969,9 +973,9 @@ class WurwolvesGame:
             button_submit_func=get_action_func_name(player.role, game.stage),
         )
 
-        logging.debug("role_details.stages: {}".format(role_details.stages))
-        logging.debug("action_desc: {}".format(action_desc))
-        logging.debug("controls_state: {}".format(controls_state))
+        logger.debug("role_details.stages: {}".format(role_details.stages))
+        logger.debug("action_desc: {}".format(action_desc))
+        logger.debug("controls_state: {}".format(controls_state))
 
         player_states = []
         for p in players:
@@ -1053,13 +1057,19 @@ class WurwolvesGame:
             myNameIsGenerated=player.user.name_is_generated,
         )
 
-        logging.debug("Full UI state: %s", state)
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Full UI state: %s", state)
+
+            t_end = time.time()
+            logger.debug(
+                f"Ending parse_game_to_state at: {t_end}, duration = {t_end - t_start :.3f}s"
+            )
 
         return state
 
 
 def trigger_update_event(game_id: int):
-    logging.info(f"Triggering updates for game {game_id}")
+    logger.info(f"Triggering updates for game {game_id}")
     global update_events
     if game_id in update_events:
         update_events[game_id].set()
