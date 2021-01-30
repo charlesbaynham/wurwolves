@@ -926,6 +926,8 @@ class WurwolvesGame:
 
         game = self.get_game(eager=True)
 
+        logger.debug("Game is loaded from database")
+
         if not game:
             self.join(user_id)
             game = self.get_game()
