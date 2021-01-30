@@ -18,7 +18,7 @@ from .game import WurwolvesGame
 from .roles import router as roles_router
 from .user_id import get_user_id
 
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 
 WORDS_FILE = os.path.join(os.path.dirname(__file__), "words.txt")
 
