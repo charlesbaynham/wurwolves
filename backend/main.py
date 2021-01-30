@@ -51,6 +51,8 @@ async def get_state(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    logging.debug("Starting get_state for UUID %s", user_id)
+
     logging.info("get_state memory usage = %.0f MB", get_mem_usage())
     state = WurwolvesGame(game_tag).parse_game_to_state(user_id)
     if not state:
@@ -64,6 +66,8 @@ def send_chat(
     user_id=Depends(get_user_id),
     message: str = Query(..., description="Chat message for secret chat"),
 ):
+    logging.debug("Starting send_chat for UUID %s", user_id)
+
     WurwolvesGame(game_tag).send_secret_message(user_id, message)
 
 
@@ -81,6 +85,8 @@ async def get_state_hash(
 
     Basically a hash: this string is guaranteed to change if the state changes
     """
+    logging.debug("Starting get_state_hash for UUID %s", user_id)
+
     logging.info("get_state_hash memory usage = %.0f MB", get_mem_usage())
 
     game = WurwolvesGame(game_tag)
@@ -93,6 +99,8 @@ async def join(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    logging.debug("Starting join for UUID %s", user_id)
+
     WurwolvesGame(game_tag).join(user_id)
 
 
@@ -101,6 +109,8 @@ async def end_game(
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
+    logging.debug("Starting end_game for UUID %s", user_id)
+
     g = WurwolvesGame(game_tag)
     user_name = g.get_user_model(user_id).name
     g.send_chat_message(f"The game was ended early by {user_name}", is_strong=True)
@@ -114,16 +124,22 @@ async def set_name(
     ),
     user_id=Depends(get_user_id),
 ):
+    logging.debug("Starting set_name for UUID %s", user_id)
+
     WurwolvesGame.set_user_name(user_id, name)
 
 
 @router.get("/my_id")
-async def get_id(*, user_ID=Depends(get_user_id)):
-    return user_ID
+async def get_id(*, user_id=Depends(get_user_id)):
+    logging.debug("Starting get_id for UUID %s", user_id)
+
+    return user_id
 
 
 @router.get("/get_game")
 async def get_game():
+    logging.debug("Starting get_game")
+
     global words
     if not words:
         with open(WORDS_FILE, newline="") as f:
