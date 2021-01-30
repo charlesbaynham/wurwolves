@@ -932,7 +932,7 @@ class WurwolvesGame:
 
         players = game.players
 
-        if logging.getLogger().isEnabledFor(logger.DEBUG):
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
             logger.debug("Players: %s", [p.user.name for p in players])
 
         try:
