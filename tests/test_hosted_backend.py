@@ -19,52 +19,51 @@ def test_hello(backend_server):
     assert response.ok
 
 
-def test_multiple_state_requests(backend_server):
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
+# def test_multiple_state_requests(backend_server):
+#     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
-    # Make 10 sessions
-    num_players = 10
+#     # Make 10 sessions
+#     num_players = 10
 
-    game_url = API_URL + "somegame/"
+#     game_url = API_URL + "somegame/"
 
-    sessions = [requests.Session() for _ in range(num_players)]
+#     sessions = [requests.Session() for _ in range(num_players)]
 
-    start = time.time()
+#     start = time.time()
 
-    for s in sessions:
-        assert s.post(game_url + "join").ok
+#     for s in sessions:
+#         assert s.post(game_url + "join").ok
 
-        r = s.get(game_url + "state", timeout=5)
-        r = s.get(game_url + "state", timeout=5)
+#         r = s.get(game_url + "state", timeout=10)
 
-    #     assert r.ok
+#     assert r.ok
 
-    #     state = json.loads(r.content)
+#     state = json.loads(r.content)
 
-    #     logging.info("Joined game as %s, t=%.2fs", state["myName"], time.time() - start)
+#     logging.info("Joined game as %s, t=%.2fs", state["myName"], time.time() - start)
 
-    # # Start the game
-    # # sessions[0].post(game_url + "spectator_lobby_action", timeout=2)
+# # Start the game
+# # sessions[0].post(game_url + "spectator_lobby_action", timeout=2)
 
-    # # end = time.time()
-    # # logging.info("Total time: %.2f", end - start)
+# # end = time.time()
+# # logging.info("Total time: %.2f", end - start)
 
-    # # start = time.time()
+# # start = time.time()
 
-    # # states = []
-    # # for s in sessions:
-    # try:
-    #     r = s.get(game_url + "state", timeout=5)
-    # except requests.exceptions.ReadTimeout:
-    #     raise RuntimeError("Timeout")
+# # states = []
+# # for s in sessions:
+# try:
+#     r = s.get(game_url + "state", timeout=5)
+# except requests.exceptions.ReadTimeout:
+#     raise RuntimeError("Timeout")
 
-    # assert r.ok
+# assert r.ok
 
-    # states.append(r.content)
+# states.append(r.content)
 
-    end = time.time()
-    logging.info("Total state rendering: %.2f", end - start)
+# end = time.time()
+# logging.info("Total state rendering: %.2f", end - start)
 
-    # states = [json.loads(x) for x in states]
+# states = [json.loads(x) for x in states]
 
-    # raise RuntimeError
+# raise RuntimeError
