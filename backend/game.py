@@ -169,7 +169,7 @@ class WurwolvesGame:
         logger.info("User %s joining now" % user_id)
 
         # Get the user from the user list, adding them if not already present
-        user = self._session.query(User).get(user_id)
+        user = self.get_user(user_id)
         if not user:
             logger.info("User %s not in DB" % user_id)
             user = self.make_user(self._session, user_id)
@@ -185,8 +185,6 @@ class WurwolvesGame:
 
         if not player:
             player = Player(
-                game=game,
-                user=user,
                 role=PlayerRole.SPECTATOR,
                 state=PlayerState.SPECTATING,
             )
@@ -245,16 +243,13 @@ class WurwolvesGame:
 
     @db_scoped
     def get_player_id(self, user_id: UUID) -> int:
+        game = self.get_game()
 
-        o = (
-            self._session.query(Player.id)
-            .filter(Player.game_id == self.game_id, Player.user_id == user_id)
-            .first()
-        )
-        if o:
-            return o[0]
-        else:
-            raise KeyError(f"User {user_id} not found in this game")
+        for p in game.players:
+            if p.user_id == user_id:
+                return p.id
+
+        raise KeyError(f"User {user_id} not found in this game")
 
     @db_scoped
     def get_player(self, user_id: UUID, filter_by_activity=True) -> Player:
@@ -263,14 +258,14 @@ class WurwolvesGame:
         `filter_by_activity`, only return players who should be displayed in this
         stage of the game.
         """
-        q = self._session.query(Player).filter(
-            Player.game_id == self.game_id, Player.user_id == user_id
-        )
+        players = self.get_players(filter_by_activity=filter_by_activity)
 
-        if filter_by_activity:
-            q = _filter_by_activity(q)
+        this_player = [p for p in players if p.user_id == user_id]
 
-        return q.first()
+        if this_player:
+            return this_player[0]
+        else:
+            return None
 
     @db_scoped
     def get_player_by_id(self, player_id: int, filter_by_activity=False) -> Player:
@@ -280,12 +275,12 @@ class WurwolvesGame:
         stage of the game.
         """
 
-        if filter_by_activity:
-            q = self._session.query(Player).filter(Player.id == player_id)
-            q = _filter_by_activity(q)
-            return q.first()
-        else:
-            return self._session.query(Player).get(player_id)
+        p = self._session.query(Player).get(player_id)
+
+        if filter_by_activity and not _player_is_active(p):
+            return None
+
+        return p
 
     @db_scoped
     def get_player_model(self, user_id: UUID) -> PlayerModel:
@@ -307,15 +302,16 @@ class WurwolvesGame:
         If `filter_by_activity`, only return Players who should be displayed in
         this stage of the game.
         """
-        q = self._session.query(Player).filter(Player.game_id == self.game_id)
+        game = self.get_game()
+        players = game.players
 
         if filter_by_activity:
-            q = _filter_by_activity(q)
+            players = [p for p in players if _player_is_active(p)]
 
         if role:
-            q = q.filter(Player.role == role)
+            players = [p for p in players if p.role == role]
 
-        return q.all()
+        return players
 
     @db_scoped
     def get_players_model(self, role: PlayerRole = None) -> List[PlayerModel]:
@@ -333,21 +329,21 @@ class WurwolvesGame:
 
         Filter by the passed parameters if any.
         """
-        q = self._session.query(Action).filter(Action.game_id == self.game_id)
+        actions = self.get_game().actions
 
         if stage_id:
-            q = q.filter(Action.stage_id == stage_id)
+            actions = [a for a in actions if a.stage_id == stage_id]
 
         if player_id:
-            q = q.filter(Action.player_id == player_id)
+            actions = [a for a in actions if a.player_id == player_id]
 
         if stage:
-            q = q.filter(Action.stage == stage)
+            actions = [a for a in actions if a.stage == stage]
 
         if not include_expired:
-            q = q.filter(Action.expired == False)
+            actions = [a for a in actions if a.expired == False]
 
-        return q.all()
+        return actions
 
     @db_scoped
     def get_actions_model(
@@ -372,14 +368,14 @@ class WurwolvesGame:
         This function uses the fact that stage_id is guaranteed to be monotonic, if not consecutive.
         """
 
-        q = self._session.query(Action.stage_id).filter(
-            Action.game_id == self.game_id, Action.stage == stage_type
-        )
+        previous_actions = self.get_actions(stage=stage_type)
 
         if stage_id:
-            q = q.filter(Action.stage_id < stage_id)
+            previous_actions = [a for a in previous_actions if a.stage_id < stage_id]
 
-        return len(set(q.all()))
+        previous_stage_ids = [a.stage_id for a in previous_actions]
+
+        return len(set(previous_stage_ids))
 
     @db_scoped
     def send_secret_message(self, user_id: UUID, message: str):
@@ -408,10 +404,14 @@ class WurwolvesGame:
 
     @db_scoped
     def get_hash_now(self):
-        g = self.get_game()
-        _hash = g.update_tag if g else 0
-        logger.info(f"Current hash {_hash}, game {g.id}")
-        return _hash
+        baked_query = bakery(lambda session: session.query(Game.update_tag))
+        baked_query += lambda q: q.filter(Game.id == bindparam("game_id"))
+
+        update_tag = baked_query(self._session).params(game_id=self.game_id).first()
+
+        ret = update_tag if update_tag else 0
+        logger.info(f"Current hash {ret}, game {self.game_id}")
+        return ret
 
     async def get_hash(self, known_hash=None, timeout=GET_HASH_TIMEOUT) -> int:
         """
@@ -595,30 +595,20 @@ class WurwolvesGame:
     @db_scoped
     def get_messages(self, user_id: UUID, include_expired=False) -> List[ChatMessage]:
         """ Get chat messages visible to the given user """
-        query = (
-            self._session.query(Message)
-            #  All messages, including public
-            .join(Message.visible_to, isouter=True)
-            # For this game
-            .filter(Message.game_id == self.game_id)
-            .filter(
-                or_(
-                    # Where it's public
-                    Message.visible_to == None,
-                    # Or this player can see it
-                    Player.user_id == user_id,
-                )
-            )
-            .order_by(Message.time_created.asc())
-        )
+        messages = self.get_game().messages
+        player = self.get_player(user_id)
+
+        visible_messages = [
+            m for m in messages if not m.visible_to or player in m.visible_to
+        ]
 
         if not include_expired:
-            query = query.filter(Message.expired == False)
-
-        messages = query.all()
+            visible_messages = [m for m in visible_messages if not m.expired]
 
         # Format as ChatMessages
-        return [ChatMessage(text=m.text, is_strong=m.is_strong) for m in messages]
+        return [
+            ChatMessage(text=m.text, is_strong=m.is_strong) for m in visible_messages
+        ]
 
     @db_scoped
     def clear_chat_messages(self):
@@ -759,19 +749,16 @@ class WurwolvesGame:
 
     @db_scoped
     def get_user(self, user_id: UUID):
-        u = self._session.query(User).filter_by(id=user_id).first()
-        if not u:
-            raise HTTPException(404, f"User {user_id} does not exist")
+        u = self._session.query(User).get(user_id)
         return u
-
-    @db_scoped
-    def get_user_model(self, user_id: UUID):
-        u = self.get_user(user_id)
-        return UserModel.from_orm(u)
 
     @db_scoped
     def get_user_name(self, user_id: UUID):
         u = self.get_user(user_id)
+
+        if not u:
+            raise HTTPException(404, f"User {user_id} not found")
+
         return u.name
 
     @classmethod
@@ -827,15 +814,15 @@ class WurwolvesGame:
         Is there at least one player with this role and stage in the game?
         """
 
-        q = self._session.query(Player).filter(Player.game_id == self.game_id)
+        players = self.get_game().players
 
         if role:
-            q = q.filter(Player.role == role)
+            players = [p for p in players if p.role == role]
 
         if state:
-            q = q.filter(Player.state == state)
+            players = [p for p in players if p.state == state]
 
-        return bool(q.first())
+        return bool(players)
 
     @db_scoped
     def player_has_action(
@@ -885,18 +872,10 @@ class WurwolvesGame:
                 if roles.get_role_team(role) == my_team
             ]
 
-            team_actions = (
-                self._session.query(Action)
-                .join(Action.player)
-                .filter(
-                    Action.game_id == self.game_id,
-                    Action.stage_id == stage_id,
-                    Player.role.in_(my_team_roles),
-                )
-                .all()
-            )
+            actions = [a for a in self.get_game().actions if a.stage_id == stage_id]
+            actions_by_my_team = [a for a in actions if a.role in my_team_roles]
 
-            action_enabled = not bool(team_actions)
+            action_enabled = not bool(actions_by_my_team)
         else:
             action_enabled = not any(a.stage_id == stage_id for a in player.actions)
 
@@ -1087,6 +1066,17 @@ def _filter_by_activity(q):
             Player.role != PlayerRole.SPECTATOR,
             Player.previous_role != PlayerRole.SPECTATOR,
         )
+    )
+
+
+def _player_is_active(p: Player):
+    """
+    Given a player, decide if they are active in the game
+    """
+    return (
+        p.active
+        or p.role != PlayerRole.SPECTATOR
+        or (p.previous_role and p.previous_role != PlayerRole.SPECTATOR)
     )
 
 
