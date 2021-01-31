@@ -160,6 +160,8 @@ class Player(Base):
 
     previous_role = Column(Enum(PlayerRole), nullable=True)
 
+    user = relationship("User", lazy="joined", foreign_keys=user_id)
+
     actions = relationship(
         "Action",
         lazy=True,
@@ -215,7 +217,7 @@ class User(Base):
     name = Column(String)
     name_is_generated = Column(Boolean, default=True)
 
-    player_roles = relationship("Player", backref="user", lazy=True)
+    player_roles = relationship("Player", lazy=True)
 
 
 # many-to-many relationship between players and messages
@@ -241,7 +243,7 @@ class Message(Base):
     game_id = Column(Integer, ForeignKey("games.id"), nullable=False)
     is_strong = Column(Boolean, default=False)
 
-    visible_to = relationship("Player", secondary=association_table)
+    visible_to = relationship("Player", secondary=association_table, lazy="joined")
 
     expired = Column(Boolean, default=False)
 
