@@ -34,8 +34,7 @@ def test_multiple_state_requests(backend_server):
     for s in sessions:
         assert s.post(game_url + "join").ok
 
-        r = s.get(game_url + "state", timeout=5)
-        r = s.get(game_url + "state", timeout=5)
+        r = s.get(game_url + "state", timeout=10)
 
     #     assert r.ok
 
