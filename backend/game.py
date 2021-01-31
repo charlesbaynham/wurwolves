@@ -19,7 +19,9 @@ from uuid import UUID
 
 import pydantic
 from fastapi import HTTPException
+from sqlalchemy import bindparam
 from sqlalchemy import or_
+from sqlalchemy.ext import baked
 from sqlalchemy.orm import selectinload
 
 from . import resolver
@@ -41,6 +43,7 @@ from .model import UserModel
 from .roles import get_action_func_name
 from .roles import get_role_description
 
+
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 # Time for get_hash to wait for until it returns. Clients will have their
@@ -55,6 +58,9 @@ names = None
 update_events: Dict[int, asyncio.Event] = {}
 
 logger = logging.getLogger("game")
+
+# A bakery for SQLAlchemy queries
+bakery = baked.bakery()
 
 
 class ChatMessage(pydantic.BaseModel):
@@ -226,7 +232,12 @@ class WurwolvesGame:
 
     @db_scoped
     def get_game(self) -> Game:
-        return self._session.query(Game).get(self.game_id)
+        baked_query = bakery(lambda session: session.query(Game))
+        baked_query += lambda q: q.filter(Game.id == bindparam("game_id"))
+
+        result = baked_query(self._session).params(game_id=self.game_id).first()
+
+        return result
 
     @db_scoped
     def get_game_model(self) -> GameModel:
