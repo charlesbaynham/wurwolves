@@ -505,8 +505,8 @@ class WurwolvesGame:
     @staticmethod
     def list_join(input_list):
         my_list = [str(i) for i in input_list]
-        return "&".join(
-            [",".join(my_list[:-1]), my_list[-1]] if len(my_list) > 2 else my_list
+        return " & ".join(
+            [", ".join(my_list[:-1]), my_list[-1]] if len(my_list) > 2 else my_list
         )
 
     @db_scoped
