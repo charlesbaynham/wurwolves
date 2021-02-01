@@ -62,7 +62,7 @@ class RoleDescription(pydantic.BaseModel):
 
     # dict of stages in which this role cannot see their own role,
     # and sees themselves as the given role instead
-    masked_role_in_stages: Dict[GameStage: PlayerRole] = {}
+    masked_role_in_stages: Dict[GameStage, PlayerRole] = {}
 
     @pydantic.validator("fallback_role_description", always=True)
     def role_and_desc(cls, v, values):

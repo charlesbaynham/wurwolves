@@ -929,7 +929,16 @@ class WurwolvesGame:
         logger.debug("User id: %s", user_id)
         logger.debug("Game players: %s", players)
 
+        # Get the role description
         role_details = get_role_description(player.role)
+
+        # If the role description specifies that this player shouldn't see their
+        # role in this stage, get the replacement role instead
+        if game.stage in role_details.masked_role_in_stages:
+            apparant_role = role_details.masked_role_in_stages[game.stage]
+            role_details = get_role_description(apparant_role)
+        else:
+            apparant_role = player.role
 
         action_desc = role_details.get_stage_action(game.stage)
 
@@ -944,7 +953,7 @@ class WurwolvesGame:
         controls_state = FrontendState.RoleState(
             title=role_details.display_name,
             text=action_desc.text[player.state],
-            role=player.role,
+            role=apparant_role,
             seed=player.seed,
             button_visible=has_action,
             button_enabled=action_enabled,
@@ -989,9 +998,10 @@ class WurwolvesGame:
             # previous role
             if real_role == PlayerRole.SPECTATOR or real_role == PlayerRole.NARRATOR:
                 displayed_role = PlayerRole.SPECTATOR
+            elif p.id == player.id:
+                displayed_role = apparant_role
             elif (
-                (p.id == player.id)
-                or player.role == PlayerRole.NARRATOR
+                player.role == PlayerRole.NARRATOR
                 or (real_role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
                 or (real_role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
                 or (real_role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)

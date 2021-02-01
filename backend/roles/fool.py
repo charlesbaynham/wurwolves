@@ -32,6 +32,11 @@ description = RoleDescription(
     team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,
     fallback_role_description=villager,
+    masked_role_in_stages={
+        GameStage.DAY: PlayerRole.FOOL,
+        GameStage.NIGHT: PlayerRole.FOOL,
+        GameStage.VOTING: PlayerRole.FOOL,
+    },
 )
 
 
