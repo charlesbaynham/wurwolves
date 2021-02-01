@@ -35,7 +35,7 @@ You win if all the wolves are eliminated.
 """
 
 description = RoleDescription(
-    display_name="You are the Priest!",
+    display_name="Priest",
     stages={
         GameStage.NIGHT: StageAction(
             text=f"""

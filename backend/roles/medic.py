@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 description = RoleDescription(
-    display_name="Medic",
+    display_name="You are the Medic",
     stages={
         GameStage.NIGHT: StageAction(
             text="""

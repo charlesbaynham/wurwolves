@@ -20,7 +20,7 @@ from .utility_mixins import TargetRequired
 from .villager import description as villager
 
 description = RoleDescription(
-    display_name="Wolf",
+    display_name="You are a Wolf!",
     stages={
         GameStage.DAY: StageAction(
             text="""

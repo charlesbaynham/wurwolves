@@ -39,7 +39,7 @@ You win if all the wolves are eliminated.
 """
 
 description = RoleDescription(
-    display_name="You are the prostitute!",
+    display_name="You are the Prostitute",
     stages={
         GameStage.NIGHT: StageAction(
             text=f"""

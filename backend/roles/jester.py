@@ -24,7 +24,7 @@ helps the wolves. They can if they want to though, so don't annoy them...
 """
 
 description = RoleDescription(
-    display_name="You are a Jester!",
+    display_name="You are the Jester!",
     stages={
         GameStage.DAY: StageAction(text=general_text),
         GameStage.NIGHT: StageAction(
