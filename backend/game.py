@@ -303,6 +303,9 @@ class WurwolvesGame:
         this stage of the game.
         """
         game = self.get_game()
+        if not game:
+            raise HTTPException(404, "Game not found")
+
         players = game.players
 
         if filter_by_activity:
