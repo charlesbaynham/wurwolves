@@ -36,9 +36,10 @@ def backend_server():
     with cd(NPM_ROOT_DIR):
         logging.info("Launching backend...")
 
+        f = open(LOG_FILE, "w")
         dev_process = sp.Popen(
             ["npm", "run", "backend"],
-            stdout=sp.PIPE,
+            stdout=f,
             stderr=sp.STDOUT,
             preexec_fn=os.setsid,
         )
@@ -55,6 +56,11 @@ def backend_server():
                 dev_process.wait(timeout=3)
             except TimeoutError:
                 os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
+
+            f.close()
+
+            print("Server logs:")
+            [print(l.strip()) for l in open(LOG_FILE, "r").readlines()]
 
         except ProcessLookupError:
             pass
@@ -96,8 +102,6 @@ def full_server(backend_server):
         except TimeoutError:
             os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
             dev_process.wait(timeout=3)
-
-        print(dev_process.stdout)
 
 
 def wait_until_server_up(test_url, timeout):
