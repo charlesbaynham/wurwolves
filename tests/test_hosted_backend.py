@@ -40,10 +40,10 @@ def test_multiple_state_requests(backend_server):
         r = s.post(game_url + "join", timeout=READ_TIMEOUT)
         assert r.ok
 
-        r = s.get(game_url + "state", timeout=READ_TIMEOUT)
-        assert r.ok
+        # r = s.get(game_url + "state", timeout=READ_TIMEOUT)
+        # assert r.ok
 
-        states.append(r.content)
+        # states.append(r.content)
 
     logging.info(
         "%sx joins and renders in t=%.0fms per player",
