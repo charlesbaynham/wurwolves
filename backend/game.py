@@ -412,7 +412,7 @@ class WurwolvesGame:
 
         update_tag = baked_query(self._session).params(game_id=self.game_id).first()
 
-        ret = update_tag if update_tag else 0
+        ret = update_tag[0] if update_tag else 0
         logger.info(f"Current hash {ret}, game {self.game_id}")
         return ret
 
