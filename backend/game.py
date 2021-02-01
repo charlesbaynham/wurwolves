@@ -40,7 +40,7 @@ from .model import PlayerState
 from .model import User
 from .model import UserModel
 from .roles import get_action_func_name
-from .roles import get_role_description
+from .roles import get_apparant_role
 
 
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
@@ -568,23 +568,23 @@ class WurwolvesGame:
         self.send_chat_message("A new game has started. Night falls in the village")
 
         for player in players:
-            desc = roles.get_role_description(player.role)
+            apparant_role, desc = roles.get_apparant_role(player.role, GameStage.NIGHT)
             if desc.reveal_others_text:
                 fellows = [p for p in players if p.role == player.role and p != player]
                 if fellows:
                     self.send_chat_message(
-                        f"You are a {player.role.value}! Your {desc.reveal_others_text} are "
+                        f"You are a {apparant_role.value}! Your {desc.reveal_others_text} are "
                         f"{self.list_join(p.user.name for p in fellows)}",
                         player_list=[player.id],
                     )
                 else:
                     self.send_chat_message(
-                        f"You are a {player.role.value}! You're all by yourself...",
+                        f"You are a {apparant_role.value}! You're all by yourself...",
                         player_list=[player.id],
                     )
             else:
                 self.send_chat_message(
-                    f"You are a {player.role.value}!", player_list=[player.id]
+                    f"You are a {apparant_role.value}!", player_list=[player.id]
                 )
 
         for role in list(PlayerRole):
@@ -930,15 +930,7 @@ class WurwolvesGame:
         logger.debug("Game players: %s", players)
 
         # Get the role description
-        role_details = get_role_description(player.role)
-
-        # If the role description specifies that this player shouldn't see their
-        # role in this stage, get the replacement role instead
-        if game.stage in role_details.masked_role_in_stages:
-            apparant_role = role_details.masked_role_in_stages[game.stage]
-            role_details = get_role_description(apparant_role)
-        else:
-            apparant_role = player.role
+        apparant_role, role_details = get_apparant_role(player.role, game.stage)
 
         action_desc = role_details.get_stage_action(game.stage)
 
