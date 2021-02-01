@@ -98,7 +98,7 @@ def full_server(backend_server):
             dev_process.wait(timeout=3)
 
         print("Server logs:")
-        print(dev_process.stdout)
+        print(dev_process.stdout.readlines())
 
 
 def wait_until_server_up(test_url, timeout):
