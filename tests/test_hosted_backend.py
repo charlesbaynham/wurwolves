@@ -8,6 +8,7 @@ import time
 import requests
 
 API_URL = "http://localhost:8000/api/"
+READ_TIMEOUT = 5
 
 
 def test_hello(backend_server):
@@ -36,10 +37,10 @@ def test_multiple_state_requests(backend_server):
     states = []
 
     for s in sessions:
-        r = s.post(game_url + "join", timeout=2)
+        r = s.post(game_url + "join", timeout=READ_TIMEOUT)
         assert r.ok
 
-        r = s.get(game_url + "state", timeout=2)
+        r = s.get(game_url + "state", timeout=READ_TIMEOUT)
         assert r.ok
 
         states.append(r.content)
@@ -52,7 +53,9 @@ def test_multiple_state_requests(backend_server):
 
     # Start the game
     time_to_start = timeit(
-        lambda: sessions[0].post(game_url + "spectator_lobby_action", timeout=2),
+        lambda: sessions[0].post(
+            game_url + "spectator_lobby_action", timeout=READ_TIMEOUT
+        ),
         number=1,
     )
 
@@ -62,7 +65,7 @@ def test_multiple_state_requests(backend_server):
     def render():
         states = []
         for s in sessions:
-            r = s.get(game_url + "state", timeout=2)
+            r = s.get(game_url + "state", timeout=READ_TIMEOUT)
             states.append(r.content)
         return states
 
