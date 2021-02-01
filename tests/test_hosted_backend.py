@@ -72,5 +72,3 @@ def test_multiple_state_requests(backend_server):
     time_to_render = timeit(render, number=1) / num_players
 
     logging.info("%.0fms to render states after game started", 1000 * time_to_render)
-
-    assert False

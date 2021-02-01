@@ -60,7 +60,7 @@ def backend_server():
             f.close()
 
             print("Server logs:")
-            [print(l) for l in open(LOG_FILE, "r").readlines()]
+            [print(l.strip()) for l in open(LOG_FILE, "r").readlines()]
 
         except ProcessLookupError:
             pass
