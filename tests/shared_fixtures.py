@@ -36,9 +36,10 @@ def backend_server():
     with cd(NPM_ROOT_DIR):
         logging.info("Launching backend...")
 
+        f = open(LOG_FILE, "w")
         dev_process = sp.Popen(
             ["npm", "run", "backend"],
-            stdout=sp.PIPE,
+            stdout=f,
             stderr=sp.STDOUT,
             preexec_fn=os.setsid,
         )
@@ -49,15 +50,17 @@ def backend_server():
         yield dev_process
     finally:
         try:
-            print("Server logs:")
-            print(dev_process.stdout.readlines())
-
             os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
             try:
                 dev_process.wait(timeout=3)
             except TimeoutError:
                 os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
+
+            f.close()
+
+            print("Server logs:")
+            [print(l) for l in open(LOG_FILE, "r").readlines()]
 
         except ProcessLookupError:
             pass
