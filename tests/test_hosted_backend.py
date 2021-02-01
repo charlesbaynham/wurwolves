@@ -19,51 +19,53 @@ def test_hello(backend_server):
     assert response.ok
 
 
-# def test_multiple_state_requests(backend_server):
-#     logging.getLogger("urllib3").setLevel(logging.WARNING)
+def test_multiple_state_requests(backend_server):
+    from timeit import timeit
 
-#     # Make 10 sessions
-#     num_players = 10
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
-#     game_url = API_URL + "somegame/"
+    # Make 10 sessions
+    num_players = 10
 
-#     sessions = [requests.Session() for _ in range(num_players)]
+    game_url = API_URL + "somegame/"
 
-#     start = time.time()
+    sessions = [requests.Session() for _ in range(num_players)]
 
-#     for s in sessions:
-#         assert s.post(game_url + "join").ok
+    start = time.time()
 
-#         r = s.get(game_url + "state", timeout=10)
+    states = []
 
-#     assert r.ok
+    for s in sessions:
+        r = s.post(game_url + "join", timeout=2)
+        assert r.ok
 
-#     state = json.loads(r.content)
+        r = s.get(game_url + "state", timeout=2)
+        assert r.ok
 
-#     logging.info("Joined game as %s, t=%.2fs", state["myName"], time.time() - start)
+        states.append(r.content)
 
-# # Start the game
-# # sessions[0].post(game_url + "spectator_lobby_action", timeout=2)
+    logging.info(
+        "%sx joins and renders in t=%.0fms per player",
+        num_players,
+        1000 * (time.time() - start) / num_players,
+    )
 
-# # end = time.time()
-# # logging.info("Total time: %.2f", end - start)
+    # Start the game
+    time_to_start = timeit(
+        lambda: sessions[0].post(game_url + "spectator_lobby_action", timeout=2),
+        number=1,
+    )
 
-# # start = time.time()
+    logging.info("%.0fms to start game", time_to_start * 1000)
 
-# # states = []
-# # for s in sessions:
-# try:
-#     r = s.get(game_url + "state", timeout=5)
-# except requests.exceptions.ReadTimeout:
-#     raise RuntimeError("Timeout")
+    # Render states again
+    def render():
+        states = []
+        for s in sessions:
+            r = s.get(game_url + "state", timeout=2)
+            states.append(r.content)
+        return states
 
-# assert r.ok
+    time_to_render = timeit(render, number=1) / num_players
 
-# states.append(r.content)
-
-# end = time.time()
-# logging.info("Total state rendering: %.2f", end - start)
-
-# states = [json.loads(x) for x in states]
-
-# raise RuntimeError
+    logging.info("%.0fms to render states after game started", 1000 * time_to_render)
