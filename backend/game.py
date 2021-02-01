@@ -919,8 +919,6 @@ class WurwolvesGame:
         Parse this game into a FrontendState for viewing by the user user_id
         """
 
-        return "derp"
-
         if logger.isEnabledFor(logging.DEBUG):
             t_start = time.time()
             logger.debug(f"Starting parse_game_to_state")

@@ -42,4 +42,4 @@ jobs:
     - name: Test with pytest
       run: |
         cp .env.example .env
-        pytest
+        pytest -s -k test_multiple_state_requests
