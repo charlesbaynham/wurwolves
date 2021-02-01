@@ -49,6 +49,9 @@ def backend_server():
         yield dev_process
     finally:
         try:
+            print("Server logs:")
+            print(dev_process.stdout.readlines())
+
             os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
             try:
@@ -89,10 +92,6 @@ def full_server(backend_server):
     try:
         yield dev_process
     finally:
-
-        print("Server logs:")
-        print(dev_process.stdout.readlines())
-
         os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
         try:
