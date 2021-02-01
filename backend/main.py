@@ -117,7 +117,7 @@ async def end_game(
     logger.debug("Starting end_game for UUID %s", user_id)
 
     g = WurwolvesGame(game_tag)
-    user_name = g.get_user_model(user_id).name
+    user_name = g.get_user_name(user_id)
     g.send_chat_message(f"The game was ended early by {user_name}", is_strong=True)
     g.end_game()
 

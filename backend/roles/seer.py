@@ -19,7 +19,7 @@ if False:  # for typing
     from ..game import WurwolvesGame
 
 description = RoleDescription(
-    display_name="Seer",
+    display_name="You are the Seer",
     stages={
         GameStage.DAY: StageAction(
             text="""

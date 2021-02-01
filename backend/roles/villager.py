@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
 description = RoleDescription(
-    display_name="Villager",
+    display_name="You are a Villager",
     stages={
         GameStage.DAY: StageAction(
             text="""

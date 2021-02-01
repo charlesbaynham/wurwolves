@@ -26,7 +26,7 @@ You win if all the wolves win.
 """
 
 description = RoleDescription(
-    display_name="You are the Acolyte",
+    display_name="You are an Acolyte",
     stages={
         GameStage.NIGHT: StageAction(
             text=general_desc,

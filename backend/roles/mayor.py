@@ -21,15 +21,13 @@ if TYPE_CHECKING:
     from ..game import WurwolvesGame
 
 general_description = """
-You are the Mayor!
-
 You are on the side of the villagers and everyone knows who you are. While you are alive, there will be
 no voting for lynching: you will make the decision unilaterally. You are allowed to take advice if you want,
 but you don't have to listen to it.
 """
 
 description = RoleDescription(
-    display_name="Mayor",
+    display_name="You are the Mayor!",
     stages={
         GameStage.DAY: StageAction(
             text=f"""

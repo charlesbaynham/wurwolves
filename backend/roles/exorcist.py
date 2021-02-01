@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 description = RoleDescription(
-    display_name="Exorcist",
+    display_name="You are an Exorcist",
     stages={
         GameStage.NIGHT: StageAction(
             text="""
