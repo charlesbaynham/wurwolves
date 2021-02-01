@@ -89,6 +89,10 @@ def full_server(backend_server):
     try:
         yield dev_process
     finally:
+
+        print("Server logs:")
+        print(dev_process.stdout.readlines())
+
         os.killpg(os.getpgid(dev_process.pid), signal.SIGTERM)
 
         try:
@@ -96,9 +100,6 @@ def full_server(backend_server):
         except TimeoutError:
             os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
             dev_process.wait(timeout=3)
-
-        print("Server logs:")
-        print(dev_process.stdout.readlines())
 
 
 def wait_until_server_up(test_url, timeout):
