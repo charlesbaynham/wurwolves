@@ -97,6 +97,7 @@ def full_server(backend_server):
             os.killpg(os.getpgid(dev_process.pid), signal.SIGKILL)
             dev_process.wait(timeout=3)
 
+        print("Server logs:")
         print(dev_process.stdout)
 
 
