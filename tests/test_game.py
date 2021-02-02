@@ -355,6 +355,7 @@ def test_kick(db_session):
     # Set one to have joined ages ago
     timeout_player_id = player_ids[0]
     timeout_player = game.get_player(timeout_player_id)
+    game.set_user_name(timeout_player_id, "timeout player")
     db_session.add(timeout_player)
 
     timeout_player.last_seen = datetime(1, 1, 1)
@@ -375,7 +376,11 @@ def test_kick(db_session):
 
     db_session.expire_all()
 
+    # Check that the idler is gone
     assert not game.get_player(timeout_player_id)
+    # And that they're not in the rendered state
+    state = game.parse_game_to_state(player_ids[1])
+    assert "timeout player" not in state.json()
 
     # Also check the tag changed
     assert tag != game.get_game_model().update_tag
