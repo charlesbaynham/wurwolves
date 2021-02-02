@@ -132,6 +132,14 @@ class PlayerState(str, enum.Enum):
     SECONDED = "SECONDED"
     SPECTATING = "SPECTATING"
 
+    def is_dead(self):
+        return self in [
+            PlayerState.WOLFED,
+            PlayerState.SHOT,
+            PlayerState.LYNCHED,
+            PlayerState.SPECTATING,
+        ]
+
 
 DEAD_STATES = [PlayerState.WOLFED, PlayerState.SHOT, PlayerState.LYNCHED]
 

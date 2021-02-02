@@ -994,7 +994,10 @@ class WurwolvesGame:
             if real_role == PlayerRole.SPECTATOR or real_role == PlayerRole.NARRATOR:
                 displayed_role = PlayerRole.SPECTATOR
             elif p.id == player.id:
-                displayed_role = apparant_role
+                if player.state.is_dead():
+                    displayed_role = real_role
+                else:
+                    displayed_role = apparant_role
             elif (
                 player.role == PlayerRole.NARRATOR
                 or (real_role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
