@@ -102,10 +102,16 @@ The Exorcist has dabbled in the occult from a young age. Now, with the village b
 
 The Exorcist is on the side of the villagers and, once per game, can perform a dark ritual to use the werewolves' powers against them: killing their target in the night. Unfortunately, if the exorcist accidentally performs the ritual on a non-wolf target, the Exorcist is instead rent by the powers they summoned from the deep.
     `),
-    new RoleDescription("Fool", "https://via.placeholder.com/150", `
-The Fool is earnest and 100% on the side of the villagers. In fact, they're so excited to help out that they see visions in the night of who is good and who is bad. Unfortunately they're just dreams: the Fool has no real information at all.
+    new RoleDescription("Fool", "https://via.placeholder.com/150x200.svg?text=The+Fool", `
+The Fool is earnest and 100% on the side of the villagers.
+In fact, they're so excited to help out that they see visions in the night of who
+is good and who is bad. Unfortunately they're just dreams: the Fool
+has no real information at all.
 
-The Fool is on the side of the villagers. However, the Fool doesn't know that they are a Fool (such is life) - they think that they are the Seer. Every night they get to check someone's alignment and will received an answer. This answer will just be random however: the Fool's visions are really just dreams.
+The Fool is on the side of the villagers. However, the Fool doesn't know that they
+are a Fool (such is life) - they think that they are the Seer. Every night they get to check
+someone's alignment and will receive an answer. This answer will just be random however:
+the Fool's visions are really just dreams.
     `),
 ]
 
