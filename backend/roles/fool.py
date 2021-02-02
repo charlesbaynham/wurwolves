@@ -24,10 +24,13 @@ if False:  # for typing
     from ..game import WurwolvesGame
 
 description = RoleDescription(
-    display_name=seer_description.display_name,
+    display_name="You are the Fool!",
     stages={
-        GameStage.DAY: seer_description.stages[GameStage.DAY],
-        GameStage.NIGHT: seer_description.stages[GameStage.NIGHT],
+        # No stages are relevant here, since this RoleDescription
+        # is only used in ENDED, where we don't want custom text.
+        # I'll pass the Seer's controls through anyway though, to stop
+        # the error validation in registration.py getting upset
+        GameStage.NIGHT: seer_description.stages[GameStage.NIGHT]
     },
     team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,
