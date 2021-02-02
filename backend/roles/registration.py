@@ -3,6 +3,7 @@ from functools import partial
 from typing import Callable
 from typing import Dict
 from typing import Optional
+from typing import Tuple
 from typing import TYPE_CHECKING
 from typing import Union
 from uuid import UUID
@@ -14,6 +15,7 @@ from fastapi import Path
 
 from . import acolyte
 from . import exorcist
+from . import fool
 from . import jester
 from . import mason
 from . import mayor
@@ -61,6 +63,7 @@ priest.register(ROLE_MAP)
 prostitute.register(ROLE_MAP)
 mason.register(ROLE_MAP)
 exorcist.register(ROLE_MAP)
+fool.register(ROLE_MAP)
 
 for r in list(PlayerRole):
     if r not in ROLE_MAP:
@@ -70,10 +73,26 @@ for r in list(PlayerRole):
 registered_with_game = []
 
 
+def get_apparant_role(
+    role: PlayerRole, stage: GameStage
+) -> Tuple[PlayerRole, RoleDescription]:
+    desc = get_role_description(role)
+
+    if stage in desc.masked_role_in_stages:
+        role = desc.masked_role_in_stages[stage]
+        desc = get_role_description(role)
+
+    return role, desc
+
+
 def get_role_description(role) -> RoleDescription:
+    """
+    Get the RoleDescription for this role
+    """
     desc = ROLE_MAP[role].role_description
     if callable(desc):
         desc = desc()
+
     return desc
 
 

@@ -40,7 +40,7 @@ from .model import PlayerState
 from .model import User
 from .model import UserModel
 from .roles import get_action_func_name
-from .roles import get_role_description
+from .roles import get_apparant_role
 
 
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
@@ -303,6 +303,9 @@ class WurwolvesGame:
         this stage of the game.
         """
         game = self.get_game()
+        if not game:
+            raise HTTPException(404, "Game not found")
+
         players = game.players
 
         if filter_by_activity:
@@ -568,23 +571,23 @@ class WurwolvesGame:
         self.send_chat_message("A new game has started. Night falls in the village")
 
         for player in players:
-            desc = roles.get_role_description(player.role)
+            apparant_role, desc = roles.get_apparant_role(player.role, GameStage.NIGHT)
             if desc.reveal_others_text:
                 fellows = [p for p in players if p.role == player.role and p != player]
                 if fellows:
                     self.send_chat_message(
-                        f"You are a {player.role.value}! Your {desc.reveal_others_text} are "
+                        f"You are a {apparant_role.value}! Your {desc.reveal_others_text} are "
                         f"{self.list_join(p.user.name for p in fellows)}",
                         player_list=[player.id],
                     )
                 else:
                     self.send_chat_message(
-                        f"You are a {player.role.value}! You're all by yourself...",
+                        f"You are a {apparant_role.value}! You're all by yourself...",
                         player_list=[player.id],
                     )
             else:
                 self.send_chat_message(
-                    f"You are a {player.role.value}!", player_list=[player.id]
+                    f"You are a {apparant_role.value}!", player_list=[player.id]
                 )
 
         for role in list(PlayerRole):
@@ -929,7 +932,8 @@ class WurwolvesGame:
         logger.debug("User id: %s", user_id)
         logger.debug("Game players: %s", players)
 
-        role_details = get_role_description(player.role)
+        # Get the role description
+        apparant_role, role_details = get_apparant_role(player.role, game.stage)
 
         action_desc = role_details.get_stage_action(game.stage)
 
@@ -944,7 +948,7 @@ class WurwolvesGame:
         controls_state = FrontendState.RoleState(
             title=role_details.display_name,
             text=action_desc.text[player.state],
-            role=player.role,
+            role=apparant_role,
             seed=player.seed,
             button_visible=has_action,
             button_enabled=action_enabled,
@@ -989,9 +993,13 @@ class WurwolvesGame:
             # previous role
             if real_role == PlayerRole.SPECTATOR or real_role == PlayerRole.NARRATOR:
                 displayed_role = PlayerRole.SPECTATOR
+            elif p.id == player.id:
+                if player.state.is_dead():
+                    displayed_role = real_role
+                else:
+                    displayed_role = apparant_role
             elif (
-                (p.id == player.id)
-                or player.role == PlayerRole.NARRATOR
+                player.role == PlayerRole.NARRATOR
                 or (real_role == PlayerRole.WOLF and player.role == PlayerRole.WOLF)
                 or (real_role == PlayerRole.ACOLYTE and player.role == PlayerRole.WOLF)
                 or (real_role == PlayerRole.JESTER and player.role == PlayerRole.WOLF)

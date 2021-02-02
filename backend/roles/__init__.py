@@ -1,6 +1,7 @@
 from .distribution import assign_roles
 from .registration import do_startup_callback
 from .registration import get_action_func_name
+from .registration import get_apparant_role
 from .registration import get_role_action
 from .registration import get_role_description
 from .registration import get_role_team
@@ -16,6 +17,7 @@ __all__ = [
     "get_action_func_name",
     "get_role_action",
     "get_role_description",
+    "get_apparant_role",
     "get_role_team",
     "do_startup_callback",
     "register_roles",

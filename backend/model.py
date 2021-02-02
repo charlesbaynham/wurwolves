@@ -120,6 +120,7 @@ class PlayerRole(str, enum.Enum):
     PROSTITUTE = "Prostitute"
     MASON = "Mason"
     EXORCIST = "Exorcist"
+    FOOL = "Fool"
 
 
 class PlayerState(str, enum.Enum):
@@ -130,6 +131,14 @@ class PlayerState(str, enum.Enum):
     NOMINATED = "NOMINATED"
     SECONDED = "SECONDED"
     SPECTATING = "SPECTATING"
+
+    def is_dead(self):
+        return self in [
+            PlayerState.WOLFED,
+            PlayerState.SHOT,
+            PlayerState.LYNCHED,
+            PlayerState.SPECTATING,
+        ]
 
 
 DEAD_STATES = [PlayerState.WOLFED, PlayerState.SHOT, PlayerState.LYNCHED]

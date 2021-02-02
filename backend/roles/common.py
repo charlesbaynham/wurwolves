@@ -60,6 +60,10 @@ class RoleDescription(pydantic.BaseModel):
     # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")
     reveal_others_text = ""
 
+    # dict of stages in which this role cannot see their own role,
+    # and sees themselves as the given role instead
+    masked_role_in_stages: Dict[GameStage, PlayerRole] = {}
+
     @pydantic.validator("fallback_role_description", always=True)
     def role_and_desc(cls, v, values):
         if v and ("fallback_role" not in values or not values["fallback_role"]):

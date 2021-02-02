@@ -18,6 +18,7 @@ const num_pics = {
     Prostitute: 1,
     Mason: 1,
     Exorcist: 1,
+    Fool: 1,
 }
 
 export function getRoleURL(role, state, seed) {
