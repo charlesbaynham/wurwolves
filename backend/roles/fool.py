@@ -27,7 +27,10 @@ description = RoleDescription(
     display_name="You are the Fool!",
     stages={
         # No stages are relevant here, since this RoleDescription
-        # is only used in ENDED, where we don't want custom text
+        # is only used in ENDED, where we don't want custom text.
+        # I'll pass the Seer's controls through anyway though, to stop
+        # the error validation in registration.py getting upset
+        GameStage.NIGHT: seer_description.stages[GameStage.NIGHT]
     },
     team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,
