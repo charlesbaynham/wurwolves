@@ -91,9 +91,7 @@ class Game(Base):
 
     players = relationship("Player", backref="game", lazy=True)
 
-    messages = relationship(
-        "Message", backref="game", lazy=True, order_by=lambda: Message.time_created
-    )
+    messages = relationship("Message", backref="game", lazy=True, order_by="Message.id")
 
     actions = relationship("Action", backref="game", lazy=True)
 
