@@ -22,6 +22,7 @@ from .common import RoleDetails
 from .common import StageAction
 from .teams import Team
 from .utility_mixins import TargetMustBeAlive
+from .utility_mixins import TargetMustNotBeSelf
 from .villager import description as villager
 
 
@@ -92,7 +93,7 @@ class AffectedByProstitute(ActionMixin):
         self.target_sleeping_with_prostitute = True
 
 
-class ProstituteAction(TargetMustBeAlive, GameAction):
+class ProstituteAction(TargetMustBeAlive, TargetMustNotBeSelf, GameAction):
     def do_modifiers(self):
         # Disable any actions originating from the prostitute's target
         for a in self.target.originated_from:

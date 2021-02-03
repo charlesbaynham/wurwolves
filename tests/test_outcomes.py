@@ -582,6 +582,39 @@ def test_prostitute_prevents_medic(mock_roles, db_session):
     "backend.roles.assign_roles",
     return_value=[
         PlayerRole.WOLF,
+        PlayerRole.MEDIC,
+        PlayerRole.PROSTITUTE,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+        PlayerRole.VILLAGER,
+    ],
+)
+def test_prostitute_not_choose_self(mock_roles, db_session):
+    game = WurwolvesGame("test_game")
+
+    wolf_id = uuid()
+    medic_id = uuid()
+    prostitute_id = uuid()
+    villager_id = uuid()
+
+    game.join(wolf_id)
+    game.join(medic_id)
+    game.join(prostitute_id)
+    game.join(villager_id)
+    game.join(uuid())
+    game.join(uuid())
+
+    game.start_game()
+
+    # Check that the pristitute can't sleep with themselves
+    with pytest.raises(HTTPException):
+        game.prostitute_night_action(prostitute_id, prostitute_id)
+
+
+@patch(
+    "backend.roles.assign_roles",
+    return_value=[
+        PlayerRole.WOLF,
         PlayerRole.SEER,
         PlayerRole.PROSTITUTE,
         PlayerRole.VILLAGER,
