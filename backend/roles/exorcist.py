@@ -75,7 +75,13 @@ class ExorcistAction(OncePerGame, TargetMustBeAlive, GameAction):
     def execute(self, game):
         from .registration import get_role_team
 
-        target_name = self.target.model.user.name
+        if self.prevented:
+            game.send_chat_message(
+                f"...to do something else tonight",
+                is_strong=True,
+                player_list=[self.originator.model.id],
+            )
+            return
 
         if get_role_team(self.target.model.role) == Team.WOLVES:
             game.send_chat_message(
