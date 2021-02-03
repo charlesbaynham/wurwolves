@@ -913,7 +913,7 @@ class WurwolvesGame:
             self.join(user_id)
             game = self.get_game()
 
-        players = game.players
+        players = self.get_players()
 
         if logging.getLogger().isEnabledFor(logging.DEBUG):
             logger.debug("Players: %s", [p.user.name for p in players])
