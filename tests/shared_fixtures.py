@@ -9,6 +9,7 @@ TESTING_DB_URL = "sqlite:///testing.db"
 TEST_API_URL = "http://localhost:8000/api/hello"
 TEST_FRONTEND_URL = "http://localhost:3000/"
 NPM_ROOT_DIR = Path(__file__, "../../").resolve()
+STARTUP_TIMEOUT = 10
 
 LOG_FILE = "test_server_backend.log"
 
@@ -44,7 +45,7 @@ def backend_server():
             preexec_fn=os.setsid,
         )
 
-        wait_until_server_up(TEST_API_URL, 5)
+        wait_until_server_up(TEST_API_URL, STARTUP_TIMEOUT)
 
     try:
         yield dev_process
@@ -90,7 +91,7 @@ def full_server(backend_server):
             preexec_fn=os.setsid,
         )
 
-        wait_until_server_up(TEST_FRONTEND_URL, 5)
+        wait_until_server_up(TEST_FRONTEND_URL, STARTUP_TIMEOUT)
 
     try:
         yield dev_process

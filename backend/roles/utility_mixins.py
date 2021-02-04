@@ -54,3 +54,12 @@ class TargetMustBeAlive(TargetRequired, ActionMixin):
             raise HTTPException(403, "Your target must be alive")
 
         super().immediate(game=game, selected_id=selected_id, **kwargs)
+
+
+class TargetMustNotBeSelf(TargetRequired, ActionMixin):
+    @classmethod
+    def immediate(cls, user_id=None, selected_id=None, **kwargs):
+        if user_id == selected_id:
+            raise HTTPException(403, "You cannot choose yourself")
+
+        super().immediate(user_id=user_id, selected_id=selected_id, **kwargs)
