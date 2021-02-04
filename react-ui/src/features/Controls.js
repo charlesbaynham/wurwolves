@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 
+import useClipboard from "react-use-clipboard";
+
 import Button from 'react-bootstrap/Button';
 
 import {
-    selectControls, selectSelectedPlayer
+    selectControls, selectSelectedPlayer, selectStage
 } from './selectors'
 import { make_api_url } from '../utils'
 
@@ -13,6 +15,8 @@ import { unselectAll } from '../app/store'
 import { RolePicture } from './RolePicture'
 
 import styles from './Controls.module.css'
+
+import copy_icon from "./CopyIcon.svg"
 
 
 const DEFAULT_STATE = {
@@ -25,11 +29,13 @@ const DEFAULT_STATE = {
 function Controls(props) {
     var controlsState = useSelector(selectControls);
     const selected_player = useSelector(selectSelectedPlayer);
+    const gameStage = useSelector(selectStage);
     const dispatch = useDispatch();
 
     const [isSending, setIsSending] = useState(false)
     const [isError, setIsError] = useState(false);
     const [errorText, setErrorText] = useState("");
+    const [isCopied, setCopied] = useClipboard(window.location.href, {successDuration: 1000});
 
     if (typeof (controlsState) == "undefined") {
         controlsState = DEFAULT_STATE
@@ -69,26 +75,30 @@ function Controls(props) {
                 await wait(1000);
                 setIsError(false);
             })
-
-
-
         }
     }
 
     return (
         <div className="row pt-4 pt-md-0 d-flex  flex-row-reverse align-items-center">
             <div className="col-md">
-                {controlsState.button_visible ?
-                    <div>
-                        <Button id="actionButton" onClick={doButtonAction} variant={controlsState.button_enabled ? "primary" : "success"}
-                            size="lg" block disabled={!controlsState.button_enabled || isSending}
-                            className={isError ? "error" : ""}>
-                            <em>{controlsState.button_text}</em>
+                    {controlsState.button_visible ?
+                            <>
+                                <Button id="actionButton" onClick={doButtonAction} variant={controlsState.button_enabled ? "primary" : "success"}
+                                    size="lg" block disabled={!controlsState.button_enabled || isSending}
+                                    className={isError ? "error" : ""}>
+                                    <em>{controlsState.button_text}</em>
+                                </Button>
+                                <div className={styles.errorMessage}>
+                                    {isError ? errorText : ""}
+                                </div>
+                            </>
+                            : null}
+                    {gameStage == "LOBBY" ?
+                        <Button onClick={setCopied} className="mt-2" variant="dark" disabled={isCopied}
+                            size="lg" block>
+                            <em>Copy link</em>
+                            <img src={copy_icon} style={{width: "1.5rem", paddingLeft: "1.5rem", color: "white"}}/>
                         </Button>
-                        <div className={styles.errorMessage}>
-                            {isError ? errorText : ""}
-                        </div>
-                    </div>
                     : null}
             </div>
             <div className="col-md-8 pt-4 pt-md-0">
