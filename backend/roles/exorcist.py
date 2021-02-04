@@ -89,14 +89,19 @@ class ExorcistAction(OncePerGame, TargetMustBeAlive, GameAction):
                 is_strong=True,
                 player_list=[self.originator.model.id],
             )
-            game.kill_player(self.target.model.id, PlayerState.WOLFED)
+            death_player = self.target.model
         else:
             game.send_chat_message(
                 f"...poorly!",
                 is_strong=True,
                 player_list=[self.originator.model.id],
             )
-            game.kill_player(self.originator.model.id, PlayerState.WOLFED)
+            death_player = self.originator.model
+
+        game.send_chat_message(
+            f"{death_player.user.name} was brutally murdered", is_strong=True
+        )
+        game.kill_player(death_player.id, PlayerState.WOLFED)
 
 
 def register(role_map):
