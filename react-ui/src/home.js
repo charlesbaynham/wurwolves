@@ -1,31 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import Button from 'react-bootstrap/Button';
+import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import ReactMarkdown from 'react-markdown';
 import Topbar from './features/Topbar'
-import {
-    Link
-} from 'react-router-dom'
+import NewGameButton from './features/NewGameButton'
 
 
 function Home(props) {
-
-    const [newGameURL, setNewGameURL] = useState('')
-
-    useEffect(() => {
-        if (newGameURL === "") {
-            fetch('/api/get_game')
-                .then(res => res.json())
-                .then((data) => {
-                    var newUrl = '/' + data;
-                    console.log("Setting new location to " + newUrl)
-                    setNewGameURL(newUrl)
-                })
-                .catch(console.log)
-        }
-    })
 
     return (
         <div>
@@ -45,16 +27,11 @@ To learn how to play, select the question mark at the top right of the screen.
                 `} />
                 </Col></Row>
                 <Row><Col>
-                    <Link to={newGameURL}>
-                        <Button block size="lg">
-                            Start a new game
-                        </Button>
-                    </Link>
+                    <NewGameButton />
                 </Col></Row>
             </Container>
         </div>
     );
-
 }
 
 export default Home;
