@@ -93,7 +93,7 @@ function Controls(props) {
                                 </div>
                             </>
                             : null}
-                    {gameStage == "LOBBY" ?
+                    {gameStage === "LOBBY" ?
                         <Button onClick={setCopied} className="mt-2" variant="dark" disabled={isCopied}
                             size="lg" block>
                             <em>Copy link</em>
