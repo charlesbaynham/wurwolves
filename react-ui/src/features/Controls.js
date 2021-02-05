@@ -16,8 +16,8 @@ import { RolePicture } from './RolePicture'
 
 import styles from './Controls.module.css'
 
-import copy_icon from "./CopyIcon.svg"
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCopy } from '@fortawesome/free-solid-svg-icons'
 
 const DEFAULT_STATE = {
     title: "",
@@ -97,7 +97,7 @@ function Controls(props) {
                         <Button onClick={setCopied} className="mt-2" variant="dark" disabled={isCopied}
                             size="lg" block>
                             <em>Copy link</em>
-                            <img src={copy_icon} style={{width: "1.5rem", paddingLeft: "1.5rem", color: "white"}}/>
+                            <FontAwesomeIcon className="ml-3" icon={faCopy} />
                         </Button>
                     : null}
             </div>
