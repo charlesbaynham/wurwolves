@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 import { motion } from "framer-motion"
 
-
 import styles from './TemporaryOverlay.module.css'
 
-
-const time_to_appear = 0.3;
-const time_to_disappear = 3;
+const _ = require('lodash');
 
 
 function sleep(ms) {
@@ -15,21 +12,29 @@ function sleep(ms) {
 }
 
 
-function TemporaryOverlay(props) {
+function TemporaryOverlay({
+    appear,
+    img,
+    time_to_appear = 0.5,
+    time_to_disappear = 3,
+    time_to_show = 0.1,
+    custom_variants = {},
+    debug = false
+}) {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         async function f() {
-            if (props.appear === true) {
+            if (appear === true) {
                 setVisible(true);
-                await sleep(1000 * time_to_appear + 100);
+                await sleep(1000 * (time_to_appear + time_to_show));
                 setVisible(false);
             }
         }
         f()
-    }, [props.appear])
+    }, [appear, time_to_appear, time_to_show])
 
-    const variants = {
+    const default_variants = {
         hidden: {
             opacity: 0,
             scale: 1,
@@ -51,10 +56,18 @@ function TemporaryOverlay(props) {
         },
     }
 
+    // Merge in any custom variant changes passed by the user
+    const variants = _.merge({}, default_variants, custom_variants);
+
+    if (debug) {
+        console.log("variants:")
+        console.log(variants)
+    }
+
     return (
         <motion.img
             className={styles.overlay}
-            src={props.img}
+            src={img}
             initial="hidden"
             animate={visible ? "visible" : "hidden"}
             variants={variants}
