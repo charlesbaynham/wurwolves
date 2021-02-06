@@ -1,0 +1,70 @@
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { motion } from "framer-motion"
+
+import { selectMyStatus } from '../selectors'
+
+
+import styles from './TemporaryOverlay.module.css'
+
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+function TemporaryOverlay(props) {
+    const [visible, setVisible] = useState(false);
+    const [previousStatus, setPreviousStatus] = useState(null);
+
+    const myStatus = useSelector(selectMyStatus);
+
+
+    useEffect(() => {
+        async function f() {
+            if (previousStatus !== myStatus) {
+                setPreviousStatus(myStatus);
+                if (myStatus !== null && previousStatus !== null) {
+                    setVisible(true);
+                    await sleep(500);
+                    setVisible(false);
+                }
+            }
+        }
+        f()
+    })
+
+    const variants = {
+        hidden: {
+            opacity: 0,
+            scale: 1,
+            transitionEnd: {
+                display: "none"
+            },
+            transition: { duration: 4 }
+        },
+        visible: {
+            opacity: [0, 1],
+            scale: [0, 1],
+            display: "block",
+            transition: { duration: 0.3 }
+        },
+    }
+
+    return (
+        <motion.img
+            className={styles.overlay}
+            src={props.img}
+            initial="hidden"
+            animate={visible ? "visible" : "hidden"}
+            variants={variants}
+            transition={{
+                visible: { duration: 0.3 },
+                hidden: { duration: 1 }
+            }}
+        />
+    )
+}
+
+
+export default TemporaryOverlay;

@@ -1043,6 +1043,7 @@ class WurwolvesGame:
             myID=user_id,
             myName=player.user.name,
             myNameIsGenerated=player.user.name_is_generated,
+            myStatus=player.state,
         )
 
         if logger.isEnabledFor(logging.DEBUG):

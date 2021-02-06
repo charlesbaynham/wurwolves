@@ -15,6 +15,7 @@ const backend = createSlice({
     myID: "",
     myName: "",
     myNameIsGenerated: true,
+    myStatus: null,
   },
   reducers: {
     replace: (state, action) => action.payload
