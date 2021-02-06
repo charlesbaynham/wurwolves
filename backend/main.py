@@ -7,6 +7,7 @@ import psutil
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 from fastapi import APIRouter
+from fastapi import BackgroundTasks
 from fastapi import Depends
 from fastapi import FastAPI
 from fastapi import HTTPException
@@ -52,6 +53,7 @@ def get_mem_usage():
 
 @router.get("/{game_tag}/state")
 async def get_state(
+    background_tasks: BackgroundTasks,
     game_tag: str = Path(..., title="The four-word ID of the game"),
     user_id=Depends(get_user_id),
 ):
@@ -59,7 +61,7 @@ async def get_state(
         logger.debug("Starting get_state for UUID %s", user_id)
         logger.debug("get_state memory usage = %.0f MB", get_mem_usage())
 
-    state = WurwolvesGame(game_tag).get_parsed_state(user_id)
+    state = await WurwolvesGame(game_tag).get_parsed_state(user_id, background_tasks)
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
     return state

@@ -20,6 +20,7 @@ from uuid import UUID
 
 import pydantic
 from cachetools import LRUCache
+from fastapi import BackgroundTasks
 from fastapi import HTTPException
 from sqlalchemy import bindparam
 from sqlalchemy import or_
@@ -236,6 +237,15 @@ class WurwolvesGame:
     @db_scoped
     def get_game(self) -> Game:
         baked_query = bakery(lambda session: session.query(Game))
+        baked_query += lambda q: q.filter(Game.id == bindparam("game_id"))
+
+        result = baked_query(self._session).params(game_id=self.game_id).first()
+
+        return result
+
+    @db_scoped
+    def get_update_tag(self) -> int:
+        baked_query = bakery(lambda session: session.query(Game.update_tag))
         baked_query += lambda q: q.filter(Game.id == bindparam("game_id"))
 
         result = baked_query(self._session).params(game_id=self.game_id).first()
@@ -902,47 +912,83 @@ class WurwolvesGame:
         return name
 
     @db_scoped
-    def get_parsed_state(self, user_id: UUID) -> FrontendState:
+    async def get_parsed_state(
+        self, user_id: UUID, background_tasks: BackgroundTasks
+    ) -> FrontendState:
         """
-        If this game hash has already been parsed and stored in the cache,
-        return it for this user. Else, calculate it for all users then return it
-        for this user.
+        If this game hash has already been parsed and stored in the cache, (or
+        there's a Future stored which will be calculated) return it for this
+        user.
+
+        Else, write a set of futures into the cache and start calculating them,
+        starting with this one
         """
         if logger.isEnabledFor(logging.DEBUG):
             t_start = time.time()
-            logger.debug(f"Starting get_parsed_state")
+            logger.debug(f"Starting get_parsed_state for user %s", user_id)
 
-        game = self.get_game()
+        update_tag = self.get_update_tag()
 
         with state_cache_lock:
             # Check for this game in the cache
-            if game.id in state_cache:
-                cached_update_tag, states_by_user_id = state_cache[game.id]
+            if self.game_id in state_cache:
+                cached_update_tag, state_futures_by_user_id = state_cache[self.game_id]
 
-                if cached_update_tag == game.update_tag:
+                if cached_update_tag == update_tag:
+                    # A dict of Futures for this game is in the cache: await its
+                    # calculation
+                    state_future = state_futures_by_user_id[user_id]
+                    logger.debug("Cache hit: future.done() = %s", state_future.done())
+
+                    state = await state_futures_by_user_id[user_id]
+
                     if logger.isEnabledFor(logging.DEBUG):
                         logger.debug(
-                            f"Cache hit! Ending get_parsed_state after {time.time()-t_start:.3f}s"
+                            f"Ending get_parsed_state from cache after {time.time()-t_start:.3f}s"
                         )
 
-                    return states_by_user_id[user_id]
+                    return state
 
         logger.debug("Cache missed")
 
-        # If it's not in the cache, calculate it for all players and then
-        # return if for this one
-        states_by_user_id = {}
-        for player in game.players:
-            states_by_user_id[player.user_id] = self.parse_game_to_state(player.user_id)
-
-        # Store in the cache
+        # If it's not in the cache, populate the cache with incomplete futures
+        loop = asyncio.get_running_loop()
         with state_cache_lock:
-            state_cache[game.id] = (game.update_tag, states_by_user_id)
+            state_futures_by_user_id = {
+                player.user_id: loop.create_future() for player in self.get_players()
+            }
+            state_cache[self.game_id] = (update_tag, state_futures_by_user_id)
 
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f"Ending get_parsed_state after {time.time()-t_start:.3f}s")
+        # Calculate it for just for this player and save in the appropriate Future
+        this_state = self.parse_game_to_state(user_id)
+        state_futures_by_user_id[user_id].set_result(this_state)
 
-        return states_by_user_id[user_id]
+        # Schedule calculation of the rest
+        async def f():
+            self._parse_unparsed_states()
+
+        background_tasks.add_task(f)
+
+        logger.debug(
+            f"Ending get_parsed_state with no cache after {time.time()-t_start:.3f}s"
+        )
+
+        return this_state
+
+    @db_scoped
+    def _parse_unparsed_states(self):
+        logger.debug("Start _parse_unparsed_states")
+        with state_cache_lock:
+            _, state_futures_by_user_id = state_cache[self.game_id]
+
+        for user_id, state_future in state_futures_by_user_id.items():
+            if state_future.done():
+                logger.debug("State already cached for user %s", user_id)
+            else:
+                logger.debug("State not cached for user %s: parsing", user_id)
+                state_future.set_result(self.parse_game_to_state(user_id))
+
+        logger.debug("End _parse_unparsed_states")
 
     @db_scoped
     def parse_game_to_state(self, user_id: UUID) -> FrontendState:
