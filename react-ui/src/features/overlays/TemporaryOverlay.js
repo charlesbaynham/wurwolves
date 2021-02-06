@@ -6,6 +6,10 @@ import { motion } from "framer-motion"
 import styles from './TemporaryOverlay.module.css'
 
 
+const time_to_appear = 0.3;
+const time_to_disappear = 3;
+
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -18,7 +22,7 @@ function TemporaryOverlay(props) {
         async function f() {
             if (props.appear === true) {
                 setVisible(true);
-                await sleep(500);
+                await sleep(1000 * time_to_appear + 100);
                 setVisible(false);
             }
         }
@@ -30,15 +34,20 @@ function TemporaryOverlay(props) {
             opacity: 0,
             scale: 1,
             transitionEnd: {
-                display: "none"
+                display: "none",
+                scale: 0,
+                opacity: 0,
             },
-            transition: { duration: 4 }
+            transition: { duration: time_to_disappear }
         },
         visible: {
             opacity: [0, 1],
-            scale: [0, 1],
+            scale: 1,
             display: "block",
-            transition: { duration: 0.3 }
+            transition: {
+                duration: time_to_appear,
+                type: "spring"
+            }
         },
     }
 
@@ -49,10 +58,6 @@ function TemporaryOverlay(props) {
             initial="hidden"
             animate={visible ? "visible" : "hidden"}
             variants={variants}
-            transition={{
-                visible: { duration: 0.3 },
-                hidden: { duration: 1 }
-            }}
         />
     )
 }
