@@ -917,15 +917,17 @@ class WurwolvesGame:
         with state_cache_lock:
             # Check for this game in the cache
             if game.id in state_cache:
-                cached_game_tag, states_by_user_id = state_cache[game.id]
+                cached_update_tag, states_by_user_id = state_cache[game.id]
 
-                if cached_game_tag == game.game_tag:
+                if cached_update_tag == game.update_tag:
                     if logger.isEnabledFor(logging.DEBUG):
                         logger.debug(
                             f"Cache hit! Ending get_parsed_state after {time.time()-t_start:.3f}s"
                         )
 
                     return states_by_user_id[user_id]
+
+        logger.debug("Cache missed")
 
         # If it's not in the cache, calculate it for all players and then
         # return if for this one
@@ -935,7 +937,7 @@ class WurwolvesGame:
 
         # Store in the cache
         with state_cache_lock:
-            state_cache[game.id] = (game.game_tag, states_by_user_id)
+            state_cache[game.id] = (game.update_tag, states_by_user_id)
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f"Ending get_parsed_state after {time.time()-t_start:.3f}s")
