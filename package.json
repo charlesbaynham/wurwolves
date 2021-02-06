@@ -14,7 +14,8 @@
     "upgrade": "alembic upgrade head",
     "resetdb": "python -m backend.reset_db",
     "test": "pytest && cd react-ui && npm test",
-    "clean": "git clean -xdf --exclude venv --exclude node_modules --exclude .env"
+    "clean": "git clean -xdf --exclude venv --exclude node_modules --exclude .env",
+    "browsers": "python -c 'from tests.test_selenium import make_N_drivers; import sys; drvs=make_N_drivers(int(sys.argv[1])); [d.get(sys.argv[2]) for d in drvs]'"
   },
   "cacheDirectories": [
     "node_modules",
@@ -26,7 +27,9 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "concurrently": "^5.2.0",
     "express": "^4.16.4",
+    "framer-motion": "^3.3.0",
     "http-proxy-middleware": "^1.0.4",
+    "lodash": "^4.17.20",
     "react-use-clipboard": "^1.0.7"
   },
   "repository": {

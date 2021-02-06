@@ -543,7 +543,7 @@ class WurwolvesGame:
         for p in self.get_players(filter_by_activity=False):
             p.role = PlayerRole.SPECTATOR
             p.previous_role = PlayerRole.SPECTATOR
-            p.status = PlayerState.SPECTATING
+            p.state = PlayerState.SPECTATING
 
     @db_scoped
     def start_game(self):
@@ -1043,6 +1043,7 @@ class WurwolvesGame:
             myID=user_id,
             myName=player.user.name,
             myNameIsGenerated=player.user.name_is_generated,
+            myStatus=player.state,
         )
 
         if logger.isEnabledFor(logging.DEBUG):

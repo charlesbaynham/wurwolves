@@ -418,6 +418,7 @@ class FrontendState(pydantic.BaseModel):
     myID: UUID
     myName: str
     myNameIsGenerated: bool
+    myStatus: PlayerState
 
 
 PlayerModel.update_forward_refs()

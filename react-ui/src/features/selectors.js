@@ -5,7 +5,7 @@ export const selectStage = (state => state.backend.stage);
 export const selectMyID = (state => state.backend.myID);
 export const selectMyName = (state => state.backend.myName);
 export const selectMyNameIsGenerated = (state => state.backend.myNameIsGenerated);
-
+export const selectMyStatus = (state => state.backend.myStatus);
 
 export function getPlayerById(players, id) {
     return players.find(p => id === p.id);
