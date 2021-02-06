@@ -17,13 +17,13 @@ function AllOverlays() {
     const [showClaws, setShowClaws] = useState(false);
 
     useEffect(() => {
-        setShowClaws(myStatus === "ALIVE" && previousStatus === "SPECTATING")
+        setShowClaws(myStatus === "WOLFED" && previousStatus === "ALIVE")
 
         setPreviousStatus(myStatus);
     }, [myStatus, previousStatus])
 
     return (
-        <TemporaryOverlay img={clawed_image} toStatus="ALIVE" fromStatus="SPECTATING" appear={showClaws} />
+        <TemporaryOverlay img={clawed_image} appear={showClaws} />
     )
 }
 
