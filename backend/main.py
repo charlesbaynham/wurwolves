@@ -59,7 +59,7 @@ async def get_state(
         logger.debug("Starting get_state for UUID %s", user_id)
         logger.debug("get_state memory usage = %.0f MB", get_mem_usage())
 
-    state = WurwolvesGame(game_tag).parse_game_to_state(user_id)
+    state = WurwolvesGame(game_tag).get_parsed_state(user_id)
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
     return state

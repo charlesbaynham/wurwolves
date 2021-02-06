@@ -10,6 +10,7 @@ import os
 import random
 import time
 from functools import wraps
+from threading import RLock
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -18,6 +19,7 @@ from typing import Union
 from uuid import UUID
 
 import pydantic
+from cachetools import LRUCache
 from fastapi import HTTPException
 from sqlalchemy import bindparam
 from sqlalchemy import or_
@@ -60,6 +62,10 @@ logger = logging.getLogger("game")
 
 # A bakery for SQLAlchemy queries
 bakery = baked.bakery()
+
+# Cache in which to store pre-parsed states
+state_cache = LRUCache(1000)
+state_cache_lock = RLock()
 
 
 class ChatMessage(pydantic.BaseModel):
@@ -894,6 +900,47 @@ class WurwolvesGame:
         name = " ".join([random.choice(names), random.choice(names)]).title()
 
         return name
+
+    @db_scoped
+    def get_parsed_state(self, user_id: UUID) -> FrontendState:
+        """
+        If this game hash has already been parsed and stored in the cache,
+        return it for this user. Else, calculate it for all users then return it
+        for this user.
+        """
+        if logger.isEnabledFor(logging.DEBUG):
+            t_start = time.time()
+            logger.debug(f"Starting get_parsed_state")
+
+        game = self.get_game()
+
+        with state_cache_lock:
+            # Check for this game in the cache
+            if game.id in state_cache:
+                cached_game_tag, states_by_user_id = state_cache[game.id]
+
+                if cached_game_tag == game.game_tag:
+                    if logger.isEnabledFor(logging.DEBUG):
+                        logger.debug(
+                            f"Cache hit! Ending get_parsed_state after {time.time()-t_start:.3f}s"
+                        )
+
+                    return states_by_user_id[user_id]
+
+        # If it's not in the cache, calculate it for all players and then
+        # return if for this one
+        states_by_user_id = {}
+        for player in game.players:
+            states_by_user_id[player.user_id] = self.parse_game_to_state(player.user_id)
+
+        # Store in the cache
+        with state_cache_lock:
+            state_cache[game.id] = (game.game_tag, states_by_user_id)
+
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"Ending get_parsed_state after {time.time()-t_start:.3f}s")
+
+        return states_by_user_id[user_id]
 
     @db_scoped
     def parse_game_to_state(self, user_id: UUID) -> FrontendState:

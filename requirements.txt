@@ -14,6 +14,8 @@ async-exit-stack==1.0.1
     # via fastapi
 async-generator==1.10
     # via fastapi
+cachetools==4.2.1
+    # via -r requirements.in
 certifi==2020.11.8
     # via requests
 chardet==3.0.4
@@ -64,8 +66,6 @@ psycopg2==2.8.6
     # via -r requirements.in
 pydantic==1.7.2
     # via fastapi
-pympler==0.9
-    # via -r requirements.in
 python-dateutil==2.8.1
     # via alembic
 python-dotenv==0.15.0
