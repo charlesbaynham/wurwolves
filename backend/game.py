@@ -952,7 +952,7 @@ class WurwolvesGame:
 
         if logger.isEnabledFor(logging.DEBUG):
             t_start = time.time()
-            logger.debug(f"Starting parse_game_to_state")
+            logger.debug(f"Starting parse_game_to_state for user_id %s", user_id)
 
         game = self.get_game()
 
