@@ -5,9 +5,7 @@ import Controls from './features/Controls'
 import GameUpdater from './features/GameUpdater'
 import GridAndChat from './features/GridAndChat'
 import Topbar from './features/Topbar'
-import TemporaryOverlay from './features/overlays/TemporaryOverlay'
-
-import clawed_image from './features/overlays/clawmarks.svg'
+import AllOverlays from './features/overlays/AllOverlays'
 
 function Game(props) {
     const game_tag = props.match.params.game_tag
@@ -19,7 +17,7 @@ function Game(props) {
                 <GridAndChat game_tag={game_tag} />
                 <h1 className="row col d-md-block d-none">Your role</h1>
                 <Controls game_tag={game_tag} />
-                <TemporaryOverlay img={clawed_image} />
+                <AllOverlays/>
             </Container>
         </div>
     );

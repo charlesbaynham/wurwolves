@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { motion } from "framer-motion"
 
-import { selectMyStatus } from '../selectors'
+import { motion } from "framer-motion"
 
 
 import styles from './TemporaryOverlay.module.css'
@@ -15,24 +13,17 @@ function sleep(ms) {
 
 function TemporaryOverlay(props) {
     const [visible, setVisible] = useState(false);
-    const [previousStatus, setPreviousStatus] = useState(null);
-
-    const myStatus = useSelector(selectMyStatus);
-
 
     useEffect(() => {
         async function f() {
-            if (previousStatus !== myStatus) {
-                setPreviousStatus(myStatus);
-                if (myStatus !== null && previousStatus !== null) {
-                    setVisible(true);
-                    await sleep(500);
-                    setVisible(false);
-                }
+            if (props.appear === true) {
+                setVisible(true);
+                await sleep(500);
+                setVisible(false);
             }
         }
         f()
-    })
+    }, [props.appear])
 
     const variants = {
         hidden: {
