@@ -263,7 +263,8 @@ def hash_game_tag(text: str):
     """
 
     # Replace all spaces with '-' and convert to lower case
-    s = text.replace(" ", "_").lower()
+    s = text.replace(" ", "-").lower()
+    logging.debug("Hashing game tag '%s' to '%s'", text, s)
     return hash_str_to_int(s, 3)
 
 
