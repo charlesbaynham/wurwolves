@@ -261,7 +261,10 @@ def hash_game_tag(text: str):
     A game ID will normally be something like "correct-horse-battery-staple",
     but can actually be any string
     """
-    return hash_str_to_int(text, 3)
+
+    # Replace all spaces with '-' and convert to lower case
+    s = text.replace(" ", "_").lower()
+    return hash_str_to_int(s, 3)
 
 
 class PlayerModel(pydantic.BaseModel):
