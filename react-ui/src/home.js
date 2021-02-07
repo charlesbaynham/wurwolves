@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import ReactMarkdown from 'react-markdown';
 import Topbar from './features/Topbar'
 import NewGameButton from './features/NewGameButton'
+import DistributionSetup from './features/DistributionSetup'
 
 
 function Home(props) {
@@ -28,6 +29,9 @@ To learn how to play, select the question mark at the top right of the screen.
                 </Col></Row>
                 <Row><Col>
                     <NewGameButton />
+                </Col></Row>
+                <Row><Col>
+                    <DistributionSetup />
                 </Col></Row>
             </Container>
         </div>
