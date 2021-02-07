@@ -86,6 +86,10 @@ class Game(Base):
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
 
+    # Optional settings to customise the role distribution. Must be json
+    # parsable to a DistributionSettings object
+    distribution_settings = Column(Integer, default=None)
+
     # Used when a stage has to be repeated, e.g. because a vote tied
     num_attempts_this_stage = Column(Integer, default=0)
 
