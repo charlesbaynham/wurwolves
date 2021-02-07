@@ -4,6 +4,7 @@ import pytest
 
 from backend.model import PlayerRole
 from backend.roles import assign_roles
+from backend.roles.distribution import DistributionSettings
 from backend.roles.distribution import DUAL_ROLES
 
 
@@ -42,9 +43,11 @@ def test_seer_always_present(num_players):
 @pytest.mark.parametrize("num_players", [5])
 def test_num_villagers(num_players):
 
+    settings = DistributionSettings(probability_of_villager=0.25)
+
     roles = []
     for _ in range(10):
-        roles += assign_roles(num_players, probability_of_villager=0.25)
+        roles += assign_roles(num_players, settings)
 
     frac_villagers = sum(r is PlayerRole.VILLAGER for r in roles) / len(roles)
 
@@ -56,8 +59,10 @@ def test_dual_roles_are_dual():
     num_players = 20
     num_repeats = 100
 
+    settings = DistributionSettings(probability_of_villager=0.25)
+
     for _ in range(num_repeats):
-        roles = assign_roles(num_players, probability_of_villager=0.25)
+        roles = assign_roles(num_players, settings)
 
         for r in DUAL_ROLES:
             if r in roles:
@@ -71,8 +76,10 @@ def test_dual_roles_assigned():
 
     dual_roles_seen = {r: False for r in DUAL_ROLES}
 
+    settings = DistributionSettings(probability_of_villager=0.25)
+
     for _ in range(num_repeats):
-        roles = assign_roles(num_players, probability_of_villager=0.25)
+        roles = assign_roles(num_players, settings)
 
         for r in DUAL_ROLES:
             if r in roles:

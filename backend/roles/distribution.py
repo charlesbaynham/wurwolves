@@ -1,6 +1,12 @@
 import math
 import random
+from typing import Callable
+from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Union
+
+import pydantic
 
 from ..model import PlayerRole
 
@@ -42,7 +48,7 @@ for role in list(PlayerRole):
 PROB_VILLAGER = 0.1
 
 
-def num_wolves(num_players: int):
+def _default_num_wolves(num_players: int):
     lookup = {
         3: 1,
         4: 1,
@@ -65,8 +71,26 @@ def num_wolves(num_players: int):
         return math.ceil(num_players / 5)
 
 
+class DistributionSettings(pydantic.BaseModel):
+    number_of_wolves: Callable = None
+    probability_of_villager: float = PROB_VILLAGER
+    role_weights: Dict[PlayerRole, float] = RANDOMISED_ROLES
+
+    @pydantic.validator("number_of_wolves", always=True)
+    def num(cls, v, values):
+        if v is None:
+            return _default_num_wolves
+        return v
+
+    @pydantic.validator("probability_of_villager", always=True)
+    def prob(cls, v, values):
+        if v < 0 or v > 1:
+            raise ValueError("probability_of_villager must be between 0 and 1")
+        return v
+
+
 def assign_roles(
-    num_players: int, probability_of_villager=PROB_VILLAGER
+    num_players: int, settings: Optional[DistributionSettings] = None
 ) -> List[PlayerRole]:
     """
     Return a randomised list of roles for this game, or None if not enough players have joined
@@ -78,6 +102,13 @@ def assign_roles(
         List[PlayerRole]: A num_players long list of PlayerRoles in a random order
     """
 
+    if settings is None:
+        settings = DistributionSettings()
+
+    probability_of_villager = settings.probability_of_villager
+    num_wolves = settings.number_of_wolves(num_players)
+    role_weights = settings.role_weights
+
     if num_players < len(guaranteed_roles) + 1:
         return None
 
@@ -85,12 +116,12 @@ def assign_roles(
     num_villagers = sum(
         random.random() < probability_of_villager for _ in range(num_players)
     )
-    max_num_villagers = num_players - num_wolves(num_players) - len(guaranteed_roles)
+    max_num_villagers = num_players - num_wolves - len(guaranteed_roles)
     if num_villagers > max_num_villagers:
         num_villagers = max_num_villagers
 
     # Fill in the guaranteed roles and the wolves
-    roles = [PlayerRole.WOLF] * num_wolves(num_players)
+    roles = [PlayerRole.WOLF] * num_wolves
     roles += guaranteed_roles
 
     # Fill in the villagers
@@ -98,7 +129,7 @@ def assign_roles(
 
     # For the rest, pick from the optional roles
     # Prepare a list of optional roles and weightings
-    remaining_roles_and_weights = RANDOMISED_ROLES.copy()
+    remaining_roles_and_weights = role_weights.copy()
 
     while len(roles) < num_players:
         if not remaining_roles_and_weights:
