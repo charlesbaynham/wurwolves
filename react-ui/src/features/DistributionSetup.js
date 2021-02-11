@@ -12,12 +12,55 @@ import Switch from "react-switch";
 import styles from './DistributionSetup.module.css'
 
 
-function Toggle({ text, checked, onChange }) {
+const default_roles = {
+    JESTER: 10,
+    VIGILANTE: 10,
+    MAYOR: 10,
+    MILLER: 10,
+    ACOLYTE: 5,
+    PRIEST: 10,
+    PROSTITUTE: 10,
+    MASON: 7,
+    EXORCIST: 10,
+    FOOL: 10,
+}
+
+
+
+function Toggle({ text, checked, onChange, className = null }) {
+    var totalClassName = styles.toggle
+    if (className !== null) {
+        totalClassName = totalClassName + " " + className
+    }
+
     return (
-        <div className={styles.toggle}>
+        <div className={totalClassName}>
             <Switch onChange={onChange} checked={checked} />
             <p>{text}</p>
         </div>
+    )
+}
+
+
+function SliderAndBox({ value, onChange, max = 5 }) {
+    return (
+        <Form.Group as={Row}>
+            <Col xs="9">
+                <RangeSlider
+                    className={styles.wideSlider}
+                    max={max}
+                    style={{ width: "100%" }}
+                    value={value ? value : 0}
+                    onChange={onChange}
+                />
+            </Col>
+            <Col xs="3">
+                <Form.Control
+                    value={value ? value : 0}
+                    onChange={onChange}
+                />
+            </Col>
+        </Form.Group>
     )
 }
 
@@ -63,6 +106,22 @@ function DistributionSetup() {
         roles: null,
     });
 
+    var role_weights = [];
+    var role;
+
+    for (role in default_roles) {
+        role_weights.push(
+            <>
+                { role}:
+                <SliderAndBox
+                    max={100}
+                    value={settings.roles === null ? 0 : settings.roles[role]}
+                    onChange={e => e.preventDefault()}
+                />
+            </>
+        )
+    }
+
     return (
         <div
             className={styles.container}
@@ -88,23 +147,11 @@ function DistributionSetup() {
                     <CollapsingDiv
                         visible={settings.numWolves !== null}
                     >
-                        <Form.Group as={Row}>
-                            <Col xs="9">
-                                <RangeSlider
-                                    className={styles.wideSlider}
-                                    max={5}
-                                    style={{ width: "100%" }}
-                                    value={settings.numWolves}
-                                    onChange={e => setSettings(Object.assign({}, settings, { numWolves: e.target.value }))}
-                                />
-                            </Col>
-                            <Col xs="3">
-                                <Form.Control
-                                    value={settings.numWolves}
-                                    onChange={e => setSettings(Object.assign({}, settings, { numWolves: e.target.value }))}
-                                />
-                            </Col>
-                        </Form.Group>
+                        <SliderAndBox
+                            max={5}
+                            value={settings.numWolves}
+                            onChange={e => setSettings(Object.assign({}, settings, { numWolves: e.target.value }))}
+                        />
                     </CollapsingDiv>
 
                     <Toggle
@@ -112,12 +159,17 @@ function DistributionSetup() {
                         checked={settings.roles !== null}
                         onChange={val => {
                             if (val) {
-                                setSettings(Object.assign({}, settings, { roles: 1 }))
+                                setSettings(Object.assign({}, settings, { roles: default_roles }))
                             } else {
                                 setSettings(Object.assign({}, settings, { roles: null }))
                             }
                         }}
+                        className="pb-4"
                     />
+
+                    <CollapsingDiv visible={settings.roles !== null}>
+                        {role_weights}
+                    </CollapsingDiv>
                 </Form>
             </CollapsingDiv>
         </div >
