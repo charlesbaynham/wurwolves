@@ -6,7 +6,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import { selectGameConfig, selectDefaultConfig } from './selectors'
-import { make_api_url, isConfigDefault } from '../utils'
+import { make_api_url, isConfigDefault, set_config } from '../utils'
 
 
 function NewGameButton() {
@@ -32,9 +32,7 @@ function NewGameButton() {
         const new_game_id = textBoxContents ? textBoxContents : newGameID
 
         if (!isConfigDefault(gameConfig, defaultConfig)) {
-            fetch(make_api_url(new_game_id, "game_config", { new_config: JSON.stringify(gameConfig) }),
-                { method: 'post' })
-                .catch(console.log)
+            set_config(new_game_id, gameConfig)
         }
 
         history.push(`/${new_game_id}`)

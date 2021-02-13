@@ -79,9 +79,7 @@ async def get_default_game_config():
 async def get_game_config(
     game_tag: str = Path(..., title="The four-word ID of the game"),
 ):
-    if logger.isEnabledFor(logging.DEBUG):
-        logger.debug("Starting get_game_config")
-        logger.debug("get_game_config memory usage = %.0f MB", get_mem_usage())
+    logger.info("Starting get_game_config for %s", game_tag)
 
     return WurwolvesGame(game_tag).get_game_config().dict()
 
@@ -94,10 +92,7 @@ async def set_game_config(
         title="JSON dict of the new game state. Must parse to valid DistributionSettings",
     ),
 ):
-    if logger.isEnabledFor(logging.DEBUG):
-        logger.debug(
-            "Starting set_game_config for game %s, state %s", game_tag, new_config
-        )
+    logger.info("Starting set_game_config for game %s, state %s", game_tag, new_config)
 
     return WurwolvesGame(game_tag).set_game_config(
         DistributionSettings.parse_raw(new_config)
