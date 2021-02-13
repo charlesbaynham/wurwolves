@@ -1084,6 +1084,7 @@ class WurwolvesGame:
             myName=player.user.name,
             myNameIsGenerated=player.user.name_is_generated,
             myStatus=player.state,
+            isCustomized=game.distribution_settings is not None,
         )
 
         if logger.isEnabledFor(logging.DEBUG):

@@ -188,10 +188,6 @@ def test_get_game_config(api_client, db_session):
     from backend.model import DistributionSettings
 
     r = api_client.get(f"/api/{GAME_ID}/game_config")
-    assert r.status_code == 404
-
-    api_client.post(f"/api/{GAME_ID}/join")
-    r = api_client.get(f"/api/{GAME_ID}/game_config")
     assert r.ok
     DistributionSettings.parse_raw(r.content)
 

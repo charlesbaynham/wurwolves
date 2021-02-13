@@ -167,10 +167,13 @@ def engine():
 def db_session(engine):
     """
     Get an SQLAlchemy database session to a clean database with the model schema
-    set up.
+    set up and seed the random number generator.
     """
     from backend.model import Base
     from backend.database import Session
+    import random
+
+    random.seed(123)
 
     Base.metadata.bind = engine
 

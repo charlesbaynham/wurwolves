@@ -444,5 +444,7 @@ class FrontendState(pydantic.BaseModel):
     myNameIsGenerated: bool
     myStatus: PlayerState
 
+    isCustomized: bool
+
 
 PlayerModel.update_forward_refs()
