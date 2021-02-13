@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import random
@@ -18,9 +19,9 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .game import WurwolvesGame
 from .model import DistributionSettings
+from .roles import DEFAULT_DISTRIBUTION_SETTINGS
 from .roles import router as roles_router
 from .user_id import get_user_id
-
 
 logger = logging.getLogger("main")
 
@@ -94,9 +95,17 @@ async def set_game_config(
 ):
     logger.info("Starting set_game_config for game %s, state %s", game_tag, new_config)
 
-    return WurwolvesGame(game_tag).set_game_config(
-        DistributionSettings.parse_raw(new_config)
-    )
+    parsed_config = json.loads(new_config)
+
+    if parsed_config is None:
+        WurwolvesGame(game_tag).set_game_config(DEFAULT_DISTRIBUTION_SETTINGS)
+    else:
+        try:
+            WurwolvesGame(game_tag).set_game_config(
+                DistributionSettings.parse_raw(new_config)
+            )
+        except pydantic.ValidationError:
+            raise HTTPException(402, "Invalid state")
 
 
 @router.post("/{game_tag}/chat")

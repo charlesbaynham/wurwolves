@@ -38,11 +38,6 @@ export const isConfigDefault = (gameConfig, defaultConfig) => {
     const wolves_equal = gameConfig.number_of_wolves === null || gameConfig.number_of_wolves === defaultConfig.number_of_wolves
     const villager_prob_equal = gameConfig.probability_of_villager === defaultConfig.probability_of_villager
 
-    console.log(gameConfig.role_weights)
-    console.log(defaultConfig.role_weights)
-
-    console.log(`roles_equal = ${roles_equal}, wolves_equal = ${wolves_equal}, villager_prob_equal = ${villager_prob_equal}`)
-
     return roles_equal && wolves_equal && villager_prob_equal
 }
 

@@ -112,9 +112,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
 
         if (isConfigDefault(gameConfig, defaultConfig)) {
             // Buttons default to the correct settings for default settings, so do nothing
-            console.log("Toggles: Config is default")
         } else {
-            console.log("Toggles: Config is not default")
             setCustomise(true)
 
             if (!_.isEqual(gameConfig.role_weights, defaultConfig.role_weights)) {
@@ -167,14 +165,6 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         }
     }, [dispatch, defaultConfig, game_tag])
 
-    const send_update = () => {
-        if (customise) {
-            set_config(game_tag, defaultConfig)
-        } else {
-            set_config(game_tag, null)
-        }
-    }
-
     var role_weights = [];
 
     if (gameConfig && gameConfig.role_weights) {
@@ -205,51 +195,63 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         <div
             className={styles.container}
         >
-            <Form className={styles.form} onSubmit={e => e.preventDefault()}>
+            <Form
+                className={styles.form}
+                onSubmit={e => e.preventDefault()}
+                onBlur={() => {
+                    if (auto_update === true && game_tag !== null) {
+                        console.log(`Triggering update now with default = ${customise}`)
+
+                        if (customise) {
+                            set_config(game_tag, null)
+                        } else {
+                            set_config(game_tag, defaultConfig)
+                        }
+                    }
+                }}
+            >
                 <Toggle
                     text="Customize role distribution"
                     checked={customise}
                     onChange={setCustomise}
                 />
-            </Form>
-
-            <CollapsingDiv visible={customise}>
-                <Form
-                    className={styles.form}
-                    onSubmit={e => e.preventDefault()}
-                    onBlur={() => { if (auto_update === true && game_tag !== null) send_update() }}
-                >
-                    <Toggle
-                        text="Select number of wolves"
-                        checked={gameConfig ? gameConfig.number_of_wolves !== null : false}
-                        onChange={val => {
-                            dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: val ? 1 : null })));
-                        }}
-                    />
-
-                    <CollapsingDiv
-                        visible={gameConfig ? gameConfig.number_of_wolves !== null : null}
+                <CollapsingDiv visible={customise}>
+                    <Form
+                        className={styles.form}
+                        onSubmit={e => e.preventDefault()}
                     >
-                        <SliderAndBox
-                            max={5}
-                            min={1}
-                            value={gameConfig ? gameConfig.number_of_wolves : null}
-                            onChange={e => dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
+                        <Toggle
+                            text="Select number of wolves"
+                            checked={gameConfig ? gameConfig.number_of_wolves !== null : false}
+                            onChange={val => {
+                                dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: val ? 1 : null })));
+                            }}
                         />
-                    </CollapsingDiv>
 
-                    <Toggle
-                        text="Select roles"
-                        checked={showRoleWeights}
-                        onChange={setShowRoleWeights}
-                        className="pb-4"
-                    />
+                        <CollapsingDiv
+                            visible={gameConfig ? gameConfig.number_of_wolves !== null : null}
+                        >
+                            <SliderAndBox
+                                max={5}
+                                min={1}
+                                value={gameConfig ? gameConfig.number_of_wolves : null}
+                                onChange={e => dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
+                            />
+                        </CollapsingDiv>
 
-                    <CollapsingDiv visible={showRoleWeights}>
-                        {role_weights}
-                    </CollapsingDiv>
-                </Form>
-            </CollapsingDiv>
+                        <Toggle
+                            text="Select roles"
+                            checked={showRoleWeights}
+                            onChange={setShowRoleWeights}
+                            className="pb-4"
+                        />
+
+                        <CollapsingDiv visible={showRoleWeights}>
+                            {role_weights}
+                        </CollapsingDiv>
+                    </Form>
+                </CollapsingDiv>
+            </Form>
         </div >
     )
 }

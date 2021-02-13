@@ -54,7 +54,7 @@ function SettingsButton({ className, gameTag }) {
 
                     Change the settings for the next time this game is restarted:
 
-                    <DistributionSetup game_tag={gameTag} />
+                    <DistributionSetup game_tag={gameTag} auto_update={true} />
 
                     <h5 className='mt-3'>End game</h5>
                 End the game for everyone. Use with care!
