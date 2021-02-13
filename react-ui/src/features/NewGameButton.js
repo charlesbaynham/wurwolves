@@ -8,7 +8,14 @@ import FormControl from 'react-bootstrap/FormControl';
 import { selectGameConfig, selectDefaultConfig } from './selectors'
 import { make_api_url } from '../utils'
 
-const isConfigDefault = () => false
+const _ = require('lodash');
+
+const isConfigDefault = (gameConfig, defaultConfig) => (
+    _.isEqual(gameConfig.role_weights, defaultConfig.role_weights) &&
+    (gameConfig.number_of_wolves === null || gameConfig.number_of_wolves === defaultConfig.number_of_wolves) &&
+    (gameConfig.probability_of_villager === defaultConfig.probability_of_villager)
+)
+
 
 function NewGameButton() {
     const [newGameID, setNewGameID] = useState("")
