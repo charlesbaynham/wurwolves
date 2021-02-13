@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { setConfig, clearConfig } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -10,6 +13,7 @@ import Form from 'react-bootstrap/Form';
 import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
+import { make_api_url } from '../utils'
 
 
 const default_roles = {
@@ -97,20 +101,38 @@ function CollapsingDiv({ visible, children }) {
 }
 
 
-function DistributionSetup() {
+function DistributionSetup({ game_tag }) {
     const [customise, setCustomise] = useState(false);
     const [settings, setSettings] = useState({
         numWolves: null,
         roles: null,
     });
+    const dispatch = useDispatch();
 
     var role_weights = [];
+
+    fetch(
+        make_api_url(
+            null, "default_game_config"
+        ),
+        { method: 'get' }
+    ).then(r => {
+        if (!r.ok) {
+            throw Error("Fetch config failed with error " + r.status)
+        }
+        return r.json()
+    }).then(data => {
+        if (data) {
+            dispatch(setConfig(data));
+        }
+    })
 
     for (let role in default_roles) {
         role_weights.push(
             <>
                 {role}:
                 <SliderAndBox
+                    key={role}
                     max={100}
                     value={settings.roles === null ? 0 : settings.roles[role]}
                     onChange={e => {

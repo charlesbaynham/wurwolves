@@ -555,7 +555,8 @@ class WurwolvesGame:
         g = self.get_game()
 
         if g is None:
-            raise HTTPException(404, f"Game not found")
+            g = self.create_game()
+
         if g.distribution_settings is not None:
             logger.debug(
                 "Custom distribution settings found: returning [%s]",

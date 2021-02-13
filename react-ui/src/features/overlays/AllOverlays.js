@@ -66,7 +66,6 @@ function AllOverlays() {
                         scale: 0,
                     }
                 }}
-                debug={true}
             />
         </>
     )

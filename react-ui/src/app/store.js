@@ -33,6 +33,9 @@ const selectedPlayer = createSlice({
   }
 })
 
+export const selectPlayer = selectedPlayer.actions.selectPlayer
+export const unselectAll = selectedPlayer.actions.unselectAll
+
 const gameConfig = createSlice({
   name: 'gameConfig',
   initialState: null,
@@ -42,8 +45,8 @@ const gameConfig = createSlice({
   }
 })
 
-export const selectPlayer = selectedPlayer.actions.selectPlayer
-export const unselectAll = selectedPlayer.actions.unselectAll
+export const setConfig = gameConfig.actions.replace
+export const clearConfig = gameConfig.actions.clear
 
 const reducer = combineReducers({
   backend: backend.reducer,
