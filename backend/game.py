@@ -551,8 +551,13 @@ class WurwolvesGame:
         g = self.get_game()
 
         if g.distribution_settings is not None:
+            logger.debug(
+                "Custom distribution settings found: returning [%s]",
+                g.distribution_settings,
+            )
             return DistributionSettings.parse_obj(g.distribution_settings)
         else:
+            logger.debug("No custom distribution settings: returning default")
             return roles.DEFAULT_DISTRIBUTION_SETTINGS
 
     @db_scoped
@@ -562,7 +567,7 @@ class WurwolvesGame:
         # Assign new roles to the active players
         players = self.get_players()
 
-        player_roles = roles.assign_roles(len(players))
+        player_roles = roles.assign_roles(len(players), self.get_game_config())
 
         logger.info(
             "Assigning roles for {} game: {}".format(self.game_id, player_roles)
