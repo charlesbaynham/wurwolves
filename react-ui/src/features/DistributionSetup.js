@@ -25,8 +25,6 @@ const default_roles = {
     FOOL: 10,
 }
 
-
-
 function Toggle({ text, checked, onChange, className = null }) {
     var totalClassName = styles.toggle
     if (className !== null) {
@@ -115,11 +113,11 @@ function DistributionSetup() {
                 <SliderAndBox
                     max={100}
                     value={settings.roles === null ? 0 : settings.roles[role]}
-                    onChange={(e => {
+                    onChange={e => {
                         var newRoles = Object.assign({}, settings.roles)
                         newRoles[role] = parseInt(e.target.value)
                         setSettings(Object.assign({}, settings, { roles: newRoles }));
-                    }).bind(role)}
+                    }}
                 />
             </>
         )

@@ -17,6 +17,7 @@ from fastapi import Response
 from starlette.middleware.sessions import SessionMiddleware
 
 from .game import WurwolvesGame
+from .model import DistributionSettings
 from .roles import router as roles_router
 from .user_id import get_user_id
 
@@ -63,6 +64,44 @@ async def get_state(
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
     return state
+
+
+@router.get("/default_game_config")
+async def get_default_game_config():
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Starting get_default_game_config")
+        logger.debug("get_default_game_config memory usage = %.0f MB", get_mem_usage())
+
+    return WurwolvesGame.get_default_game_config().dict()
+
+
+@router.get("/{game_tag}/game_config")
+async def get_game_config(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+):
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Starting get_game_config")
+        logger.debug("get_game_config memory usage = %.0f MB", get_mem_usage())
+
+    return WurwolvesGame(game_tag).get_game_config().dict()
+
+
+@router.post("/{game_tag}/game_config")
+async def set_game_config(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+    new_config: str = Query(
+        ...,
+        title="JSON dict of the new game state. Must parse to valid DistributionSettings",
+    ),
+):
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug(
+            "Starting set_game_config for game %s, state %s", game_tag, new_config
+        )
+
+    return WurwolvesGame(game_tag).set_game_config(
+        DistributionSettings.parse_raw(new_config)
+    )
 
 
 @router.post("/{game_tag}/chat")

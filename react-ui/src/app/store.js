@@ -16,7 +16,6 @@ const backend = createSlice({
     myName: "",
     myNameIsGenerated: true,
     myStatus: null,
-    gameConfig: null,
   },
   reducers: {
     replace: (state, action) => action.payload
@@ -34,12 +33,22 @@ const selectedPlayer = createSlice({
   }
 })
 
+const gameConfig = createSlice({
+  name: 'gameConfig',
+  initialState: null,
+  reducers: {
+    replace: (state, action) => action.payload,
+    clear: (state) => null,
+  }
+})
+
 export const selectPlayer = selectedPlayer.actions.selectPlayer
 export const unselectAll = selectedPlayer.actions.unselectAll
 
 const reducer = combineReducers({
   backend: backend.reducer,
   selectedPlayer: selectedPlayer.reducer,
+  gameConfig: gameConfig.reducer,
 })
 
 

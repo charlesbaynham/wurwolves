@@ -546,10 +546,16 @@ class WurwolvesGame:
             p.previous_role = PlayerRole.SPECTATOR
             p.state = PlayerState.SPECTATING
 
+    @classmethod
+    def get_default_game_config(cls):
+        return roles.DEFAULT_DISTRIBUTION_SETTINGS
+
     @db_scoped
     def get_game_config(self) -> DistributionSettings:
         g = self.get_game()
 
+        if g is None:
+            raise HTTPException(404, f"Game not found")
         if g.distribution_settings is not None:
             logger.debug(
                 "Custom distribution settings found: returning [%s]",
@@ -558,7 +564,24 @@ class WurwolvesGame:
             return DistributionSettings.parse_obj(g.distribution_settings)
         else:
             logger.debug("No custom distribution settings: returning default")
-            return roles.DEFAULT_DISTRIBUTION_SETTINGS
+            return self.get_default_game_config()
+
+    @db_scoped
+    def set_game_config(self, new_config: Optional[DistributionSettings] = None):
+        g = self.get_game()
+
+        if g is None:
+            raise HTTPException(404, "Game not found")
+
+        if new_config is None:
+            g.distribution_settings = None
+        else:
+            if not isinstance(new_config, DistributionSettings):
+                raise TypeError(
+                    f"Expecting an instance of DistributionSettings, got {type(new_config)}"
+                )
+
+            g.distribution_settings = new_config.dict()
 
     @db_scoped
     def start_game(self):
@@ -1059,7 +1082,6 @@ class WurwolvesGame:
             myName=player.user.name,
             myNameIsGenerated=player.user.name_is_generated,
             myStatus=player.state,
-            gameConfig=self.get_game_config(),
         )
 
         if logger.isEnabledFor(logging.DEBUG):

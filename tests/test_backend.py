@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from backend.game import WurwolvesGame
 from backend.main import app
-
+from backend.model import PlayerRole
 
 GAME_ID = "hot-potato"
 
@@ -172,3 +172,53 @@ def test_keepalive_no_change_hash(api_client, db_session):
     second_game_hash = g.get_hash_now()
 
     assert first_game_hash == second_game_hash
+
+
+def test_get_default_game_config(api_client):
+    from backend.model import DistributionSettings
+
+    r = api_client.get("/api/default_game_config")
+
+    assert r.ok
+    DistributionSettings.parse_raw(r.content)
+
+
+def test_get_game_config(api_client, db_session):
+    from backend.model import DistributionSettings
+
+    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    assert r.status_code == 404
+
+    api_client.post(f"/api/{GAME_ID}/join")
+    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    assert r.ok
+    DistributionSettings.parse_raw(r.content)
+
+
+def test_set_game_config(api_client, db_session):
+    from backend.model import DistributionSettings
+    from urllib.parse import urlencode
+
+    api_client.post(f"/api/{GAME_ID}/join")
+    r = api_client.get(f"/api/{GAME_ID}/game_config")
+
+    config = DistributionSettings.parse_raw(r.content)
+
+    assert config.number_of_wolves is None
+
+    config.number_of_wolves = 5
+    config.role_weights[PlayerRole.JESTER] = 1000
+
+    r = api_client.post(
+        f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
+    )
+
+    assert r.ok
+
+    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    assert r.ok
+    config2 = DistributionSettings.parse_raw(r.content)
+
+    assert config2.number_of_wolves == 5
+    assert config2.role_weights[PlayerRole.JESTER] == 1000
+    assert config == config2

@@ -402,8 +402,6 @@ class FrontendState(pydantic.BaseModel):
 
     players: List[UIPlayerState]
 
-    gameConfig: DistributionSettings
-
     class ChatMsg(pydantic.BaseModel):
         msg: str
         isStrong = False
