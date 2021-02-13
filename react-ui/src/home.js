@@ -30,7 +30,7 @@ To learn how to play, select the question mark at the top right of the screen.
                 <Row><Col>
                     <NewGameButton />
                 </Col></Row>
-                <Row><Col>
+                <Row className='pt-3'><Col>
                     <DistributionSetup />
                 </Col></Row>
             </Container>

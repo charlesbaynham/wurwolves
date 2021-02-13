@@ -6,6 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 
+import DistributionSetup from '../DistributionSetup'
+
 import { make_api_url } from '../../utils'
 import { settings_text } from '../../prose'
 
@@ -48,7 +50,13 @@ function SettingsButton({ className, gameTag }) {
                 <Modal.Body>
                     <ReactMarkdown source={settings_text} />
 
-                    <h5>End game</h5>
+                    <h5 className='mt-3'>Customise roles</h5>
+
+                    Change the settings for the next time this game is restarted:
+
+                    <DistributionSetup game_tag={gameTag} />
+
+                    <h5 className='mt-3'>End game</h5>
                 End the game for everyone. Use with care!
 
                 {!endClicked ?
