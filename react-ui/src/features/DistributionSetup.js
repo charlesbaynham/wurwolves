@@ -33,12 +33,13 @@ function Toggle({ text, checked, onChange, className = null }) {
 }
 
 
-function SliderAndBox({ value, onChange, max = 5 }) {
+function SliderAndBox({ value, onChange, min = 0, max = 5 }) {
     return (
         <Form.Group as={Row}>
             <Col xs="9">
                 <RangeSlider
                     className={styles.wideSlider}
+                    min={min}
                     max={max}
                     style={{ width: "100%" }}
                     value={value ? value : 0}
@@ -193,6 +194,7 @@ function DistributionSetup({ game_tag }) {
                     >
                         <SliderAndBox
                             max={5}
+                            min={1}
                             value={gameConfig.number_of_wolves}
                             onChange={e => dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
                         />
