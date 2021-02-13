@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from backend.game import WurwolvesGame
 from backend.main import app
+from backend.model import GameStage
 from backend.model import PlayerRole
 
 GAME_ID = "hot-potato"
@@ -222,3 +223,64 @@ def test_set_game_config(api_client, db_session):
     assert config2.number_of_wolves == 5
     assert config2.role_weights[PlayerRole.JESTER] == 1000
     assert config == config2
+
+
+def test_control_roles(api_client, db_session):
+    from uuid import uuid4 as uuid
+    from backend.model import DistributionSettings
+    from urllib.parse import urlencode
+
+    g = WurwolvesGame(GAME_ID)
+
+    # Make a 5 player game
+    with api_client as s:
+        r = s.post(f"/api/{GAME_ID}/join")
+        assert r.ok
+
+        for _ in range(4):
+            g.join(uuid())
+
+        # Set the config to promise a jester
+        r = s.get(f"/api/{GAME_ID}/game_config")
+        assert r.ok
+        config = DistributionSettings.parse_raw(r.content)
+        config.role_weights[PlayerRole.JESTER] = 100000
+        r = s.post(
+            f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
+        )
+        assert r.ok
+
+        # Run the game start a few times for confirm that it worked
+        for _ in range(5):
+            players = g.get_players_model()
+            assert not any([p.role is PlayerRole.JESTER for p in players])
+
+            g.start_game()
+
+            players = g.get_players_model()
+            assert any([p.role is PlayerRole.JESTER for p in players])
+
+            g.end_game()
+            g.move_to_lobby()
+
+
+def test_end_game(api_client, db_session):
+    from uuid import uuid4 as uuid
+
+    g = WurwolvesGame(GAME_ID)
+
+    with api_client as s:
+        r = s.post(f"/api/{GAME_ID}/join")
+        assert r.ok
+
+        for _ in range(4):
+            g.join(uuid())
+
+        g.start_game()
+
+        assert g.get_game_model().stage == GameStage.NIGHT
+
+        r = s.post(f"/api/{GAME_ID}/end_game")
+        assert r.ok
+
+        assert g.get_game_model().stage == GameStage.ENDED
