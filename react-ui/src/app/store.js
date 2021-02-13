@@ -16,6 +16,7 @@ const backend = createSlice({
     myName: "",
     myNameIsGenerated: true,
     myStatus: null,
+    gameConfig: null,
   },
   reducers: {
     replace: (state, action) => action.payload
