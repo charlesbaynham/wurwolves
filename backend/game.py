@@ -555,7 +555,8 @@ class WurwolvesGame:
         g = self.get_game()
 
         if g is None:
-            g = self.create_game()
+            logger.debug("Game does not exist: returning default")
+            return self.get_default_game_config()
 
         if g.distribution_settings is not None:
             logger.debug(
@@ -572,7 +573,7 @@ class WurwolvesGame:
         g = self.get_game()
 
         if g is None:
-            raise HTTPException(404, "Game not found")
+            g = self.create_game()
 
         if new_config is None:
             g.distribution_settings = None
