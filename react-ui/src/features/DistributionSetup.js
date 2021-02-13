@@ -16,6 +16,7 @@ import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
 import { make_api_url, isConfigDefault, set_config } from '../utils'
+import ReactMarkdown from 'react-markdown';
 
 const _ = require('lodash');
 
@@ -243,6 +244,10 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             onChange={setShowRoleWeights}
                             className="pb-4"
                         />
+
+                        <ReactMarkdown>
+                            Adjust the weightings for respective roles below. All roles will be assigned at most once.
+                        </ReactMarkdown>
 
                         <CollapsingDiv visible={showRoleWeights}>
                             {role_weights}
