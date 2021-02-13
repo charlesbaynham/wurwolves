@@ -27,6 +27,7 @@ from . import resolver
 from . import roles
 from .model import Action
 from .model import ActionModel
+from .model import DistributionSettings
 from .model import FrontendState
 from .model import Game
 from .model import GameModel
@@ -546,6 +547,15 @@ class WurwolvesGame:
             p.state = PlayerState.SPECTATING
 
     @db_scoped
+    def get_game_config(self) -> DistributionSettings:
+        g = self.get_game()
+
+        if g.distribution_settings is not None:
+            return DistributionSettings.parse_obj(g.distribution_settings)
+        else:
+            return roles.DEFAULT_DISTRIBUTION_SETTINGS
+
+    @db_scoped
     def start_game(self):
         self._wipe_all_roles()
 
@@ -1044,6 +1054,7 @@ class WurwolvesGame:
             myName=player.user.name,
             myNameIsGenerated=player.user.name_is_generated,
             myStatus=player.state,
+            gameConfig=self.get_game_config(),
         )
 
         if logger.isEnabledFor(logging.DEBUG):

@@ -3,6 +3,8 @@ import enum
 import json
 import logging
 import random
+from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -351,6 +353,20 @@ class ActionModel(pydantic.BaseModel):
         extra = "forbid"
 
 
+class DistributionSettings(pydantic.BaseModel):
+    """ Settings for how to generate a game """
+
+    number_of_wolves: Union[None, int] = None
+    probability_of_villager: float
+    role_weights: Dict[PlayerRole, float]
+
+    @pydantic.validator("probability_of_villager", always=True)
+    def prob(cls, v, values):
+        if v < 0 or v > 1:
+            raise ValueError("probability_of_villager must be between 0 and 1")
+        return v
+
+
 class FrontendState(pydantic.BaseModel):
     """
     Schema for the React state of a client's frontend
@@ -386,7 +402,7 @@ class FrontendState(pydantic.BaseModel):
 
     players: List[UIPlayerState]
 
-    gameConfig: roles.DistributionSettings
+    gameConfig: DistributionSettings
 
     class ChatMsg(pydantic.BaseModel):
         msg: str

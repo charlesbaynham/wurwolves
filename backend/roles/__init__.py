@@ -1,4 +1,5 @@
 from .distribution import assign_roles
+from .distribution import DEFAULT_DISTRIBUTION_SETTINGS
 from .registration import do_startup_callback
 from .registration import get_action_func_name
 from .registration import get_apparant_role
@@ -14,6 +15,7 @@ from .teams import win_ends_game
 
 __all__ = [
     "assign_roles",
+    "DEFAULT_DISTRIBUTION_SETTINGS",
     "get_action_func_name",
     "get_role_action",
     "get_role_description",

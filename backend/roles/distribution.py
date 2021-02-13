@@ -8,6 +8,7 @@ from typing import Union
 
 import pydantic
 
+from ..model import DistributionSettings
 from ..model import PlayerRole
 
 guaranteed_roles = [
@@ -71,22 +72,11 @@ def _default_num_wolves(num_players: int):
         return math.ceil(num_players / 5)
 
 
-class DistributionSettings(pydantic.BaseModel):
-    number_of_wolves: Callable = None
-    probability_of_villager: float = PROB_VILLAGER
-    role_weights: Dict[PlayerRole, float] = RANDOMISED_ROLES
-
-    @pydantic.validator("number_of_wolves", always=True)
-    def num(cls, v, values):
-        if v is None:
-            return _default_num_wolves
-        return v
-
-    @pydantic.validator("probability_of_villager", always=True)
-    def prob(cls, v, values):
-        if v < 0 or v > 1:
-            raise ValueError("probability_of_villager must be between 0 and 1")
-        return v
+DEFAULT_DISTRIBUTION_SETTINGS = DistributionSettings(
+    number_of_wolves=None,
+    probability_of_villager=PROB_VILLAGER,
+    role_weights=RANDOMISED_ROLES,
+)
 
 
 def assign_roles(
@@ -103,10 +93,19 @@ def assign_roles(
     """
 
     if settings is None:
-        settings = DistributionSettings()
+        settings = DEFAULT_DISTRIBUTION_SETTINGS
 
     probability_of_villager = settings.probability_of_villager
-    num_wolves = settings.number_of_wolves(num_players)
+
+    if isinstance(settings.number_of_wolves, int):
+        num_wolves = settings.number_of_wolves
+    elif settings.number_of_wolves is None:
+        num_wolves = _default_num_wolves(num_players)
+    else:
+        raise TypeError(
+            "settings.number_of_wolves is a %s", type(settings.number_of_wolves)
+        )
+
     role_weights = settings.role_weights
 
     if num_players < len(guaranteed_roles) + 1:
