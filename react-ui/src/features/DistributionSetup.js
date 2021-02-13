@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectGameConfig } from './selectors'
+import { selectGameConfig, selectDefaultConfig } from './selectors'
 
 import { setGameConfig, setDefaultConfig } from '../app/store'
 
@@ -92,13 +92,14 @@ function CollapsingDiv({ visible, children }) {
 
 function DistributionSetup({ game_tag }) {
     const gameConfig = useSelector(selectGameConfig);
+    const defaultConfig = useSelector(selectDefaultConfig);
 
     const [customise, setCustomise] = useState(false);
     const [showRoleWeights, setShowRoleWeights] = useState(false);
     const dispatch = useDispatch();
 
-    // Get the default state and set both the stored default and the current config to it
     useEffect(() => {
+        // Get and store the default config
         fetch(
             make_api_url(
                 null, "default_game_config"
@@ -106,16 +107,38 @@ function DistributionSetup({ game_tag }) {
             { method: 'get' }
         ).then(r => {
             if (!r.ok) {
-                throw Error("Fetch config failed with error " + r.status)
+                throw Error("Fetch default config failed with error " + r.status)
             }
             return r.json()
         }).then(data => {
             if (data) {
-                dispatch(setGameConfig(data));
                 dispatch(setDefaultConfig(data));
             }
         })
-    }, [dispatch])
+    }, [dispatch, game_tag])
+    useEffect(() => {
+        if (game_tag !== null) {
+            // If in a game, get the current config too
+            fetch(
+                make_api_url(
+                    game_tag, "game_config"
+                ),
+                { method: 'get' }
+            ).then(r => {
+                if (!r.ok) {
+                    throw Error("Fetch game config failed with error " + r.status)
+                }
+                return r.json()
+            }).then(data => {
+                if (data) {
+                    dispatch(setGameConfig(data));
+                }
+            })
+        } else {
+            // Otherwise, use the default
+            dispatch(setGameConfig(defaultConfig));
+        }
+    }, [dispatch, defaultConfig, game_tag])
 
     var role_weights = [];
 
