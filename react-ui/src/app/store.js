@@ -36,30 +36,33 @@ const selectedPlayer = createSlice({
 export const selectPlayer = selectedPlayer.actions.selectPlayer
 export const unselectAll = selectedPlayer.actions.unselectAll
 
-const gameConfig = createSlice({
-  name: 'gameConfig',
+const config = createSlice({
+  name: 'config',
   initialState: {
-    number_of_wolves: null,
-    probability_of_villager: null,
-    role_weights: {}
+    gameConfig: {
+      number_of_wolves: null,
+      probability_of_villager: null,
+      role_weights: {}
+    },
+    defaultConfig: {
+      number_of_wolves: null,
+      probability_of_villager: null,
+      role_weights: {}
+    }
   },
   reducers: {
-    replace: (state, action) => {
-      console.log("Setting config to")
-      console.log(action.payload)
-      return action.payload
-    },
+    replaceGameConfig: (state, action) => Object.assign({}, state, { gameConfig: action.payload }),
     clear: (state) => null,
   }
 })
 
-export const setConfig = gameConfig.actions.replace
-export const clearConfig = gameConfig.actions.clear
+export const setGameConfig = config.actions.replaceGameConfig
+export const clearGameConfig = config.actions.clear
 
 const reducer = combineReducers({
   backend: backend.reducer,
   selectedPlayer: selectedPlayer.reducer,
-  gameConfig: gameConfig.reducer,
+  config: config.reducer,
 })
 
 

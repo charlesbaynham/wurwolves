@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { selectGameConfig } from './selectors'
 
-import { setConfig, clearConfig } from '../app/store'
+import { setGameConfig, clearGameConfig } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -123,7 +123,7 @@ function DistributionSetup({ game_tag }) {
             return r.json()
         }).then(data => {
             if (data) {
-                dispatch(setConfig(data));
+                dispatch(setGameConfig(data));
             }
         })
     }, [dispatch])
@@ -146,7 +146,7 @@ function DistributionSetup({ game_tag }) {
 
                             console.log(newRoles)
                             console.log(newConfig)
-                            dispatch(setConfig(newConfig))
+                            dispatch(setGameConfig(newConfig))
                         }}
                     />
                 </>
@@ -172,7 +172,7 @@ function DistributionSetup({ game_tag }) {
                         text="Select number of wolves"
                         checked={gameConfig.number_of_wolves !== null}
                         onChange={val => {
-                            dispatch(setConfig(Object.assign({}, gameConfig, { number_of_wolves: val ? 1 : null })));
+                            dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: val ? 1 : null })));
                         }}
                     />
 
@@ -182,7 +182,7 @@ function DistributionSetup({ game_tag }) {
                         <SliderAndBox
                             max={5}
                             value={gameConfig.number_of_wolves}
-                            onChange={e => dispatch(setConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
+                            onChange={e => dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
                         />
                     </CollapsingDiv>
 
