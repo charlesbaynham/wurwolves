@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
+import { selectGameConfig } from './selectors'
 
 import { setConfig, clearConfig } from '../app/store'
 
@@ -102,47 +104,54 @@ function CollapsingDiv({ visible, children }) {
 
 
 function DistributionSetup({ game_tag }) {
+    const gameConfig = useSelector(selectGameConfig);
+
     const [customise, setCustomise] = useState(false);
-    const [settings, setSettings] = useState({
-        numWolves: null,
-        roles: null,
-    });
+    const [showRoleWeights, setShowRoleWeights] = useState(false);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        fetch(
+            make_api_url(
+                null, "default_game_config"
+            ),
+            { method: 'get' }
+        ).then(r => {
+            if (!r.ok) {
+                throw Error("Fetch config failed with error " + r.status)
+            }
+            return r.json()
+        }).then(data => {
+            if (data) {
+                dispatch(setConfig(data));
+            }
+        })
+    }, [dispatch])
 
     var role_weights = [];
 
-    fetch(
-        make_api_url(
-            null, "default_game_config"
-        ),
-        { method: 'get' }
-    ).then(r => {
-        if (!r.ok) {
-            throw Error("Fetch config failed with error " + r.status)
-        }
-        return r.json()
-    }).then(data => {
-        if (data) {
-            dispatch(setConfig(data));
-        }
-    })
+    if (gameConfig && gameConfig.role_weights) {
+        for (let role in gameConfig.role_weights) {
+            role_weights.push(
+                <>
+                    {role}:
+                    <SliderAndBox
+                        key={role}
+                        max={100}
+                        value={gameConfig.role_weights === null ? 0 : gameConfig.role_weights[role]}
+                        onChange={e => {
+                            var newRoles = Object.assign({}, gameConfig.role_weights)
+                            newRoles[role] = parseInt(e.target.value)
+                            const newConfig = Object.assign({}, gameConfig, { role_weights: newRoles })
 
-    for (let role in default_roles) {
-        role_weights.push(
-            <>
-                {role}:
-                <SliderAndBox
-                    key={role}
-                    max={100}
-                    value={settings.roles === null ? 0 : settings.roles[role]}
-                    onChange={e => {
-                        var newRoles = Object.assign({}, settings.roles)
-                        newRoles[role] = parseInt(e.target.value)
-                        setSettings(Object.assign({}, settings, { roles: newRoles }));
-                    }}
-                />
-            </>
-        )
+                            console.log(newRoles)
+                            console.log(newConfig)
+                            dispatch(setConfig(newConfig))
+                        }}
+                    />
+                </>
+            )
+        }
     }
 
     return (
@@ -161,36 +170,30 @@ function DistributionSetup({ game_tag }) {
                 <Form className={styles.form} onSubmit={e => e.preventDefault()}>
                     <Toggle
                         text="Select number of wolves"
-                        checked={settings.numWolves !== null}
+                        checked={gameConfig.number_of_wolves !== null}
                         onChange={val => {
-                            setSettings(Object.assign({}, settings, { numWolves: val ? 1 : null }));
+                            dispatch(setConfig(Object.assign({}, gameConfig, { number_of_wolves: val ? 1 : null })));
                         }}
                     />
 
                     <CollapsingDiv
-                        visible={settings.numWolves !== null}
+                        visible={gameConfig.number_of_wolves !== null}
                     >
                         <SliderAndBox
                             max={5}
-                            value={settings.numWolves}
-                            onChange={e => setSettings(Object.assign({}, settings, { numWolves: e.target.value }))}
+                            value={gameConfig.number_of_wolves}
+                            onChange={e => dispatch(setConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
                         />
                     </CollapsingDiv>
 
                     <Toggle
                         text="Select roles"
-                        checked={settings.roles !== null}
-                        onChange={val => {
-                            if (val) {
-                                setSettings(Object.assign({}, settings, { roles: default_roles }))
-                            } else {
-                                setSettings(Object.assign({}, settings, { roles: null }))
-                            }
-                        }}
+                        checked={showRoleWeights}
+                        onChange={setShowRoleWeights}
                         className="pb-4"
                     />
 
-                    <CollapsingDiv visible={settings.roles !== null}>
+                    <CollapsingDiv visible={showRoleWeights}>
                         {role_weights}
                     </CollapsingDiv>
                 </Form>

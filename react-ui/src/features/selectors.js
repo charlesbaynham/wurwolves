@@ -21,7 +21,7 @@ export const selectPlayerReady = id => (state => getPlayerById(state.backend.pla
 
 export const selectAllPlayers = state => state.backend.players;
 
-export const selectGameConfig = state => state.backend.gameConfig;
+export const selectGameConfig = state => state.gameConfig;
 
 export const selectControls = (state => state.backend.controls_state);
 export const selectPlayerSelectable = (state => state.backend.controls_state.button_submit_person);

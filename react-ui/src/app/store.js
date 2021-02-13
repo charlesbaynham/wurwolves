@@ -38,9 +38,17 @@ export const unselectAll = selectedPlayer.actions.unselectAll
 
 const gameConfig = createSlice({
   name: 'gameConfig',
-  initialState: null,
+  initialState: {
+    number_of_wolves: null,
+    probability_of_villager: null,
+    role_weights: {}
+  },
   reducers: {
-    replace: (state, action) => action.payload,
+    replace: (state, action) => {
+      console.log("Setting config to")
+      console.log(action.payload)
+      return action.payload
+    },
     clear: (state) => null,
   }
 })
