@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
+import ReactMarkdown from 'react-markdown';
+
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-
-import ReactMarkdown from 'react-markdown';
 
 import { make_api_url } from '../../utils'
 import { settings_text } from '../../prose'
@@ -12,7 +12,7 @@ import { settings_text } from '../../prose'
 import styles from './SettingsButton.module.css'
 import icon from './icon.svg'
 
-function SettingsButton({className, gameTag}) {
+function SettingsButton({ className, gameTag }) {
 
     const [show, setShow] = useState(false);
 
@@ -33,57 +33,57 @@ function SettingsButton({className, gameTag}) {
 
     return (
         <>
-        <a className={`navbar-settings ${className}`}
-            href="/" onClick={ (event) => {
-                event.preventDefault()
-                handleShow()
-            } }>
-            <img src={icon} alt="Utilities icon" className={styles.icon}/>
-        </a>
+            <a className={`navbar-settings ${className}`}
+                href="/" onClick={(event) => {
+                    event.preventDefault()
+                    handleShow()
+                }}>
+                <img src={icon} alt="Utilities icon" className={styles.icon} />
+            </a>
 
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Utilities</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <ReactMarkdown source={settings_text} />
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Utilities</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ReactMarkdown source={settings_text} />
 
-                <h5>End game</h5>
+                    <h5>End game</h5>
                 End the game for everyone. Use with care!
 
                 {!endClicked ?
-                    <Button variant="danger" block onClick={() => {
-                        setEndClicked(true);
-                        setTimeoutID(setTimeout(() => {
-                            setEndTimeoutComplete(true);
-                            setTimeoutID(null);
-                        }, 3000));
-                    }}>
-                        End game
+                        <Button variant="danger" block onClick={() => {
+                            setEndClicked(true);
+                            setTimeoutID(setTimeout(() => {
+                                setEndTimeoutComplete(true);
+                                setTimeoutID(null);
+                            }, 3000));
+                        }}>
+                            End game
                     </Button>
-                :
-                    <Alert variant="danger">
-                        {endTimeoutComplete ?
-                            <Button variant="danger" block onClick={() => {
-                                endGame(gameTag);
-                                handleClose();
-                            }}>
-                                Confirm end game
-                            </Button>
                         :
-                            <>Wait for it...</>
-                        }
-                    </Alert>
-                }
+                        <Alert variant="danger">
+                            {endTimeoutComplete ?
+                                <Button variant="danger" block onClick={() => {
+                                    endGame(gameTag);
+                                    handleClose();
+                                }}>
+                                    Confirm end game
+                            </Button>
+                                :
+                                <>Wait for it...</>
+                            }
+                        </Alert>
+                    }
 
 
-            </Modal.Body>
-            <Modal.Footer>
-            <Button variant="primary" onClick={handleClose}>
-                Close
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleClose}>
+                        Close
             </Button>
-            </Modal.Footer>
-        </Modal>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }
