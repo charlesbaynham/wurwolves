@@ -91,7 +91,7 @@ function CollapsingDiv({ visible, children }) {
 }
 
 
-function DistributionSetup({ game_tag }) {
+function DistributionSetup({ game_tag = null }) {
     const gameConfig = useSelector(selectGameConfig);
     const defaultConfig = useSelector(selectDefaultConfig);
 
