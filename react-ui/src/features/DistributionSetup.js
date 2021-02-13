@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { selectGameConfig } from './selectors'
 
-import { setGameConfig, clearGameConfig } from '../app/store'
+import { setGameConfig, setDefaultConfig } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -17,19 +17,6 @@ import Switch from "react-switch";
 import styles from './DistributionSetup.module.css'
 import { make_api_url } from '../utils'
 
-
-const default_roles = {
-    JESTER: 10,
-    VIGILANTE: 10,
-    MAYOR: 10,
-    MILLER: 10,
-    ACOLYTE: 5,
-    PRIEST: 10,
-    PROSTITUTE: 10,
-    MASON: 7,
-    EXORCIST: 10,
-    FOOL: 10,
-}
 
 function Toggle({ text, checked, onChange, className = null }) {
     var totalClassName = styles.toggle
@@ -110,6 +97,7 @@ function DistributionSetup({ game_tag }) {
     const [showRoleWeights, setShowRoleWeights] = useState(false);
     const dispatch = useDispatch();
 
+    // Get the default state and set both the stored default and the current config to it
     useEffect(() => {
         fetch(
             make_api_url(
@@ -124,6 +112,7 @@ function DistributionSetup({ game_tag }) {
         }).then(data => {
             if (data) {
                 dispatch(setGameConfig(data));
+                dispatch(setDefaultConfig(data));
             }
         })
     }, [dispatch])

@@ -52,11 +52,12 @@ const config = createSlice({
   },
   reducers: {
     replaceGameConfig: (state, action) => Object.assign({}, state, { gameConfig: action.payload }),
-    clear: (state) => null,
+    replaceDefaultConfig: (state, action) => Object.assign({}, state, { defaultConfig: action.payload }),
   }
 })
 
 export const setGameConfig = config.actions.replaceGameConfig
+export const setDefaultConfig = config.actions.replaceDefaultConfig
 export const clearGameConfig = config.actions.clear
 
 const reducer = combineReducers({
