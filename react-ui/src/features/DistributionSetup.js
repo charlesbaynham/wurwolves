@@ -15,7 +15,9 @@ import Form from 'react-bootstrap/Form';
 import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
-import { make_api_url } from '../utils'
+import { make_api_url, isConfigDefault } from '../utils'
+
+const _ = require('lodash');
 
 
 function Toggle({ text, checked, onChange, className = null }) {
@@ -99,6 +101,28 @@ function DistributionSetup({ game_tag = null }) {
     const [showRoleWeights, setShowRoleWeights] = useState(false);
     const dispatch = useDispatch();
 
+    const [togglesAreSetup, setTogglesAreSetup] = useState(false)
+
+    // Wait until both the default state and the current state have been loaded,
+    // then set the state of the toggles accordingly
+    useEffect(() => {
+        if (togglesAreSetup) return;
+
+        if (isConfigDefault(gameConfig, defaultConfig)) {
+            // Buttons default to the correct settings for default settings, so do nothing
+        } else {
+            setCustomise(true)
+
+            if (!_.isEqual(gameConfig.role_weights, defaultConfig.role_weights)) {
+                setShowRoleWeights(true)
+            }
+        }
+
+        setTogglesAreSetup(true);
+    }, [togglesAreSetup, gameConfig, defaultConfig])
+
+
+
     useEffect(() => {
         // Get and store the default config
         fetch(
@@ -130,10 +154,8 @@ function DistributionSetup({ game_tag = null }) {
                     throw Error("Fetch game config failed with error " + r.status)
                 }
                 return r.json()
-            }).then(data => {
-                if (data) {
-                    dispatch(setGameConfig(data));
-                }
+            }).then(config => {
+                dispatch(setGameConfig(config));
             })
         } else {
             // Otherwise, use the default
