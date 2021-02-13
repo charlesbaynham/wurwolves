@@ -200,12 +200,10 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 onSubmit={e => e.preventDefault()}
                 onBlur={() => {
                     if (auto_update === true && game_tag !== null) {
-                        console.log(`Triggering update now with default = ${customise}`)
-
                         if (customise) {
-                            set_config(game_tag, null)
+                            set_config(game_tag, gameConfig)
                         } else {
-                            set_config(game_tag, defaultConfig)
+                            set_config(game_tag, null)
                         }
                     }
                 }}
