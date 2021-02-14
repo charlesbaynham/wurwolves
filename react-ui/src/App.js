@@ -21,9 +21,18 @@ import {
 
 import ReactGA from 'react-ga'
 
-
+// Analytics
 ReactGA.initialize('UA-186218553-1');
 ReactGA.pageview(window.location.pathname + window.location);
+
+// Disable console.log in production
+function noop() { }
+if (process.env.NODE_ENV !== 'development') {
+  console.debug = noop;
+  console.log = noop;
+  console.warn = noop;
+  console.error = noop;
+}
 
 
 function App() {

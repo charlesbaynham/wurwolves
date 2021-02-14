@@ -21,12 +21,17 @@ export const selectPlayerReady = id => (state => getPlayerById(state.backend.pla
 
 export const selectAllPlayers = state => state.backend.players;
 
+export const selectGameConfig = state => state.config.gameConfig;
+export const selectUIConfig = state => state.config.UIConfig;
+
 export const selectControls = (state => state.backend.controls_state);
 export const selectPlayerSelectable = (state => state.backend.controls_state.button_submit_person);
 
 export const selectStateHash = (state => state.backend.state_hash);
 
 export const selectShowSecretChat = (state => state.backend.showSecretChat)
+
+export const selectIsCustomized = (state => state.backend.isCustomized)
 
 // Frontend stuff:
 

@@ -30,6 +30,8 @@
     "framer-motion": "^3.3.0",
     "http-proxy-middleware": "^1.0.4",
     "lodash": "^4.17.20",
+    "react-bootstrap-range-slider": "^2.0.2",
+    "react-switch": "^6.0.0",
     "react-use-clipboard": "^1.0.7"
   },
   "repository": {

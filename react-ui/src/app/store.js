@@ -36,9 +36,25 @@ const selectedPlayer = createSlice({
 export const selectPlayer = selectedPlayer.actions.selectPlayer
 export const unselectAll = selectedPlayer.actions.unselectAll
 
+const config = createSlice({
+  name: 'config',
+  initialState: {
+    gameConfig: null,  // Stores the current game config
+    UIConfig: null,  // Stores the UI state, which may temporarily differ from gameConfig when it's being edited
+  },
+  reducers: {
+    replaceGameConfig: (state, action) => Object.assign({}, state, { gameConfig: action.payload }),
+    replaceUIConfig: (state, action) => Object.assign({}, state, { UIConfig: action.payload }),
+  }
+})
+
+export const setGameConfig = config.actions.replaceGameConfig
+export const setUIConfig = config.actions.replaceUIConfig
+
 const reducer = combineReducers({
   backend: backend.reducer,
   selectedPlayer: selectedPlayer.reducer,
+  config: config.reducer,
 })
 
 

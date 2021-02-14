@@ -841,62 +841,63 @@ def test_seer_saved_no_fail(mock_roles, db_session):
 def test_fool_no_mention_seer(empty_game):
     from unittest.mock import patch
     import backend
+    from backend.roles import DistributionSettings
 
-    patched_roles = backend.roles.distribution.RANDOMISED_ROLES
-    patched_roles[PlayerRole.FOOL] = 1000000
+    game = WurwolvesGame("test_game")
 
-    with patch("backend.roles.distribution.RANDOMISED_ROLES", new=patched_roles):
-        game = empty_game
+    # Make some players in a game
+    num_players = 10
+    user_ids = [uuid() for _ in range(num_players)]
+    [game.join(u) for u in user_ids]
 
-        # Make some players in a game
-        num_players = 10
-        user_ids = [uuid() for _ in range(num_players)]
-        [game.join(u) for u in user_ids]
+    # Customise the probabilitites to get a fool
+    settings = DistributionSettings(role_weights={PlayerRole.FOOL: 1000000})
+    game.set_game_config(settings)
 
-        game.start_game()
+    game.start_game()
 
-        # Find the fool (there's almost certainly one)
-        fool_player = [p for p in game.get_players() if p.role == PlayerRole.FOOL]
-        assert len(fool_player) == 1
-        fool_id = fool_player[0].user_id
+    # Find the fool (there's almost certainly one)
+    fool_player = [p for p in game.get_players() if p.role == PlayerRole.FOOL]
+    assert len(fool_player) == 1
+    fool_id = fool_player[0].user_id
 
-        game.set_user_name(fool_id, "The one who isn't the seer")
-        game._session.commit()
+    game.set_user_name(fool_id, "The one who isn't the seer")
+    game._session.commit()
 
-        # Confirm that the fool's state doesn't mention the fool anywhere
-        def fool_in_state(fool_state):
-            # Unfortunately, it does in one place: the function call. A savvy user could
-            # therefore cheat. I should change it so that all player actions call the
-            # same function in game. The game would then pass the call on to the
-            # appropriate method, depending on the player's role.
-            # For now, so this test passes, remove that reference
-            fool_state_filtered = fool_state.dict()
-            fool_state_filtered["controls_state"]["button_submit_func"] = "removed"
-            fool_state = type(fool_state).parse_obj(fool_state_filtered)
+    # Confirm that the fool's state doesn't mention the fool anywhere
+    def fool_in_state(fool_state):
+        # Unfortunately, it does in one place: the function call. A savvy user could
+        # therefore cheat. I should change it so that all player actions call the
+        # same function in game. The game would then pass the call on to the
+        # appropriate method, depending on the player's role.
+        # For now, so this test passes, remove that reference
+        fool_state_filtered = fool_state.dict()
+        fool_state_filtered["controls_state"]["button_submit_func"] = "removed"
+        fool_state = type(fool_state).parse_obj(fool_state_filtered)
 
-            print("Fool state:")
-            from pprint import pprint
+        print("Fool state:")
+        from pprint import pprint
 
-            pprint(fool_state.dict())
+        pprint(fool_state.dict())
 
-            return "fool" in fool_state.json().lower()
+        return "fool" in fool_state.json().lower()
 
-        game._set_stage(GameStage.NIGHT)
-        fool_state = game.parse_game_to_state(fool_id)
-        assert not fool_in_state(fool_state)
+    game._set_stage(GameStage.NIGHT)
+    fool_state = game.parse_game_to_state(fool_id)
+    assert not fool_in_state(fool_state)
 
-        game._set_stage(GameStage.VOTING)
-        fool_state = game.parse_game_to_state(fool_id)
-        assert not fool_in_state(fool_state)
+    game._set_stage(GameStage.VOTING)
+    fool_state = game.parse_game_to_state(fool_id)
+    assert not fool_in_state(fool_state)
 
-        game._set_stage(GameStage.DAY)
-        fool_state = game.parse_game_to_state(fool_id)
-        assert not fool_in_state(fool_state)
+    game._set_stage(GameStage.DAY)
+    fool_state = game.parse_game_to_state(fool_id)
+    assert not fool_in_state(fool_state)
 
-        # Move to the end of the game and confirm that the fool is revealed
-        game._set_stage(GameStage.ENDED)
-        fool_state = game.parse_game_to_state(fool_id)
-        assert fool_in_state(fool_state)
+    # Move to the end of the game and confirm that the fool is revealed
+    game._set_stage(GameStage.ENDED)
+    fool_state = game.parse_game_to_state(fool_id)
+    assert fool_in_state(fool_state)
 
 
 def test_exorcist_suceed(five_player_game):

@@ -3,6 +3,8 @@ import enum
 import json
 import logging
 import random
+from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -85,6 +87,10 @@ class Game(Base):
 
     stage = Column(Enum(GameStage), default=GameStage.LOBBY)
     stage_id = Column(Integer, default=0)
+
+    # Optional settings to customise the role distribution. Must be json
+    # parsable to a DistributionSettings object
+    distribution_settings = Column(JSONEncodedDict, default=None)
 
     # Used when a stage has to be repeated, e.g. because a vote tied
     num_attempts_this_stage = Column(Integer, default=0)
@@ -347,6 +353,27 @@ class ActionModel(pydantic.BaseModel):
         extra = "forbid"
 
 
+class DistributionSettings(pydantic.BaseModel):
+    """ Settings for how to generate a game """
+
+    number_of_wolves: Optional[int] = None
+    probability_of_villager: Optional[float] = None
+    role_weights: Optional[Dict[PlayerRole, float]] = None
+
+    def is_default(self) -> bool:
+        return (
+            self.number_of_wolves is None
+            and self.role_weights is None
+            and self.probability_of_villager is None
+        )
+
+    @pydantic.validator("probability_of_villager", always=True)
+    def prob(cls, v, values):
+        if v is not None and (v < 0 or v > 1):
+            raise ValueError("probability_of_villager must be between 0 and 1")
+        return v
+
+
 class FrontendState(pydantic.BaseModel):
     """
     Schema for the React state of a client's frontend
@@ -423,6 +450,8 @@ class FrontendState(pydantic.BaseModel):
     myName: str
     myNameIsGenerated: bool
     myStatus: PlayerState
+
+    isCustomized: bool
 
 
 PlayerModel.update_forward_refs()

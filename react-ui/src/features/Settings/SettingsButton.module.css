@@ -1,3 +1,16 @@
+.link {
+  position: relative;
+}
+
+.notification {
+  position: absolute;
+  color: #A00;
+  font-size: 0.8em;
+  left: 5px;
+  top: -5px;
+}
+
+
 .icon {
   width: 0.75cm;
 }

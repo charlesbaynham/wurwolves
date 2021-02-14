@@ -1,9 +1,11 @@
+import json
 import logging
 import os
 import random
 from typing import Optional
 
 import psutil
+import pydantic
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 from fastapi import APIRouter
@@ -17,9 +19,10 @@ from fastapi import Response
 from starlette.middleware.sessions import SessionMiddleware
 
 from .game import WurwolvesGame
+from .model import DistributionSettings
+from .roles import RANDOMISED_ROLES
 from .roles import router as roles_router
 from .user_id import get_user_id
-
 
 logger = logging.getLogger("main")
 
@@ -63,6 +66,46 @@ async def get_state(
     if not state:
         raise HTTPException(status_code=404, detail=f"Game '{game_tag}' not found")
     return state
+
+
+@router.get("/default_role_weights")
+async def get_default_role_weights():
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Starting get_default_role_weights")
+
+    return {k.value: v for k, v in RANDOMISED_ROLES.items()}
+
+
+@router.get("/{game_tag}/game_config")
+async def get_game_config(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+):
+    logger.info("Starting get_game_config for %s", game_tag)
+
+    return WurwolvesGame(game_tag).get_game_config()
+
+
+@router.post("/{game_tag}/game_config")
+async def set_game_config(
+    game_tag: str = Path(..., title="The four-word ID of the game"),
+    new_config: str = Query(
+        ...,
+        title="JSON dict of the new game state. Must parse to valid DistributionSettings",
+    ),
+):
+    logger.info("Starting set_game_config for game %s, state %s", game_tag, new_config)
+
+    parsed_config = json.loads(new_config)
+
+    if parsed_config is None:
+        WurwolvesGame(game_tag).set_game_config(DistributionSettings())
+    else:
+        try:
+            WurwolvesGame(game_tag).set_game_config(
+                DistributionSettings.parse_raw(new_config)
+            )
+        except pydantic.ValidationError:
+            raise HTTPException(422, "Invalid state")
 
 
 @router.post("/{game_tag}/chat")
