@@ -260,6 +260,11 @@ def test_control_roles(api_client, db_session):
             g.move_to_lobby()
 
 
+def test_control_num_wolves(api_client, db_session):
+    # This doesn't work! fix it
+    assert False
+
+
 def test_end_game(api_client, db_session):
     from uuid import uuid4 as uuid
 
