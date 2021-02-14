@@ -161,7 +161,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
             dispatch(setGameConfig(null))
             dispatch(setUIConfig(null))
         }
-    }, [])
+    }, [dispatch])
 
     // On first render, and whenever the game hash changes and this component is loaded,
     // get the current gameConfig.
@@ -207,6 +207,32 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         // eslint-disable-next-line
     }, [gameConfig, dispatch])
 
+    const triggerUpdate = () => {
+        if (auto_update === true && game_tag !== null) {
+            const newConfig = customise ? UIConfig : null;
+            console.log("triggerUpdate: sending request to change config to")
+            console.log(newConfig)
+            set_config(game_tag, newConfig)
+        }
+    }
+
+    // If the UIConfig changes, send a request to change the gameConfig
+    // if they aren't already equal
+    useEffect(() => {
+        if (!_.isEqual(gameConfig, UIConfig)) {
+            console.log("UIConfig changed: requesting update to")
+            console.log(UIConfig)
+            triggerUpdate(UIConfig)
+        } else {
+            console.log("UIConfig changed but already equal to gameConfig")
+        }
+
+        // Disable linting here because I'm intentionally leaving
+        // gameConfig off the dependency list:
+
+        // eslint-disable-next-line
+    }, [UIConfig])
+
     var role_weights = [];
 
     if (UIConfig && UIConfig.role_weights) {
@@ -231,15 +257,6 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         }
     }
 
-    const triggerUpdate = () => {
-        if (auto_update === true && game_tag !== null) {
-            const newConfig = customise ? UIConfig : null;
-            console.log("Sending request to change config to")
-            console.log(newConfig)
-            set_config(game_tag, newConfig)
-        }
-    }
-
     return (
         <div
             className={styles.container}
@@ -247,15 +264,11 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
             <Form
                 className={styles.form}
                 onSubmit={e => e.preventDefault()}
-                onBlur={triggerUpdate}
             >
                 <Toggle
                     text="Customize role distribution"
                     checked={customise}
-                    onChange={(e) => {
-                        setCustomise(e)
-                        triggerUpdate()
-                    }}
+                    onChange={setCustomise}
                 />
                 <CollapsingDiv visible={customise}>
                     <div
@@ -266,7 +279,6 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             checked={UIConfig ? UIConfig.number_of_wolves !== null : false}
                             onChange={val => {
                                 dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: val ? 1 : null })));
-                                triggerUpdate()
                             }}
                         />
 
@@ -286,7 +298,6 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             checked={UIConfig ? UIConfig.role_weights !== null : false}
                             onChange={(val) => {
                                 dispatch(setUIConfig(Object.assign({}, UIConfig, { role_weights: val ? defaultRoleWeights : null })));
-                                triggerUpdate()
                             }}
                             className="pb-4"
                         />
