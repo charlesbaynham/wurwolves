@@ -6,7 +6,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import { selectUIConfig } from './selectors'
-import { make_api_url, isConfigDefault, set_config } from '../utils'
+import { make_api_url, set_config } from '../utils'
 
 
 function NewGameButton({ callback = null }) {

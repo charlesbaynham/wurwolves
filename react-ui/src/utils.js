@@ -33,18 +33,4 @@ export function make_api_url(game_tag, endpoint, extra_params) {
 }
 
 
-export const isConfigDefault = (gameConfig) => {
-    const roles_default = gameConfig.role_weights == null
-    const wolves_default = gameConfig.number_of_wolves === null
-    const villager_prob_default = gameConfig.probability_of_villager === null
-
-
-    const isConfigDefault = roles_default && wolves_default && villager_prob_default
-    console.log(`isConfigDefault = ${isConfigDefault}`)
-
-    return isConfigDefault
-}
-
-
-
 export default null;

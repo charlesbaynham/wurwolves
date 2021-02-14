@@ -15,7 +15,7 @@ import Form from 'react-bootstrap/Form';
 import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
-import { make_api_url, set_config, isConfigDefault } from '../utils'
+import { make_api_url, set_config } from '../utils'
 import ReactMarkdown from 'react-markdown';
 
 const DEFAULT_UI_STATE = {
