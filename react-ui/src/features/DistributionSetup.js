@@ -215,9 +215,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                     onChange={setCustomise}
                 />
                 <CollapsingDiv visible={customise}>
-                    <Form
+                    <div
                         className={styles.form}
-                        onSubmit={e => e.preventDefault()}
                     >
                         <Toggle
                             text="Select number of wolves"
@@ -252,7 +251,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                         <CollapsingDiv visible={showRoleWeights}>
                             {role_weights}
                         </CollapsingDiv>
-                    </Form>
+                    </div>
                 </CollapsingDiv>
             </Form>
         </div >
