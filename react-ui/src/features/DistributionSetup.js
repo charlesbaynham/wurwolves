@@ -154,6 +154,15 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         })
     }, [])
 
+    // When this component is unloaded, clear both the gameState and the UIState
+    useEffect(() => {
+        return () => {
+            console.log("Clearing UI and Game config states")
+            dispatch(setGameConfig(null))
+            dispatch(setUIConfig(null))
+        }
+    }, [])
+
     // On first render, and whenever the game hash changes and this component is loaded,
     // get the current gameConfig.
     useEffect(() => {
