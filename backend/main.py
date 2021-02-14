@@ -5,6 +5,7 @@ import random
 from typing import Optional
 
 import psutil
+import pydantic
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 from fastapi import APIRouter
