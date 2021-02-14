@@ -9,27 +9,34 @@ import { selectGameConfig } from './selectors'
 import { make_api_url, isConfigDefault, set_config } from '../utils'
 
 
-function NewGameButton() {
-    const [newGameID, setNewGameID] = useState("")
+function NewGameButton({ callback = null }) {
+    const [suggestedGameID, setSuggestedGameID] = useState(null)
     const [textBoxContents, setTextBoxContents] = useState("")
-    const history = useHistory();
+    const new_game_id = textBoxContents ? textBoxContents : suggestedGameID
 
+    const history = useHistory();
     const gameConfig = useSelector(selectGameConfig);
 
     useEffect(() => {
-        if (newGameID === "") {
+        if (suggestedGameID === null) {
             fetch(make_api_url(null, "get_game"))
                 .then(res => res.json())
                 .then((data) => {
-                    setNewGameID(data)
+                    setSuggestedGameID(data)
                 })
                 .catch(console.log)
         }
     })
 
-    const startGame = () => {
-        const new_game_id = textBoxContents ? textBoxContents : newGameID
+    // If a callback has been passed in, update its value with the new game ID
+    useEffect(() => {
+        if (callback !== null) {
+            callback(new_game_id);
+            console.log(`Calling callback with = ${new_game_id}`)
+        }
+    }, [new_game_id, callback])
 
+    const startGame = () => {
         if (!isConfigDefault(gameConfig)) {
             set_config(new_game_id, gameConfig)
         }
@@ -41,7 +48,7 @@ function NewGameButton() {
         <Form onSubmit={startGame}>
             <InputGroup size="lg">
                 <FormControl
-                    placeholder={newGameID}
+                    placeholder={new_game_id}
                     aria-label="Game id"
                     aria-describedby="basic-addon2"
                     value={textBoxContents}

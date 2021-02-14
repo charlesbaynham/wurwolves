@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -9,6 +9,8 @@ import DistributionSetup from './features/DistributionSetup'
 
 
 function Home(props) {
+
+    const [newGameID, setNewGameID] = useState(null);
 
     return (
         <div>
@@ -28,10 +30,10 @@ To learn how to play, select the question mark at the top right of the screen.
                 `} />
                 </Col></Row>
                 <Row><Col>
-                    <NewGameButton />
+                    <NewGameButton callback={setNewGameID} />
                 </Col></Row>
                 <Row className='pt-3'><Col>
-                    <DistributionSetup />
+                    <DistributionSetup game_tag={newGameID} />
                 </Col></Row>
             </Container>
         </div>

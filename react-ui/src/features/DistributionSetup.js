@@ -155,21 +155,24 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     }, [])
 
     // On first render, and whenever the game hash changes and this component is loaded,
-    // get the current gameConfig
+    // get the current gameConfig.
     useEffect(() => {
-        fetch(
-            make_api_url(
-                game_tag, "game_config"
-            ),
-            { method: 'get' }
-        ).then(r => {
-            if (!r.ok) {
-                throw Error("Fetch game config failed with error " + r.status)
-            }
-            return r.json()
-        }).then(config => {
-            dispatch(setGameConfig(config));
-        })
+        console.log(`getting game_config with tag ${game_tag}`)
+        if (game_tag !== null) {
+            fetch(
+                make_api_url(
+                    game_tag, "game_config"
+                ),
+                { method: 'get' }
+            ).then(r => {
+                if (!r.ok) {
+                    throw Error("Fetch game config failed with error " + r.status)
+                }
+                return r.json()
+            }).then(config => {
+                dispatch(setGameConfig(config));
+            })
+        }
     }, [dispatch, game_tag, stateHash])
 
     // If the gameConfig changes, update the UI state
