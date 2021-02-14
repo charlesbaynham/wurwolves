@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectGameConfig, selectDefaultConfig } from './selectors'
+import { selectGameConfig, selectDefaultConfig, selectUIConfig, selectStateHash } from './selectors'
 
-import { setGameConfig, setDefaultConfig } from '../app/store'
+import { setGameConfig, setDefaultConfig, setUIConfig } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -95,39 +95,47 @@ function CollapsingDiv({ visible, children }) {
 
 
 function DistributionSetup({ game_tag = null, auto_update = false }) {
+    // The redux store maintains three config objects:
+    // * gameConfig:    The current config of the game, as stored in the database
+    // * UIConfig:      The UI state as drawn locally. Might difer from
+    //                  gameConfig while settings are being changed
+    // * defaultConfig: The default config. Static.
+    //
+    // Also, this object keeps track of which toggles are selected. Initially these are set
+    // according to whether a) the state is marked as customized by the backend (in the frontent parser)
+    // and b) if so, which bits (if any) have been customised.
+    //
+    // To allow the user to change the settings, the UI state can be altered. If this happens, the frontend
+    // sends an API request to alter the backend state to match. gameConfig updates are copied
+    // to UIConfig only if before the update UIConfig == gameConfig. This updates the state displayed to the
+    // user, but doesn't interrupt them if they're busy configuring it already. Such updates trigger a
+    // recalculation of the slider states too.
+
     const gameConfig = useSelector(selectGameConfig);
     const defaultConfig = useSelector(selectDefaultConfig);
+    const UIConfig = useSelector(selectUIConfig);
+
+    const stateHash = useSelector(selectStateHash);
 
     const [customise, setCustomise] = useState(false);
     const [showRoleWeights, setShowRoleWeights] = useState(false);
     const dispatch = useDispatch();
 
-    const [togglesAreSetup, setTogglesAreSetup] = useState(false)
+    // Set up the toggles to match the UI state
+    const setupToggles = (config) => {
+        if (config === null || defaultConfig === null) return;
 
-    // Wait until both the default state and the current state have been loaded,
-    // then set the state of the toggles accordingly
-    useEffect(() => {
-        if (togglesAreSetup) return;
-
-        if (gameConfig === null || defaultConfig === null) return;
-
-        if (isConfigDefault(gameConfig, defaultConfig)) {
-            // Buttons default to the correct settings for default settings, so do nothing
+        if (isConfigDefault(config, defaultConfig)) {
+            setCustomise(false)
+            setShowRoleWeights(false)
         } else {
             setCustomise(true)
-
-            if (!_.isEqual(gameConfig.role_weights, defaultConfig.role_weights)) {
-                setShowRoleWeights(true)
-            }
+            setShowRoleWeights(!_.isEqual(config.role_weights, defaultConfig.role_weights))
         }
+    }
 
-        setTogglesAreSetup(true);
-    }, [togglesAreSetup, gameConfig, defaultConfig])
-
-
-
+    // Just once, get and store the default config
     useEffect(() => {
-        // Get and store the default config
         fetch(
             make_api_url(
                 null, "default_game_config"
@@ -144,47 +152,53 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
             }
         })
     }, [dispatch, game_tag])
+
+    // On first render, and whenever the game hash changes and this component is loaded,
+    // get the current gameConfig
     useEffect(() => {
-        if (game_tag !== null) {
-            // If in a game, get the current config too
-            fetch(
-                make_api_url(
-                    game_tag, "game_config"
-                ),
-                { method: 'get' }
-            ).then(r => {
-                if (!r.ok) {
-                    throw Error("Fetch game config failed with error " + r.status)
-                }
-                return r.json()
-            }).then(config => {
-                dispatch(setGameConfig(config));
-            })
-        } else {
-            // Otherwise, use the default
-            dispatch(setGameConfig(defaultConfig));
+        fetch(
+            make_api_url(
+                game_tag, "game_config"
+            ),
+            { method: 'get' }
+        ).then(r => {
+            if (!r.ok) {
+                throw Error("Fetch game config failed with error " + r.status)
+            }
+            return r.json()
+        }).then(config => {
+            dispatch(setGameConfig(config));
+        })
+    }, [dispatch, game_tag, stateHash])
+
+    // If the gameConfig changes, update the UI state and recalculate the toggle states
+    // ONLY if the UIConfig and gameConfig were previously equal
+    const [previousGameConfig, setPreviousGameConfig] = useState(null);
+    useEffect(() => {
+        if (_.isEqual(previousGameConfig, UIConfig)) {
+            dispatch(setUIConfig(gameConfig))
+            setupToggles(gameConfig)
         }
-    }, [dispatch, defaultConfig, game_tag])
+        setPreviousGameConfig(gameConfig)
+    }, [gameConfig])
 
     var role_weights = [];
 
-    if (gameConfig && gameConfig.role_weights) {
-        for (let role in gameConfig.role_weights) {
+    if (UIConfig && UIConfig.role_weights) {
+        for (let role in UIConfig.role_weights) {
             role_weights.push(
                 <>
                     {role}:
                     <SliderAndBox
                         key={role}
                         max={100}
-                        value={gameConfig.role_weights === null ? 0 : gameConfig.role_weights[role]}
+                        value={UIConfig.role_weights === null ? 0 : UIConfig.role_weights[role]}
                         onChange={e => {
-                            var newRoles = Object.assign({}, gameConfig.role_weights)
+                            var newRoles = Object.assign({}, UIConfig.role_weights)
                             newRoles[role] = parseInt(e.target.value)
-                            const newConfig = Object.assign({}, gameConfig, { role_weights: newRoles })
+                            const newUIConfig = Object.assign({}, UIConfig, { role_weights: newRoles })
 
-                            console.log(newRoles)
-                            console.log(newConfig)
-                            dispatch(setGameConfig(newConfig))
+                            dispatch(setUIConfig(newUIConfig))
                         }}
                     />
                 </>
@@ -202,7 +216,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 onBlur={() => {
                     if (auto_update === true && game_tag !== null) {
                         if (customise) {
-                            set_config(game_tag, gameConfig)
+                            set_config(game_tag, UIConfig)
                         } else {
                             set_config(game_tag, null)
                         }
@@ -220,20 +234,20 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                     >
                         <Toggle
                             text="Select number of wolves"
-                            checked={gameConfig ? gameConfig.number_of_wolves !== null : false}
+                            checked={UIConfig ? UIConfig.number_of_wolves !== null : false}
                             onChange={val => {
-                                dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: val ? 1 : null })));
+                                dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: val ? 1 : null })));
                             }}
                         />
 
                         <CollapsingDiv
-                            visible={gameConfig ? gameConfig.number_of_wolves !== null : null}
+                            visible={UIConfig ? UIConfig.number_of_wolves !== null : null}
                         >
                             <SliderAndBox
                                 max={5}
                                 min={1}
-                                value={gameConfig ? gameConfig.number_of_wolves : null}
-                                onChange={e => dispatch(setGameConfig(Object.assign({}, gameConfig, { number_of_wolves: parseInt(e.target.value) })))}
+                                value={UIConfig ? UIConfig.number_of_wolves : null}
+                                onChange={e => dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: parseInt(e.target.value) })))}
                             />
                         </CollapsingDiv>
 
