@@ -176,8 +176,11 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     const [previousGameConfig, setPreviousGameConfig] = useState(null);
     useEffect(() => {
         if (_.isEqual(previousGameConfig, UIConfig)) {
+            console.log("UI and game configs were equal: updating UI to keep in sync with new GameConfig")
             dispatch(setUIConfig(gameConfig))
             setupToggles(gameConfig)
+        } else {
+            console.log("UI and game configs differ: not updating")
         }
         setPreviousGameConfig(gameConfig)
     }, [gameConfig])
@@ -254,7 +257,12 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                         <Toggle
                             text="Select roles"
                             checked={showRoleWeights}
-                            onChange={setShowRoleWeights}
+                            onChange={(val) => {
+                                setShowRoleWeights(val);
+                                if (!val) {
+                                    dispatch(setUIConfig(Object.assign({}, UIConfig, { role_weights: defaultConfig.role_weights })))
+                                }
+                            }}
                             className="pb-4"
                         />
 
