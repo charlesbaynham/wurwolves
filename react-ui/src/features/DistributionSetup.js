@@ -15,7 +15,7 @@ import Form from 'react-bootstrap/Form';
 import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
-import { make_api_url, set_config } from '../utils'
+import { make_api_url, set_config, isConfigDefault } from '../utils'
 import ReactMarkdown from 'react-markdown';
 
 const _ = require('lodash');
@@ -119,21 +119,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     const stateHash = useSelector(selectStateHash);
 
     const [customise, setCustomise] = useState(false);
-    // const [showRoleWeights, setShowRoleWeights] = useState(false);
+
     const dispatch = useDispatch();
-
-    // Set up the toggles to match the UI state
-    // const setupToggles = (config) => {
-    //     if (config === null || defaultConfig === null) return;
-
-    //     if (isConfigDefault(config, defaultConfig)) {
-    //         setCustomise(false)
-    //         setShowRoleWeights(false)
-    //     } else {
-    //         setCustomise(true)
-    //         setShowRoleWeights(!_.isEqual(config.role_weights, defaultConfig.role_weights))
-    //     }
-    // }
 
     // Just once, get and store the list of default role weights
     useEffect(() => {
@@ -157,8 +144,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // On first render, and whenever the game hash changes and this component is loaded,
     // get the current gameConfig.
     useEffect(() => {
-        console.log(`getting game_config with tag ${game_tag}`)
         if (game_tag !== null) {
+            console.log(`getting game_config with tag ${game_tag}`)
             fetch(
                 make_api_url(
                     game_tag, "game_config"
@@ -180,10 +167,14 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // const [previousGameConfig, setPreviousGameConfig] = useState(null);
     const previousGameConfig = useRef(null);
     useEffect(() => {
-
         if (_.isEqual(previousGameConfig.current, UIConfig)) {
-            console.log("UI and game configs were equal: updating UI to keep in sync with new GameConfig")
+            console.log("UI and game configs were equal: updating UI to keep in sync with new GameConfig:")
+            console.log(gameConfig)
             dispatch(setUIConfig(gameConfig))
+            // Set the toggle appropriately
+            if (gameConfig !== null) {
+                setCustomise(!isConfigDefault(gameConfig))
+            }
         } else {
             console.log("UI and game configs differ: not updating")
         }
