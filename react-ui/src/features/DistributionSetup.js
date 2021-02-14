@@ -191,6 +191,11 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
             console.log(previousGameConfig.current)
         }
         previousGameConfig.current = gameConfig
+
+        // Disable linting here because I'm intentionally leaving
+        // UIConfig off the dependency list:
+
+        // eslint-disable-next-line
     }, [gameConfig, dispatch])
 
     var role_weights = [];
