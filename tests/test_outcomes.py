@@ -841,6 +841,7 @@ def test_seer_saved_no_fail(mock_roles, db_session):
 def test_fool_no_mention_seer(empty_game):
     from unittest.mock import patch
     import backend
+    from backend.roles import DistributionSettings
 
     game = WurwolvesGame("test_game")
 
@@ -850,8 +851,7 @@ def test_fool_no_mention_seer(empty_game):
     [game.join(u) for u in user_ids]
 
     # Customise the probabilitites to get a fool
-    settings = game.get_game_config()
-    settings.role_weights[PlayerRole.FOOL] = 1000000
+    settings = DistributionSettings(role_weights={PlayerRole.FOOL: 1000000})
     game.set_game_config(settings)
 
     game.start_game()

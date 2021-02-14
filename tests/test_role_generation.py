@@ -14,28 +14,28 @@ def setup_module(module):
 
 
 def test_basics():
-    assert assign_roles(0) is None
-    assert assign_roles(1) is None
-    assert assign_roles(2) is None
+    assert assign_roles(0, None) is None
+    assert assign_roles(1, None) is None
+    assert assign_roles(2, None) is None
 
-    assert assign_roles(3) is not None
-    assert assign_roles(4) is not None
-    assert assign_roles(5) is not None
-    assert assign_roles(10) is not None
-    assert assign_roles(20) is not None
-    assert assign_roles(100) is not None
+    assert assign_roles(3, None) is not None
+    assert assign_roles(4, None) is not None
+    assert assign_roles(5, None) is not None
+    assert assign_roles(10, None) is not None
+    assert assign_roles(20, None) is not None
+    assert assign_roles(100, None) is not None
 
 
 @pytest.mark.parametrize("num_players", [3, 4, 5, 10, 20, 100])
 def test_wolf_always_present(num_players):
-    roles = assign_roles(num_players)
+    roles = assign_roles(num_players, None)
 
     assert any(r is PlayerRole.WOLF for r in roles)
 
 
 @pytest.mark.parametrize("num_players", [3, 4, 5, 10, 20, 100])
 def test_seer_always_present(num_players):
-    roles = assign_roles(num_players)
+    roles = assign_roles(num_players, None)
 
     assert any(r is PlayerRole.SEER for r in roles)
 

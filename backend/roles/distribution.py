@@ -72,7 +72,9 @@ def _default_num_wolves(num_players: int):
         return math.ceil(num_players / 5)
 
 
-def assign_roles(num_players: int, settings: DistributionSettings) -> List[PlayerRole]:
+def assign_roles(
+    num_players: int, settings: Union[None, DistributionSettings]
+) -> List[PlayerRole]:
     """
     Return a randomised list of roles for this game, or None if not enough players have joined
 
@@ -83,9 +85,14 @@ def assign_roles(num_players: int, settings: DistributionSettings) -> List[Playe
         List[PlayerRole]: A num_players long list of PlayerRoles in a random order
     """
 
+    if settings is None:
+        settings = DistributionSettings()
+
     if not isinstance(settings, DistributionSettings):
         raise TypeError(
-            "Settings must be a DistributionSettings. Got {}".format(type(settings))
+            "Settings must be None or a DistributionSettings object. Got {}".format(
+                type(settings)
+            )
         )
 
     probability_of_villager = (
