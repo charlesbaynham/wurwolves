@@ -87,7 +87,7 @@ class VoteStartNewGame(GameAction, NoTargetRequired):
 
         # Try to assign roles here, just to see if it works. The actual result
         # is ignored, it's just used for checking we have enough players
-        if not roles.assign_roles(len(game.get_players())):
+        if not roles.assign_roles(len(game.get_players()), game.get_game_config()):
             raise HTTPException(status_code=400, detail="Not enough players")
 
         msg = f"{game.get_user_name(user_id)} wants to start a new game"

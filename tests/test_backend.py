@@ -313,7 +313,7 @@ def test_control_impossible_num_wolves(api_client, db_session):
             g.join(uuid())
 
         # Set the config to have 4 wolves: this is impossible
-        config = DistributionSettings(number_of_wolves=2)
+        config = DistributionSettings(number_of_wolves=4)
         r = s.post(
             f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
         )
