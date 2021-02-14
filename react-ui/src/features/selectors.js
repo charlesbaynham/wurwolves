@@ -31,6 +31,8 @@ export const selectStateHash = (state => state.backend.state_hash);
 
 export const selectShowSecretChat = (state => state.backend.showSecretChat)
 
+export const selectIsCustomized = (state => state.backend.isCustomized)
+
 // Frontend stuff:
 
 export const selectSelectedPlayer = (state => state.selectedPlayer)

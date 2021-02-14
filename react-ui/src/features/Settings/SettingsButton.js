@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import ReactMarkdown from 'react-markdown';
 
@@ -6,10 +7,15 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 
+import { selectIsCustomized } from '../selectors'
+
 import DistributionSetup from '../DistributionSetup'
 
 import { make_api_url } from '../../utils'
 import { settings_text } from '../../prose'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircle } from '@fortawesome/free-solid-svg-icons'
 
 import styles from './SettingsButton.module.css'
 import icon from './icon.svg'
@@ -21,6 +27,8 @@ function SettingsButton({ className, gameTag }) {
     const [endClicked, setEndClicked] = useState(false);
     const [endTimeoutComplete, setEndTimeoutComplete] = useState(false);
     const [timeoutID, setTimeoutID] = useState(null);
+
+    const isCustomized = useSelector(selectIsCustomized);
 
     const handleClose = () => {
         setShow(false);
@@ -35,12 +43,18 @@ function SettingsButton({ className, gameTag }) {
 
     return (
         <>
-            <a className={`navbar-settings ${className}`}
+            <a className={`${styles.link} ${className}`}
                 href="/" onClick={(event) => {
                     event.preventDefault()
                     handleShow()
                 }}>
                 <img src={icon} alt="Utilities icon" className={styles.icon} />
+                {
+                    isCustomized ?
+                        <FontAwesomeIcon className={styles.notification} icon={faCircle} />
+                        : null
+                }
+
             </a>
 
             <Modal show={show} onHide={handleClose}>
