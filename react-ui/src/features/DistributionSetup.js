@@ -231,6 +231,15 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         }
     }
 
+    const triggerUpdate = () => {
+        if (auto_update === true && game_tag !== null) {
+            const newConfig = customise ? UIConfig : null;
+            console.log("Sending request to change config to")
+            console.log(newConfig)
+            set_config(game_tag, newConfig)
+        }
+    }
+
     return (
         <div
             className={styles.container}
@@ -238,20 +247,15 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
             <Form
                 className={styles.form}
                 onSubmit={e => e.preventDefault()}
-                onBlur={() => {
-                    if (auto_update === true && game_tag !== null) {
-                        if (customise) {
-                            set_config(game_tag, UIConfig)
-                        } else {
-                            set_config(game_tag, null)
-                        }
-                    }
-                }}
+                onBlur={triggerUpdate}
             >
                 <Toggle
                     text="Customize role distribution"
                     checked={customise}
-                    onChange={setCustomise}
+                    onChange={(e) => {
+                        setCustomise(e)
+                        triggerUpdate()
+                    }}
                 />
                 <CollapsingDiv visible={customise}>
                     <div
@@ -262,6 +266,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             checked={UIConfig ? UIConfig.number_of_wolves !== null : false}
                             onChange={val => {
                                 dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: val ? 1 : null })));
+                                triggerUpdate()
                             }}
                         />
 
@@ -281,6 +286,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             checked={UIConfig ? UIConfig.role_weights !== null : false}
                             onChange={(val) => {
                                 dispatch(setUIConfig(Object.assign({}, UIConfig, { role_weights: val ? defaultRoleWeights : null })));
+                                triggerUpdate()
                             }}
                             className="pb-4"
                         />
