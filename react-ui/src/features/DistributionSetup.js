@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectGameConfig, selectDefaultConfig, selectUIConfig, selectStateHash } from './selectors'
+import { selectGameConfig, selectUIConfig, selectStateHash } from './selectors'
 
-import { setGameConfig, setDefaultConfig, setUIConfig } from '../app/store'
+import { setGameConfig, setUIConfig } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -15,7 +15,7 @@ import Form from 'react-bootstrap/Form';
 import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
-import { make_api_url, isConfigDefault, set_config } from '../utils'
+import { make_api_url, set_config } from '../utils'
 import ReactMarkdown from 'react-markdown';
 
 const _ = require('lodash');
@@ -112,33 +112,34 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // recalculation of the slider states too.
 
     const gameConfig = useSelector(selectGameConfig);
-    const defaultConfig = useSelector(selectDefaultConfig);
     const UIConfig = useSelector(selectUIConfig);
+
+    const [defaultRoleWeights, setDefaultRoleWeights] = useState(null);
 
     const stateHash = useSelector(selectStateHash);
 
     const [customise, setCustomise] = useState(false);
-    const [showRoleWeights, setShowRoleWeights] = useState(false);
+    // const [showRoleWeights, setShowRoleWeights] = useState(false);
     const dispatch = useDispatch();
 
     // Set up the toggles to match the UI state
-    const setupToggles = (config) => {
-        if (config === null || defaultConfig === null) return;
+    // const setupToggles = (config) => {
+    //     if (config === null || defaultConfig === null) return;
 
-        if (isConfigDefault(config, defaultConfig)) {
-            setCustomise(false)
-            setShowRoleWeights(false)
-        } else {
-            setCustomise(true)
-            setShowRoleWeights(!_.isEqual(config.role_weights, defaultConfig.role_weights))
-        }
-    }
+    //     if (isConfigDefault(config, defaultConfig)) {
+    //         setCustomise(false)
+    //         setShowRoleWeights(false)
+    //     } else {
+    //         setCustomise(true)
+    //         setShowRoleWeights(!_.isEqual(config.role_weights, defaultConfig.role_weights))
+    //     }
+    // }
 
-    // Just once, get and store the default config
+    // Just once, get and store the list of default role weights
     useEffect(() => {
         fetch(
             make_api_url(
-                null, "default_game_config"
+                null, "default_role_weights"
             ),
             { method: 'get' }
         ).then(r => {
@@ -148,10 +149,10 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
             return r.json()
         }).then(data => {
             if (data) {
-                dispatch(setDefaultConfig(data));
+                setDefaultRoleWeights(data);
             }
         })
-    }, [dispatch, game_tag])
+    }, [])
 
     // On first render, and whenever the game hash changes and this component is loaded,
     // get the current gameConfig
@@ -171,19 +172,20 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
         })
     }, [dispatch, game_tag, stateHash])
 
-    // If the gameConfig changes, update the UI state and recalculate the toggle states
+    // If the gameConfig changes, update the UI state
     // ONLY if the UIConfig and gameConfig were previously equal
-    const [previousGameConfig, setPreviousGameConfig] = useState(null);
+    // const [previousGameConfig, setPreviousGameConfig] = useState(null);
+    const previousGameConfig = useRef(null);
     useEffect(() => {
-        if (_.isEqual(previousGameConfig, UIConfig)) {
+
+        if (_.isEqual(previousGameConfig.current, UIConfig)) {
             console.log("UI and game configs were equal: updating UI to keep in sync with new GameConfig")
             dispatch(setUIConfig(gameConfig))
-            setupToggles(gameConfig)
         } else {
             console.log("UI and game configs differ: not updating")
         }
-        setPreviousGameConfig(gameConfig)
-    }, [gameConfig])
+        previousGameConfig.current = gameConfig
+    }, [gameConfig, dispatch])
 
     var role_weights = [];
 
@@ -195,7 +197,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                     <SliderAndBox
                         key={role}
                         max={100}
-                        value={UIConfig.role_weights === null ? 0 : UIConfig.role_weights[role]}
+                        value={UIConfig.role_weights[role]}
                         onChange={e => {
                             var newRoles = Object.assign({}, UIConfig.role_weights)
                             newRoles[role] = parseInt(e.target.value)
@@ -256,12 +258,9 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
 
                         <Toggle
                             text="Select roles"
-                            checked={showRoleWeights}
+                            checked={UIConfig ? UIConfig.role_weights !== null : false}
                             onChange={(val) => {
-                                setShowRoleWeights(val);
-                                if (!val) {
-                                    dispatch(setUIConfig(Object.assign({}, UIConfig, { role_weights: defaultConfig.role_weights })))
-                                }
+                                dispatch(setUIConfig(Object.assign({}, UIConfig, { role_weights: val ? defaultRoleWeights : null })));
                             }}
                             className="pb-4"
                         />
@@ -270,7 +269,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             Adjust the weightings for respective roles below. All roles will be assigned at most once.
                         </ReactMarkdown>
 
-                        <CollapsingDiv visible={showRoleWeights}>
+                        <CollapsingDiv visible={UIConfig ? UIConfig.role_weights !== null : false}>
                             {role_weights}
                         </CollapsingDiv>
                     </div>

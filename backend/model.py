@@ -356,13 +356,20 @@ class ActionModel(pydantic.BaseModel):
 class DistributionSettings(pydantic.BaseModel):
     """ Settings for how to generate a game """
 
-    number_of_wolves: Union[None, int] = None
-    probability_of_villager: float
-    role_weights: Dict[PlayerRole, float]
+    number_of_wolves: Optional[int] = None
+    probability_of_villager: Optional[float] = None
+    role_weights: Optional[Dict[PlayerRole, float]] = None
+
+    def is_default(self) -> bool:
+        return (
+            self.number_of_wolves is None
+            and self.role_weights is None
+            and self.probability_of_villager is None
+        )
 
     @pydantic.validator("probability_of_villager", always=True)
     def prob(cls, v, values):
-        if v < 0 or v > 1:
+        if v is not None and (v < 0 or v > 1):
             raise ValueError("probability_of_villager must be between 0 and 1")
         return v
 

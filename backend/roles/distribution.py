@@ -72,13 +72,6 @@ def _default_num_wolves(num_players: int):
         return math.ceil(num_players / 5)
 
 
-DEFAULT_DISTRIBUTION_SETTINGS = DistributionSettings(
-    number_of_wolves=None,
-    probability_of_villager=PROB_VILLAGER,
-    role_weights=RANDOMISED_ROLES,
-)
-
-
 def assign_roles(
     num_players: int, settings: Optional[DistributionSettings] = None
 ) -> List[PlayerRole]:
@@ -93,9 +86,13 @@ def assign_roles(
     """
 
     if settings is None:
-        settings = DEFAULT_DISTRIBUTION_SETTINGS
+        settings = DistributionSettings()
 
-    probability_of_villager = settings.probability_of_villager
+    probability_of_villager = (
+        settings.probability_of_villager
+        if settings.probability_of_villager is not None
+        else PROB_VILLAGER
+    )
 
     if isinstance(settings.number_of_wolves, int):
         num_wolves = settings.number_of_wolves
@@ -106,7 +103,9 @@ def assign_roles(
             "settings.number_of_wolves is a %s", type(settings.number_of_wolves)
         )
 
-    role_weights = settings.role_weights
+    role_weights = (
+        settings.role_weights if settings.role_weights is not None else RANDOMISED_ROLES
+    )
 
     if num_players < len(guaranteed_roles) + 1:
         return None

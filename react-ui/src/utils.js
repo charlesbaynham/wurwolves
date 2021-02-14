@@ -1,5 +1,5 @@
 
-const _ = require('lodash');
+// const _ = require('lodash');
 
 
 // This ID is used until the client is assigned a proper UUID
@@ -33,12 +33,12 @@ export function make_api_url(game_tag, endpoint, extra_params) {
 }
 
 
-export const isConfigDefault = (gameConfig, defaultConfig) => {
-    const roles_equal = _.isEqual(gameConfig.role_weights, defaultConfig.role_weights)
-    const wolves_equal = gameConfig.number_of_wolves === null || gameConfig.number_of_wolves === defaultConfig.number_of_wolves
-    const villager_prob_equal = gameConfig.probability_of_villager === defaultConfig.probability_of_villager
+export const isConfigDefault = (gameConfig) => {
+    const roles_default = gameConfig.role_weights == null
+    const wolves_default = gameConfig.number_of_wolves === null
+    const villager_prob_default = gameConfig.probability_of_villager === null
 
-    return roles_equal && wolves_equal && villager_prob_equal
+    return roles_default && wolves_default && villager_prob_default
 }
 
 

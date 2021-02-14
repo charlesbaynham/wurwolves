@@ -23,7 +23,6 @@ export const selectAllPlayers = state => state.backend.players;
 
 export const selectGameConfig = state => state.config.gameConfig;
 export const selectUIConfig = state => state.config.UIConfig;
-export const selectDefaultConfig = state => state.config.defaultConfig;
 
 export const selectControls = (state => state.backend.controls_state);
 export const selectPlayerSelectable = (state => state.backend.controls_state.button_submit_person);

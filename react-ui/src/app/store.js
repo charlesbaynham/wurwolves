@@ -41,18 +41,15 @@ const config = createSlice({
   initialState: {
     gameConfig: null,  // Stores the current game config
     UIConfig: null,  // Stores the UI state, which may temporarily differ from gameConfig when it's being edited
-    defaultConfig: null,  // Stores the default game config
   },
   reducers: {
     replaceGameConfig: (state, action) => Object.assign({}, state, { gameConfig: action.payload }),
-    replaceDefaultConfig: (state, action) => Object.assign({}, state, { defaultConfig: action.payload }),
     replaceUIConfig: (state, action) => Object.assign({}, state, { UIConfig: action.payload }),
   }
 })
 
 export const setGameConfig = config.actions.replaceGameConfig
 export const setUIConfig = config.actions.replaceUIConfig
-export const setDefaultConfig = config.actions.replaceDefaultConfig
 
 const reducer = combineReducers({
   backend: backend.reducer,

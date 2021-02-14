@@ -20,7 +20,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .game import WurwolvesGame
 from .model import DistributionSettings
-from .roles import DEFAULT_DISTRIBUTION_SETTINGS
+from .roles import RANDOMISED_ROLES
 from .roles import router as roles_router
 from .user_id import get_user_id
 
@@ -68,13 +68,12 @@ async def get_state(
     return state
 
 
-@router.get("/default_game_config")
-async def get_default_game_config():
+@router.get("/default_role_weights")
+async def get_default_role_weights():
     if logger.isEnabledFor(logging.DEBUG):
-        logger.debug("Starting get_default_game_config")
-        logger.debug("get_default_game_config memory usage = %.0f MB", get_mem_usage())
+        logger.debug("Starting get_default_role_weights")
 
-    return WurwolvesGame.get_default_game_config().dict()
+    return {k.value: v for k, v in RANDOMISED_ROLES.items()}
 
 
 @router.get("/{game_tag}/game_config")
@@ -99,14 +98,14 @@ async def set_game_config(
     parsed_config = json.loads(new_config)
 
     if parsed_config is None:
-        WurwolvesGame(game_tag).set_game_config(DEFAULT_DISTRIBUTION_SETTINGS)
+        WurwolvesGame(game_tag).set_game_config(DistributionSettings())
     else:
         try:
             WurwolvesGame(game_tag).set_game_config(
                 DistributionSettings.parse_raw(new_config)
             )
         except pydantic.ValidationError:
-            raise HTTPException(402, "Invalid state")
+            raise HTTPException(422, "Invalid state")
 
 
 @router.post("/{game_tag}/chat")

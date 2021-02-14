@@ -40,7 +40,6 @@ from .model import PlayerRole
 from .model import PlayerState
 from .model import User
 from .model import UserModel
-from .roles import DEFAULT_DISTRIBUTION_SETTINGS
 from .roles import get_action_func_name
 from .roles import get_apparant_role
 
@@ -547,17 +546,13 @@ class WurwolvesGame:
             p.previous_role = PlayerRole.SPECTATOR
             p.state = PlayerState.SPECTATING
 
-    @classmethod
-    def get_default_game_config(cls):
-        return roles.DEFAULT_DISTRIBUTION_SETTINGS
-
     @db_scoped
     def get_game_config(self) -> DistributionSettings:
         g = self.get_game()
 
         if g is None:
             logger.debug("Game does not exist: returning default")
-            return self.get_default_game_config()
+            return DistributionSettings()
 
         if g.distribution_settings is not None:
             logger.debug(
@@ -567,7 +562,7 @@ class WurwolvesGame:
             return DistributionSettings.parse_obj(g.distribution_settings)
         else:
             logger.debug("No custom distribution settings: returning default")
-            return self.get_default_game_config()
+            return DistributionSettings()
 
     @db_scoped
     def set_game_config(self, new_config: Optional[DistributionSettings] = None):
@@ -587,9 +582,9 @@ class WurwolvesGame:
                     f"Expecting an instance of DistributionSettings, got {type(new_config)}"
                 )
 
-            if new_config == DEFAULT_DISTRIBUTION_SETTINGS:
+            if new_config.is_default():
                 logger.info(
-                    "New config identical to default: setting %s to defaults",
+                    "New config is all defaults: setting %s to defaults",
                     self.game_id,
                 )
                 g.distribution_settings = None
