@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
-import { selectGameConfig } from './selectors'
+import { selectUIConfig } from './selectors'
 import { make_api_url, isConfigDefault, set_config } from '../utils'
 
 
@@ -15,7 +15,7 @@ function NewGameButton({ callback = null }) {
     const new_game_id = textBoxContents ? textBoxContents : suggestedGameID
 
     const history = useHistory();
-    const gameConfig = useSelector(selectGameConfig);
+    const gameConfig = useSelector(selectUIConfig);
 
     useEffect(() => {
         if (suggestedGameID === null) {
@@ -37,10 +37,7 @@ function NewGameButton({ callback = null }) {
     }, [new_game_id, callback])
 
     const startGame = () => {
-        if (!isConfigDefault(gameConfig)) {
-            set_config(new_game_id, gameConfig)
-        }
-
+        set_config(new_game_id, gameConfig)
         history.push(`/${new_game_id}`)
     }
 

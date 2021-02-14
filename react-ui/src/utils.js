@@ -38,7 +38,11 @@ export const isConfigDefault = (gameConfig) => {
     const wolves_default = gameConfig.number_of_wolves === null
     const villager_prob_default = gameConfig.probability_of_villager === null
 
-    return roles_default && wolves_default && villager_prob_default
+
+    const isConfigDefault = roles_default && wolves_default && villager_prob_default
+    console.log(`isConfigDefault = ${isConfigDefault}`)
+
+    return isConfigDefault
 }
 
 

@@ -18,6 +18,12 @@ import styles from './DistributionSetup.module.css'
 import { make_api_url, set_config, isConfigDefault } from '../utils'
 import ReactMarkdown from 'react-markdown';
 
+const DEFAULT_UI_STATE = {
+    number_of_wolves: null,
+    probability_of_villager: null,
+    role_weights: null,
+}
+
 const _ = require('lodash');
 
 
@@ -118,9 +124,16 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
 
     const stateHash = useSelector(selectStateHash);
 
-    const [customise, setCustomise] = useState(false);
-
     const dispatch = useDispatch();
+
+    const customise = UIConfig !== null;
+    const setCustomise = (val) => {
+        if (val) {
+            dispatch(setUIConfig(DEFAULT_UI_STATE));
+        } else {
+            dispatch(setUIConfig(null));
+        }
+    }
 
     // Just once, get and store the list of default role weights
     useEffect(() => {
@@ -157,6 +170,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 }
                 return r.json()
             }).then(config => {
+                console.log("Retrieved game state: ")
+                console.log(config)
                 dispatch(setGameConfig(config));
             })
         }
@@ -164,19 +179,16 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
 
     // If the gameConfig changes, update the UI state
     // ONLY if the UIConfig and gameConfig were previously equal
-    // const [previousGameConfig, setPreviousGameConfig] = useState(null);
     const previousGameConfig = useRef(null);
     useEffect(() => {
         if (_.isEqual(previousGameConfig.current, UIConfig)) {
             console.log("UI and game configs were equal: updating UI to keep in sync with new GameConfig:")
             console.log(gameConfig)
             dispatch(setUIConfig(gameConfig))
-            // Set the toggle appropriately
-            if (gameConfig !== null) {
-                setCustomise(!isConfigDefault(gameConfig))
-            }
         } else {
             console.log("UI and game configs differ: not updating")
+            console.log(UIConfig)
+            console.log(previousGameConfig.current)
         }
         previousGameConfig.current = gameConfig
     }, [gameConfig, dispatch])

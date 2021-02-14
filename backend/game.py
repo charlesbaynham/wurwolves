@@ -547,12 +547,12 @@ class WurwolvesGame:
             p.state = PlayerState.SPECTATING
 
     @db_scoped
-    def get_game_config(self) -> DistributionSettings:
+    def get_game_config(self) -> Union[None, DistributionSettings]:
         g = self.get_game()
 
         if g is None:
-            logger.debug("Game does not exist: returning default")
-            return DistributionSettings()
+            logger.debug("Game does not exist: returning None")
+            return None
 
         if g.distribution_settings is not None:
             logger.debug(
@@ -561,8 +561,8 @@ class WurwolvesGame:
             )
             return DistributionSettings.parse_obj(g.distribution_settings)
         else:
-            logger.debug("No custom distribution settings: returning default")
-            return DistributionSettings()
+            logger.debug("No custom distribution settings: returning None")
+            return None
 
     @db_scoped
     def set_game_config(self, new_config: Optional[DistributionSettings] = None):

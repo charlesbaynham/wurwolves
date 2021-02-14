@@ -82,7 +82,7 @@ async def get_game_config(
 ):
     logger.info("Starting get_game_config for %s", game_tag)
 
-    return WurwolvesGame(game_tag).get_game_config().dict()
+    return WurwolvesGame(game_tag).get_game_config()
 
 
 @router.post("/{game_tag}/game_config")
