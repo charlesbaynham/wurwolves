@@ -40,6 +40,7 @@ from .model import PlayerRole
 from .model import PlayerState
 from .model import User
 from .model import UserModel
+from .roles import DEFAULT_DISTRIBUTION_SETTINGS
 from .roles import get_action_func_name
 from .roles import get_apparant_role
 
@@ -570,12 +571,15 @@ class WurwolvesGame:
 
     @db_scoped
     def set_game_config(self, new_config: Optional[DistributionSettings] = None):
+        logger.info("set_game_config for game %s", self.game_id)
+
         g = self.get_game()
 
         if g is None:
             g = self.create_game()
 
         if new_config is None:
+            logger.info("Setting %s config to defaults", self.game_id)
             g.distribution_settings = None
         else:
             if not isinstance(new_config, DistributionSettings):
@@ -583,7 +587,15 @@ class WurwolvesGame:
                     f"Expecting an instance of DistributionSettings, got {type(new_config)}"
                 )
 
-            g.distribution_settings = new_config.dict()
+            if new_config == DEFAULT_DISTRIBUTION_SETTINGS:
+                logger.info(
+                    "New config identical to default: setting %s to defaults",
+                    self.game_id,
+                )
+                g.distribution_settings = None
+            else:
+                logger.info("Setting %s config to %s", self.game_id, new_config)
+                g.distribution_settings = new_config.dict()
 
     @db_scoped
     def start_game(self):
