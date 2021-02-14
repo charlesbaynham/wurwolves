@@ -60,8 +60,8 @@ function TemporaryOverlay({
     const variants = _.merge({}, default_variants, custom_variants);
 
     if (debug) {
-        console.log("variants:")
-        console.log(variants)
+        console.debug("variants:")
+        console.debug(variants)
     }
 
     return (

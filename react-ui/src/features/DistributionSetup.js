@@ -157,7 +157,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // When this component is unloaded, clear both the gameState and the UIState
     useEffect(() => {
         return () => {
-            console.log("Clearing UI and Game config states")
+            console.debug("Clearing UI and Game config states")
             dispatch(setGameConfig(null))
             dispatch(setUIConfig(null))
         }
@@ -167,7 +167,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // get the current gameConfig.
     useEffect(() => {
         if (game_tag !== null) {
-            console.log(`getting game_config with tag ${game_tag}`)
+            console.debug(`getting game_config with tag ${game_tag}`)
             fetch(
                 make_api_url(
                     game_tag, "game_config"
@@ -179,8 +179,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 }
                 return r.json()
             }).then(config => {
-                console.log("Retrieved game state: ")
-                console.log(config)
+                console.debug("Retrieved game state: ")
+                console.debug(config)
                 dispatch(setGameConfig(config));
             })
         }
@@ -191,13 +191,13 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     const previousGameConfig = useRef(null);
     useEffect(() => {
         if (_.isEqual(previousGameConfig.current, UIConfig)) {
-            console.log("UI and game configs were equal: updating UI to keep in sync with new GameConfig:")
-            console.log(gameConfig)
+            console.debug("UI and game configs were equal: updating UI to keep in sync with new GameConfig:")
+            console.debug(gameConfig)
             dispatch(setUIConfig(gameConfig))
         } else {
-            console.log("UI and game configs differ: not updating")
-            console.log(UIConfig)
-            console.log(previousGameConfig.current)
+            console.debug("UI and game configs differ: not updating")
+            console.debug(UIConfig)
+            console.debug(previousGameConfig.current)
         }
         previousGameConfig.current = gameConfig
 
@@ -210,8 +210,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     const triggerUpdate = () => {
         if (auto_update === true && game_tag !== null) {
             const newConfig = customise ? UIConfig : null;
-            console.log("triggerUpdate: sending request to change config to")
-            console.log(newConfig)
+            console.debug("triggerUpdate: sending request to change config to")
+            console.debug(newConfig)
             set_config(game_tag, newConfig)
         }
     }
@@ -220,11 +220,11 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // if they aren't already equal
     useEffect(() => {
         if (!_.isEqual(gameConfig, UIConfig)) {
-            console.log("UIConfig changed: requesting update to")
-            console.log(UIConfig)
+            console.debug("UIConfig changed: requesting update to")
+            console.debug(UIConfig)
             triggerUpdate(UIConfig)
         } else {
-            console.log("UIConfig changed but already equal to gameConfig")
+            console.debug("UIConfig changed but already equal to gameConfig")
         }
 
         // Disable linting here because I'm intentionally leaving

@@ -32,7 +32,7 @@ function NewGameButton({ callback = null }) {
     useEffect(() => {
         if (callback !== null) {
             callback(new_game_id);
-            console.log(`Calling callback with = ${new_game_id}`)
+            console.debug(`Calling callback with = ${new_game_id}`)
         }
     }, [new_game_id, callback])
 
