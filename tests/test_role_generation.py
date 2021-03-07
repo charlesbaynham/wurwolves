@@ -106,7 +106,7 @@ def test_customization_num_wolves(num_players, num_wolves):
 
 @pytest.mark.parametrize("num_players", range(3, 20))
 def test_customization_no_roles(num_players):
-    settings = DistributionSettings(role_weights={role: 0 for role in list(PlayerRole)})
+    settings = DistributionSettings(probability_of_villager=1)
     roles = assign_roles(num_players, settings)
 
     allowed_roles = [
