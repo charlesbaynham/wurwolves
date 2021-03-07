@@ -86,3 +86,34 @@ def test_dual_roles_assigned():
                 dual_roles_seen[r] = True
 
     assert all(dual_roles_seen.values())
+
+
+import itertools
+
+
+@pytest.mark.parametrize(
+    "num_players,num_wolves", itertools.product(range(20), range(20))
+)
+def test_customization_num_wolves(num_players, num_wolves):
+    settings = DistributionSettings(number_of_wolves=num_wolves)
+    roles = assign_roles(num_players, settings)
+
+    if num_players >= num_wolves + 2:
+        assert len([r for r in roles if r is PlayerRole.WOLF]) == num_wolves
+    else:
+        assert roles is None
+
+
+@pytest.mark.parametrize("num_players", range(3, 20))
+def test_customization_no_roles(num_players):
+    settings = DistributionSettings(role_weights={role: 0 for role in list(PlayerRole)})
+    roles = assign_roles(num_players, settings)
+
+    allowed_roles = [
+        PlayerRole.WOLF,
+        PlayerRole.VILLAGER,
+        PlayerRole.SEER,
+        PlayerRole.MEDIC,
+    ]
+
+    assert all([r in allowed_roles for r in roles])
