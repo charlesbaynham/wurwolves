@@ -329,11 +329,11 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                             className="pb-4"
                         />
 
-                        <ReactMarkdown>
-                            Adjust the weightings for respective roles below. All roles will be assigned at most once.
-                        </ReactMarkdown>
-
                         <CollapsingDiv visible={UIConfig ? UIConfig.role_weights !== null : false}>
+                            <ReactMarkdown>
+                                Adjust the weightings for respective roles below. All roles will be assigned at most once.
+                            </ReactMarkdown>
+
                             {role_weights}
                         </CollapsingDiv>
                     </div>
