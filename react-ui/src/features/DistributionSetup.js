@@ -42,7 +42,7 @@ function Toggle({ text, checked, onChange, className = null }) {
 }
 
 
-function SliderAndBox({ value, onChange, min = 0, max = 5 }) {
+function SliderAndBox({ value, onChange, min = 0, max = 5, step = 1 }) {
     return (
         <Form.Group as={Row}>
             <Col xs="9">
@@ -50,6 +50,7 @@ function SliderAndBox({ value, onChange, min = 0, max = 5 }) {
                     className={styles.wideSlider}
                     min={min}
                     max={max}
+                    step={step}
                     style={{ width: "100%" }}
                     value={value ? value : 0}
                     onChange={onChange}
@@ -290,6 +291,32 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                                 min={1}
                                 value={UIConfig ? UIConfig.number_of_wolves : null}
                                 onChange={e => dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: parseInt(e.target.value) })))}
+                            />
+                        </CollapsingDiv>
+
+
+                        <Toggle
+                            text="Set propability of having a role"
+                            checked={UIConfig ? UIConfig.probability_of_villager !== null : false}
+                            onChange={val => {
+                                dispatch(setUIConfig(Object.assign({}, UIConfig, { probability_of_villager: val ? 0.25 : null })));
+                            }}
+                        />
+
+                        <CollapsingDiv
+                            visible={UIConfig ? UIConfig.probability_of_villager !== null : false}
+                        >
+                            <SliderAndBox
+                                max={100}
+                                min={0}
+                                step={1}
+                                value={(UIConfig && UIConfig.probability_of_villager !== null)
+                                    ? Math.round(100 * (1 - UIConfig.probability_of_villager))
+                                    : null}
+                                onChange={e => dispatch(setUIConfig(
+                                    Object.assign({}, UIConfig, {
+                                        probability_of_villager: 1 - 0.01 * parseInt(e.target.value)
+                                    })))}
                             />
                         </CollapsingDiv>
 
