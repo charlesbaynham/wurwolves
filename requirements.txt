@@ -64,8 +64,6 @@ psycopg2==2.8.6
     # via -r requirements.in
 pydantic==1.7.2
     # via fastapi
-pympler==0.9
-    # via -r requirements.in
 python-dateutil==2.8.1
     # via alembic
 python-dotenv==0.15.0
@@ -99,7 +97,7 @@ starlette==0.13.6
     # via fastapi
 ujson==3.2.0
     # via fastapi
-urllib3==1.26.2
+urllib3==1.26.3
     # via requests
 uvicorn==0.11.8
     # via fastapi
