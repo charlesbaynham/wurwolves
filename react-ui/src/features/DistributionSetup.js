@@ -7,6 +7,8 @@ import { setGameConfig, setUIConfig } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 
 import { motion } from "framer-motion"
 import RangeSlider from 'react-bootstrap-range-slider';
@@ -18,6 +20,10 @@ import styles from './DistributionSetup.module.css'
 import { make_api_url, set_config } from '../utils'
 import ReactMarkdown from 'react-markdown';
 
+import villagerImage from './characters/villager.svg'
+import jesterImage from './characters/jester.svg'
+import seerImage from './characters/seer.svg'
+
 const DEFAULT_UI_STATE = {
     number_of_wolves: null,
     probability_of_villager: null,
@@ -25,6 +31,47 @@ const DEFAULT_UI_STATE = {
 }
 
 const _ = require('lodash');
+
+
+function ModeSelector() {
+
+    const RoleCard = ({title, description, img}) => (
+        <Col xs={6} s={4} md={3}>
+            <Card style={{
+                    height: "100%",
+                    paddingTop: "1em"
+                }}>
+                <Card.Img variant="top" src={img} style={{height: "3cm"}} />
+                <Card.Body>
+                    <Card.Title>{title}</Card.Title>
+                    <Card.Text>
+                        {description}
+                    </Card.Text>
+                </Card.Body>
+            </Card>
+        </Col>
+    )
+
+    return (
+    <Row className="justify-content-center">
+        <RoleCard
+            title="Beginner"
+            description="Just the basics"
+            img={villagerImage}
+        />
+        <RoleCard
+            title="Fledgling"
+            description="Four extra roles"
+            img={jesterImage}
+        />
+        <RoleCard
+            title="Expert"
+            description="All the roles!"
+            img={seerImage}
+        />
+    </Row>
+)
+}
 
 
 function Toggle({ text, checked, onChange, className = null }) {
@@ -266,6 +313,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 className={styles.form}
                 onSubmit={e => e.preventDefault()}
             >
+                <ModeSelector />
                 <Toggle
                     text="Customize role distribution"
                     checked={customise}
