@@ -123,19 +123,15 @@ function DistributionSetup({ game_tag = null, auto_update = false, no_padding = 
         }
     }, [dispatch, game_tag, stateHash])
 
-    const triggerUpdate = (newMode) => {
+    // If the game config mode changes, send a request to change it on the server
+    const changeMode = (newMode) => {
+        dispatch(setGameConfigMode(newMode))
         if (auto_update === true && game_tag !== null) {
             console.debug("triggerUpdate: sending request to change config mode to")
             console.debug(newMode)
             set_config_mode(game_tag, newMode)
         }
     }
-
-    // If the game config mode changes, send a request to change it on the server
-    useEffect(() => {
-        triggerUpdate(gameConfigMode)
-        // eslint-disable-next-line
-    }, [gameConfigMode])
 
     return (
         <div
@@ -147,7 +143,7 @@ function DistributionSetup({ game_tag = null, auto_update = false, no_padding = 
             >
                 <ModeSelector
                     selected={gameConfigMode}
-                    setSelected={(v) => dispatch(setGameConfigMode(v))}
+                    setSelected={(v) => changeMode(v)}
                     no_padding={no_padding}
                 />
             </Form>
