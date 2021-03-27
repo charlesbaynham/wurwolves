@@ -65,9 +65,20 @@ bakery = baked.bakery()
 
 # Presets for role generation
 LOOKUP_CONFIG = {
-    "easy": DistributionSettings(probability_of_villager=0.1),
-    "medium": DistributionSettings(probability_of_villager=0.2),
-    "hard": DistributionSettings(),
+    "easy": DistributionSettings(
+        role_weights={
+            # No roles: essential ones only
+        }
+    ),
+    "medium": DistributionSettings(
+        role_weights={
+            PlayerRole.JESTER: 1,
+            PlayerRole.VIGILANTE: 1,
+            PlayerRole.MAYOR: 1,
+            PlayerRole.MILLER: 1,
+        }
+    ),
+    "hard": DistributionSettings(),  # Default setting: all roles
 }
 
 
