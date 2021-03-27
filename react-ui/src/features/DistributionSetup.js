@@ -20,10 +20,10 @@ import jesterImage from './characters/jester.svg'
 import seerImage from './characters/seer.svg'
 
 
-function ModeSelector({selected, setSelected}) {
+function ModeSelector({selected, setSelected, no_padding = false}) {
 
     const RoleCard = ({title, description, img, active=false, onClick=null}) => (
-        <Col xs={6} s={4} md={3}>
+        <Col xs={6} s={4} md={no_padding ? 4 : 3}>
             <button className={styles.debuttonedButton} onClick={onClick}>
             <Card className={active ? styles.difficulty_box + " " + styles.difficulty_box_active : styles.difficulty_box}>
                 <Card.Img variant="top" src={img} style={{height: "3cm"}} />
@@ -75,7 +75,7 @@ function ModeSelector({selected, setSelected}) {
 }
 
 
-function DistributionSetup({ game_tag = null, auto_update = false }) {
+function DistributionSetup({ game_tag = null, auto_update = false, no_padding = false }) {
     // The redux store maintains three config objects:
     // * gameConfig:    The current config of the game, as stored in the database
     // * UIConfig:      The UI state as drawn locally. Might difer from
@@ -145,7 +145,11 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 className={styles.form}
                 onSubmit={e => e.preventDefault()}
             >
-                <ModeSelector selected={gameConfigMode} setSelected={(v) => dispatch(setGameConfigMode(v))}/>
+                <ModeSelector
+                    selected={gameConfigMode}
+                    setSelected={(v) => dispatch(setGameConfigMode(v))}
+                    no_padding={no_padding}
+                />
             </Form>
         </div >
     )
