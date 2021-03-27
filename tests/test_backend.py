@@ -187,42 +187,36 @@ def test_get_default_role_weights(api_client):
     assert r.ok
 
 
-def test_get_game_config(api_client, db_session):
+def test_get_game_config_mode(api_client, db_session):
     from backend.model import DistributionSettings
 
-    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
     assert r.ok
 
-    assert json.loads(r.content) is None
+    assert json.loads(r.content) == "hard"
 
 
-def test_set_get_game_config(api_client, db_session):
+def test_set_get_game_config_mode(api_client, db_session):
     from urllib.parse import urlencode
 
     api_client.post(f"/api/{GAME_ID}/join")
-    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
 
-    config = json.loads(r.content)
+    config = r.content
 
-    assert config is None
-
-    config = DistributionSettings(
-        number_of_wolves=5, role_weights={PlayerRole.JESTER: 1000}
-    )
+    assert config is "hard"
 
     r = api_client.post(
-        f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
+        f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": "easy"})
     )
 
     assert r.ok
 
     r = api_client.get(f"/api/{GAME_ID}/game_config")
     assert r.ok
-    config2 = DistributionSettings.parse_raw(r.content)
+    config2 = r.content
 
-    assert config2.number_of_wolves == 5
-    assert config2.role_weights[PlayerRole.JESTER] == 1000
-    assert config == config2
+    assert config2 == "hard"
 
 
 def test_control_roles(api_client, db_session):

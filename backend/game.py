@@ -67,7 +67,7 @@ bakery = baked.bakery()
 LOOKUP_CONFIG = {
     "easy": DistributionSettings(probability_of_villager=0.1),
     "medium": DistributionSettings(probability_of_villager=0.2),
-    "hard": DistributionSettings(probability_of_villager=0.3),
+    "hard": DistributionSettings(),
 }
 
 
