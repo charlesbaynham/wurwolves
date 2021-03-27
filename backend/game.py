@@ -597,6 +597,52 @@ class WurwolvesGame:
         g.distribution_settings = new_config.dict()
 
     @db_scoped
+    def get_game_config(self) -> Union[None, DistributionSettings]:
+        g = self.get_game()
+
+        if g is None:
+            logger.debug("Game does not exist: returning None")
+            return None
+
+        if g.distribution_settings is not None:
+            logger.debug(
+                "Custom distribution settings found: returning [%s]",
+                g.distribution_settings,
+            )
+            return DistributionSettings.parse_obj(g.distribution_settings)
+        else:
+            logger.debug("No custom distribution settings: returning None")
+            return None
+
+    @db_scoped
+    def set_game_config(self, new_config: Optional[DistributionSettings] = None):
+        logger.info("set_game_config for game %s", self.game_id)
+
+        g = self.get_game()
+
+        if g is None:
+            g = self.create_game()
+
+        if new_config is None:
+            logger.info("Setting %s config to defaults", self.game_id)
+            g.distribution_settings = None
+        else:
+            if not isinstance(new_config, DistributionSettings):
+                raise TypeError(
+                    f"Expecting an instance of DistributionSettings, got {type(new_config)}"
+                )
+
+            if new_config.is_default():
+                logger.info(
+                    "New config is all defaults: setting %s to defaults",
+                    self.game_id,
+                )
+                g.distribution_settings = None
+            else:
+                logger.info("Setting %s config to %s", self.game_id, new_config)
+                g.distribution_settings = new_config.dict()
+
+    @db_scoped
     def start_game(self):
         self._wipe_all_roles()
 
