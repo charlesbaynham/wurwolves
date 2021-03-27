@@ -117,3 +117,65 @@ def test_customization_no_roles(num_players):
     ]
 
     assert all([r in allowed_roles for r in roles])
+
+
+@pytest.mark.parametrize("num_players", range(4, 20))
+def test_customize_roles(num_players):
+    settings = DistributionSettings(
+        role_weights={
+            PlayerRole.ACOLYTE: 1,
+        },
+        probability_of_villager=0,
+    )
+    roles = assign_roles(num_players, settings)
+
+    required_roles = [
+        PlayerRole.WOLF,
+        PlayerRole.SEER,
+        PlayerRole.MEDIC,
+        PlayerRole.ACOLYTE,
+    ]
+    possible_roles = [PlayerRole.VILLAGER]
+
+    assert all([r in required_roles + possible_roles for r in roles])
+    assert all([r in roles for r in required_roles])
+
+
+@pytest.mark.parametrize("num_players", range(5, 20))
+def test_customize_roles_2(num_players):
+    settings = DistributionSettings(
+        role_weights={PlayerRole.ACOLYTE: 1, PlayerRole.JESTER: 1, PlayerRole.FOOL: 0},
+        probability_of_villager=0,
+    )
+    roles = assign_roles(num_players, settings)
+
+    required_roles = [
+        PlayerRole.WOLF,
+        PlayerRole.SEER,
+        PlayerRole.MEDIC,
+        PlayerRole.ACOLYTE,
+        PlayerRole.JESTER,
+    ]
+    possible_roles = [PlayerRole.VILLAGER]
+
+    assert all([r in required_roles + possible_roles for r in roles])
+    assert all([r in roles for r in required_roles])
+
+
+@pytest.mark.parametrize("num_players", range(5, 20))
+def test_customize_roles_3(num_players):
+    settings = DistributionSettings(
+        role_weights={PlayerRole.MASON: 1}, probability_of_villager=0
+    )
+    roles = assign_roles(num_players, settings)
+
+    required_roles = [
+        PlayerRole.WOLF,
+        PlayerRole.SEER,
+        PlayerRole.MEDIC,
+        PlayerRole.MASON,
+    ]
+    possible_roles = [PlayerRole.VILLAGER]
+
+    assert all([r in required_roles + possible_roles for r in roles])
+    assert all([r in roles for r in required_roles])

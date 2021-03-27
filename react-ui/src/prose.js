@@ -69,6 +69,11 @@ The Mayor is in charge here, and everyone knows it.
 
 After the first night, the Mayor is publicly revealed so everyone knows who they are. While they live, there is no voting for lynching: the mayor makes the decision unilaterally. They can be killed by the wolves just like normal villagers.
     `),
+    new RoleDescription("Miller", "/images/characters/miller0.svg", `
+Lives alone, never meets people and likes it that way.
+
+The Miller is on the side of the villagers: unfortunately they don't recognize him. If the Seer checks the alignment of the Miller, they will seem like a wolf even though they're not.
+    `),
     new RoleDescription("Acolyte", "/images/characters/acolyte0.svg", `
 Really wishes they were a werewolf. The Acolyte used to have a long fringe and listen to mopey rock, but now they worship the werewolves. They're sure that, if they work hard enough, the wolves will get in touch.
 
@@ -91,11 +96,6 @@ They always knew that a secret society would come in useful.
 
 The Masons do not have special powers, but they know each other's identity (they always come as a pair). They are on the side of the villagers.
 
-    `),
-    new RoleDescription("Miller", "/images/characters/miller0.svg", `
-Lives alone, never meets people and likes it that way.
-
-The Miller is on the side of the villagers: unfortunately they don't recognize him. If the Seer checks the alignment of the Miller, they will seem like a wolf even though they're not.
     `),
     new RoleDescription("Exorcist", "/images/characters/exorcist0.svg", `
 The Exorcist has dabbled in the occult from a young age. Now, with the village beset by werewolves, it's finally their chance to use their knowledge.

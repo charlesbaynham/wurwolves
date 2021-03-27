@@ -187,142 +187,36 @@ def test_get_default_role_weights(api_client):
     assert r.ok
 
 
-def test_get_game_config(api_client, db_session):
+def test_get_game_config_mode(api_client, db_session):
     from backend.model import DistributionSettings
 
-    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
     assert r.ok
 
-    assert json.loads(r.content) is None
+    assert json.loads(r.content) == "hard"
 
 
-def test_set_get_game_config(api_client, db_session):
+def test_set_get_game_config_mode(api_client, db_session):
     from urllib.parse import urlencode
 
     api_client.post(f"/api/{GAME_ID}/join")
-    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
 
     config = json.loads(r.content)
 
-    assert config is None
-
-    config = DistributionSettings(
-        number_of_wolves=5, role_weights={PlayerRole.JESTER: 1000}
-    )
+    assert config == "hard"
 
     r = api_client.post(
-        f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
+        f"/api/{GAME_ID}/game_config_mode?" + urlencode({"new_config_mode": "easy"})
     )
 
     assert r.ok
 
-    r = api_client.get(f"/api/{GAME_ID}/game_config")
+    r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
     assert r.ok
-    config2 = DistributionSettings.parse_raw(r.content)
+    config2 = json.loads(r.content)
 
-    assert config2.number_of_wolves == 5
-    assert config2.role_weights[PlayerRole.JESTER] == 1000
-    assert config == config2
-
-
-def test_control_roles(api_client, db_session):
-    from uuid import uuid4 as uuid
-    from backend.model import DistributionSettings
-    from urllib.parse import urlencode
-
-    g = WurwolvesGame(GAME_ID)
-
-    # Make a 5 player game
-    with api_client as s:
-        r = s.post(f"/api/{GAME_ID}/join")
-        assert r.ok
-
-        for _ in range(4):
-            g.join(uuid())
-
-        # Set the config to promise a jester
-        config = DistributionSettings(role_weights={PlayerRole.JESTER: 100000})
-        r = s.post(
-            f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
-        )
-        assert r.ok
-
-        # Run the game start a few times for confirm that it worked
-        for _ in range(5):
-            players = g.get_players_model()
-            assert not any([p.role is PlayerRole.JESTER for p in players])
-
-            g.start_game()
-
-            players = g.get_players_model()
-            assert any([p.role is PlayerRole.JESTER for p in players])
-
-            g.end_game()
-            g.move_to_lobby()
-
-
-def test_control_num_wolves(api_client, db_session):
-    from uuid import uuid4 as uuid
-    from backend.model import DistributionSettings
-    from urllib.parse import urlencode
-
-    g = WurwolvesGame(GAME_ID)
-
-    # Make a 5 player game
-    with api_client as s:
-        r = s.post(f"/api/{GAME_ID}/join")
-        assert r.ok
-
-        for _ in range(4):
-            g.join(uuid())
-
-        # Set the config to have 2 wolves
-        config = DistributionSettings(number_of_wolves=2)
-        r = s.post(
-            f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
-        )
-        assert r.ok
-
-        # Run the game start a few times for confirm that it worked
-        for _ in range(5):
-            players = g.get_players_model()
-            assert not any([p.role is PlayerRole.WOLF for p in players])
-
-            g.start_game()
-
-            players = g.get_players_model()
-            assert sum([p.role is PlayerRole.WOLF for p in players]) == 2
-
-            g.end_game()
-            g.move_to_lobby()
-
-
-def test_control_impossible_num_wolves(api_client, db_session):
-    from uuid import uuid4 as uuid
-    from backend.model import DistributionSettings
-    from urllib.parse import urlencode
-
-    g = WurwolvesGame(GAME_ID)
-
-    # Make a 5 player game
-    with api_client as s:
-        r = s.post(f"/api/{GAME_ID}/join")
-        assert r.ok
-
-        for _ in range(4):
-            g.join(uuid())
-
-        # Set the config to have 4 wolves: this is impossible
-        config = DistributionSettings(number_of_wolves=4)
-        r = s.post(
-            f"/api/{GAME_ID}/game_config?" + urlencode({"new_config": config.json()})
-        )
-        assert r.ok
-
-        # Confirm that starting the game fails
-        r = s.post(f"/api/{GAME_ID}/spectator_lobby_action")
-        assert not r.ok
-        assert r.status_code == 400
+    assert config2 == "easy"
 
 
 def test_end_game(api_client, db_session):

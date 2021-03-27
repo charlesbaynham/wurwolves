@@ -63,6 +63,25 @@ logger = logging.getLogger("game")
 bakery = baked.bakery()
 
 
+# Presets for role generation
+LOOKUP_CONFIG = {
+    "easy": DistributionSettings(
+        role_weights={
+            # No roles: essential ones only
+        }
+    ),
+    "medium": DistributionSettings(
+        role_weights={
+            PlayerRole.JESTER: 1,
+            PlayerRole.VIGILANTE: 1,
+            PlayerRole.MAYOR: 1,
+            PlayerRole.MILLER: 1,
+        }
+    ),
+    "hard": DistributionSettings(),  # Default setting: all roles
+}
+
+
 class ChatMessage(pydantic.BaseModel):
     text: str
     is_strong = False
@@ -545,6 +564,48 @@ class WurwolvesGame:
             p.role = PlayerRole.SPECTATOR
             p.previous_role = PlayerRole.SPECTATOR
             p.state = PlayerState.SPECTATING
+
+    @db_scoped
+    def get_game_config_mode(self) -> Union[None, str]:
+        g = self.get_game()
+
+        if g is None:
+            logger.debug("Game does not exist: using default")
+            current_config = DistributionSettings()
+        elif g.distribution_settings is None:
+            logger.debug("No custom settings stored: using default mode")
+            current_config = DistributionSettings()
+        else:
+            logger.debug(
+                "Custom distribution settings [%s] found: comparing with modes",
+                g.distribution_settings,
+            )
+            current_config = DistributionSettings.parse_obj(g.distribution_settings)
+
+        for mode, config in LOOKUP_CONFIG.items():
+            if config == current_config:
+                logger.debug("Match found: mode is %s", mode)
+                return mode
+
+        # If there's no match, return "custom"
+        return "custom"
+
+    @db_scoped
+    def set_game_config_mode(self, new_config_mode: str):
+        logger.info("set_game_config_mode for game %s", self.game_id)
+
+        g = self.get_game()
+
+        if g is None:
+            g = self.create_game()
+
+        try:
+            new_config = LOOKUP_CONFIG[new_config_mode]
+        except KeyError:
+            raise HTTPException(404, "{} is not a valid mode".format(new_config_mode))
+
+        logger.info("Setting %s config to %s", self.game_id, new_config)
+        g.distribution_settings = new_config.dict()
 
     @db_scoped
     def get_game_config(self) -> Union[None, DistributionSettings]:

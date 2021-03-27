@@ -111,8 +111,12 @@ def assign_roles(
         )
 
     role_weights = (
-        settings.role_weights if settings.role_weights is not None else RANDOMISED_ROLES
+        settings.role_weights.copy()
+        if settings.role_weights is not None
+        else RANDOMISED_ROLES.copy()
     )
+    # Filter out anything with zero weighting
+    role_weights = {r: w for r, w in role_weights.items() if w > 0}
 
     if num_players < len(guaranteed_roles) + num_wolves:
         return None
