@@ -6,7 +6,7 @@
 const temporary_id = Math.random();
 
 export function set_config_mode(game_id, new_mode) {
-    fetch(make_api_url(game_id, "game_config_mode", new_mode),
+    fetch(make_api_url(game_id, "game_config_mode", {"new_config_mode": new_mode}),
         { method: 'post' })
         .catch(console.log)
 }

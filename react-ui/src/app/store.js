@@ -37,8 +37,8 @@ export const selectPlayer = selectedPlayer.actions.selectPlayer
 export const unselectAll = selectedPlayer.actions.unselectAll
 
 const config = createSlice({
-  name: 'configMode',
-  initialState: 0,
+  name: 'config',
+  initialState: "",
   reducers: {
     replaceGameConfigMode: (state, action) => action.payload,
   }

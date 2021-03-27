@@ -63,6 +63,14 @@ logger = logging.getLogger("game")
 bakery = baked.bakery()
 
 
+# Presets for role generation
+LOOKUP_CONFIG = {
+    "easy": DistributionSettings(probability_of_villager=0.1),
+    "medium": DistributionSettings(probability_of_villager=0.2),
+    "hard": DistributionSettings(probability_of_villager=0.3),
+}
+
+
 class ChatMessage(pydantic.BaseModel):
     text: str
     is_strong = False
@@ -547,50 +555,46 @@ class WurwolvesGame:
             p.state = PlayerState.SPECTATING
 
     @db_scoped
-    def get_game_config(self) -> Union[None, DistributionSettings]:
+    def get_game_config_mode(self) -> Union[None, str]:
         g = self.get_game()
 
         if g is None:
-            logger.debug("Game does not exist: returning None")
-            return None
-
-        if g.distribution_settings is not None:
+            logger.debug("Game does not exist: using default")
+            current_config = DistributionSettings()
+        elif g.distribution_settings is None:
+            logger.debug("No custom settings stored: using default mode")
+            current_config = DistributionSettings()
+        else:
             logger.debug(
-                "Custom distribution settings found: returning [%s]",
+                "Custom distribution settings [%s] found: comparing with modes",
                 g.distribution_settings,
             )
-            return DistributionSettings.parse_obj(g.distribution_settings)
-        else:
-            logger.debug("No custom distribution settings: returning None")
-            return None
+            current_config = DistributionSettings.parse_obj(g.distribution_settings)
+
+        for mode, config in LOOKUP_CONFIG.items():
+            if config == current_config:
+                logger.debug("Match found: mode is %s", mode)
+                return mode
+
+        # If there's no match, return "custom"
+        return "custom"
 
     @db_scoped
-    def set_game_config(self, new_config: Optional[DistributionSettings] = None):
-        logger.info("set_game_config for game %s", self.game_id)
+    def set_game_config_mode(self, new_config_mode: str):
+        logger.info("set_game_config_mode for game %s", self.game_id)
 
         g = self.get_game()
 
         if g is None:
             g = self.create_game()
 
-        if new_config is None:
-            logger.info("Setting %s config to defaults", self.game_id)
-            g.distribution_settings = None
-        else:
-            if not isinstance(new_config, DistributionSettings):
-                raise TypeError(
-                    f"Expecting an instance of DistributionSettings, got {type(new_config)}"
-                )
+        try:
+            new_config = LOOKUP_CONFIG[new_config_mode]
+        except KeyError:
+            raise HTTPException(404, "{} is not a valid mode".format(new_config_mode))
 
-            if new_config.is_default():
-                logger.info(
-                    "New config is all defaults: setting %s to defaults",
-                    self.game_id,
-                )
-                g.distribution_settings = None
-            else:
-                logger.info("Setting %s config to %s", self.game_id, new_config)
-                g.distribution_settings = new_config.dict()
+        logger.info("Setting %s config to %s", self.game_id, new_config)
+        g.distribution_settings = new_config.dict()
 
     @db_scoped
     def start_game(self):

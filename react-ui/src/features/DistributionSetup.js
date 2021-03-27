@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { selectGameConfigMode, selectStateHash } from './selectors'
@@ -20,9 +20,7 @@ import jesterImage from './characters/jester.svg'
 import seerImage from './characters/seer.svg'
 
 
-function ModeSelector() {
-
-    const [selected, setSelected] = useState(0);
+function ModeSelector({selected, setSelected}) {
 
     const RoleCard = ({title, description, img, active=false, onClick=null}) => (
         <Col xs={6} s={4} md={3}>
@@ -46,9 +44,9 @@ function ModeSelector() {
             title="Beginner"
             description="Just the basics"
             img={villagerImage}
-            active={selected === 0}
+            active={selected === "easy"}
             onClick={(e) => {
-                setSelected(0);
+                setSelected("easy");
                 e.preventDefault();
             }}
         />
@@ -56,9 +54,9 @@ function ModeSelector() {
             title="Fledgling"
             description="Four extra roles"
             img={jesterImage}
-            active={selected === 1}
+            active={selected === "medium"}
             onClick={(e) => {
-                setSelected(1);
+                setSelected("medium");
                 e.preventDefault();
             }}
         />
@@ -66,9 +64,9 @@ function ModeSelector() {
             title="Expert"
             description="All the roles!"
             img={seerImage}
-            active={selected === 2}
+            active={selected === "hard"}
             onClick={(e) => {
-                setSelected(2);
+                setSelected("hard");
                 e.preventDefault();
             }}
         />
@@ -98,6 +96,8 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     const stateHash = useSelector(selectStateHash);
     const dispatch = useDispatch();
 
+    console.log(`gameConfigMode = ${gameConfigMode}`)
+
     // On first render, and whenever the game hash changes and this component is loaded,
     // get the current gameConfigMode.
     useEffect(() => {
@@ -114,8 +114,10 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 }
                 return r.json()
             }).then(game_mode => {
-                console.debug("Retrieved game mode: ")
-                console.debug(game_mode)
+                console.debug(`Retrieved game mode: ${game_mode}`)
+                if (game_mode === null) {
+                    throw Error('No game mode returned');
+                }
                 dispatch(setGameConfigMode(game_mode));
             })
         }
@@ -143,7 +145,7 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 className={styles.form}
                 onSubmit={e => e.preventDefault()}
             >
-                <ModeSelector />
+                <ModeSelector selected={gameConfigMode} setSelected={(v) => dispatch(setGameConfigMode(v))}/>
             </Form>
         </div >
     )
