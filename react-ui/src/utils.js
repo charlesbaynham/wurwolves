@@ -5,8 +5,8 @@
 // This ID is used until the client is assigned a proper UUID
 const temporary_id = Math.random();
 
-export function set_config(game_id, new_config) {
-    fetch(make_api_url(game_id, "game_config", { new_config: JSON.stringify(new_config) }),
+export function set_config_mode(game_id, new_mode) {
+    fetch(make_api_url(game_id, "game_config_mode", new_mode),
         { method: 'post' })
         .catch(console.log)
 }

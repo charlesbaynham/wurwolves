@@ -6,7 +6,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import { selectUIConfig } from './selectors'
-import { make_api_url, set_config } from '../utils'
+import { make_api_url, set_config_mode } from '../utils'
 
 
 function NewGameButton({ callback = null }) {
@@ -37,7 +37,7 @@ function NewGameButton({ callback = null }) {
     }, [new_game_id, callback])
 
     const startGame = () => {
-        set_config(new_game_id, gameConfig)
+        set_config_mode(new_game_id, gameConfig)
         history.push(`/${new_game_id}`)
     }
 

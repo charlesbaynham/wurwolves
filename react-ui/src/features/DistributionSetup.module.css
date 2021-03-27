@@ -13,3 +13,31 @@
 .wideSlider {
     width: 100%;
 }
+
+.difficulty_box {
+    height: 100%;
+    padding-top: 1em;
+}
+
+.difficulty_box:hover {
+    box-shadow: 0 0 6px rgba(35, 173, 278, 1);
+}
+
+.difficulty_box_active {
+    box-shadow: 0 0 6px rgba(0, 173, 0, 1);
+}
+
+.debuttonedButton {
+    display: inline-block;
+    border: none;
+    margin: 0;
+    height: 100%;
+    text-decoration: none;
+    background: none;
+    color: none;
+    cursor: pointer;
+    transition: background 250ms ease-in-out,
+                transform 150ms ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}

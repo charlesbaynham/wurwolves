@@ -1,46 +1,33 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectGameConfig, selectUIConfig, selectStateHash } from './selectors'
+import { selectGameConfigMode, selectStateHash } from './selectors'
 
-import { setGameConfig, setUIConfig } from '../app/store'
+import { setGameConfigMode } from '../app/store'
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
 
-import { motion } from "framer-motion"
-import RangeSlider from 'react-bootstrap-range-slider';
 
 import Form from 'react-bootstrap/Form';
-import Switch from "react-switch";
 
 import styles from './DistributionSetup.module.css'
-import { make_api_url, set_config } from '../utils'
-import ReactMarkdown from 'react-markdown';
+import { make_api_url, set_config_mode } from '../utils'
 
 import villagerImage from './characters/villager.svg'
 import jesterImage from './characters/jester.svg'
 import seerImage from './characters/seer.svg'
 
-const DEFAULT_UI_STATE = {
-    number_of_wolves: null,
-    probability_of_villager: null,
-    role_weights: null,
-}
-
-const _ = require('lodash');
-
 
 function ModeSelector() {
 
-    const RoleCard = ({title, description, img}) => (
+    const [selected, setSelected] = useState(0);
+
+    const RoleCard = ({title, description, img, active=false, onClick=null}) => (
         <Col xs={6} s={4} md={3}>
-            <Card style={{
-                    height: "100%",
-                    paddingTop: "1em"
-                }}>
+            <button className={styles.debuttonedButton} onClick={onClick}>
+            <Card className={active ? styles.difficulty_box + " " + styles.difficulty_box_active : styles.difficulty_box}>
                 <Card.Img variant="top" src={img} style={{height: "3cm"}} />
                 <Card.Body>
                     <Card.Title>{title}</Card.Title>
@@ -49,6 +36,7 @@ function ModeSelector() {
                     </Card.Text>
                 </Card.Body>
             </Card>
+            </button>
         </Col>
     )
 
@@ -58,93 +46,34 @@ function ModeSelector() {
             title="Beginner"
             description="Just the basics"
             img={villagerImage}
+            active={selected === 0}
+            onClick={(e) => {
+                setSelected(0);
+                e.preventDefault();
+            }}
         />
         <RoleCard
             title="Fledgling"
             description="Four extra roles"
             img={jesterImage}
+            active={selected === 1}
+            onClick={(e) => {
+                setSelected(1);
+                e.preventDefault();
+            }}
         />
         <RoleCard
             title="Expert"
             description="All the roles!"
             img={seerImage}
+            active={selected === 2}
+            onClick={(e) => {
+                setSelected(2);
+                e.preventDefault();
+            }}
         />
     </Row>
 )
-}
-
-
-function Toggle({ text, checked, onChange, className = null }) {
-    var totalClassName = styles.toggle
-    if (className !== null) {
-        totalClassName = totalClassName + " " + className
-    }
-
-    return (
-        <div className={totalClassName}>
-            <Switch onChange={onChange} checked={checked} />
-            <p>{text}</p>
-        </div>
-    )
-}
-
-
-function SliderAndBox({ value, onChange, min = 0, max = 5, step = 1 }) {
-    return (
-        <Form.Group as={Row}>
-            <Col xs="9">
-                <RangeSlider
-                    className={styles.wideSlider}
-                    min={min}
-                    max={max}
-                    step={step}
-                    style={{ width: "100%" }}
-                    value={value ? value : 0}
-                    onChange={onChange}
-                />
-            </Col>
-            <Col xs="3">
-                <Form.Control
-                    value={value ? value : 0}
-                    onChange={onChange}
-                />
-            </Col>
-        </Form.Group>
-    )
-}
-
-
-function CollapsingDiv({ visible, children }) {
-    return (
-        <motion.div
-            initial="hidden"
-            animate={visible ? "visible" : "hidden"}
-            variants={{
-                hidden: {
-                    opacity: 0,
-                    scaleY: 0,
-                    height: 0,
-                    transitionEnd: {
-                        display: "none",
-                    },
-                    transition: {
-                        type: "tween"
-                    }
-                },
-                visible: {
-                    opacity: 1,
-                    scaleY: 1,
-                    height: "auto",
-                    display: "block",
-                    transition: {
-                        type: "tween"
-                    }
-                },
-            }}
-        >
-            {children}
-        </motion.div>
-    )
 }
 
 
@@ -165,60 +94,18 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
     // user, but doesn't interrupt them if they're busy configuring it already. Such updates trigger a
     // recalculation of the slider states too.
 
-    const gameConfig = useSelector(selectGameConfig);
-    const UIConfig = useSelector(selectUIConfig);
-
-    const [defaultRoleWeights, setDefaultRoleWeights] = useState(null);
-
+    const gameConfigMode = useSelector(selectGameConfigMode);
     const stateHash = useSelector(selectStateHash);
-
     const dispatch = useDispatch();
 
-    const customise = UIConfig !== null;
-    const setCustomise = (val) => {
-        if (val) {
-            dispatch(setUIConfig(DEFAULT_UI_STATE));
-        } else {
-            dispatch(setUIConfig(null));
-        }
-    }
-
-    // Just once, get and store the list of default role weights
-    useEffect(() => {
-        fetch(
-            make_api_url(
-                null, "default_role_weights"
-            ),
-            { method: 'get' }
-        ).then(r => {
-            if (!r.ok) {
-                throw Error("Fetch default config failed with error " + r.status)
-            }
-            return r.json()
-        }).then(data => {
-            if (data) {
-                setDefaultRoleWeights(data);
-            }
-        })
-    }, [])
-
-    // When this component is unloaded, clear both the gameState and the UIState
-    useEffect(() => {
-        return () => {
-            console.debug("Clearing UI and Game config states")
-            dispatch(setGameConfig(null))
-            dispatch(setUIConfig(null))
-        }
-    }, [dispatch])
-
     // On first render, and whenever the game hash changes and this component is loaded,
-    // get the current gameConfig.
+    // get the current gameConfigMode.
     useEffect(() => {
         if (game_tag !== null) {
-            console.debug(`getting game_config with tag ${game_tag}`)
+            console.debug(`getting game_config_mode with tag ${game_tag}`)
             fetch(
                 make_api_url(
-                    game_tag, "game_config"
+                    game_tag, "game_config_mode"
                 ),
                 { method: 'get' }
             ).then(r => {
@@ -226,84 +113,27 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                     throw Error("Fetch game config failed with error " + r.status)
                 }
                 return r.json()
-            }).then(config => {
-                console.debug("Retrieved game state: ")
-                console.debug(config)
-                dispatch(setGameConfig(config));
+            }).then(game_mode => {
+                console.debug("Retrieved game mode: ")
+                console.debug(game_mode)
+                dispatch(setGameConfigMode(game_mode));
             })
         }
     }, [dispatch, game_tag, stateHash])
 
-    // If the gameConfig changes, update the UI state
-    // ONLY if the UIConfig and gameConfig were previously equal
-    const previousGameConfig = useRef(null);
-    useEffect(() => {
-        if (_.isEqual(previousGameConfig.current, UIConfig)) {
-            console.debug("UI and game configs were equal: updating UI to keep in sync with new GameConfig:")
-            console.debug(gameConfig)
-            dispatch(setUIConfig(gameConfig))
-        } else {
-            console.debug("UI and game configs differ: not updating")
-            console.debug(UIConfig)
-            console.debug(previousGameConfig.current)
-        }
-        previousGameConfig.current = gameConfig
-
-        // Disable linting here because I'm intentionally leaving
-        // UIConfig off the dependency list:
-
-        // eslint-disable-next-line
-    }, [gameConfig, dispatch])
-
-    const triggerUpdate = () => {
+    const triggerUpdate = (newMode) => {
         if (auto_update === true && game_tag !== null) {
-            const newConfig = customise ? UIConfig : null;
-            console.debug("triggerUpdate: sending request to change config to")
-            console.debug(newConfig)
-            set_config(game_tag, newConfig)
+            console.debug("triggerUpdate: sending request to change config mode to")
+            console.debug(newMode)
+            set_config_mode(game_tag, newMode)
         }
     }
 
-    // If the UIConfig changes, send a request to change the gameConfig
-    // if they aren't already equal
+    // If the game config mode changes, send a request to change it on the server
     useEffect(() => {
-        if (!_.isEqual(gameConfig, UIConfig)) {
-            console.debug("UIConfig changed: requesting update to")
-            console.debug(UIConfig)
-            triggerUpdate(UIConfig)
-        } else {
-            console.debug("UIConfig changed but already equal to gameConfig")
-        }
-
-        // Disable linting here because I'm intentionally leaving
-        // gameConfig off the dependency list:
-
+        triggerUpdate(gameConfigMode)
         // eslint-disable-next-line
-    }, [UIConfig])
-
-    var role_weights = [];
-
-    if (UIConfig && UIConfig.role_weights) {
-        for (let role in UIConfig.role_weights) {
-            role_weights.push(
-                <>
-                    {role}:
-                    <SliderAndBox
-                        key={role}
-                        max={100}
-                        value={UIConfig.role_weights[role]}
-                        onChange={e => {
-                            var newRoles = Object.assign({}, UIConfig.role_weights)
-                            newRoles[role] = parseInt(e.target.value)
-                            const newUIConfig = Object.assign({}, UIConfig, { role_weights: newRoles })
-
-                            dispatch(setUIConfig(newUIConfig))
-                        }}
-                    />
-                </>
-            )
-        }
-    }
+    }, [gameConfigMode])
 
     return (
         <div
@@ -314,78 +144,6 @@ function DistributionSetup({ game_tag = null, auto_update = false }) {
                 onSubmit={e => e.preventDefault()}
             >
                 <ModeSelector />
-                <Toggle
-                    text="Customize role distribution"
-                    checked={customise}
-                    onChange={setCustomise}
-                />
-                <CollapsingDiv visible={customise}>
-                    <div
-                        className={styles.form}
-                    >
-                        <Toggle
-                            text="Select number of wolves"
-                            checked={UIConfig ? UIConfig.number_of_wolves !== null : false}
-                            onChange={val => {
-                                dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: val ? 1 : null })));
-                            }}
-                        />
-
-                        <CollapsingDiv
-                            visible={UIConfig ? UIConfig.number_of_wolves !== null : null}
-                        >
-                            <SliderAndBox
-                                max={5}
-                                min={1}
-                                value={UIConfig ? UIConfig.number_of_wolves : null}
-                                onChange={e => dispatch(setUIConfig(Object.assign({}, UIConfig, { number_of_wolves: parseInt(e.target.value) })))}
-                            />
-                        </CollapsingDiv>
-
-
-                        <Toggle
-                            text="Set propability of having a role"
-                            checked={UIConfig ? UIConfig.probability_of_villager !== null : false}
-                            onChange={val => {
-                                dispatch(setUIConfig(Object.assign({}, UIConfig, { probability_of_villager: val ? 0.25 : null })));
-                            }}
-                        />
-
-                        <CollapsingDiv
-                            visible={UIConfig ? UIConfig.probability_of_villager !== null : false}
-                        >
-                            <SliderAndBox
-                                max={100}
-                                min={0}
-                                step={1}
-                                value={(UIConfig && UIConfig.probability_of_villager !== null)
-                                    ? Math.round(100 * (1 - UIConfig.probability_of_villager))
-                                    : null}
-                                onChange={e => dispatch(setUIConfig(
-                                    Object.assign({}, UIConfig, {
-                                        probability_of_villager: 1 - 0.01 * parseInt(e.target.value)
-                                    })))}
-                            />
-                        </CollapsingDiv>
-
-                        <Toggle
-                            text="Select roles"
-                            checked={UIConfig ? UIConfig.role_weights !== null : false}
-                            onChange={(val) => {
-                                dispatch(setUIConfig(Object.assign({}, UIConfig, { role_weights: val ? defaultRoleWeights : null })));
-                            }}
-                            className="pb-4"
-                        />
-
-                        <CollapsingDiv visible={UIConfig ? UIConfig.role_weights !== null : false}>
-                            <ReactMarkdown>
-                                Adjust the weightings for respective roles below. All roles will be assigned at most once.
-                            </ReactMarkdown>
-
-                            {role_weights}
-                        </CollapsingDiv>
-                    </div>
-                </CollapsingDiv>
             </Form>
         </div >
     )
