@@ -9,7 +9,13 @@ import logging
 import os
 import random
 import time
-
+from functools import wraps
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
+from uuid import UUID
 
 import pydantic
 from fastapi import HTTPException
@@ -38,13 +44,6 @@ from .roles import get_action_func_name
 from .roles import get_apparant_role
 
 
-from functools import wraps
-from typing import Dict, Callable, List
-from typing import Optional
-from typing import Union
-from uuid import UUID
-
-
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 # Time for get_hash to wait for until it returns. Clients will have their
@@ -56,7 +55,7 @@ MAX_NAME_LENGTH = 25
 NAMES_FILE = os.path.join(os.path.dirname(__file__), "names.txt")
 names = None
 
-update_events: Dict[int,    asyncio.Event] = {}
+update_events: Dict[int, asyncio.Event] = {}
 
 logger = logging.getLogger("game")
 
