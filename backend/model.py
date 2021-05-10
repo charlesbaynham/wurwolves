@@ -354,7 +354,7 @@ class ActionModel(pydantic.BaseModel):
 
 
 class DistributionSettings(pydantic.BaseModel):
-    """ Settings for how to generate a game """
+    """Settings for how to generate a game"""
 
     number_of_wolves: Optional[int] = None
     probability_of_villager: Optional[float] = None

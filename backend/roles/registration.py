@@ -113,7 +113,7 @@ def get_role_callback(role: PlayerRole) -> Union[Callable, None]:
 
 
 def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameAction"]:
-    """ Get the action class associated with a role and stage, or None """
+    """Get the action class associated with a role and stage, or None"""
     role_description = get_role_description(role)
     role_actions = get_role_actions(role)
 
@@ -127,7 +127,7 @@ def get_role_action(role: PlayerRole, stage: GameStage) -> Union[None, "GameActi
 
 
 def do_startup_callback(game, role: PlayerRole) -> None:
-    """ Call the startup callback for a role if one is registered """
+    """Call the startup callback for a role if one is registered"""
     callback = get_role_callback(role)
 
     if callback:
