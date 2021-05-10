@@ -705,7 +705,7 @@ class WurwolvesGame:
 
     @db_scoped
     def get_messages(self, user_id: UUID, include_expired=False) -> List[ChatMessage]:
-        """ Get chat messages visible to the given user """
+        """Get chat messages visible to the given user"""
         messages = self.get_game().messages
         player = self.get_player(user_id)
 
@@ -849,7 +849,7 @@ class WurwolvesGame:
 
     @db_scoped
     def _set_stage(self, stage: GameStage):
-        """ Change the stage of the game, updating the stage ID """
+        """Change the stage of the game, updating the stage ID"""
         if not isinstance(stage, GameStage):
             raise ValueError
 
