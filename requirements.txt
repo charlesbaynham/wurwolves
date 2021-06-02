@@ -97,7 +97,7 @@ starlette==0.13.6
     # via fastapi
 ujson==3.2.0
     # via fastapi
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 uvicorn==0.11.8
     # via fastapi
