@@ -3,6 +3,7 @@ The Miller role
 
 The Miller can't do shit, and if the seer checks them they look like a wolf
 """
+
 from ..model import GameStage
 from ..model import PlayerRole
 from ..resolver import GameAction

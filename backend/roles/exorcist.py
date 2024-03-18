@@ -4,6 +4,7 @@ The Exorcist role
 Once per game, the exorcist may attempt to drive out one person in the night. If
 they are a wolf, they are killed. If they are not, the exorcist is killed.
 """
+
 from typing import TYPE_CHECKING
 from uuid import UUID
 
