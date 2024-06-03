@@ -1,6 +1,7 @@
 """
 The Seer role
 """
+
 import logging
 
 from ..model import GameStage
