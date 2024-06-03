@@ -2,7 +2,7 @@
 repos:
   # Several generic fixes
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: check-merge-conflict
@@ -11,15 +11,15 @@ repos:
       - id: check-yaml
 
   # Sort python imports
-  - repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.5.0
+  - repo: https://github.com/asottile/reorder-python-imports
+    rev: v3.13.0
     hooks:
     - id: reorder-python-imports
       language_version: python3.8
 
   # Format the code with a conventional PEP8 style
   - repo: https://github.com/psf/black
-    rev: 21.7b0
+    rev: 24.4.2
     hooks:
       - id: black
         language_version: python3.8
