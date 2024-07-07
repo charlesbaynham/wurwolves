@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
@@ -14,7 +14,7 @@ function NewGameButton({ callback = null }) {
     const [textBoxContents, setTextBoxContents] = useState("")
     const new_game_id = textBoxContents ? textBoxContents : suggestedGameID
 
-    const history = useHistory();
+    const navigate = useNavigate();
     const gameConfigMode = useSelector(selectGameConfigMode);
 
     useEffect(() => {
@@ -38,7 +38,7 @@ function NewGameButton({ callback = null }) {
 
     const startGame = () => {
         set_config_mode(new_game_id, gameConfigMode)
-        history.push(`/${new_game_id}`)
+        navigate(`/${new_game_id}`)
     }
 
     return (
