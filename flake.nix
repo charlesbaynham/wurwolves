@@ -61,19 +61,16 @@
               }
           );
 
-        # backendApp =
-        #   let
-        #     python = pkgs.python3.withPackages (ps: pythonReqs ++ [ backendPackage ]);
-        #   in
-        #   flake-utils.lib.mkApp
-        #     {
-        #       drv = (pkgs.writeShellScriptBin "script" ''
-        #         export PATH=${pkgs.lib.makeBinPath [ python ]}:$PATH
+        backendApp =
+          flake-utils.lib.mkApp
+            {
+              drv = (pkgs.writeShellScriptBin "script" ''
+                export PATH=${pkgs.lib.makeBinPath [ pythonEnv ]}:$PATH
 
-        #         python -m backend.reset_db && true
-        #         exec python -m uvicorn backend.main:app --host 0.0.0.0
-        #       '');
-        #     };
+                python -m backend.reset_db && true
+                exec python -m uvicorn backend.main:app --host 0.0.0.0
+              '');
+            };
 
         # loadDocker = flake-utils.lib.mkApp
         #   {
@@ -97,12 +94,12 @@
             buildInputs = reqs;
           };
 
-        # apps = {
-        #   inherit loadDocker;
-        #   default = loadDocker;
-        #   frontend = frontendApp;
-        #   backend = backendApp;
-        # };
+        apps = {
+          # inherit loadDocker;
+          # default = loadDocker;
+          frontend = frontendApp;
+          backend = backendApp;
+        };
 
         packages = {
           inherit frontendBuild frontendBuildWithCaddy;
