@@ -4,6 +4,7 @@ services:
     environment:
     - API_URL
     - WEBSITE_URL
+    - TRAEFIK_HOST
     - XDG_CONFIG_HOME=/config
     - XDG_DATA_HOME=/data
     ports:
@@ -13,6 +14,9 @@ services:
     - caddy_data:/data
     - caddy_config:/config
     restart: always
+    labels:
+      - "traefik.http.routers.wwfrontend.rule=Host(`${TRAEFIK_HOST}`)"
+
 
   wwbackend:
     image: wurwolves-backend
