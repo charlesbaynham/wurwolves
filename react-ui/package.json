@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.34",
+    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^1.1.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -11,9 +14,12 @@
     "cli-real-favicon": "^0.0.6",
     "express": "^4.17.1",
     "express-favicon": "^2.0.1",
+    "framer-motion": "^3.3.0",
+    "lodash": "^4.17.21",
     "path": "^0.12.7",
-    "react": "^16.13.1",
+    "react": "^18",
     "react-bootstrap": "^1.0.1",
+    "react-bootstrap-range-slider": "^2.0.2",
     "react-dom": "^16.13.1",
     "react-ga": "^3.3.0",
     "react-markdown": "^9.0.1",
@@ -21,6 +27,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
     "react-scrollable-feed": "^1.1.2",
+    "react-switch": "^6.0.0",
+    "react-use-clipboard": "^1.0.7",
     "redux-devtools-extension": "^2.13.8"
   },
   "scripts": {
