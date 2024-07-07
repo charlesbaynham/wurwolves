@@ -1,26 +1,25 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import store from './app/store';
-import App from './App';
-import Controls from './features/Controls';
+import React from "react";
+import { render } from "@testing-library/react";
+import { Provider } from "react-redux";
+import store from "./app/store";
+import App from "./App";
+import Controls from "./features/Controls";
 
-test('renders homepage', () => {
+test("renders homepage", () => {
   const { getByText } = render(
     <Provider store={store}>
       <App />
-    </Provider>
+    </Provider>,
   );
 
   expect(getByText(/Start a new game/i)).toBeInTheDocument();
 });
 
-
-test('renders role', () => {
+test("renders role", () => {
   const { getByText } = render(
     <Provider store={store}>
       <Controls />
-    </Provider>
+    </Provider>,
   );
 
   expect(getByText(/You are a /i)).toBeInTheDocument();
