@@ -6,7 +6,7 @@ A simple web app to play Werewolves (AKA Mafia) online. Live now at [wurwolves.c
 Deployment
 ----------
 
-This repository can be used to build docker containers for the frontend and backend, using nix, or can be run using nix directly. 
+This repository can be used to build docker containers for the frontend and backend, using nix, or can be run using nix directly.
 
 1. Configure `.env`
 
