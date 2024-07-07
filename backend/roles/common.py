@@ -58,7 +58,7 @@ class RoleDescription(pydantic.BaseModel):
 
     # If present, announce to this role who else has this role.
     # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")
-    reveal_others_text : str = ""
+    reveal_others_text: str = ""
 
     # dict of stages in which this role cannot see their own role,
     # and sees themselves as the given role instead
