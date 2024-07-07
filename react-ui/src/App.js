@@ -13,11 +13,6 @@ import Footer from "./features/Footer";
 
 import { selectStage } from "./features/selectors";
 
-import ReactGA from "react-ga";
-
-// Analytics
-ReactGA.initialize("UA-186218553-1");
-ReactGA.pageview(window.location.pathname + window.location);
 
 // Disable console.log in production
 function noop() {}
@@ -33,6 +28,7 @@ function App() {
   return (
     <div className={game_stage}>
       <div id="main" className="min-vh-100 bg-night-black">
+        Hello world
         <Router>
           <Routes>
             <Route path="/:game_tag" component={Game} />
