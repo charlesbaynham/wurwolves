@@ -18,7 +18,7 @@
           pkgs.pre-commit
           pkgs.black
           pkgs.caddy
-          pkgs.ruby  # For pre-commit FIX-ME hook
+          pkgs.ruby # For pre-commit FIX-ME hook
         ];
 
         frontendBuild = pkgs.buildNpmPackage rec {
@@ -72,18 +72,18 @@
               '');
             };
 
-        # loadDocker = flake-utils.lib.mkApp
-        #   {
-        #     drv = (pkgs.writeShellScriptBin "script" ''
-        #       nix build .#dockerFrontend
-        #       export IMG_ID=$(docker load -i result | sed -nr 's/^Loaded image: (.*)$/\1/p' | xargs -I{} docker image ls "{}" --format="{{.ID}}")
-        #       docker tag $IMG_ID streetfight-frontend:latest
+        loadDocker = flake-utils.lib.mkApp
+          {
+            drv = (pkgs.writeShellScriptBin "script" ''
+              nix build .#dockerFrontend
+              export IMG_ID=$(docker load -i result | sed -nr 's/^Loaded image: (.*)$/\1/p' | xargs -I{} docker image ls "{}" --format="{{.ID}}")
+              docker tag $IMG_ID streetfight-frontend:latest
 
-        #       nix build .#dockerBackend
-        #       export IMG_ID=$(docker load -i result | sed -nr 's/^Loaded image: (.*)$/\1/p' | xargs -I{} docker image ls "{}" --format="{{.ID}}")
-        #       docker tag $IMG_ID streetfight-backend:latest
-        #     '');
-        #   };
+              nix build .#dockerBackend
+              export IMG_ID=$(docker load -i result | sed -nr 's/^Loaded image: (.*)$/\1/p' | xargs -I{} docker image ls "{}" --format="{{.ID}}")
+              docker tag $IMG_ID streetfight-backend:latest
+            '');
+          };
 
 
       in
@@ -95,8 +95,8 @@
           };
 
         apps = {
-          # inherit loadDocker;
-          # default = loadDocker;
+          inherit loadDocker;
+          default = loadDocker;
           frontend = frontendApp;
           backend = backendApp;
         };
@@ -116,15 +116,15 @@
               Env = [ "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" ];
             };
           };
-          # dockerBackend = pkgs.dockerTools.buildLayeredImage {
-          #   name = "wurwolves-backend";
-          #   created = "now";
-          #   config = {
-          #     Cmd = [ backendApp.program ];
-          #     WorkingDir = "/data";
-          #     Volumes = { "/data" = { }; };
-          #   };
-          # };
+          dockerBackend = pkgs.dockerTools.buildLayeredImage {
+            name = "wurwolves-backend";
+            created = "now";
+            config = {
+              Cmd = [ backendApp.program ];
+              WorkingDir = "/data";
+              Volumes = { "/data" = { }; };
+            };
+          };
         };
       }
     );
