@@ -4,7 +4,6 @@ The Acolyte role
 The acolyte has no special powers but wins if the wolves win. The wolves know who they are, but the acolyte
 doesn't know anything. For the sake of the game's conclusion, the Acolyte counts as a villager.
 """
-
 from typing import TYPE_CHECKING
 
 from ..model import GameStage

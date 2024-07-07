@@ -1,7 +1,6 @@
 """
 The Spectator role
 """
-
 import logging
 from typing import TYPE_CHECKING
 

@@ -3,7 +3,6 @@ The Priest role
 
 Once per game, the priest may check the role of a dead player
 """
-
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException

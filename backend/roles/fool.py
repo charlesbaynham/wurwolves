@@ -3,7 +3,6 @@ The Fool role
 
 The fool thinks that they are the seer! But they just get random answers instead.
 """
-
 import logging
 import random
 

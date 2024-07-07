@@ -11,7 +11,6 @@ another wolf buddy acting.
 that person, they are not home and so don't die. However if the wolves attack
 the prostitute, they get both of them.
 """
-
 from ..model import GameStage
 from ..model import PlayerRole
 from ..resolver import ActionMixin
