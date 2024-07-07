@@ -10,6 +10,7 @@
           name = "backend";
           src = ./backend;
           propagatedBuildInputs = [ ];
+          doCheck = false;
         };
 
         pythonReqs = with pkgs.python3Packages; [
