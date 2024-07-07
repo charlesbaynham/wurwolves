@@ -1,6 +1,5 @@
 import { createStore, combineReducers } from 'redux'
 import { createSlice } from '@reduxjs/toolkit'
-import { composeWithDevTools } from 'redux-devtools-extension'
 
 
 const backend = createSlice({
@@ -55,8 +54,7 @@ const reducer = combineReducers({
 
 // Expose the store on window.store for debugging
 let store = createStore(
-  reducer,
-  composeWithDevTools()
+  reducer
 );
 window.store = store;
 
