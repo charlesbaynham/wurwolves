@@ -11,8 +11,9 @@ repos:
       - id: check-yaml
 
   # Sort python imports
-  - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.13.0
+  # Use fork until https://github.com/psf/black/issues/4175 is fixed (possibly never)
+  - repo: https://github.com/wimglenn/reorder-python-imports-black
+    rev: v3.12.0
     hooks:
     - id: reorder-python-imports
 
