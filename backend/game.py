@@ -3,6 +3,7 @@ Game module
 
 This module provides the WurwolvesGame class, for interacting with a single game
 """
+
 import asyncio
 import datetime
 import logging

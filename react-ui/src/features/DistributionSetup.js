@@ -35,7 +35,7 @@ function ModeSelector({ selected, setSelected, no_padding = false }) {
               : styles.difficulty_box
           }
         >
-          <Card.Img variant="top" src={img} style={{ height: "3cm" }} />
+          <Card.Img variant="top" src={img} className={styles.buttonImg} />
           <Card.Body>
             <Card.Title>{title}</Card.Title>
             <Card.Text>{description}</Card.Text>

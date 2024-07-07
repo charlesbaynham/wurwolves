@@ -3,6 +3,7 @@ The Vigilante role
 
 Once per game, the vigilante may kill one person in the night
 """
+
 from typing import TYPE_CHECKING
 
 from ..model import GameStage

@@ -23,6 +23,7 @@ if os.environ.get("DEBUG_DATABASE"):
 else:
     logger.setLevel(logging.WARNING)
 
+
 # if the sqltimings logger is enabled for debug, add hooks to the database engine
 @event.listens_for(Engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):

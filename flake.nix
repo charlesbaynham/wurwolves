@@ -7,49 +7,14 @@
         pkgs = nixpkgs.legacyPackages.${system};
         inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryEnv;
 
-        # backendPackage = mkPoetryApplication { projectDir = ./.; };
-
         pythonEnv = mkPoetryEnv {
           projectDir = ./.;
           preferWheels = true;
         };
 
-        # backendPackage = pkgs.python3Packages.buildPythonPackage rec {
-        #   name = "backend";
-        #   src = ./backend;
-        #   propagatedBuildInputs = [ ];
-        #   doCheck = false;
-        # };
-
-        # pythonReqs = with pkgs.python3Packages; [
-        #   pip
-
-        #   # Runtime
-        #   python-dotenv
-        #   sqlalchemy
-        #   alembic
-        #   psutil
-        #   psycopg2
-        #   sqlalchemy-utils
-        #   fastapi
-        #   wsproto
-        #   uvicorn
-
-        #   # Development
-        #   pytest
-        #   pytest-asyncio
-        #   pytest-mock
-        #   # selenium
-        #   # geckodriver-autoinstaller
-        #   requests
-
-        #   backendPackage
-        # ];
-
         reqs = with pkgs; [
           pkgs.nodejs
           pythonEnv
-          # (pkgs.python3.withPackages (ps: pythonReqs))
           pkgs.pre-commit
           pkgs.black
           pkgs.caddy
@@ -60,7 +25,7 @@
           pname = "wurwolves";
           version = "0.0.0";
           src = ./react-ui;
-          npmDepsHash = "sha256-LXN8r4SkYpYDrwhRnQ9UoffE8tFA+tI9Tf7nUKE44gI=";
+          # npmDepsHash = "sha256-LXN8r4SkYpYDrwhRnQ9UoffE8tFA+tI9Tf7nUKE44gI=";
           installPhase = ''
             mkdir $out
             cp -a build/. $out
@@ -139,31 +104,31 @@
         #   backend = backendApp;
         # };
 
-        # packages = {
-        #   inherit backendPackage frontendBuild frontendBuildWithCaddy;
-        #   default = frontendBuild;
-        #   dockerFrontend = pkgs.dockerTools.buildLayeredImage {
-        #     name = "wurwolves-frontend";
-        #     created = "now";
-        #     config = {
-        #       Cmd = [ frontendApp.program ];
-        #       ExposedPorts = {
-        #         "80/tcp" = { };
-        #         "443/tcp" = { };
-        #       };
-        #       Env = [ "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" ];
-        #     };
-        #   };
-        #   dockerBackend = pkgs.dockerTools.buildLayeredImage {
-        #     name = "wurwolves-backend";
-        #     created = "now";
-        #     config = {
-        #       Cmd = [ backendApp.program ];
-        #       WorkingDir = "/data";
-        #       Volumes = { "/data" = { }; };
-        #     };
-        #   };
-        # };
+        packages = {
+          inherit frontendBuild frontendBuildWithCaddy;
+          default = frontendBuild;
+          dockerFrontend = pkgs.dockerTools.buildLayeredImage {
+            name = "wurwolves-frontend";
+            created = "now";
+            config = {
+              Cmd = [ frontendApp.program ];
+              ExposedPorts = {
+                "80/tcp" = { };
+                "443/tcp" = { };
+              };
+              Env = [ "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" ];
+            };
+          };
+          # dockerBackend = pkgs.dockerTools.buildLayeredImage {
+          #   name = "wurwolves-backend";
+          #   created = "now";
+          #   config = {
+          #     Cmd = [ backendApp.program ];
+          #     WorkingDir = "/data";
+          #     Volumes = { "/data" = { }; };
+          #   };
+          # };
+        };
       }
     );
 }
