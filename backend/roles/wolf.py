@@ -1,7 +1,6 @@
 """
 The Wolf role
 """
-
 from ..model import GameStage
 from ..model import PlayerRole
 from ..model import PlayerState

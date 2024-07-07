@@ -3,7 +3,6 @@ The Mason role
 
 The mason has no special powers, but they have a buddy mason. These two know who each other are.
 """
-
 from typing import TYPE_CHECKING
 
 from ..model import GameStage
