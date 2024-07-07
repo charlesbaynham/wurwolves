@@ -1,14 +1,19 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
 
+import { useParams } from "react-router-dom";
+
 import Controls from "./features/Controls";
 import GameUpdater from "./features/GameUpdater";
 import GridAndChat from "./features/GridAndChat";
 import Topbar from "./features/Topbar";
 import AllOverlays from "./features/overlays/AllOverlays";
 
-function Game(props) {
-  const game_tag = props.match.params.game_tag;
+
+function Game() {
+  const params = useParams();
+
+  const game_tag = params.game_tag;
   return (
     <div>
       <Topbar game_tag={game_tag} />
