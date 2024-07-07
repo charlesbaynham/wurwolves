@@ -85,7 +85,7 @@ LOOKUP_CONFIG = {
 
 class ChatMessage(pydantic.BaseModel):
     text: str
-    is_strong = False
+    is_strong: bool = False
 
 
 class WurwolvesGame:

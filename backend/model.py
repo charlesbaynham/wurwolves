@@ -288,7 +288,7 @@ class PlayerModel(pydantic.BaseModel):
 
     seed: float = 0
 
-    previous_role: Optional[PlayerRole]
+    previous_role: Optional[PlayerRole] = None
 
     class Config:
         from_attributes = True
