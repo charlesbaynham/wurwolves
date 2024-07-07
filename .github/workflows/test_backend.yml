@@ -42,5 +42,5 @@ jobs:
         poetry install
     - name: Test with pytest
       run: |
-        cp .env.example .env
+        cp .env.dev .env
         pytest
