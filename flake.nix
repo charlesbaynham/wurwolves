@@ -1,46 +1,55 @@
 {
   description = "Simple npm+python environment";
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, poetry2nix }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryEnv;
 
-        backendPackage = pkgs.python3Packages.buildPythonPackage rec {
-          name = "backend";
-          src = ./backend;
-          propagatedBuildInputs = [ ];
-          doCheck = false;
+        # backendPackage = mkPoetryApplication { projectDir = ./.; };
+
+        pythonEnv = mkPoetryEnv {
+          projectDir = ./.;
+          preferWheels = true;
         };
 
-        pythonReqs = with pkgs.python3Packages; [
-          pip
+        # backendPackage = pkgs.python3Packages.buildPythonPackage rec {
+        #   name = "backend";
+        #   src = ./backend;
+        #   propagatedBuildInputs = [ ];
+        #   doCheck = false;
+        # };
 
-          # Runtime
-          python-dotenv
-          sqlalchemy
-          alembic
-          psutil
-          psycopg2
-          sqlalchemy-utils
-          fastapi
-          wsproto
-          uvicorn
+        # pythonReqs = with pkgs.python3Packages; [
+        #   pip
 
-          # Development
-          pytest
-          pytest-asyncio
-          pytest-mock
-          # selenium
-          # geckodriver-autoinstaller
-          requests
+        #   # Runtime
+        #   python-dotenv
+        #   sqlalchemy
+        #   alembic
+        #   psutil
+        #   psycopg2
+        #   sqlalchemy-utils
+        #   fastapi
+        #   wsproto
+        #   uvicorn
 
-          backendPackage
-        ];
+        #   # Development
+        #   pytest
+        #   pytest-asyncio
+        #   pytest-mock
+        #   # selenium
+        #   # geckodriver-autoinstaller
+        #   requests
+
+        #   backendPackage
+        # ];
 
         reqs = with pkgs; [
           pkgs.nodejs
-          (pkgs.python3.withPackages (ps: pythonReqs))
+          pythonEnv
+          # (pkgs.python3.withPackages (ps: pythonReqs))
           pkgs.pre-commit
           pkgs.black
           pkgs.caddy
