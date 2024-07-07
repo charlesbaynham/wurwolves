@@ -3,6 +3,7 @@ The Medic role
 
 The Medic can save one person every night.
 """
+
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
