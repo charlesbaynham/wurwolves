@@ -9,7 +9,6 @@ import GridAndChat from "./features/GridAndChat";
 import Topbar from "./features/Topbar";
 import AllOverlays from "./features/overlays/AllOverlays";
 
-
 function Game() {
   const params = useParams();
 

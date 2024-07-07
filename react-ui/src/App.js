@@ -1,5 +1,10 @@
 import React from "react";
-import { RouterProvider, Route, Routes, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  Route,
+  Routes,
+  createBrowserRouter,
+} from "react-router-dom";
 
 import { useSelector } from "react-redux";
 
@@ -24,7 +29,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-
 // Disable console.log in production
 function noop() {}
 if (process.env.NODE_ENV !== "development") {
@@ -33,7 +37,6 @@ if (process.env.NODE_ENV !== "development") {
   console.warn = noop;
   console.error = noop;
 }
-
 
 function App() {
   const game_stage = useSelector(selectStage);
