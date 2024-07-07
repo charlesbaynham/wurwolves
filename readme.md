@@ -3,21 +3,23 @@ Wurwolves
 
 A simple web app to play Werewolves (AKA Mafia) online. Live now at [wurwolves.com](https://www.wurwolves.com).
 
-This repository is ready to be deployed to a Heroku dyno. You'll need to manually add both the python and nodejs buildpacks like so:
+Deployment
+----------
 
-```
-heroku buildpacks:clear
-heroku buildpacks:set heroku/nodejs
-heroku buildpacks:add --index 1 heroku/python
-```
+This repository can be used to build docker containers for the frontend and backend, using nix, or can be run using nix directly. 
 
-And also the PostgreSQL addon:
+1. Configure `.env`
 
-```
-heroku addons:create heroku-postgresql:hobby-dev
-```
+then either:
 
-Alternatively, provision on your container platform of choice. The database is accessed and configured through the environmental variable `DATABASE_URL`.
+2. Run `nix run .#frontend` in one window
+3. ...and `nix run .#backend` in another
+
+or:
+
+2. `nix run` to build docker images and store them in the local registry
+3. `docker compose up`
+
 
 Local use
 ---------
