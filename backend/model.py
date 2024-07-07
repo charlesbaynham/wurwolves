@@ -291,7 +291,7 @@ class PlayerModel(pydantic.BaseModel):
     previous_role: Optional[PlayerRole]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         extra = "forbid"
 
 
@@ -305,7 +305,7 @@ class MessageModel(pydantic.BaseModel):
     visible_to: List[PlayerModel]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         extra = "forbid"
 
 
@@ -322,7 +322,7 @@ class GameModel(pydantic.BaseModel):
     messages: List[MessageModel]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         extra = "forbid"
 
 
@@ -332,7 +332,7 @@ class UserModel(pydantic.BaseModel):
     name_is_generated: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         extra = "forbid"
 
 
@@ -349,7 +349,7 @@ class ActionModel(pydantic.BaseModel):
     selected_player: Union[None, PlayerModel]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         extra = "forbid"
 
 
@@ -411,10 +411,10 @@ class FrontendState(pydantic.BaseModel):
 
     class ChatMsg(pydantic.BaseModel):
         msg: str
-        isStrong = False
+        isStrong: bool = False
 
     chat: List[ChatMsg]
-    showSecretChat = False
+    showSecretChat: bool = False
 
     stage: GameStage
 

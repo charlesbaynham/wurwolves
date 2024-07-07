@@ -20,7 +20,7 @@ from .teams import Team
 class StageAction(pydantic.BaseModel):
     text: Dict[PlayerState, str]
     button_text: Optional[str]
-    select_person = True
+    select_person: bool = True
 
     @pydantic.validator("text", pre=True)
     def build_text(cls, v):
@@ -58,7 +58,7 @@ class RoleDescription(pydantic.BaseModel):
 
     # If present, announce to this role who else has this role.
     # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")
-    reveal_others_text = ""
+    reveal_others_text : str = ""
 
     # dict of stages in which this role cannot see their own role,
     # and sees themselves as the given role instead
