@@ -26,10 +26,10 @@ fastapi = { version = "^0.80", extras = ["all"] }
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
 pre-commit = "^3.7.1"
-#black = "^24.4.2"
 selenium = "^4.22.0"
 geckodriver-autoinstaller = "^0.1.0"
 requests = "^2.32.3"
+black = "^24.4.2"
 
 [build-system]
 requires = ["poetry-core"]
