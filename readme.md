@@ -21,17 +21,14 @@ or:
 3. `docker compose up`
 
 
-Local use
----------
+Local development
+-----------------
 
-For local use, create and activate a python virtual environment then install and run:
+For local development, install nix and direnv then use::
 
-```
-virtualenv venv
-source venv/bin/activate
-npm install
-npm dev
-```
+1. `direnv allow`
+2. `npm i`
+3. `npm run dev`
 
 Outline
 -------
