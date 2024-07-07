@@ -21,6 +21,7 @@ sqlalchemy-utils = "^0.37"
 psycopg2-binary = "^2.9.9"
 markupsafe = "^2.1.5"
 fastapi = { version = "^0.80", extras = ["all"] }
+pydantic = "^1.7.4"
 
 
 [tool.poetry.group.dev.dependencies]
