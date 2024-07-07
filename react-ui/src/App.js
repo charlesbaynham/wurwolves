@@ -2,7 +2,7 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Switch
+  Routes
 } from 'react-router-dom'
 
 import { useSelector } from 'react-redux';
@@ -41,10 +41,10 @@ function App() {
     <div className={game_stage}>
       <div id="main" className="min-vh-100 bg-night-black">
         <Router>
-          <Switch>
+          <Routes>
             <Route path="/:game_tag" component={Game} />
             <Route path="/" component={Home} />
-          </Switch>
+          </Routes>
         </Router>
         <Footer />
       </div>
