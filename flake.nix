@@ -47,7 +47,7 @@
         ];
 
         frontendBuild = pkgs.buildNpmPackage rec {
-          pname = "streetfight";
+          pname = "wurwolves";
           version = "0.0.0";
           src = ./react-ui;
           npmDepsHash = "sha256-86N+zJ2/WMGOWVLyDBY1RkVA27ktPMeiGjH+JXVb5Y4=";
@@ -58,7 +58,7 @@
         };
 
         frontendBuildWithCaddy = pkgs.stdenv.mkDerivation {
-          name = "streetfight-with-caddy";
+          name = "wurwolves-with-caddy";
           src = frontendBuild;
           installPhase = ''
             mkdir $out
@@ -133,7 +133,7 @@
           inherit backendPackage frontendBuild frontendBuildWithCaddy;
           default = frontendBuild;
           dockerFrontend = pkgs.dockerTools.buildLayeredImage {
-            name = "streetfight-frontend";
+            name = "wurwolves-frontend";
             created = "now";
             config = {
               Cmd = [ frontendApp.program ];
@@ -145,7 +145,7 @@
             };
           };
           dockerBackend = pkgs.dockerTools.buildLayeredImage {
-            name = "streetfight-backend";
+            name = "wurwolves-backend";
             created = "now";
             config = {
               Cmd = [ backendApp.program ];
