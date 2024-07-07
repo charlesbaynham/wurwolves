@@ -67,6 +67,9 @@
               drv = (pkgs.writeShellScriptBin "script" ''
                 export PATH=${pkgs.lib.makeBinPath [ pythonEnv ]}:$PATH
 
+                # Add this flake to python path, but let the local directory take priority
+                export PYTHONPATH=${self}:$PYTHONPATH
+
                 python -m backend.reset_db && true
                 exec python -m uvicorn backend.main:app --host 0.0.0.0
               '');
