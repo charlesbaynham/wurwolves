@@ -14,6 +14,7 @@
 
         reqs = with pkgs; [
           pkgs.nodejs
+          pkgs.poetry
           pythonEnv
           pkgs.pre-commit
           pkgs.black
