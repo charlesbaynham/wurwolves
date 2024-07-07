@@ -51,7 +51,7 @@
           pname = "wurwolves";
           version = "0.0.0";
           src = ./react-ui;
-          npmDepsHash = "sha256-86N+zJ2/WMGOWVLyDBY1RkVA27ktPMeiGjH+JXVb5Y4=";
+          # npmDepsHash = UNKNOWN
           installPhase = ''
             mkdir $out
             cp -a build/. $out
