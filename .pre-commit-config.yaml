@@ -15,11 +15,9 @@ repos:
     rev: v2.5.0
     hooks:
     - id: reorder-python-imports
-      language_version: python3.8
 
   # Format the code with a conventional PEP8 style
   - repo: https://github.com/psf/black
     rev: 21.7b0
     hooks:
       - id: black
-        language_version: python3.8
