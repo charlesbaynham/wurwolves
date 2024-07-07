@@ -1,10 +1,10 @@
 .toggle {
     padding: 0.5em 0;
     display: flex;
-    align-items:center;
+    align-items: center;
 }
 
-.toggle > p {
+.toggle>p {
     margin: 0;
     padding: 0;
     padding-left: 2em;
@@ -38,7 +38,13 @@
     color: none;
     cursor: pointer;
     transition: background 250ms ease-in-out,
-                transform 150ms ease;
+        transform 150ms ease;
     -webkit-appearance: none;
     -moz-appearance: none;
+}
+
+
+.buttonImg {
+    height: 3cm;
+    object-fit: contain;
 }

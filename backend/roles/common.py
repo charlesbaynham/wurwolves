@@ -19,8 +19,8 @@ from .teams import Team
 
 class StageAction(pydantic.BaseModel):
     text: Dict[PlayerState, str]
-    button_text: Optional[str]
-    select_person = True
+    button_text: Optional[str] = None
+    select_person: bool = True
 
     @pydantic.validator("text", pre=True)
     def build_text(cls, v):
@@ -46,19 +46,19 @@ class StageAction(pydantic.BaseModel):
 
 class RoleDescription(pydantic.BaseModel):
     display_name: str
-    fallback_role: Optional[PlayerRole]
-    fallback_role_description: Optional["RoleDescription"]
+    fallback_role: Optional[PlayerRole] = None
+    fallback_role_description: Optional["RoleDescription"] = None
     stages: Dict[GameStage, StageAction]
 
     class SecretChatType(Enum):
         TEAM = auto()
         ROLE = auto()
 
-    secret_chat_enabled: Optional[SecretChatType]
+    secret_chat_enabled: Optional[SecretChatType] = None
 
     # If present, announce to this role who else has this role.
     # Use this text to do so (e.g. "fellow wolves" -> "your fellow wolves are x and y")
-    reveal_others_text = ""
+    reveal_others_text: str = ""
 
     # dict of stages in which this role cannot see their own role,
     # and sees themselves as the given role instead

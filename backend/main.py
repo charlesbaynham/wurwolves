@@ -50,7 +50,7 @@ app.add_middleware(
 
 
 def get_mem_usage():
-    return psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2
+    return psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 @router.get("/{game_tag}/state")

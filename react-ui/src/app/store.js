@@ -1,10 +1,8 @@
-import { createStore, combineReducers } from 'redux'
-import { createSlice } from '@reduxjs/toolkit'
-import { composeWithDevTools } from 'redux-devtools-extension'
-
+import { createStore, combineReducers } from "redux";
+import { createSlice } from "@reduxjs/toolkit";
 
 const backend = createSlice({
-  name: 'backend',
+  name: "backend",
   initialState: {
     state_hash: 0,
     players: [],
@@ -18,46 +16,42 @@ const backend = createSlice({
     myStatus: null,
   },
   reducers: {
-    replace: (state, action) => action.payload
-  }
-})
+    replace: (state, action) => action.payload,
+  },
+});
 
-export const replaceState = backend.actions.replace
+export const replaceState = backend.actions.replace;
 
 const selectedPlayer = createSlice({
-  name: 'selectedPlayer',
+  name: "selectedPlayer",
   initialState: null,
   reducers: {
     selectPlayer: (state, action) => action.payload,
-    unselectAll: state => null,
-  }
-})
+    unselectAll: (state) => null,
+  },
+});
 
-export const selectPlayer = selectedPlayer.actions.selectPlayer
-export const unselectAll = selectedPlayer.actions.unselectAll
+export const selectPlayer = selectedPlayer.actions.selectPlayer;
+export const unselectAll = selectedPlayer.actions.unselectAll;
 
 const config = createSlice({
-  name: 'config',
+  name: "config",
   initialState: "",
   reducers: {
     replaceGameConfigMode: (state, action) => action.payload,
-  }
-})
+  },
+});
 
-export const setGameConfigMode = config.actions.replaceGameConfigMode
+export const setGameConfigMode = config.actions.replaceGameConfigMode;
 
 const reducer = combineReducers({
   backend: backend.reducer,
   selectedPlayer: selectedPlayer.reducer,
   config: config.reducer,
-})
-
+});
 
 // Expose the store on window.store for debugging
-let store = createStore(
-  reducer,
-  composeWithDevTools()
-);
+let store = createStore(reducer);
 window.store = store;
 
 export default store;

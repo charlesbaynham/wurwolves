@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "wurwolves"
+version = "0.1.0"
+description = "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server"
+authors = ["Charles Baynham <charles.baynham@gmail.com>"]
+license = "MIT"
+readme = "readme.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+alembic = "^1.4.3"
+graphql-core = "^2.3.2"
+idna = "^2.10"
+promise = "^2.3"
+psutil = "^5.8.0"
+python-dotenv = "^0.15.0"
+six = "^1.15.0"
+sqlalchemy = "^1.3.20"
+sqlalchemy-utils = "^0.37"
+psycopg2-binary = "^2.9.9"
+markupsafe = "^2.1.5"
+fastapi = "^0.111.0"
+pydantic = "^2.8.2"
+itsdangerous = "^2.2.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+pre-commit = "^3.7.1"
+selenium = "^4.22.0"
+geckodriver-autoinstaller = "^0.1.0"
+requests = "^2.32.3"
+black = "^24.4.2"
+ipython = "^8.26.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

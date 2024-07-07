@@ -8,10 +8,9 @@
     "dev": "concurrently \"cd react-ui && npm start\" \"npm run backend\"",
     "frontend": "node server",
     "backend": "(npm run resetdb || true) && uvicorn backend.main:app --reload --reload-dir backend",
+    "processSVGs": "svgo -r -f .",
     "build": "cd react-ui && npm run build",
-    "install": "pip install -e . && cd react-ui/ && npm install",
-    "migrate": "alembic revision --autogenerate",
-    "upgrade": "alembic upgrade head",
+    "install": "cd react-ui/ && npm install",
     "resetdb": "python -m backend.reset_db",
     "test": "pytest && cd react-ui && npm test",
     "clean": "git clean -xdf --exclude venv --exclude node_modules --exclude .env",
@@ -22,17 +21,10 @@
     "react-ui/node_modules"
   ],
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
-    "@fortawesome/react-fontawesome": "^0.1.14",
     "concurrently": "^5.2.0",
     "express": "^4.16.4",
-    "framer-motion": "^3.3.0",
     "http-proxy-middleware": "^1.0.4",
-    "lodash": "^4.17.21",
-    "react-bootstrap-range-slider": "^2.0.2",
-    "react-switch": "^6.0.0",
-    "react-use-clipboard": "^1.0.7"
+    "svgo": "^3.3.2"
   },
   "repository": {
     "type": "git",
@@ -45,6 +37,5 @@
     "react",
     "wurwolves"
   ],
-  "license": "None",
-  "devDependencies": {}
+  "license": "None"
 }

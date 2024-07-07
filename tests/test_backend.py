@@ -67,7 +67,7 @@ def test_state_speed(api_client_factory, caplog):
                 response = c.get(
                     "/api/{}/state".format(GAME_ID), params={"temporary_id": rand_id}
                 )
-                assert response.ok
+                assert response.status_code == 200
             except Exception as e:
                 logging.error("Failed at repeat %s, client %s", i_repeat, i_client)
                 raise e
@@ -139,7 +139,7 @@ def test_single_render(api_client_factory, caplog):
 
     render_database_times = _get_database_times(render_logs)
 
-    assert response.ok
+    assert response.status_code == 200
 
     logging.warning(f"total_time = {total_time:.3f}s")
 
@@ -184,14 +184,14 @@ def test_get_default_role_weights(api_client):
 
     print(r.content)
 
-    assert r.ok
+    assert r.status_code == 200
 
 
 def test_get_game_config_mode(api_client, db_session):
     from backend.model import DistributionSettings
 
     r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
-    assert r.ok
+    assert r.status_code == 200
 
     assert json.loads(r.content) == "hard"
 
@@ -210,10 +210,10 @@ def test_set_get_game_config_mode(api_client, db_session):
         f"/api/{GAME_ID}/game_config_mode?" + urlencode({"new_config_mode": "easy"})
     )
 
-    assert r.ok
+    assert r.status_code == 200
 
     r = api_client.get(f"/api/{GAME_ID}/game_config_mode")
-    assert r.ok
+    assert r.status_code == 200
     config2 = json.loads(r.content)
 
     assert config2 == "easy"
@@ -226,7 +226,7 @@ def test_end_game(api_client, db_session):
 
     with api_client as s:
         r = s.post(f"/api/{GAME_ID}/join")
-        assert r.ok
+        assert r.status_code == 200
 
         for _ in range(4):
             g.join(uuid())
@@ -236,6 +236,6 @@ def test_end_game(api_client, db_session):
         assert g.get_game_model().stage == GameStage.NIGHT
 
         r = s.post(f"/api/{GAME_ID}/end_game")
-        assert r.ok
+        assert r.status_code == 200
 
         assert g.get_game_model().stage == GameStage.ENDED

@@ -1,0 +1,30 @@
+# {
+# 	http_port 80
+# 	https_port 443
+# }
+
+{$WEBSITE_URL:https://localhost} {
+	# encode gzip
+
+	handle /api/* {
+		reverse_proxy {$API_URL:http://localhost:8000}
+	}
+
+	handle /docs/* {
+		reverse_proxy {$API_URL:http://localhost:8000}
+	}
+
+	handle {
+		root * result
+
+		# Templates give static sites some dynamic features
+		# templates
+
+		# Compress responses according to Accept-Encoding headers
+		# encode gzip zstd
+
+		# Make HTML file extension optional
+		try_files {path} /index.html
+		file_server
+	}
+}
