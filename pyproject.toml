@@ -31,6 +31,7 @@ selenium = "^4.22.0"
 geckodriver-autoinstaller = "^0.1.0"
 requests = "^2.32.3"
 black = "^24.4.2"
+ipython = "^8.26.0"
 
 [build-system]
 requires = ["poetry-core"]
