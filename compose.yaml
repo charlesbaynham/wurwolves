@@ -29,6 +29,15 @@ services:
     - ./logs:/data/logs
     restart: always
 
+  cloudflare-ddns:
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    environment:
+    - API_KEY=${CLOUDFLARE_KEY}
+    - ZONE=${CLOUDFLARE_DOMAIN}
+    - SUBDOMAIN=${CLOUDFLARE_SUBDOMAIN}
+    - PROXIED=false
+
 volumes:
   caddy_data:
   caddy_config:
