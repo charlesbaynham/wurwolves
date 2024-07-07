@@ -1,0 +1,34 @@
+services:
+  wwfrontend:
+    image: wurwolves-frontend
+    environment:
+    - API_URL
+    - WEBSITE_URL
+    - XDG_CONFIG_HOME=/config
+    - XDG_DATA_HOME=/data
+    ports:
+    - 80:80
+    - 443:443
+    volumes:
+    - caddy_data:/data
+    - caddy_config:/config
+    restart: always
+
+  wwbackend:
+    image: wurwolves-backend
+    environment:
+    - DATABASE_URL
+    - MAKE_DEBUG_ENTRIES
+    - SECRET_KEY
+    - WEBSITE_URL
+    - LOG_LEVEL
+    - LOG_OVERRIDES
+    - GUNICORN_WORKERS
+    - DEBUG
+    volumes:
+    - ./logs:/data/logs
+    restart: always
+
+volumes:
+  caddy_data:
+  caddy_config:
