@@ -117,7 +117,7 @@ function Controls(props) {
           status="ALIVE"
           seed={controlsState.seed}
         />
-        <ReactMarkdown source={controlsState.text} />
+        <ReactMarkdown children={controlsState.text} />
       </div>
     </div>
   );

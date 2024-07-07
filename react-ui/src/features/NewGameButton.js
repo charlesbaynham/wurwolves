@@ -50,11 +50,9 @@ function NewGameButton({ callback = null }) {
           value={textBoxContents}
           onChange={(e) => setTextBoxContents(e.target.value)}
         />
-        <InputGroup.Append>
-          <Button onClick={startGame}>
-            {textBoxContents ? "Join" : "Start"}
-          </Button>
-        </InputGroup.Append>
+        <Button onClick={startGame}>
+          {textBoxContents ? "Join" : "Start"}
+        </Button>
       </InputGroup>
     </Form>
   );

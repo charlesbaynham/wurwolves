@@ -61,7 +61,7 @@ function SettingsButton({ className, gameTag }) {
           <Modal.Title>Utilities</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ReactMarkdown source={settings_text} />
+          <ReactMarkdown children={settings_text} />
           <h5 className="mt-3">Customise roles</h5>
           Change the settings for the next time this game is restarted:
           <DistributionSetup

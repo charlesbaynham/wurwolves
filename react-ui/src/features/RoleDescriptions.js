@@ -44,7 +44,7 @@ function RoleDescriptions(props) {
                     />
                   ) : null}
                   {badges[value.level]}
-                  <ReactMarkdown source={value.description} />
+                  <ReactMarkdown children={value.description} />
                 </Tab.Pane>
               );
             })}

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { RouterProvider, Route, Routes, createBrowserRouter } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 
@@ -13,6 +13,17 @@ import Footer from "./features/Footer";
 
 import { selectStage } from "./features/selectors";
 
+const router = createBrowserRouter([
+  {
+    path: "/:game_tag",
+    element: <Game />,
+  },
+  {
+    path: "/",
+    element: <Home />,
+  },
+]);
+
 
 // Disable console.log in production
 function noop() {}
@@ -23,18 +34,14 @@ if (process.env.NODE_ENV !== "development") {
   console.error = noop;
 }
 
+
 function App() {
   const game_stage = useSelector(selectStage);
+
   return (
     <div className={game_stage}>
       <div id="main" className="min-vh-100 bg-night-black">
-        Hello world
-        <Router>
-          <Routes>
-            <Route path="/:game_tag" component={Game} />
-            <Route path="/" component={Home} />
-          </Routes>
-        </Router>
+        <RouterProvider router={router} />
         <Footer />
       </div>
     </div>

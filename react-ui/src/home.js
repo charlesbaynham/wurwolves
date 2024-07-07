@@ -25,7 +25,7 @@ function Home(props) {
         <Row>
           <Col>
             <ReactMarkdown
-              source={`
+              children={`
 Play werewolves online with an automated narrator. If you're not in the same room,
 you should probably start a video call.
 

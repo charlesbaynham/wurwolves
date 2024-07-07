@@ -37,7 +37,7 @@ function HelpButton({ className }) {
         <Modal.Body>
           <Tabs defaultActiveKey="intro" className="flex-row">
             <Tab eventKey="intro" title="Game" className="px-1">
-              <ReactMarkdown className={styles.prose} source={help_text} />
+              <ReactMarkdown className={styles.prose} children={help_text} />
             </Tab>
             <Tab eventKey="guaranteed-roles" title="Roles - guaranteed">
               <RoleDescriptions roles={guaranteed_roles} />
