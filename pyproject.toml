@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A simple werewolves (/ mafia) webapp using a React+Redux frontend with a Python+FastAPI+SQLAlchemy backend, served by a static node server"
 authors = ["Charles Baynham <charles.baynham@gmail.com>"]
 license = "MIT"
-readme = "README.md"
+readme = "readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
