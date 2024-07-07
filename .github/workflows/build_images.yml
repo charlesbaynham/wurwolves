@@ -1,0 +1,65 @@
+name: Build images
+
+on:
+  push:
+    branches:
+    - master
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_PREFIX: ${{ github.repository }}
+
+jobs:
+  build_frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Nix
+      uses: cachix/install-nix-action@v22
+    - name: Build frontend docker image
+      run: |
+        nix build .#dockerFrontend
+        export IMG_ID=$(docker load -i result | sed -nr 's/^Loaded image: (.*)$/\1/p' | xargs -I{} docker image ls "{}" --format="{{.ID}}")
+        docker tag $IMG_ID $REGISTRY/${IMAGE_NAME_PREFIX}-frontend:$GITHUB_SHA
+        docker tag $IMG_ID $REGISTRY/${IMAGE_NAME_PREFIX}-frontend:latest
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push to registry
+      run: |
+        echo "Pushing Docker image to GitHub Container Registry"
+        docker push $REGISTRY/${IMAGE_NAME_PREFIX}-frontend:$GITHUB_SHA
+        docker push $REGISTRY/${IMAGE_NAME_PREFIX}-frontend:latest
+
+  build_backend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Nix
+      uses: cachix/install-nix-action@v22
+    - name: Build backend docker image
+      run: |
+        nix build .#dockerBackend
+        export IMG_ID=$(docker load -i result | sed -nr 's/^Loaded image: (.*)$/\1/p' | xargs -I{} docker image ls "{}" --format="{{.ID}}")
+        docker tag $IMG_ID $REGISTRY/${IMAGE_NAME_PREFIX}-backend:$GITHUB_SHA
+        docker tag $IMG_ID $REGISTRY/${IMAGE_NAME_PREFIX}-backend:latest
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push to registry
+      run: |
+        echo "Pushing Docker image to GitHub Container Registry"
+        docker push $REGISTRY/${IMAGE_NAME_PREFIX}-backend:$GITHUB_SHA
+        docker push $REGISTRY/${IMAGE_NAME_PREFIX}-backend:latest
