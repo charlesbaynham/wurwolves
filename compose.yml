@@ -3,7 +3,6 @@ services:
     image: wurwolves-frontend
     environment:
     - API_URL
-    # - WEBSITE_URL
     - XDG_CONFIG_HOME=/config
     - XDG_DATA_HOME=/data
     ports: 
@@ -20,7 +19,6 @@ services:
     - DATABASE_URL
     - MAKE_DEBUG_ENTRIES
     - SECRET_KEY
-    - WEBSITE_URL
     - LOG_LEVEL
     - LOG_OVERRIDES
     - GUNICORN_WORKERS
