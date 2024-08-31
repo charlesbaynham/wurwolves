@@ -12,6 +12,13 @@ services:
       traefik.http.routers.wwfrontend.rule: 'Host(`${TRAFIK_HOST}`)'
       traefik.http.routers.wwfrontend.entrypoints: https
       traefik.http.routers.wwfrontend.tls.certresolver: letsencrypt-cloudflare
+
+      # HTTP redirection
+      traefik.http.routers.wwfrontend-http.entrypoints: http
+      traefik.http.routers.wwfrontend-http.rule: 'Host(`${TRAFIK_HOST}`)'
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+      traefik.http.routers.wwfrontend-http.middlewares: https-redirect
+
     networks:
       - default
       - traefik
