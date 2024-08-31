@@ -9,8 +9,7 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik
-      traefik.http.routers.mattermost.entrypoints: https
-      traefik.http.routers.mattermost.rule: 'Host(`${TRAFIK_HOST}`)'
+      traefik.http.routers.wwfrontend.rule: 'Host(`${TRAFIK_HOST}`)'
     networks:
       - default
       - traefik
