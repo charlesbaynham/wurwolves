@@ -10,7 +10,7 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.http.routers.wwfrontend.rule: 'Host(`${TRAFIK_HOST}`)'
-      traefik.http.routers.traefik-https.tls.certresolver: letsencrypt-cloudflare
+      traefik.http.routers.wwfrontend.tls.certresolver: letsencrypt-cloudflare
     networks:
       - default
       - traefik
