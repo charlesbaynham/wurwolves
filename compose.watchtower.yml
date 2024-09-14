@@ -14,7 +14,7 @@ services:
     image: ${BACKEND_IMAGE:-ghcr.io/charlesbaynham/wurwolves-backend:latest}
     labels:
       com.centurylinklabs.watchtower.scope: wurwolves
-    
+
   watchtower:
     image: containrrr/watchtower
     restart: always
@@ -25,4 +25,3 @@ services:
       com.centurylinklabs.watchtower.scope: wurwolves
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    
