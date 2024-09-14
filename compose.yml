@@ -5,14 +5,14 @@ services:
     - API_URL
     - XDG_CONFIG_HOME=/config
     - XDG_DATA_HOME=/data
-    ports: 
+    ports:
     - 80:80
     - 443:443
     volumes:
     - caddy_data:/data
     - caddy_config:/config
-    restart: always    
-    
+    restart: always
+
   wwbackend:
     image: wurwolves-backend
     environment:
