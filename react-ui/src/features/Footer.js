@@ -5,7 +5,7 @@ function Footer() {
     <div className="text-muted text-nowrap footer d-flex flex-row px-5 bg-light bg-night-black">
       <a id="buymeabeer" href="https://www.buymeacoffee.com/wurwolves">
         <span className="d-none d-sm-inline">
-          If you've enjoyed the app, consider buying me a beer
+          If you've enjoyed the app, you could buy me a beer
         </span>
         <span className="d-inline d-sm-none">Buy me a beer</span>
         <span role="img" aria-label="beer">
