@@ -1,0 +1,28 @@
+# Use watchtower to automatically get updates to the master branch on github
+#
+# To use this plugin, add it to the COMPOSE_FILE .env setup
+
+services:
+  # Override the frontend and backend to get their containers from the github
+  # container registry instead of the locally built versions:
+  frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/charlesbaynham/wurwolves-frontend:latest}
+    labels:
+      com.centurylinklabs.watchtower.scope: wurwolves
+
+  backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/charlesbaynham/wurwolves-backend:latest}
+    labels:
+      com.centurylinklabs.watchtower.scope: wurwolves
+    
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    environment:
+      WATCHTOWER_SCOPE: wurwolves
+      WATCHTOWER_POLL_INTERVAL: 30
+    labels:
+      com.centurylinklabs.watchtower.scope: wurwolves
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    
