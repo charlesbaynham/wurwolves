@@ -23,11 +23,13 @@ or:
 Traefik
 -------
 
-The default instructions above will launch a local service for testing. To
-deploy properly, use the ".env.traefik" template to wire these containers into
-traefik for SSL certificates. You will need to also have a traefik instance
-running and connected to the docker network called "traefik". HTTPS negotiation
-is out of scope for this repository - set it up in traefik. 
+The default instructions above will launch a local service using caddy with
+self-signed certificates. You could use caddy directly by altering the Caddyfile to let caddy negotiate HTTPS on your behalf. However, I've set this up to use traefik instead so that this app can be hosted next to others. 
+
+To deploy, use the ".env.traefik" template to wire these containers into traefik
+for SSL certificates. You will need to also have a traefik instance running and
+connected to the docker network called "traefik". HTTPS negotiation is out of
+scope for this repository - set it up in traefik. 
 
 Local development
 -----------------
