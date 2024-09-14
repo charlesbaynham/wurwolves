@@ -1,0 +1,28 @@
+# Expose this service via a traefik instance
+# 1. Traefik must be already running
+# 2. The network "traefik" must exist and traefik must be connected to it
+
+services:
+  wwfrontend:
+    ports: !reset []
+    # Copied from https://gist.github.com/lfache/a02c01dde1e55345f4583cfce724cf1f:
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.wwfrontend.rule: 'Host(`${TRAFIK_HOST}`)'
+      traefik.http.routers.wwfrontend.entrypoints: https
+      traefik.http.routers.wwfrontend.tls.certresolver: letsencrypt-cloudflare
+
+      # HTTP redirection
+      traefik.http.routers.wwfrontend-http.entrypoints: http
+      traefik.http.routers.wwfrontend-http.rule: 'Host(`${TRAFIK_HOST}`)'
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+      traefik.http.routers.wwfrontend-http.middlewares: https-redirect
+
+    networks:
+      - default
+      - traefik
+
+networks:
+  traefik:
+      external: true
