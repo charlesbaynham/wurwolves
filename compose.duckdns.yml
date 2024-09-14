@@ -13,4 +13,3 @@ services:
       - UPDATE_IP=ipv4 #optional
       - LOG_FILE=false #optional
     restart: unless-stopped
-

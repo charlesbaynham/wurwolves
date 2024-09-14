@@ -1,5 +1,5 @@
 # Expose this service via a traefik instance
-# 1. Traefik must be already running 
+# 1. Traefik must be already running
 # 2. The network "traefik" must exist and traefik must be connected to it
 
 services:
