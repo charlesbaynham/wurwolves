@@ -20,6 +20,14 @@ or:
 2. `nix run` to build docker images and store them in the local registry
 3. `docker compose up`
 
+Traefik
+-------
+
+The default instructions above will launch a local service for testing. To
+deploy properly, use the ".env.traefik" template to wire these containers into
+traefik for SSL certificates. You will need to also have a traefik instance
+running and connected to the docker network called "traefik". HTTPS negotiation
+is out of scope for this repository - set it up in traefik. 
 
 Local development
 -----------------
