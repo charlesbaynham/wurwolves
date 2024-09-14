@@ -1,5 +1,5 @@
 services:
-  wwfrontend:
+  frontend:
     image: wurwolves-frontend
     environment:
     - API_URL
@@ -13,7 +13,7 @@ services:
     - caddy_config:/config
     restart: always
 
-  wwbackend:
+  backend:
     image: wurwolves-backend
     environment:
     - DATABASE_URL
