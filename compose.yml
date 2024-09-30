@@ -1,9 +1,8 @@
 services:
-  wwfrontend:
+  frontend:
     image: wurwolves-frontend
     environment:
     - API_URL
-    - WEBSITE_URL
     - XDG_CONFIG_HOME=/config
     - XDG_DATA_HOME=/data
     ports:
@@ -14,13 +13,12 @@ services:
     - caddy_config:/config
     restart: always
 
-  wwbackend:
+  backend:
     image: wurwolves-backend
     environment:
     - DATABASE_URL
     - MAKE_DEBUG_ENTRIES
     - SECRET_KEY
-    - WEBSITE_URL
     - LOG_LEVEL
     - LOG_OVERRIDES
     - GUNICORN_WORKERS
@@ -29,14 +27,14 @@ services:
     - ./logs:/data/logs
     restart: always
 
-  cloudflare-ddns:
-    image: oznu/cloudflare-ddns:latest
-    restart: always
-    environment:
-    - API_KEY=${CLOUDFLARE_KEY}
-    - ZONE=${CLOUDFLARE_DOMAIN}
-    - SUBDOMAIN=${CLOUDFLARE_SUBDOMAIN}
-    - PROXIED=false
+  # cloudflare-ddns:
+  #   image: oznu/cloudflare-ddns:latest
+  #   restart: always
+  #   environment:
+  #   - API_KEY=${CLOUDFLARE_KEY}
+  #   - ZONE=${CLOUDFLARE_DOMAIN}
+  #   - SUBDOMAIN=${CLOUDFLARE_SUBDOMAIN}
+  #   - PROXIED=false
 
 volumes:
   caddy_data:

@@ -1,9 +1,5 @@
-# {
-# 	http_port 80
-# 	https_port 443
-# }
 
-{$WEBSITE_URL:https://localhost} {
+http://, https://localhost {
 	# encode gzip
 
 	handle /api/* {
