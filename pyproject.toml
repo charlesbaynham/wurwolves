@@ -12,7 +12,7 @@ python = "^3.10"
 
 alembic = "^1.4.3"
 graphql-core = "^2.3.2"
-idna = "^2.10"
+idna = "^3.7"
 promise = "^2.3"
 psutil = "^5.8.0"
 python-dotenv = "^0.15.0"
