@@ -111,7 +111,9 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "poetry2nix": "poetry2nix"
+        "poetry2nix": "poetry2nix",
+        "nixpkgs-lxc": "nixpkgs-lxc",
+        "cattle": "cattle"
       }
     },
     "systems": {
@@ -177,6 +179,38 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "type": "github"
+      }
+    },
+    "nixpkgs-lxc": {
+      "locked": {
+        "lastModified": 1786430034,
+        "narHash": "sha256-Vux08kA5PICwS2sViCMfwVLAHNoH8TkKAeBo25LjpMI=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "70cc4559b10a6062b05ff1af17e0add065ccaed9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-26.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "cattle": {
+      "locked": {
+        "lastModified": 1786689474,
+        "narHash": "sha256-mCqt7dB0oxkGipgkiZ+vCoeDWM2oJEFNBYtljVdA9LM=",
+        "ref": "v1",
+        "rev": "bbdbd1483226eb1a09219f66cf3e2dfcd11da2c7",
+        "revCount": 3,
+        "type": "git",
+        "url": "https://github.com/charlesbaynham/nix-proxmox-cattle"
+      },
+      "original": {
+        "ref": "v1",
+        "type": "git",
+        "url": "https://github.com/charlesbaynham/nix-proxmox-cattle"
       }
     }
   },

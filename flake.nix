@@ -1,8 +1,22 @@
 {
   description = "Simple npm+python environment";
 
-  outputs = { self, nixpkgs, flake-utils, poetry2nix }:
-    flake-utils.lib.eachDefaultSystem (system:
+  # nixpkgs, flake-utils and poetry2nix stay indirect (resolved from the
+  # registry, pinned by flake.lock) - the app's toolchain is validated against
+  # those revisions, npmDepsHash included, and is deliberately not disturbed.
+  #
+  # The container's OS comes from a current nixpkgs instead, because the LXC
+  # image plumbing the cattle module needs is newer than that pin. Mixing is
+  # fine: the app packages are self-contained closures wherever they are built.
+  inputs.nixpkgs-lxc.url = "github:NixOS/nixpkgs/nixos-26.05";
+  inputs.cattle.url = "git+https://github.com/charlesbaynham/nix-proxmox-cattle?ref=v1";
+
+  outputs = { self, nixpkgs, flake-utils, poetry2nix, nixpkgs-lxc, cattle }:
+    let
+      lxcSystem = "x86_64-linux";
+      wurwolvesModule = import ./nix/wurwolves.nix;
+
+      perSystem = flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryEnv;
@@ -10,6 +24,14 @@
         pythonEnv = mkPoetryEnv {
           projectDir = ./.;
           preferWheels = true;
+        };
+
+        # What the deployed container needs, and deliberately free of pytest,
+        # selenium and ipython.
+        runtimeEnv = mkPoetryEnv {
+          projectDir = ./.;
+          preferWheels = true;
+          groups = [ ];
         };
 
         reqs = with pkgs; [
@@ -106,7 +128,7 @@
         };
 
         packages = {
-          inherit frontendBuild frontendBuildWithCaddy;
+          inherit frontendBuild frontendBuildWithCaddy runtimeEnv;
           default = frontendBuild;
           dockerFrontend = pkgs.dockerTools.buildLayeredImage {
             name = "wurwolves-frontend";
@@ -132,4 +154,28 @@
         };
       }
     );
+
+      # `.#proxmoxLxcTemplate` is the rootfs tarball Proxmox takes as a CT
+      # template. Everything generic about being a cattle container comes from
+      # nix-proxmox-cattle; only the app wiring is here.
+      lxcTemplate = cattle.lib.mkTemplate {
+        nixpkgs = nixpkgs-lxc;
+        name = "wurwolves";
+        system = lxcSystem;
+        stateDir = "/data";
+        modules = [
+          wurwolvesModule
+          {
+            services.wurwolves = {
+              enable = true;
+              backend = perSystem.packages.${lxcSystem}.runtimeEnv;
+              frontend = perSystem.packages.${lxcSystem}.frontendBuild;
+              source = self;
+            };
+          }
+        ];
+      };
+    in
+    nixpkgs.lib.recursiveUpdate perSystem
+      (lxcTemplate // { nixosModules.wurwolves = wurwolvesModule; });
 }
