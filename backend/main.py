@@ -47,9 +47,7 @@ router = APIRouter()
 # secret role. It used to be a constant here, which meant everyone had it.
 SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
-    raise RuntimeError(
-        "SECRET_KEY is not set. For development, copy .env.dev to .env."
-    )
+    raise RuntimeError("SECRET_KEY is not set. For development, copy .env.dev to .env.")
 
 app.add_middleware(
     SessionMiddleware,
