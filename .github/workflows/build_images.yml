@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - master
+  # So a branch can be built before it is merged. Images and the template
+  # release only publish from master, so a dispatch elsewhere is build-only.
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
