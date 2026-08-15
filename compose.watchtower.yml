@@ -16,7 +16,7 @@ services:
       com.centurylinklabs.watchtower.scope: wurwolves
 
   watchtower:
-    image: containrrr/watchtower
+    image: nickfedor/watchtower
     restart: always
     environment:
       WATCHTOWER_SCOPE: wurwolves
