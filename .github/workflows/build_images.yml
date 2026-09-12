@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - master
+  # So a branch can be built before it is merged. Images and the template
+  # release only publish from master, so a dispatch elsewhere is build-only.
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -63,3 +66,12 @@ jobs:
         echo "Pushing Docker image to GitHub Container Registry"
         docker push $REGISTRY/${IMAGE_NAME_PREFIX}-backend:$GITHUB_SHA
         docker push $REGISTRY/${IMAGE_NAME_PREFIX}-backend:latest
+
+  # Build the Proxmox LXC rootfs template and publish it as a release asset.
+  # Deployment is pull-based - CI has no route to a hypervisor behind domestic
+  # NAT - so the hypervisor fetches the asset itself. The pattern, and the
+  # contract this repo honours in exchange, live in nix-proxmox-cattle.
+  build_lxc_template:
+    permissions:
+      contents: write
+    uses: charlesbaynham/nix-proxmox-cattle/.github/workflows/build-template.yml@v1

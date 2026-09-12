@@ -42,9 +42,16 @@ words = None
 app = FastAPI()
 router = APIRouter()
 
+# This key signs the cookie that carries a player's identity, so anyone holding
+# it can forge any player's session - and in this game a session *is* your
+# secret role. It used to be a constant here, which meant everyone had it.
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY is not set. For development, copy .env.dev to .env.")
+
 app.add_middleware(
     SessionMiddleware,
-    secret_key="james will never understand the prostitute",
+    secret_key=SECRET_KEY,
     max_age=60 * 60 * 24 * 365 * 10,
 )
 
