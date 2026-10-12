@@ -23,15 +23,13 @@ from .villager import description as villager
 description = RoleDescription(
     display_name="You are a Wolf!",
     stages={
-        GameStage.DAY: StageAction(
-            text="""
+        GameStage.DAY: StageAction(text="""
 You are a Wolf! You kill one person each night
 
 You win if the wolves kill enough villagers that you are equal in number
 
 You have access to secret chat: use it to chat with the other wolves (if there are any).
-    """
-        ),
+    """),
         GameStage.NIGHT: StageAction(
             text="""
 You are a Wolf! You kill one person each night

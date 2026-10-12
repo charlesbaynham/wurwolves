@@ -12,7 +12,6 @@ from alembic import op
 
 import backend
 
-
 # revision identifiers, used by Alembic.
 revision = "eec0897350c7"
 down_revision = None

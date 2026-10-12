@@ -32,13 +32,11 @@ You win if all the wolves are eliminated.
             button_text="Move to vote",
             select_person=False,
         ),
-        GameStage.NIGHT: StageAction(
-            text="""
+        GameStage.NIGHT: StageAction(text="""
 You are a villager. You have no special powers. Try not to get eaten!
 
 You have nothing to do at night. Try to relax...
-    """
-        ),
+    """),
         GameStage.VOTING: StageAction(
             text="""
 Vote for someone to lynch! Whoever gets the most votes will be killed.

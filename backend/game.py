@@ -44,7 +44,6 @@ from .model import UserModel
 from .roles import get_action_func_name
 from .roles import get_apparant_role
 
-
 SPECTATOR_TIMEOUT = datetime.timedelta(seconds=40)
 
 # Time for get_hash to wait for until it returns. Clients will have their

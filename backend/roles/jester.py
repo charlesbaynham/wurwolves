@@ -28,13 +28,11 @@ description = RoleDescription(
     display_name="You are the Jester!",
     stages={
         GameStage.DAY: StageAction(text=general_text),
-        GameStage.NIGHT: StageAction(
-            text=f"""
+        GameStage.NIGHT: StageAction(text=f"""
 {general_text}
 
 You have nothing to do at night. Plot your jesting.
-    """
-        ),
+    """),
     },
     team=Team.JESTER,
     fallback_role=PlayerRole.VILLAGER,

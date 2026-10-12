@@ -37,11 +37,9 @@ You win if all the wolves are eliminated.
 """,
             button_text="Select someone to shoot",
         ),
-        GameStage.DAY: StageAction(
-            text="""
+        GameStage.DAY: StageAction(text="""
 You are a vigilante! Once per game, you can shoot someone in the night.
-        """
-        ),
+        """),
     },
     team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,
