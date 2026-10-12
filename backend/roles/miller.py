@@ -13,7 +13,6 @@ from .common import StageAction
 from .teams import Team
 from .villager import description as villager
 
-
 general_desc = """
 Oh dear, you're the miller.
 

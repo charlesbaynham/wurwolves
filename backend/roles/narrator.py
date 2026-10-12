@@ -42,15 +42,13 @@ When you're ready to start the voting for the day, click the button.
             button_text="Move to vote",
             select_person=False,
         ),
-        GameStage.NIGHT: StageAction(
-            text=f"""
+        GameStage.NIGHT: StageAction(text=f"""
 {general_description}
 
 You don't have anything to do at night. Watch the chat log to see what people are up to.
 If someone isn't doing their action you can remind them, but be careful not to
 reveal their identity! When the day breaks, you can announce the results.
-    """
-        ),
+    """),
         GameStage.VOTING: StageAction(
             text=f"""
 {general_description}

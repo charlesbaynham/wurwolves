@@ -42,16 +42,14 @@ You win if all the wolves are eliminated.
 """,
             button_text="Select someone to exorcise",
         ),
-        GameStage.DAY: StageAction(
-            text="""
+        GameStage.DAY: StageAction(text="""
 You are a exorcist! Once per game, you can attempt to exorcise a wolf.
 
 If you choose a wolf, you will kill them. But, if you choose a non-wolf, YOU
 will die. So choose carefully.
 
 You win if all the wolves are eliminated.
-        """
-        ),
+        """),
     },
     team=Team.VILLAGERS,
     fallback_role=PlayerRole.VILLAGER,

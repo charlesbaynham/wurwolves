@@ -9,7 +9,6 @@ from sqlalchemy import pool
 
 from backend import model
 
-
 load_dotenv(find_dotenv(), verbose=True)
 
 # this is the Alembic Config object, which provides

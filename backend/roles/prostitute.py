@@ -26,7 +26,6 @@ from .utility_mixins import TargetMustBeAlive
 from .utility_mixins import TargetMustNotBeSelf
 from .villager import description as villager
 
-
 general_desc = """
 You're the prostitute! You make life complicated for people.
 

@@ -28,7 +28,6 @@ TEST_URL = "localhost:3000"
 TEST_GAME = "james-doesnt-understand-prostitute"
 from pathlib import Path
 
-
 # Mark this whole module as requiring selenium
 pytestmark = pytest.mark.selenium
 

@@ -22,13 +22,11 @@ if False:  # for typing
 description = RoleDescription(
     display_name="You are the Seer",
     stages={
-        GameStage.DAY: StageAction(
-            text="""
+        GameStage.DAY: StageAction(text="""
 You are a Seer! You get to check the identity of one person each night.
 
 You win if all the wolves are eliminated.
-    """
-        ),
+    """),
         GameStage.NIGHT: StageAction(
             text="""
 You are a Seer! You get to check the identity of one person each night.

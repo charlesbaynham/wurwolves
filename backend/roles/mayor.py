@@ -39,13 +39,11 @@ When you're ready to decide who to lynch, click the button.
             button_text="Move to vote",
             select_person=False,
         ),
-        GameStage.NIGHT: StageAction(
-            text=f"""
+        GameStage.NIGHT: StageAction(text=f"""
 {general_description}
 
 It's night now so you have nothing to do. Let's hope your subjects are loyal!
-    """
-        ),
+    """),
         GameStage.VOTING: StageAction(
             text=f"""
 {general_description}
